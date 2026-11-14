@@ -23,16 +23,18 @@ export const T = {
   fontText: tokens.font.text,
   fontDisplay: tokens.font.text,
   fontMono: tokens.font.mono,
-  radius: { tag: 6, option: 8, control: 10, inset: 12, card: 18, pill: 999 },
+  radius: { tag: 6, option: 6, control: 8, inset: 10, card: 12, pill: 999 }, // card = --sz-radius
   ease: 'cubic-bezier(0.2, 0, 0, 1)',
+  /** Tailles de texte partagées avec la page Body (tokens.size = --sz-fs-*). */
+  fs: tokens.size,
 } as const;
 
 /** Étiquette de section (signature SpaceX) : petite, capitales, espacée, discrète. */
 export const label: CSSProperties = {
-  fontFamily: T.fontText, fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: T.textMuted,
+  fontFamily: T.fontText, fontSize: tokens.size.xs, fontWeight: 500, textTransform: 'uppercase', letterSpacing: tokens.labelTracking, color: T.textMuted,
 };
 /** Données et métadonnées : chasse fixe, chiffres tabulaires, casse normale. */
-export const mono: CSSProperties = { fontFamily: T.fontMono, fontSize: 12, fontVariantNumeric: 'tabular-nums' };
+export const mono: CSSProperties = { fontFamily: T.fontMono, fontSize: tokens.size.sm, fontVariantNumeric: 'tabular-nums' };
 export const num: CSSProperties = { fontFamily: T.fontDisplay, fontVariantNumeric: 'tabular-nums', fontWeight: 500 };
 
 export const LEVEL_LABEL: Record<Level, string> = {
@@ -87,7 +89,7 @@ export function Prov({ p }: { p: ProvLike }) {
   const c = p === 'H' ? T.holo : p === 'SIMULÉ' ? T.textMuted : T.textDim;
   const txt = p === 'H' ? '[H]' : p === 'RÉEL — NON NASA' ? 'Réel · non NASA' : p === 'RÉEL' ? 'Réel' : p === 'SIMULÉ' ? 'Simulé' : p;
   return (
-    <span style={{ ...mono, fontSize: 11, color: c, border: `1px solid ${T.border}`, borderRadius: T.radius.tag, padding: '2px 8px', whiteSpace: 'nowrap' }}>
+    <span className="sz-prov-wr" style={{ ...mono, fontSize: tokens.size.xs, color: c, border: `1px solid ${T.border}`, borderRadius: T.radius.tag, padding: '2px 8px', whiteSpace: 'nowrap' }}>
       {txt}
     </span>
   );
@@ -96,7 +98,7 @@ export function Prov({ p }: { p: ProvLike }) {
 export function TagBadge({ tag, id }: { tag: Tag; id?: string }) {
   const c = tag === 'H' ? T.holo : T.textDim;
   return (
-    <span style={{ ...mono, fontSize: 11, color: c, border: `1px solid ${T.border}`, borderRadius: T.radius.tag, padding: '2px 8px', whiteSpace: 'nowrap' }}>
+    <span className="sz-tag" style={{ ...mono, fontSize: tokens.size.xs, color: c, border: `1px solid ${T.border}`, borderRadius: T.radius.tag, padding: '2px 8px', whiteSpace: 'nowrap' }}>
       [{tag}{id ? ' ' + id : ''}]
     </span>
   );
@@ -122,7 +124,7 @@ export function Btn(props: {
       className="wr-btn"
       style={{
         fontFamily: T.fontText,
-        fontSize: 15,
+        fontSize: tokens.size.md,
         fontWeight: 500,
         minWidth: 44,
         minHeight: 44,
@@ -182,7 +184,7 @@ export function Segmented<V extends string | number>(props: {
             className="wr-seg"
             style={{
               ...num,
-              fontSize: 17,
+              fontSize: tokens.size.lg,
               minHeight: 44,
               border: 'none',
               borderRadius: T.radius.option,

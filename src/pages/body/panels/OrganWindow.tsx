@@ -13,6 +13,8 @@ import { CHRONO_AGE_J0, DAY_END, DAY_SOL0, DAY_TODAY } from '../../../mocks/miss
 import { getAnalyteMeta, getBloodTests, getDayBodyPlan } from '../../../sim/load';
 import { bioAgeSeries, hasBioAgeModel } from '../../../models/bioAge';
 import { phenoAge } from '../../../models/phenoAge';
+import { lossToYears } from '../../../models/agingRates';
+import { organForecast, type Forecast, type ForecastOrgan } from '../../../models/ml';
 import { SUMMARY_SOURCE, getSummaryPlan } from '../../../content/summaries';
 import { lightTimeMin, lightTimeSource } from '../../../content/horizons';
 import {
@@ -60,8 +62,27 @@ interface Row {
   band1?: [number, number];
 }
 
+/** Modèle d'IA B (régression quantile) : perte p10/p50/p90 à Sol 0 et en fin de mission, convertie en âge équivalent. */
+interface MlPoint { day: number; f: Forecast; lo: number; mid: number; hi: number }
+const ML_ORGANS = new Set<OrganId>(['hanche', 'cuisse', 'coeur']);
+const ML_DAYS = [DAY_SOL0, DAY_END] as const;
+
+function mlPoints(organId: OrganId, adherence: 0 | 1): MlPoint[] {
+  if (!ML_ORGANS.has(organId)) return [];
+  const out: MlPoint[] = [];
+  for (const day of ML_DAYS) {
+    if (day !== 210 && day !== 860) continue;
+    const f = organForecast(organId as ForecastOrgan, day, adherence);
+    const y = (loss: number): number | null => { const v = lossToYears(organId, loss); return v === null ? null : chronoAt(day) + v; };
+    const [lo, mid, hi] = f ? [y(f.p10), y(f.p50), y(f.p90)] : [null, null, null];
+    if (f && lo !== null && mid !== null && hi !== null) out.push({ day, f, lo, mid, hi });
+  }
+  return out;
+}
+
 interface GapChart {
   rows: Row[];
+  ml: [MlPoint[], MlPoint[]];   // modèle d'IA B, rythme actuel / avec le plan
   modeled: boolean;
   hasPrediction: boolean;
   splitDay: number;
@@ -91,6 +112,7 @@ function buildGapChart(organId: OrganId): GapChart {
   const hasPrediction = s0.some((p) => p.predicted);
   const splitDay = split >= 0 ? s0[split].day : -1;
   const plan = new Map(s1.map((p) => [p.day, p]));
+  const ml: [MlPoint[], MlPoint[]] = [mlPoints(organId, 0), mlPoints(organId, 1)];
 
   let lo = Infinity;
   let hi = -Infinity;
@@ -117,12 +139,14 @@ function buildGapChart(organId: OrganId): GapChart {
     return row;
   });
 
+  for (const m of [...ml[0], ...ml[1]]) see(m.lo, m.hi);
+
   const last0 = s0.length ? s0[s0.length - 1] : null;
   const last1 = s1.length ? s1[s1.length - 1] : null;
   const gap = (p: BioAgePoint | null): number | null => (p && modeled ? p.bioAge - chronoAt(p.day) : null);
   if (!Number.isFinite(lo)) { lo = CHRONO_AGE_J0; hi = CHRONO_AGE_J0 + 1; }
   return {
-    rows, modeled, hasPrediction, splitDay,
+    rows, ml, modeled, hasPrediction, splitDay,
     end: [gap(last0), gap(last1)],
     endPoint: [last0, last1],
     ...niceAxis(lo, hi + Math.max(0.4, (hi - lo) * 0.1)),
@@ -399,6 +423,17 @@ function GapChartView({ chart, day, adherence }: { chart: GapChart; day: number;
         {chart.hasPrediction && chart.modeled && e0 ? <ReferenceDot x={e0.day} y={e0.bioAge} r={2.5} fill={C.bg} stroke={s[0].stroke} /> : null}
         {chart.hasPrediction && chart.modeled && e1 ? <ReferenceDot x={e1.day} y={e1.bioAge} r={2.5} fill={C.bg} stroke={s[1].stroke} /> : null}
 
+        {/* modèle d'IA B : barre p10–p90 et médiane, scénario affiché seulement */}
+        {chart.modeled ? chart.ml[adherence].map((m) => (
+          <ReferenceLine
+            key={`ml-${m.day}`} ifOverflow="extendDomain" stroke={C.holo} strokeWidth={2} strokeOpacity={0.9}
+            segment={[{ x: m.day, y: m.lo }, { x: m.day, y: m.hi }]}
+          />
+        )) : null}
+        {chart.modeled ? chart.ml[adherence].map((m) => (
+          <ReferenceDot key={`ml-mid-${m.day}`} x={m.day} y={m.mid} r={2.5} fill={C.holo} stroke={C.bg} strokeWidth={1} />
+        )) : null}
+
         <Tooltip content={<GapTip />} cursor={{ stroke: C.textDim, strokeWidth: 1 }} isAnimationActive={false} />
       </ComposedChart>
     </ResponsiveContainer>
@@ -441,12 +476,13 @@ function PhenoChartView({ rows, usedDay }: { rows: PhenoRow[]; usedDay: number |
   );
 }
 
-function Legend({ pheno, mock }: { pheno?: boolean; mock?: boolean }): JSX.Element {
+function Legend({ pheno, mock, ml }: { pheno?: boolean; mock?: boolean; ml?: boolean }): JSX.Element {
   return (
     <ul className="ow__legend sz-label">
       <li><i className="ow__key ow__key--solid" />{pheno ? (mock ? 'PHENOAGE (VALEUR FACTICE)' : 'PHENOAGE CALCULÉ') : 'MESURÉ'}</li>
       {pheno ? null : <li><i className="ow__key ow__key--dash" />PRÉDIT (MODÈLE)</li>}
       {pheno ? null : <li><i className="ow__key ow__key--band" />INCERTITUDE</li>}
+      {ml ? <li><i className="ow__key ow__key--ml" />MODÈLE D’IA B (P10–P90)</li> : null}
       <li><i className="ow__key ow__key--thin" />ÂGE RÉEL</li>
     </ul>
   );
@@ -496,9 +532,20 @@ function OrganRight({ organ, day }: { organ: OrganState; day: number }): JSX.Ele
             </div>
           )}
         </div>
-        <Legend />
+        <Legend ml={chart.modeled && chart.ml[adherence].length > 0} />
       </Sect>
       <div className="ow__notes">
+        {chart.modeled && chart.ml[adherence].length > 0 ? (
+          <p className="ow__ml sz-mono">
+            <span className="ow__ml-name">MODÈLE D’IA B</span>{' '}
+            {chart.ml[adherence].map((m, i) => (
+              <span key={m.day}>
+                {i > 0 ? ' · ' : ''}{m.day === DAY_SOL0 ? 'SOL 0' : fmtDay(m.day)} : {fmt(m.f.p50, 1)} [{fmt(m.f.p10, 1)}–{fmt(m.f.p90, 1)}]
+              </span>
+            ))}
+            {' '}<span className="sz-dim">{chart.ml[adherence][0].f.unit}</span> <TagBadge tag="H" />
+          </p>
+        ) : null}
         <p className="ow__formula sz-mono">
           bioAge = âge réel + perte cumulée % / vitesse de vieillissement terrestre %/an <TagBadge tag="H" />
         </p>
@@ -682,7 +729,7 @@ export function OrganWindow(): JSX.Element | null {
   const isGlobal = target === 'global';
   const organ = isGlobal ? null : body.organs.find((o) => o.id === target) ?? null;
   const sys = organ ? LAYER_META[organ.layer]?.sys ?? 'SYS-00' : 'SYS-00';
-  const name = isGlobal ? 'CORPS ENTIER' : organ?.name ?? String(target);
+  const name = isGlobal ? 'Corps entier' : organ?.name ?? String(target);
   const gap = organ && hasBioAgeModel(organ.id) ? organ.bioAge - organ.chronoAge : null;
 
   return (

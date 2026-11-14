@@ -3,7 +3,7 @@
  "date": "2026-09-27",
  "scenario": "control",
  "transcript": [
-  "06:57 — Réveil. Reste allongé plusieurs minutes avant de se lever.",
+  "06:57 — Réveil. Se lève directement.",
   "06:50 — Message reçu ou incident signalé la veille : une panne du recycleur d'eau qui a demandé 3 h de travail.",
   "07:30 — Ne vient pas au petit-déjeuner commun. Kovacs frappe à sa cabine ; Haddad : « Je préfère être seul un moment. »",
   "08:30 — Briefing avec la Terre (message différé). Haddad pose deux questions sur le planning et propose une modification.",
@@ -21,12 +21,12 @@
   "tempsAvecEquipageMin": 162,
   "repasSautes": 1,
   "pas": 2962,
-  "sommeilH": 5.9
+  "sommeilH": 7.3
  },
  "biomarkers": {
-  "checkinHumeur": 3,
+  "checkinHumeur": 4,
   "checkinFatigue": 3,
-  "vfcMs": 43,
+  "vfcMs": 57.7,
   "cortisolNmolL": null
  }
 }

@@ -1,5 +1,5 @@
 # Status — Walid (A)
-_Mis à jour : sam. 14 nov. 16:25_
+_Mis à jour : sam. 14 nov. 19:55_
 
 ## Prêt en local — PAS ENCORE POUSSÉ sur origin/develop
 > Tout ce qui suit est sur la branche `develop` LOCALE (commits WIP + arbre de travail). `origin/develop` n'existe pas encore : rien n'est « livré » au sens de la
@@ -167,3 +167,10 @@ npm run build    # typecheck + build de prod
 - @Steve : vérifier les 3 normes dans le PDF NASA-STD-3001 Rév. C et passer `verified: true` ; noms de fichiers `.glb`
   attendus dans `public/models/manifest.json` (placeholder) ; coefficients PhenoAge (Levine 2018).
 - @Ahmed : `todoSync` et `checkin` sont en mémoire (aucun appel réseau) ; `server/api.ts` répond déjà aux 4 routes.
+
+## Réponse à Mouad (PR n°9) — sam. 19:55
+- **PR n°9 fusionnée dans `develop`** (triage, router, planDay, explain réels).
+- **En-tête Body** : « ÂGE SANGUIN 44,6 ANS · MODÈLE D'IA, NHANES [H] » sous PhenoAge (`bloodAgeSeries()`, dernier prélèvement ≤ jour affiché).
+- **Fenêtre organe hanche / cuisse / cœur** : barre p10–p90 + médiane du modèle B (`organForecast`) à Sol 0 (J210) et J860, pour le scénario affiché,
+  convertie en âge équivalent (`lossToYears`) sur le graphe ; valeurs en % de perte sous le graphe.
+

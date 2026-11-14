@@ -125,12 +125,12 @@ function LiveRow({ type, dataVersion, now, live, manual }: {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 4, alignItems: 'end' }}>
       <div>
-        <div style={{ fontSize: 15, fontWeight: 500, color: T.text }}>{LABEL[type]}</div>
-        <div style={{ fontSize: 13, color: T.textMuted, marginTop: 2, fontVariantNumeric: 'tabular-nums' }}>{origin}</div>
+        <div style={{ fontSize: T.fs.md, fontWeight: 500, color: T.text }}>{LABEL[type]}</div>
+        <div style={{ fontSize: T.fs.sm, color: T.textMuted, marginTop: 2, fontVariantNumeric: 'tabular-nums' }}>{origin}</div>
         <div style={{ ...num, fontSize: 'clamp(28px, 2.6vw, 36px)', color: m && fresh ? T.text : T.status.grey, lineHeight: 1.1, marginTop: 8, letterSpacing: '-0.01em' }}>
-          {m ? fr(m.value, d) : '—'} <span style={{ fontSize: 15, color: T.textMuted, fontWeight: 400 }}>{unit}</span>
+          {m ? fr(m.value, d) : '—'} <span style={{ fontSize: T.fs.md, color: T.textMuted, fontWeight: 400 }}>{unit}</span>
         </div>
-        <div style={{ fontSize: 13, color: T.textDim, marginTop: 4, fontVariantNumeric: 'tabular-nums' }}>
+        <div style={{ fontSize: T.fs.sm, color: T.textDim, marginTop: 4, fontVariantNumeric: 'tabular-nums' }}>
           {ref}
           {z != null && <span style={{ color: zc }}> · {z > 0 ? '+' : ''}{fr(z, 1)} écarts-types</span>}
         </div>
@@ -174,9 +174,9 @@ function ManualEntry({ onSave }: { onSave: (m: Measurement) => void }) {
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && save()}
-          style={{ width: 96, minHeight: 44, boxSizing: 'border-box', background: T.panelRaised, color: T.text, border: `1px solid ${T.borderStrong}`, padding: '0 12px', fontFamily: T.fontText, fontSize: 15, fontVariantNumeric: 'tabular-nums', borderRadius: T.radius.control }}
+          style={{ width: 96, minHeight: 44, boxSizing: 'border-box', background: T.panelRaised, color: T.text, border: `1px solid ${T.borderStrong}`, padding: '0 12px', fontFamily: T.fontText, fontSize: T.fs.md, fontVariantNumeric: 'tabular-nums', borderRadius: T.radius.control }}
         />
-        <span id={helpId} style={{ fontSize: 13, color: outOfRange ? T.status.amber : T.textMuted, fontVariantNumeric: 'tabular-nums' }}>
+        <span id={helpId} style={{ fontSize: T.fs.sm, color: outOfRange ? T.status.amber : T.textMuted, fontVariantNumeric: 'tabular-nums' }}>
           Plage {lo}–{hi} {UNIT[type]}
         </span>
       </div>
@@ -226,14 +226,14 @@ export function WatchImport({ onImported, hasData }: { onImported: () => void; h
 
   return (
     <Panel title="Données Apple Watch" prov={<Prov p="RÉEL" />}>
-      <p style={{ margin: '0 0 16px', fontSize: 15, color: T.textDim }}>
+      <p style={{ margin: '0 0 16px', fontSize: T.fs.md, color: T.textDim }}>
         {hasData ? 'Export du présentateur chargé' : 'Aucun export chargé, les valeurs affichées sont simulées'}
       </p>
       <label
         className="wr-btn"
         aria-busy={running}
         style={{
-          position: 'relative', fontFamily: T.fontText, fontSize: 15, fontWeight: 500, color: T.text, background: T.panelRaised,
+          position: 'relative', fontFamily: T.fontText, fontSize: T.fs.md, fontWeight: 500, color: T.text, background: T.panelRaised,
           border: `1px solid ${T.border}`, borderRadius: T.radius.control, padding: '0 16px', minHeight: 44,
           display: 'inline-flex', alignItems: 'center', cursor: running ? 'default' : 'pointer', opacity: running ? 0.35 : 1,
           outline: focusRing ? `2px solid ${T.text}` : undefined, outlineOffset: 2,
@@ -256,7 +256,7 @@ export function WatchImport({ onImported, hasData }: { onImported: () => void; h
         </div>
       )}
       {msg && (
-        <p role="status" style={{ margin: '16px 0 0', fontSize: 13, color: msg.warn ? T.status.amber : T.textDim, lineHeight: 1.45, fontVariantNumeric: 'tabular-nums' }}>
+        <p role="status" style={{ margin: '16px 0 0', fontSize: T.fs.sm, color: msg.warn ? T.status.amber : T.textDim, lineHeight: 1.45, fontVariantNumeric: 'tabular-nums' }}>
           {msg.text}
         </p>
       )}

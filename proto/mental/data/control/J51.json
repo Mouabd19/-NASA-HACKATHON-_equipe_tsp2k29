@@ -3,7 +3,7 @@
  "date": "2026-10-02",
  "scenario": "control",
  "transcript": [
-  "06:37 — Réveil. Se lève directement.",
+  "06:37 — Réveil. Reste allongé plusieurs minutes avant de se lever.",
   "07:30 — Petit-déjeuner avec l'équipage. Haddad : « Bien dormi, pour une fois. » Échange suivi avec Okafor (3 répliques). Posture droite, gestes rapides.",
   "08:30 — Briefing avec la Terre (message différé). Haddad pose deux questions sur le planning et propose une modification.",
   "10:00 — Maintenance du système de filtration d'air : terminée dans les temps.",
@@ -20,12 +20,12 @@
   "tempsAvecEquipageMin": 222,
   "repasSautes": 0,
   "pas": 3835,
-  "sommeilH": 6.8
+  "sommeilH": 5.9
  },
  "biomarkers": {
   "checkinHumeur": 4,
   "checkinFatigue": 2,
-  "vfcMs": 50,
+  "vfcMs": 52,
   "cortisolNmolL": null
  }
 }

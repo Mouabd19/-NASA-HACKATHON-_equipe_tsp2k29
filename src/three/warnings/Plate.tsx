@@ -73,7 +73,7 @@ export function Plate({ item, register }: { item: WarnItem; register: (el: HTMLD
           <span className="w3d-plate__label">{item.label}</span>
           <span className="w3d-plate__sub">
             <b>{item.levelLabel}</b>
-            <i>{item.ruleLabel}</i>
+            <i className="sz-detail">{item.ruleLabel}</i>
           </span>
         </div>
         {item.color === 'red' && <span className="w3d-plate__hatch" aria-hidden="true" />}

@@ -12,6 +12,7 @@ import { lightTimeMin, lightTimeSource } from '../../content/horizons';
 import { CheckInCard } from './CheckInCard';
 import { NowNextCard } from './NowNextCard';
 import { TodoList } from './TodoList';
+import { MoodCard } from './MoodCard';
 import { LiveWidget, WatchImport } from './LiveWidget';
 import { Btn, Dot, T, fr } from './ui';
 import './warroom.css';
@@ -59,12 +60,13 @@ export function WarRoom() {
   }, []);
 
   const checkin = useMemo(() => todayCheckIn(), [version]);
-  const t = useMemo(() => triage(DAY), [version]);
+  // dataVersion : l'arrivée des vraies données montre recalcule le triage et le plan (fusion RÉEL de Mouad).
+  const t = useMemo(() => triage(DAY), [version, dataVersion]);
   const delay = lightTimeMin(DATE);
   // Valeur tabulée (JPL Horizons / test ROADMAP) → [Publié] ; approximation orbite circulaire → [H].
   const delayTag: Tag = lightTimeSource(DATE) === 'table' ? 'Publié' : 'H';
   const out = useMemo(() => router(t, POS, delay), [t, delay]);
-  const plan = useMemo(() => planDay(DAY), [version]);
+  const plan = useMemo(() => planDay(DAY), [version, dataVersion]);
   const items: TodoItem[] = useMemo(() => plan.map((i) => ({ ...i, done: i.done || done.has(i.id) })), [plan, done]);
   const summary = useMemo(() => getSummary('hanche', DAY), []);
   const summaryAt = useMemo(() => new Date(new Date(DATE + 'T06:00:00').getTime() + delay * 60_000), [delay]);
@@ -130,16 +132,16 @@ export function WarRoom() {
       <div style={{ maxWidth: 1440, margin: '0 auto', padding: '32px clamp(16px, 3vw, 32px) 48px', boxSizing: 'border-box' }}>
         <header style={{ display: 'flex', flexWrap: 'wrap', gap: '16px 32px', alignItems: 'flex-end', marginBottom: 32 }}>
           <div>
-            <h1 style={{ fontFamily: T.fontDisplay, fontSize: 'clamp(24px, 2.4vw, 32px)', fontWeight: 600, letterSpacing: '-0.015em', lineHeight: 1.1, margin: 0 }}>
+            <h1 style={{ fontFamily: T.fontDisplay, fontSize: 'clamp(24px, 2.4vw, 30px)', fontWeight: 600, letterSpacing: '-0.015em', lineHeight: 1.1, margin: 0 }}>
               Jour {DAY} · {dateLabel}
             </h1>
-            <div style={{ fontSize: 15, color: T.textDim, marginTop: 8 }}>Haddad [Persona] · en route vers Mars</div>
+            <div style={{ fontSize: T.fs.md, color: T.textDim, marginTop: 8 }}>Haddad <span className="sz-tag">[Persona]</span> · en route vers Mars</div>
           </div>
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', borderRadius: T.radius.pill, border: `1px solid ${T.border}`, background: T.panel }}>
             <Dot color={T.holo} size={6} />
-            <span style={{ fontSize: 13, color: T.textDim }}>Lien Terre</span>
-            <span style={{ fontSize: 15, fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>{fr(delay)} min</span>
-            <span style={{ fontSize: 13, color: T.textMuted }}>[{delayTag}]</span>
+            <span style={{ fontSize: T.fs.sm, color: T.textDim }}>Lien Terre</span>
+            <span style={{ fontSize: T.fs.md, fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>{fr(delay)} min</span>
+            <span className="sz-tag" style={{ fontSize: T.fs.sm, color: T.textMuted }}>[{delayTag}]</span>
           </div>
         </header>
 
@@ -151,6 +153,7 @@ export function WarRoom() {
             <div className="wr-side">
               <CheckInCard day={DAY} done={checkin} />
               <LiveWidget dataVersion={dataVersion} />
+              <MoodCard key={version} />
               <WatchImport hasData={hasReal} onImported={() => setDataVersion((v) => v + 1)} />
             </div>
             <TodoList items={items} onToggle={toggle} synced={synced} level={t.level} />
@@ -161,7 +164,7 @@ export function WarRoom() {
             Réinitialiser la démo
           </Btn>
         )}
-        <footer style={{ marginTop: 32, fontSize: 13, color: T.textMuted }}>Mission simulée · check-in et montre réels</footer>
+        <footer className="sz-detail" style={{ marginTop: 32, fontSize: T.fs.sm, color: T.textMuted }}>Mission simulée · check-in et montre réels</footer>
       </div>
     </main>
   );

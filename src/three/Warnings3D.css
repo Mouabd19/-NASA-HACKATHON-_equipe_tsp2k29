@@ -43,8 +43,9 @@
   user-select: none;
   will-change: transform, opacity;
   color: var(--w3d-c);
-  font-family: var(--sz-font-mono);
-  text-transform: uppercase;
+  font-family: var(--sz-font-text);
+  text-transform: none;
+  font-weight: 500;
 }
 .w3d-plate--amber { --w3d-c: var(--sz-amber); --w3d-period: 2.4s; }
 .w3d-plate--red { --w3d-c: var(--sz-red); --w3d-period: 1s; }
@@ -126,7 +127,7 @@
 .w3d-plate__sub {
   display: flex;
   gap: 5px;
-  font-size: 10px;
+  font-size: 11px;
   line-height: 11px;
   margin: -1px 0;
   letter-spacing: 0.03em;
@@ -156,9 +157,9 @@
   right: 11px;
   top: -5px;
   padding: 1px 4px 1px 5px;
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1;
-  letter-spacing: 0.14em;
+  letter-spacing: var(--sz-tracking);
   color: var(--sz-text-dim);
   background: var(--sz-bg);
   border: 1px dashed var(--sz-border-strong);

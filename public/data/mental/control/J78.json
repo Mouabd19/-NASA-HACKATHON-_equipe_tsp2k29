@@ -23,12 +23,12 @@
    "tempsAvecEquipageMin": 211,
    "repasSautes": 0,
    "pas": 3652,
-   "sommeilH": 6.8
+   "sommeilH": 6.9
   },
   "biomarkers": {
    "checkinHumeur": 3,
-   "checkinFatigue": 3,
-   "vfcMs": 47,
+   "checkinFatigue": 2,
+   "vfcMs": 54.7,
    "cortisolNmolL": null
   }
  },
@@ -40,38 +40,38 @@
     "faits": [
      {
       "heure": "06:43",
-      "fait": "Réveil et lever immédiat.",
+      "fait": "Se lève directement après le réveil, sans délai.",
+      "citation": null
+     },
+     {
+      "heure": "08:30",
+      "fait": "Pose deux questions sur le planning lors du briefing avec la Terre et propose une modification.",
       "citation": null
      },
      {
       "heure": "10:00",
-      "fait": "Maintenance du système de filtration d'air terminée dans les temps.",
+      "fait": "Termine la maintenance du système de filtration d'air dans les temps.",
       "citation": null
      },
      {
       "heure": "14:00",
-      "fait": "Séance d'exercice complète : 60 min d'ARED puis vélo.",
-      "citation": null
-     },
-     {
-      "heure": "16:00",
-      "fait": "Expérience de biologie menée avec Okafor ; Haddad propose une variante du protocole.",
+      "fait": "Réalise la séance d'exercice complète (60 min ARED et vélo).",
       "citation": null
      },
      {
       "heure": "19:30",
-      "fait": "Dîner pris en commun avec l'équipage ; Haddad propose de commencer le module 3 après le café.",
+      "fait": "Prend le dîner en commun et propose de passer au module 3 après le café.",
       "citation": "On attaque le module 3 après le café ?"
      },
      {
       "heure": "23:20",
-      "fait": "Coucher. Sommeil mesuré : 6,8 h.",
+      "fait": "Se couche après 6,9 h de sommeil enregistrées.",
       "citation": null
      }
     ],
-    "resume": "Haddad a pris ses trois repas avec l'équipage, sans repas sauté, et a terminé la maintenance dans les temps ainsi que la séance d'exercice complète. Il s'est levé à 06:43 et couché à 23:20, avec environ 211 min passées avec l'équipage et 50 min de parole."
+    "resume": "Haddad a pris ses trois repas sans en sauter, dont le déjeuner et le dîner en commun, et a effectué la séance d'exercice complète ainsi que la maintenance dans les temps. Il a passé 211 minutes avec l'équipage et s'est couché à 23h20, après 3 652 pas dans la journée."
    },
-   "seconds": 8.9
+   "seconds": 7.3
   },
   {
    "id": "obs-paroles",
@@ -80,38 +80,38 @@
     "faits": [
      {
       "heure": "07:30",
-      "fait": "Au petit-déjeuner, Haddad répond après un long silence à une question de l'équipage.",
+      "fait": "Répond après un long silence lors du petit-déjeuner commun.",
       "citation": "C'est la troisième fois qu'on refait ça."
      },
      {
       "heure": "08:30",
-      "fait": "Lors du briefing avec la Terre, Haddad pose deux questions sur le planning et propose une modification.",
+      "fait": "Pose deux questions sur le planning lors du briefing avec la Terre et propose une modification.",
       "citation": null
      },
      {
       "heure": "12:40",
-      "fait": "Au déjeuner commun, Haddad répond à une question sur son avis sans développer.",
+      "fait": "Répond brièvement au déjeuner commun sans donner d'avis.",
       "citation": "Pas d'avis particulier."
      },
      {
       "heure": "16:00",
-      "fait": "Pendant l'expérience de biologie avec Okafor, Haddad prend l'initiative de plaisanter et propose une variante du protocole.",
+      "fait": "Plaisante avec Okafor pendant l'expérience de biologie et propose une variante du protocole.",
       "citation": null
      },
      {
       "heure": "17:30",
-      "fait": "Haddad enregistre un message vidéo de 9 minutes destiné à sa famille.",
+      "fait": "Enregistre un message vidéo différé de 9 min pour sa famille, en souriant.",
       "citation": null
      },
      {
       "heure": "19:30",
-      "fait": "Au dîner commun, Haddad prend l'initiative de proposer de passer au module 3 après le café.",
+      "fait": "Lance le sujet du module 3 au dîner commun, en proposant de l'aborder après le café.",
       "citation": "On attaque le module 3 après le café ?"
      }
     ],
-    "resume": "Haddad a eu 50 minutes de temps de parole sur la journée, sur 211 minutes passées avec l'équipage. Il a pris l'initiative dans les échanges de planning, de protocole et de dîner, et a enregistré un message de 9 minutes pour sa famille."
+    "resume": "Haddad prend l'initiative dans trois échanges (planning, protocole, dîner) et répond de façon brève ou différée dans deux autres (petit-déjeuner, déjeuner). Il enregistre un message de 9 min pour sa famille et son temps de parole de la journée est de 50 min."
    },
-   "seconds": 5.5
+   "seconds": 5.7
   },
   {
    "id": "obs-corps",
@@ -126,32 +126,32 @@
      {
       "heure": "07:30",
       "fait": "Marque un long silence avant de répondre au petit-déjeuner.",
-      "citation": null
-     },
-     {
-      "heure": "12:40",
-      "fait": "Prend part au déjeuner commun ; aucun repas sauté sur la journée.",
-      "citation": null
+      "citation": "C'est la troisième fois qu'on refait ça."
      },
      {
       "heure": "14:00",
-      "fait": "Réalise la séance d'exercice complète : 60 minutes (ARED et vélo).",
+      "fait": "Réalise la séance d'exercice complète, 60 minutes d'ARED et de vélo.",
       "citation": null
      },
      {
       "heure": "17:30",
-      "fait": "Sourit pendant le message enregistré de 9 minutes.",
+      "fait": "Sourit pendant le message enregistré de 9 minutes destiné à sa famille.",
+      "citation": null
+     },
+     {
+      "heure": "19:30",
+      "fait": "Aucun repas sauté dans la journée ; participe aux dîners communs.",
       "citation": null
      },
      {
       "heure": "23:20",
-      "fait": "Se couche après 6,8 heures de sommeil enregistrées sur la nuit.",
+      "fait": "Se couche après une durée de sommeil mesurée de 6,9 heures.",
       "citation": null
      }
     ],
-    "resume": "Haddad se lève directement, ne saute aucun repas et effectue la séance d'exercice complète de 60 minutes, avec 3 652 pas sur la journée. Il marque un long silence au petit-déjeuner, sourit pendant un message enregistré, et enregistre 6,8 heures de sommeil."
+    "resume": "Haddad se lève sans délai, réalise l'intégralité de la séance d'exercice et ne saute aucun repas, avec 3 652 pas enregistrés. Il marque un silence prolongé lors du petit-déjeuner et sourit pendant le message familial, avant de se coucher après 6,9 heures de sommeil."
    },
-   "seconds": 8
+   "seconds": 5.8
   }
  ],
  "psychologists": [
@@ -163,37 +163,29 @@
     "confiance": "moyenne",
     "hypotheses": [
      {
-      "schema": "Fatigue déclarée en légère hausse ce jour, à regarder sans lui donner de sens particulier pour l'instant.",
+      "schema": "Léger repli sur les échanges du matin, à regarder dans la durée. Un seul indicateur d'humeur s'écarte nettement, sans persistance sur 4 jours ni cohérence avec les autres sources.",
       "preuves": [
-       "Fatigue déclarée 3/5 le J78, contre 2/5 chaque jour de J72 à J77",
-       "Sommeil de 6,8 h, dans la variation habituelle (référence 6,6 h, écart +3 %)",
-       "Un seul jour de fatigue plus élevée, sans persistance sur les 7 jours"
-      ]
-     },
-     {
-      "schema": "Silence inhabituel au petit-déjeuner, à mettre en lien avec l'humeur plus basse du jour, sans signal durable.",
-      "preuves": [
-       "Long silence avant de répondre au petit-déjeuner (observateur corps et ressentis, 07:30)",
-       "Humeur déclarée 3/5 le J78, écart de -17 % par rapport à la référence (3,6)",
-       "Humeur à 3/5 aussi les J74 et J76, sans enchaînement sur 4 jours"
+       "Humeur déclarée à 3/5 aujourd'hui, soit -21 % vs référence, alors qu'elle était à 4/5 ou 5/5 sur J72, J73, J75, J76 et J77.",
+       "Long silence au petit-déjeuner à 07:30, avec la phrase « C'est la troisième fois qu'on refait ça. »",
+       "Réponse brève au déjeuner à 12:40, sans avis particulier."
       ]
      }
     ],
     "ecartsReference": [
-     "Temps avec l'équipage +17 % (211 min contre 180,1 de référence), sous le seuil de 20 %",
-     "Humeur déclarée -17 % (3 contre 3,6 de référence), sous le seuil de 20 %",
-     "Repas sautés -100 % (0 contre 0,5 de référence), écart favorable : aucun repas sauté aujourd'hui"
+     "Humeur déclarée : 3/5 aujourd'hui, -21 % vs référence 3.8 (seul écart supérieur à 20 %).",
+     "Temps avec l'équipage : 211 min, +17 % vs référence 180.1, sous le seuil de 20 %.",
+     "VFC : 54.7 ms, -4 % vs référence 56.8 ; moyenne 7 j à -9 %."
     ],
     "pointsRassurants": [
-     "Les trois repas pris en commun, sans repas sauté",
-     "Séance d'exercice complète (60 min) et maintenance terminée dans les temps",
-     "Initiative prise dans les échanges de planning, de protocole et de dîner",
-     "Message vidéo de 9 min enregistré pour sa famille, avec sourire observé",
-     "Sommeil de 6,8 h et pas (3 652) proches de sa référence"
+     "Les trois repas ont été pris, sans repas sauté, dont le dîner en commun.",
+     "Séance d'exercice complète (60 min) et maintenance d'air réalisées dans les temps.",
+     "Sommeil stable à 6.9 h, identique à la référence, et pas dans la norme (3652, -1 %).",
+     "Initiative sur le planning (08:30) et le protocole (16:00), avec propositions concrètes.",
+     "Message vidéo de 9 min pour la famille enregistré en souriant à 17:30."
     ],
-    "noteAuPsy": "Journée dans la variation habituelle de Haddad, sans indicateur durablement hors référence. La fatigue passe à 3/5 et l'humeur à 3/5 ce jour, à observer dans les prochains jours. Le cortisol du jour est absent (non mesuré) ; la remarque « C'est la troisième fois qu'on refait ça » mérite d'être regardée en contexte si elle se répète."
+    "noteAuPsy": "Journée dans la variation habituelle de Haddad, avec un seul écart notable (humeur à 3/5, -21 %) sans persistance sur la semaine. Le silence du matin et la phrase « C'est la troisième fois qu'on refait ça. » méritent d'être recoupés avec l'équipage. Données cortisol absentes aujourd'hui, à compléter avant de conclure sur une tendance."
    },
-   "seconds": 8.5
+   "seconds": 7.3
   },
   {
    "id": "psy-anxiete",
@@ -203,28 +195,35 @@
     "confiance": "moyenne",
     "hypotheses": [
      {
-      "schema": "Léger fléchissement de l'humeur et de la fatigue ce jour, isolé et sans signal persistant sur 7 jours.",
+      "schema": "Fléchissement ponctuel de l'humeur déclarée, sans schéma durable sur 7 jours.",
       "preuves": [
-       "Humeur déclarée à 3/5, soit -17 % par rapport à la référence de 3.6, sous le seuil de 20 %.",
-       "Fatigue à 3/5, la valeur la plus haute de J72 à J78, mais aucun autre indicateur ne dépasse 20 % d'écart.",
-       "Long silence au petit-déjeuner, un fait ponctuel sans répétition sur la semaine."
+       "Humeur déclarée à 3/5 contre une référence de 3,8 (-21 %), seul indicateur au-delà du seuil de 20 % aujourd'hui.",
+       "Humeur de 5/5 en J76, puis 4/5 en J77, avant 3/5 en J78. Elle était à 4/5 en J72, J73 et J75.",
+       "Silence prolongé au petit-déjeuner à 07:30, sans cause documentée par les observateurs."
+      ]
+     },
+     {
+      "schema": "Agacement possible autour d'un sujet récurrent, à éclaircir.",
+      "preuves": [
+       "Remarque à 07:30 : « C'est la troisième fois qu'on refait ça », sans précision sur le sujet.",
+       "Haddad reprend pourtant l'initiative à 08:30 et à 19:30 : ce n'est pas un retrait.",
+       "Temps avec l'équipage à +17 % de la référence, sous le seuil de 20 %."
       ]
      }
     ],
     "ecartsReference": [
-     "Temps avec l'équipage : 211 min, soit +17 % par rapport à la référence de 180.1 min, sous le seuil de 20 %.",
-     "Humeur déclarée : 3/5, soit -17 % par rapport à la référence de 3.6, sous le seuil de 20 %.",
-     "Repas sautés : 0 contre une référence de 0.5 (-100 %), écart favorable sur une base très faible."
+     "Humeur déclarée : -21 % (3 contre une référence de 3,8), seul écart au-delà de 20 %.",
+     "Temps avec l'équipage : +17 % (211 min contre 180,1 min), sous le seuil de 20 %.",
+     "Repas sautés : -100 % (0 contre 0,5), écart sur une base très faible, non significatif."
     ],
     "pointsRassurants": [
-     "Les trois repas ont été pris avec l'équipage, sans repas sauté.",
-     "La séance d'exercice complète de 60 minutes a été réalisée, et la maintenance a été terminée dans les temps.",
-     "Sommeil de 6.8 h, proche de la référence, et VFC à 47 ms (-3 %), stable.",
-     "Haddad a pris des initiatives (planning, protocole, dîner) et a enregistré un message de 9 minutes pour sa famille, en souriant."
+     "Aucun repas sauté, participation aux dîners communs et séance d'exercice complète.",
+     "Sommeil stable à 6,9 h, identique à la référence, et VFC proche de la référence (-4 %).",
+     "Initiative au briefing (propositions sur le planning et le protocole), sourire et message familial de 9 min."
     ],
-    "noteAuPsy": "Journée dans la variation normale de Haddad : un seul indicateur (humeur) s'écarte légèrement, sous le seuil. Le cortisol n'a pas été mesuré aujourd'hui, et le dernier relevé (386 nmol/L à J77) n'a pas de référence fournie pour comparaison. À rester attentif à la fatigue si elle reste à 3/5 les prochains jours."
+    "noteAuPsy": "Une seule mesure sort du seuil : l'humeur déclarée, sur une journée, sans schéma sur 7 jours. Le silence du petit-déjeuner et la remarque « C'est la troisième fois qu'on refait ça » méritent d'être éclaircis avec Haddad s'ils se répètent. Les autres signaux (sommeil, exercice, repas, initiative) restent dans sa variation normale."
    },
-   "seconds": 7.6
+   "seconds": 10.3
   },
   {
    "id": "psy-social",
@@ -234,36 +233,35 @@
     "confiance": "moyenne",
     "hypotheses": [
      {
-      "schema": "Fatigue en légère hausse et humeur un peu basse sur quelques jours, sans retrait social chiffré. À regarder, sans signal d'isolement.",
+      "schema": "Baisse isolée de l'humeur déclarée, sans écho dans le comportement social. À regarder si elle se répète.",
       "preuves": [
-       "Fatigue déclarée à 3/5 sur J78, contre 2/5 de J72 à J77.",
-       "Humeur déclarée à 3/5 sur J74, J76 et J78, soit -17 % sous la référence (3,6), sous le seuil de 20 %.",
-       "Sommeil stable entre 6,4 h et 7,4 h sur la semaine, avec 6,8 h sur J78."
+       "Humeur déclarée de 3/5 aujourd'hui, soit -21 % par rapport à la référence de 3.8.",
+       "Moyenne sur 7 jours à 3.9 (+3 %), et humeur de 4/5 ou 5/5 les jours précédents.",
+       "Temps avec l'équipage à +17 % et deux initiatives sociales dans la journée (planning et dîner)."
       ]
      },
      {
-      "schema": "Réserve verbale ponctuelle lors des échanges de groupe, qui ne se retrouve pas dans le temps de parole.",
+      "schema": "Silence prolongé au petit-déjeuner, possible signe de fatigue ou de moindre envie de parler le matin. Un fait isolé pour l'instant.",
       "preuves": [
-       "Long silence avant de répondre au petit-déjeuner (07:30), avec la citation « C'est la troisième fois qu'on refait ça. ».",
-       "Réponse courte au déjeuner : « Pas d'avis particulier. » (12:40).",
-       "Temps de parole de 50 min, soit +3 % vs référence, donc pas de retrait mesurable."
+       "Long silence avant de répondre au petit-déjeuner à 07:30, avec la remarque « C'est la troisième fois qu'on refait ça ».",
+       "Réponse brève au déjeuner sans avis particulier.",
+       "Temps de parole de 50 min, en légère hausse (+3 %) par rapport à la référence."
       ]
      }
     ],
     "ecartsReference": [
-     "Humeur déclarée : 3/5 aujourd'hui, -17 % vs référence (3,6), sous le seuil de 20 %.",
-     "Temps avec l'équipage : 211 min, +17 % vs référence (180,1), sous le seuil de 20 %.",
-     "Repas sautés : 0 aujourd'hui vs référence 0,5 (-100 %), écart sur une base très faible sans signal négatif."
+     "Humeur déclarée : 3/5, soit -21 % par rapport à la référence (3.8).",
+     "Temps avec l'équipage : 211 min, soit +17 % par rapport à la référence (180.1 min).",
+     "VFC : moyenne sur 7 jours à 51.9 ms, soit -9 % par rapport à la référence (56.8 ms)."
     ],
     "pointsRassurants": [
-     "Aucun repas sauté sur la journée et trois repas pris avec l'équipage.",
-     "Initiatives dans les échanges : proposition de variante du protocole avec Okafor et proposition de passer au module 3 au dîner.",
-     "Message vidéo de 9 min enregistré pour la famille, avec sourire pendant l'enregistrement.",
-     "Sommeil de 6,8 h, dans la variation habituelle, et séance d'exercice complète de 60 min."
+     "Les trois repas ont été pris, dont le dîner en commun.",
+     "Haddad propose des initiatives dans le planning, le protocole et le dîner (module 3).",
+     "Il sourit pendant son message vidéo à sa famille et le sommeil reste stable à 6.9 h."
     ],
-    "noteAuPsy": "Journée dans la variation normale de Haddad : aucun seuil de 20 % franchi sur au moins deux indicateurs, et l'implication sociale reste élevée. La fatigue et l'humeur légèrement basses reviennent sur trois jours, à garder en vue sans en tirer de conclusion. Les silences au petit-déjeuner et les réponses courtes méritent une attention au fil des prochains jours plutôt qu'une intervention immédiate."
+    "noteAuPsy": "Un seul indicateur, l'humeur déclarée, dépasse le seuil de 20 % aujourd'hui, et il ne s'inscrit pas dans une tendance sur 7 jours. Le comportement social reste engagé, avec des initiatives et des repas complets. Le cortisol n'est pas disponible pour J78, et le silence du petit-déjeuner mérite d'être observé si un schéma se répète."
    },
-   "seconds": 9.2
+   "seconds": 8
   }
  ],
  "dossierPourLePsyHumain": {

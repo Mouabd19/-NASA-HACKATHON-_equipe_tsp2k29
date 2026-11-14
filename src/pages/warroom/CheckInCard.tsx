@@ -70,15 +70,15 @@ export function CheckInCard({ day, done }: { day: number; done: CheckInZones | n
 
   return (
     <Panel title="Check-in du matin" prov={<Prov p="RÉEL" />} className="wr-checkin">
-      <p style={{ color: T.textDim, margin: '-4px 0 24px', fontSize: 15 }}>
+      <p className="sz-detail" style={{ color: T.textDim, margin: '-4px 0 24px', fontSize: T.fs.md }}>
         Avant toute séance · une note par ligne
       </p>
       <div style={{ display: 'grid', gap: 16 }}>
         {ROWS.map((r) => (
           <div key={r.key} className="wr-row">
             <div>
-              <div id={`ci-${r.key}`} style={{ fontSize: 17, fontWeight: 500, color: T.text }}>{r.label}</div>
-              <div id={`ci-${r.key}-hint`} style={{ fontSize: 13, color: T.textMuted, marginTop: 2 }}>{r.scale[0]} {r.low} · {r.scale[r.scale.length - 1]} {r.high}</div>
+              <div id={`ci-${r.key}`} style={{ fontSize: T.fs.lg, fontWeight: 500, color: T.text }}>{r.label}</div>
+              <div id={`ci-${r.key}-hint`} className="sz-detail" style={{ fontSize: T.fs.sm, color: T.textMuted, marginTop: 2 }}>{r.scale[0]} {r.low} · {r.scale[r.scale.length - 1]} {r.high}</div>
             </div>
             <Segmented ariaLabel={`${r.label}, de ${r.scale[0]} à ${r.scale[r.scale.length - 1]}`} describedBy={`ci-${r.key}-hint`} values={r.scale} value={d[r.key]} onChange={(v) => set(r.key, v)} />
           </div>
@@ -86,8 +86,8 @@ export function CheckInCard({ day, done }: { day: number; done: CheckInZones | n
         {d.pain !== undefined && d.pain > 0 && (
           <div className="wr-row">
             <div>
-              <div style={{ fontSize: 15, color: T.textDim }}>Où as-tu mal&nbsp;?</div>
-              <div style={{ fontSize: 13, color: T.textMuted, marginTop: 2 }}>Plusieurs zones possibles</div>
+              <div style={{ fontSize: T.fs.md, color: T.textDim }}>Où as-tu mal&nbsp;?</div>
+              <div className="sz-detail" style={{ fontSize: T.fs.sm, color: T.textMuted, marginTop: 2 }}>Plusieurs zones possibles</div>
             </div>
             <ZonePicker zones={ZONES} value={d.painZones ?? []}
               onToggle={(id) => setD((p) => {
@@ -101,7 +101,7 @@ export function CheckInCard({ day, done }: { day: number; done: CheckInZones | n
         <Btn kind="primary" disabled={!complete} onClick={submit}>Valider le check-in</Btn>
         {done && <Btn kind="secondary" onClick={() => setOpen(false)}>Annuler</Btn>}
         {done && DEMO && <Btn kind="quiet" onClick={() => { clearCheckIn(day); setD({}); setOpen(false); }}>Effacer le check-in</Btn>}
-        <span aria-live="polite" style={{ marginLeft: 'auto', fontSize: 13, color: T.textMuted, fontVariantNumeric: 'tabular-nums' }}>{filled} notes sur 4</span>
+        <span aria-live="polite" style={{ marginLeft: 'auto', fontSize: T.fs.sm, color: T.textMuted, fontVariantNumeric: 'tabular-nums' }}>{filled} notes sur 4</span>
       </div>
     </Panel>
   );
@@ -110,13 +110,13 @@ export function CheckInCard({ day, done }: { day: number; done: CheckInZones | n
 function Summary({ label: l, v, max, extra, alert }: { label: string; v: number; max: number; extra?: string; alert: boolean }) {
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: T.textMuted }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: T.fs.sm, color: T.textMuted }}>
         {alert && <Dot color={T.status.amber} size={6} />}{l}
         {alert && <span className="wr-sr-only">, déclenche une alerte</span>}
       </div>
-      <div style={{ ...num, fontSize: 28, color: T.text, marginTop: 4 }}>
-        {v}<span style={{ fontSize: 15, color: T.textMuted }}> / {max}</span>
-        {extra && <span style={{ fontSize: 15, color: T.textDim, fontWeight: 400 }}> · {extra}</span>}
+      <div style={{ ...num, fontSize: T.fs.xl, color: T.text, marginTop: 4 }}>
+        {v}<span style={{ fontSize: T.fs.md, color: T.textMuted }}> / {max}</span>
+        {extra && <span style={{ fontSize: T.fs.md, color: T.textDim, fontWeight: 400 }}> · {extra}</span>}
       </div>
     </div>
   );

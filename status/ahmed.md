@@ -1,5 +1,5 @@
 # Status — Ahmed (B)
-_Mis à jour : sam. 18:40_
+_Mis à jour : sam. 19:55_
 
 ## Livré sur develop (PR `feature/ahmed`)
 - **Ingest réel** (remplace les stubs, mêmes signatures) :
@@ -12,6 +12,11 @@ _Mis à jour : sam. 18:40_
 - **Pages** : War Room (check-in, MAINTENANT/ENSUITE, to-do groupée, mesure en direct, import d'export) et Raisonnement. Les couleurs viennent uniquement de `src/ui/tokens.ts`, adaptées dans `src/pages/warroom/ui.tsx`. Les classes CSS sont préfixées `wr-`, pour ne pas toucher `global.css`.
 - `scripts/parse-health.ts` → `public/data/watch/presenter.json` (local, ignoré par git). Raccourcis iOS : `server/shortcuts/README.md`.
 - Tests : `tests/ingest/*`, `tests/api/*`. Suite complète : 121 tests verts, `tsc -b` et `vite build` OK.
+
+## Livré (PR `feature/ahmed-ml`) — demandes de Mouad
+- **Page Raisonnement → section « Nos modèles d'IA »** (`modelCards()`) : pour chaque modèle, titre, étiquette, apprentissage, données, chiffres clés, limites. Le modèle B affiche un tableau « erreur du modèle vs sans ML » par organe et par échéance.
+- **War Room → carte « Signal d'humeur »** (`moodSignals()`) : score du jour, courbe J27 → J94, seuil 0,44, zone d'alerte. Mention « signal à regarder, jamais un diagnostic ».
+- **`triage` et `planDay` recalculés à l'arrivée des vraies données montre** (`dataVersion` ajouté aux dépendances).
 
 ## Bloqué / risques
 - **Node ≥ 22 obligatoire** (Vite 8, Vitest 5). Avec Node 20.15, ni `dev` ni `test` ne tournent. Sur Mac : `brew install node@22`.

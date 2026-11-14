@@ -200,7 +200,7 @@ function RowView({ row, day, open, onToggle }: { row: Row; day: number; open: bo
       >
         <span className="bp-row__name">
           <span className="bp-row__label">{label}</span>
-          <span className="bp-row__sub">
+          <span className="bp-row__sub sz-detail">
             <span className="bp-row__unit">{last.unit}</span>
             <TagBadge tag={last.tag} />
           </span>
@@ -273,10 +273,10 @@ export function BloodPanel(): JSX.Element {
   return (
     <Panel
       sys="BIO-01"
-      title="ANALYSES"
+      title="Analyses"
       provenance="SIMULÉ"
       className="bp"
-      right={<span className="bp-day">{fmtDay(day)}</span>}
+      right={<span className="bp-day sz-detail">{fmtDay(day)}</span>}
     >
       {projected && lastAny >= 0 ? (
         <div className="bp-banner">
@@ -287,9 +287,9 @@ export function BloodPanel(): JSX.Element {
         <div className="bp-none">DONNÉES INSUFFISANTES</div>
       ) : (
         <div className="bp-scroll sz-scroll">
-          {group(`CAPILLAIRE — HEBDO (${drawDay === null ? '—' : fmtDay(drawDay)})`, capillary)}
-          {group(`URINE — QUOTIDIEN${urineDay !== null && urineDay !== day ? ` (${fmtDay(urineDay)})` : ''}`, urine)}
-          <div className="bp-legend">
+          {group(`Sang · ${drawDay === null ? '—' : fmtDay(drawDay)}`, capillary)}
+          {group(`Urine${urineDay !== null && urineDay !== day ? ` · ${fmtDay(urineDay)}` : ''}`, urine)}
+          <div className="bp-legend sz-detail">
             <span className="bp-legend__key"><i className="bp-legend__ref" /> INTERVALLE DE RÉF. <TagBadge tag="Publié" /></span>
             <span className="bp-legend__key">▲▼ TENDANCE 4 SEM.</span>
           </div>

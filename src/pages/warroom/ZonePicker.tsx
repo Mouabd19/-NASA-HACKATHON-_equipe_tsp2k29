@@ -16,7 +16,7 @@ export function ZonePicker({ zones, value, onToggle }: { zones: { id: OrganId; l
             onClick={() => onToggle(z.id)}
             className="wr-seg"
             style={{
-              fontFamily: T.fontText, fontSize: 15, fontWeight: 500, minHeight: 44, padding: '0 16px',
+              fontFamily: T.fontText, fontSize: T.fs.md, fontWeight: 500, minHeight: 44, padding: '0 16px',
               borderRadius: T.radius.pill, cursor: 'pointer',
               background: on ? T.text : T.panelRaised,
               color: on ? T.bg : T.textDim,
