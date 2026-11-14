@@ -3,7 +3,7 @@
  "date": "2026-11-13",
  "scenario": "drift",
  "transcript": [
-  "07:11 — Réveil. Reste allongé plusieurs minutes avant de se lever.",
+  "07:11 — Réveil. Se lève directement.",
   "06:50 — Message reçu ou incident signalé la veille : un désaccord technique avec Ito pendant le briefing.",
   "07:30 — Ne vient pas au petit-déjeuner commun. Kovacs frappe à sa cabine ; Haddad : « Faites sans moi ce soir. »",
   "08:30 — Briefing avec la Terre (message différé). Haddad ne prend pas la parole.",
@@ -21,12 +21,12 @@
   "tempsAvecEquipageMin": 58,
   "repasSautes": 2,
   "pas": 2425,
-  "sommeilH": 4.7
+  "sommeilH": 6.5
  },
  "biomarkers": {
-  "checkinHumeur": 2,
-  "checkinFatigue": 4,
-  "vfcMs": 38,
+  "checkinHumeur": 3,
+  "checkinFatigue": 3,
+  "vfcMs": 43.5,
   "cortisolNmolL": null
  }
 }

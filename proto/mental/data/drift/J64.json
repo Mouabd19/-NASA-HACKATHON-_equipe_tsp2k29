@@ -20,12 +20,12 @@
   "tempsAvecEquipageMin": 197,
   "repasSautes": 1,
   "pas": 4350,
-  "sommeilH": 6.8
+  "sommeilH": 7.1
  },
  "biomarkers": {
-  "checkinHumeur": 3,
+  "checkinHumeur": 4,
   "checkinFatigue": 2,
-  "vfcMs": 53,
+  "vfcMs": 50.4,
   "cortisolNmolL": null
  }
 }

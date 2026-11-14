@@ -23,9 +23,9 @@
   "sommeilH": 7.3
  },
  "biomarkers": {
-  "checkinHumeur": 4,
+  "checkinHumeur": 3,
   "checkinFatigue": 2,
-  "vfcMs": 53,
+  "vfcMs": 59.6,
   "cortisolNmolL": null
  }
 }

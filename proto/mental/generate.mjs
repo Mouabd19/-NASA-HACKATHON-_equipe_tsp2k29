@@ -20,6 +20,36 @@ const J0 = Date.parse('2026-08-12T00:00:00Z');
 const FIRST = 46, LAST = 94, ONSET = 75;   // J46–J59 = période de référence ; analyse sur J60–J94
 const CREW = { cmo: 'Kovacs', ing: 'Ito', bio: 'Okafor' };
 
+// --- Biomarqueurs : simulation de Mouad (public/data/sim/, Haddad J0→J94, épisode injecté à J75) -----
+// Scénario drift : valeurs du jour. Scénario témoin : la simulation de Mouad ne contient que Haddad AVEC
+// l'épisode ; pour J75–J94 on reprend ses valeurs de J-28 (J47–J66, avant l'épisode, même jour de la
+// semaine → même rythme de prélèvement du cortisol). Les deux scénarios viennent donc du même instrument.
+const SIM = path.join(HERE, '..', '..', 'public', 'data', 'sim');
+const readSim = (f) => JSON.parse(fs.readFileSync(path.join(SIM, f), 'utf8'));
+const dayOf = (iso) => Math.round((Date.parse(iso) - J0) / 86400000);
+const WATCH = readSim('watch.json');
+const series = (type) => new Map(WATCH.filter((x) => x.type === type).map((x) => [dayOf(x.date), x.value]));
+const HRV = series('HeartRateVariabilitySDNN');
+const SLEEP = series('SleepAnalysis');
+const CORTISOL = new Map(readSim('blood.json').filter((x) => x.analyte === 'cortisol').map((x) => [x.day, x.value]));
+const CHECKIN = new Map(readSim('checkins.json').map((x) => [x.day, x]));
+const simDay = (day, scenario) => (scenario === 'control' && day >= ONSET ? day - 28 : day);
+function simBio(day, scenario) {
+  const k = simDay(day, scenario);
+  const c = CHECKIN.get(k);
+  if (!c || !HRV.has(k) || !SLEEP.has(k)) throw new Error(`Donnée de Mouad manquante pour J${k}`);
+  return {
+    sommeilH: SLEEP.get(k),
+    bio: {
+      checkinHumeur: c.mood,
+      checkinFatigue: c.fatigue,
+      vfcMs: round(HRV.get(k), 1),
+      cortisolNmolL: CORTISOL.has(k) ? round(CORTISOL.get(k)) : null, // prélèvement hebdomadaire
+      // pas de champ « source » ici : les agents ne doivent pas savoir s'ils lisent le témoin
+    },
+  };
+}
+
 // --- Aléa reproductible (mulberry32) -------------------------------------------------------------
 function rng(seed) { return () => { seed |= 0; seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
 const pick = (r, a) => a[Math.floor(r() * a.length)];
@@ -70,7 +100,9 @@ function makeDay(day, scenario) {
   const add = (t, txt) => scenes.push(`${t} — ${txt}`);
   let talkMin = 0, socialMin = 0, mealsSkipped = 0;
 
-  const sleepH = round(clamp(7.1 - 2.2 * e + (r() - 0.5) * 0.8, 3.5, 8.5), 1);
+  r(); // (ancien tirage du sommeil, gardé pour ne pas décaler l'aléa des scènes)
+  const sim = simBio(day, scenario);
+  const sleepH = sim.sommeilH;
   const wakeMin = 30 + Math.round(e * 40 + r() * 10);
   add(hhmm(6 + Math.floor(wakeMin / 60), wakeMin % 60), `Réveil. ${sleepH < 6 ? 'Reste allongé plusieurs minutes avant de se lever.' : 'Se lève directement.'}`);
   if (bad > 0.4) add('06:50', `Message reçu ou incident signalé la veille : ${pick(r, BAD_DAY_CAUSE)}.`);
@@ -139,13 +171,8 @@ function makeDay(day, scenario) {
     pas: steps,
     sommeilH: sleepH,
   };
-  // Biomarqueurs (provisoires ici ; à remplacer par ceux du générateur de Mouad quand ils existent)
-  const bio = {
-    checkinHumeur: clamp(Math.round(4 - 2.2 * e + (r() - 0.5)), 1, 5),
-    checkinFatigue: clamp(Math.round(2 + 2.2 * e + (r() - 0.5)), 1, 5),
-    vfcMs: Math.round(52 - 14 * e + (r() - 0.5) * 6),
-    cortisolNmolL: day % 7 === 0 ? Math.round(380 + 160 * e + (r() - 0.5) * 40) : null, // prélèvement hebdomadaire
-  };
+  // Biomarqueurs : simulation de Mouad (voir simBio)
+  const bio = sim.bio;
   const date = new Date(J0 + day * 86400000).toISOString().slice(0, 10);
   return { day, date, scenario, transcript: scenes, sensors, biomarkers: bio, _drift: round(d, 2), _bad: round(bad, 2) };
 }

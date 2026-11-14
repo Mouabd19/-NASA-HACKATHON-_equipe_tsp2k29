@@ -3,7 +3,7 @@
  "date": "2026-11-14",
  "scenario": "drift",
  "transcript": [
-  "07:09 — Réveil. Reste allongé plusieurs minutes avant de se lever.",
+  "07:09 — Réveil. Se lève directement.",
   "07:30 — Petit-déjeuner avec l'équipage. Haddad : « J'ai l'impression de tourner en rond ici. » Voix basse et monocorde.",
   "08:30 — Briefing avec la Terre (message différé). Haddad pose deux questions sur le planning et propose une modification.",
   "10:00 — Maintenance du système de filtration d'air : abandonnée en cours, reportée à demain. Haddad : « De toute façon on verra bien. »",
@@ -20,12 +20,12 @@
   "tempsAvecEquipageMin": 147,
   "repasSautes": 1,
   "pas": 2423,
-  "sommeilH": 5.4
+  "sommeilH": 6
  },
  "biomarkers": {
-  "checkinHumeur": 2,
-  "checkinFatigue": 4,
-  "vfcMs": 41,
+  "checkinHumeur": 3,
+  "checkinFatigue": 3,
+  "vfcMs": 38.6,
   "cortisolNmolL": null
  }
 }
