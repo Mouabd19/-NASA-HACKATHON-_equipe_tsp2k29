@@ -119,7 +119,7 @@ button.bp-row:hover { background: var(--sz-panel-hover); }
   font-family: var(--sz-font-text);
   font-size: 11px;
   line-height: 12px;
-  letter-spacing: 0.08em;
+  letter-spacing: 0;
   text-transform: none;
   font-weight: 500;
   color: var(--sz-text);

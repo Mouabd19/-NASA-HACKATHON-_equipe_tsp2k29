@@ -148,7 +148,7 @@ export function LayersPanel(): JSX.Element {
                 <span className="lyr__label">{sentenceCase(meta.label)}</span>
                 {!meta.mvp ? <span className="lyr__beta" title="Calque hors MVP — données partielles">BÊTA</span> : null}
                 <span className="lyr__fill" />
-                <span className="lyr__alerts" data-zero={n === 0} title={`${n} alerte${n > 1 ? 's' : ''} sur ce calque`}>
+                <span className="lyr__alerts sz-detail" data-zero={n === 0} title={`${n} alerte${n > 1 ? 's' : ''} sur ce calque`}>
                   {n > 0 ? `${n} ALR` : '—'}
                 </span>
                 <StatusDot color={worst} size={7} />

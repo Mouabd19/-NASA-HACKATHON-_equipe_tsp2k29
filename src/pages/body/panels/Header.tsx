@@ -6,6 +6,7 @@ import type { CSSProperties, JSX } from 'react';
 import type { Color, DayBody } from '../../../types';
 import { ASTRONAUT, DAY_END, DAY_SOL0, DAY_TODAY } from '../../../mocks/mission';
 import { phenoAge } from '../../../models/phenoAge';
+import { bloodAgeSeries } from '../../../models/ml';
 import { lightTimeMin, lightTimeSource } from '../../../content/horizons';
 import { PanelClose, ProvenanceBadge, StatusChip, TagBadge, dayToDate, fmt, fmtDay } from '../../../ui';
 import { useBody, useDayBody } from '../store';
@@ -62,6 +63,9 @@ export function Header(): JSX.Element {
 
   const body = useDayBody();
   const pheno = useMemo(() => phenoAge(day), [day]);
+  // Modèle d'IA A (âge sanguin, NHANES) : dernier prélèvement ≤ jour affiché ; rien d'inventé au-delà.
+  const bloodSeries = useMemo(() => bloodAgeSeries(), []);
+  const blood = useMemo(() => bloodSeries.filter((p) => p.day <= day).at(-1) ?? null, [bloodSeries, day]);
   const date = dayToDate(day);
   const delay = useMemo(() => lightTimeMin(date), [date]);
   const delayExact = useMemo(() => lightTimeSource(date) === 'table', [date]);
@@ -150,9 +154,20 @@ export function Header(): JSX.Element {
             <span className="hdr__bio-none sz-mono">DONNÉES INSUFFISANTES</span>
           </span>
         )}
-        <span className="hdr__bio-foot sz-label sz-dim sz-detail">
-          {pheno?.mock ? 'FORMULE NON CALCULÉE' : 'LEVINE 2018'}
-          {pheno ? <> · {mode === 'projection' ? 'DERNIER PRÉLÈV.' : 'PRÉLÈV.'} {fmtDay(pheno.day)}</> : <> · AUCUN PRÉLÈVEMENT</>}
+        <span className="hdr__bio-foot sz-label sz-dim">
+          {blood ? (
+            <span
+              className="hdr__blood"
+              title={`Âge sanguin estimé par le modèle d'IA A (régression ElasticNet entraînée sur NHANES 2015–2018), prélèvement ${fmtDay(blood.day)} — âge réel ${fmt(blood.chronoAge, 1)} ans`}
+            >
+              ÂGE SANGUIN <span className="hdr__blood-num">{fmt(blood.bloodAge, 1)} ANS</span>
+              <span className="sz-detail"> (RÉEL {fmt(blood.chronoAge, 1)})</span> · MODÈLE D’IA, NHANES <TagBadge tag="H" />
+            </span>
+          ) : null}
+          <span className="sz-detail">
+            {blood ? ' · ' : ''}{pheno?.mock ? 'FORMULE NON CALCULÉE' : 'LEVINE 2018'}
+            {pheno ? <> · {mode === 'projection' ? 'DERNIER PRÉLÈV.' : 'PRÉLÈV.'} {fmtDay(pheno.day)}</> : <> · AUCUN PRÉLÈVEMENT</>}
+          </span>
         </span>
       </button>
 

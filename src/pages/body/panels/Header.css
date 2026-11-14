@@ -159,6 +159,8 @@
   color: var(--sz-text);
 }
 .hdr__bio-unit { color: var(--sz-text-dim); }
+.hdr__bio-foot { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hdr__blood-num { color: var(--sz-text); }
 .hdr__bio-vs {
   display: inline-flex;
   align-items: baseline;

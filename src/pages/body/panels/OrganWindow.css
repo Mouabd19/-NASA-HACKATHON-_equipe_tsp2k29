@@ -346,6 +346,9 @@ button.ow__scn:hover:not(:disabled) { background: var(--sz-panel-hover); border-
   padding-top: 8px;
   border-top: 1px solid var(--sz-border);
 }
+.ow__key--ml { width: 2px; height: 10px; border-top: 0; background: var(--sz-holo); }
+.ow__ml { margin-bottom: 4px; font-size: 11px; line-height: 1.5; color: var(--sz-text); }
+.ow__ml-name { color: var(--sz-holo); }
 .ow__formula { font-size: 11px; line-height: 1.5; color: var(--sz-text); }
 .ow__limit { margin-top: 4px; font-size: 11px; line-height: 1.4; color: var(--sz-text-dim); }
 
