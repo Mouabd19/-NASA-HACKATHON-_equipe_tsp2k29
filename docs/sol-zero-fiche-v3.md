@@ -46,9 +46,11 @@ NASA Space Apps 2026, défi « Health monitoring software for astronauts ».
 
 **La cible.** La Cdt L. Haddad **\[Persona\]** est en transit Terre → Mars, au jour 94 (J94) d'une mission de 860 jours :
 
-- 180 j d'aller ;  
+- 210 j d'aller (**Sol 0 = J210**, arrivée sur Mars) ;  
 - 500 j en surface ;  
-- 180 j de retour.
+- 150 j de retour (J860).
+
+> **Mise à jour du 14/11 (décision Mouad, alignée par Steve) : Sol 0 = J210**, comme dans tout le code (`DAY_SOL0`), les tests et le modèle B. Les chiffres « Sol 0 » des tableaux du §7 ci-dessous ont été calculés pour J180 dans la v3 : **les valeurs de référence sont maintenant celles de l'app** (modèles de Mouad, à J210). La dose de mission ne change pas (360 j de transit au total).
 
 **1\. Personne à bord n'est forcément médecin.**
 
@@ -221,7 +223,7 @@ Chaque alerte produit une carte unique :
   - en absolu, rouge si \< 36,5 ml/kg/min (EVA de surface \[V1 4002\]).  
 - **VO₂max pré-vol de Haddad** : 44 ml/kg/min **\[Persona\]**.
 
-|  | J94 | Sol 0, rythme actuel (adhérence 0,5) | Sol 0, avec le plan (adhérence 1\) |
+|  | J94 | Sol 0 (J210), rythme actuel (adhérence 0,5) | Sol 0 (J210), avec le plan (adhérence 1\) |
 | :---- | :---- | :---- | :---- |
 | Déficit | 10,84 % | **17,09 %** (bande 13,52–20,38) | **15,15 %** (11,80–18,38) |
 | VO₂max | 39,2 | **36,5** (35,0–38,1) | **37,3** (35,9–38,8) |
@@ -237,7 +239,7 @@ Chaque alerte produit une carte unique :
 - Le T-score reste affiché **en information**, avec les seuils de l'OMS repris dans le glossaire de la Rev C : −1,0 pour l'ostéopénie, −2,5 pour l'ostéoporose. La référence utilisée est NHANES III (Looker 1998), à vérifier entre H0 et H2.  
 - J860≥ reste une **borne basse** : les 500 jours en surface ne sont pas comptés.
 
-|  | J94 | Sol 0 (J180), rythme / plan | Retour J860≥, rythme actuel | Retour J860≥, avec le plan |
+|  | J94 | Sol 0 (J210 ; valeurs v3 calculées à J180, voir l'app), rythme / plan | Retour J860≥, rythme actuel | Retour J860≥, avec le plan |
 | :---- | :---- | :---- | :---- | :---- |
 | Perte | 1,99 % | 4,16 % (ambre) / 2,71 % (vert) | **8,70 %** (6,84–10,36) | **4,22 %** (3,32–5,02) |
 | Lecture | Vert | — | **Rouge, sur toute la bande** ; T −1,13 | **Ambre ; le pire cas touche le rouge** ; T −0,81 |

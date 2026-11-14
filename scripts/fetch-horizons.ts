@@ -5,7 +5,7 @@
 import { writeFileSync } from 'node:fs';
 
 const J0 = '2026-08-12';            // [Persona] départ : J94 = 2026-11-14
-const MISSION_DAYS = 860;           // 180 j aller + 500 j surface + 180 j retour
+const MISSION_DAYS = 860;           // 210 j aller (Sol 0 = J210) + 500 j surface + 150 j retour
 const AU_KM = 149_597_870.7;
 const C_KM_S = 299_792.458;
 

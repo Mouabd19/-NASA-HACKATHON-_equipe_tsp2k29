@@ -1,5 +1,5 @@
 # Status — Steve (D)
-_Mis à jour : sam. 18:55_
+_Mis à jour : sam. 19:50_
 
 ## Livré (PR `feature/steve-models` → `develop`)
 - **Z-Anatomy branché dans la page Body** (avec l'accord de Walid) : `src/three/zanatomy.ts` charge les calques + l'avatar et produit la même liste `PartDef[]` que le corps procédural ; chargement dans `main.tsx` avant le premier rendu (repli automatique sur le corps procédural si échec ou > 15 s) ; ancres des ⚠ lues dans le manifeste (`activeAnchors()`) ; crédits Z-Anatomy affichés. Réseau vasculaire (`arteres`, `veines`, `aorte`) → organe `sang` du calque cardio. 94 tests verts, build OK.
@@ -17,6 +17,7 @@ _Mis à jour : sam. 18:55_
 - Jalons 23:00 et 02:00 **livrés**. Suite : script des synthèses IA par organe (06:00), dès que `public/data/sim/` de Mouad est poussé.
 
 ## Bloqué / risques
+- `horizons.json` : ✅ vraies données JPL Horizons lancées par Mouad (`feature/mouad-horizons`, 11,014 min le 14/11, étiquette [NASA]). Format compatible avec `src/content/horizons.ts`.
 - `horizons.json` est **PROVISOIRE** (calcul local, `provisional: true`, étiquette [H]) : mon environnement ne joint pas ssd.jpl.nasa.gov. **Quelqu'un doit lancer `npx tsx scripts/fetch-horizons.ts` sur son portable** (30 s) avant le gel pour avoir la vraie donnée [NASA]. Écart attendu < 0,01 min.
 - ⚠ **Correction de la fiche** : la dose de carrière 600 mSv est **[V1 4030]**. Et la Rev C ne contient **pas** l'affirmation « bisphosphonates → perte ~0 % » ni « < 5 % de perte à la hanche avec l'ARED » (attribuées à la justification de V1 4027) : les bisphosphonates n'y sont que dans le glossaire. Ne pas afficher ces chiffres en [NASA] tant que je n'ai pas trouvé la vraie source (étape 3).
 - Licence des modèles : **CC BY-NC-SA 4.0** (rein + oreille interne NC). OK pour le hackathon uniquement ; crédit visible obligatoire dans l'app et le README.
@@ -38,7 +39,7 @@ _Mis à jour : sam. 18:55_
   Id inconnu → `null` (ou texte générique pour `whyText`), jamais d'exception. Besoin d'un autre id ? Dis-le dans ton status.
 - @Mouad : mêmes ids pour `planDay` (hanche AMBRE → `ared-squat` + `ared-souleve-de-terre` + `menu-calcium-vitd` ; VO₂ AMBRE → `velo-intervalles` / `tapis-intervalles` ; calcium urinaire → `menu-anti-calculs`).
 - @Mouad : ✅ réponses lues (vieillissement sourcé, PhenoAge 43,1, urine). Pitch : présenter la cuisse « +15 ans » comme un **équivalent** en années de vieillissement normal, en partie réversible.
-- @Mouad : ✅ fiche dans le repo → `docs/sol-zero-fiche-v3.md`. ✅ **Sol 0 = J180** (2027-02-08 ; 180 j d'aller), confirmé par Steve. Vitesses de vieillissement : voir ligne ci-dessous.
+- @Mouad : ✅ fiche dans le repo → `docs/sol-zero-fiche-v3.md`. ✅ **Sol 0 = J210** (2027-03-10) : décision de Mouad appliquée — fiche (`docs/sol-zero-fiche-v3.md`), script horizons, synthèses IA et pitch alignés sur J210. Vitesses de vieillissement : voir ligne ci-dessous.
 - @Mouad **(décision à prendre)** : vitesses de vieillissement terrestre sourcées = hanche **0,5 %/an**, muscle **0,4 %/an**, VO₂ 1 %/an (au lieu de 1 %/an partout). Avec la formule §8 : hanche J94 → **+4,0 ans**, J860 → +17,4 (rythme) / +8,4 (plan). Garder 1 %/an = hypothèse prudente [H] à afficher comme telle. Détail : `docs/sources/references-v3.2.md`.
 - @Mouad : calcium suivi dans l'**urine** (monte dès J15–J30, NTX aussi) ; calcium sanguin stable. Hémoglobine : baisse lente sur toute la mission (anémie spatiale, réversible après retour).
 - @Ahmed : étiquettes Raisonnement — bisphosphonates = [Publié] LeBlanc 2013 (`leblanc2013`), PAS [NASA].
