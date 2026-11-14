@@ -206,6 +206,20 @@ const CHAINS: Record<string, Builder> = {
       step('decision', 'Séance de mobilité et de gainage du dos, 15 min.', 'H', REF.ochmo),
     ],
   }),
+  'r-pvt': day => {
+    const p = metricAt(day, 'yeux', 'pvt');
+    return {
+      title: 'Test de vigilance PVT — pourquoi ?',
+      steps: [
+        step('donnee', p
+          ? `${when(day)} : temps de réaction ${fr(p.value, 0)} ms, ${p.trend7d === undefined ? 'tendance 7 j indisponible' : `tendance 7 j ${fr(p.trend7d, 1)} %/sem`}.`
+          : `${when(day)} : aucune mesure de vigilance récente, la donnée est expirée.`, 'Persona', REF.sim('Test PVT quotidien')),
+        step('modele', 'Moyenne sur 7 jours du temps de réaction, croisée avec la fatigue et le sommeil du check-in. Le manque de sommeil allonge les temps de réaction avant qu\'on le ressente.', 'H'),
+        step('norme', 'Pas de seuil NASA chiffré dans nos sources : repère d\'équipe [H], vigilance à surveiller au-delà de 300 ms de moyenne. Une donnée manquante ne donne jamais un statut vert.', 'H'),
+        step('decision', 'Test PVT de 3 minutes aujourd\'hui, avant les tâches qui demandent de la précision.', 'H'),
+      ],
+    };
+  },
   'r-fatigue': day => ({
     title: 'Récupération — pourquoi ?',
     steps: [

@@ -45,3 +45,32 @@ export function vo2Color(vo2: number): Color {
 /** Plus haut = pire (calcium urinaire, gaine du nerf optique, dose). */
 export const levelUp = (v: number, amber: number, red: number): Color =>
   !Number.isFinite(v) ? 'grey' : v >= red ? 'red' : v >= amber ? 'amber' : 'green';
+
+/** Bornes d'une plage normale : hors bornes « ambre » → ambre, hors bornes « rouge » → rouge. */
+export interface Band { redLow?: number; amberLow?: number; amberHigh?: number; redHigh?: number }
+
+/** Couleur d'une valeur dans une plage (trop bas ET trop haut peuvent être pires). NaN → gris, jamais vert. */
+export function inBand(v: number, b: Band): Color {
+  if (!Number.isFinite(v)) return 'grey';
+  if ((b.redLow !== undefined && v < b.redLow) || (b.redHigh !== undefined && v >= b.redHigh)) return 'red';
+  if ((b.amberLow !== undefined && v < b.amberLow) || (b.amberHigh !== undefined && v > b.amberHigh)) return 'amber';
+  return 'green';
+}
+
+/**
+ * Plages des métriques sans norme NASA chiffrée : repères d'équipe [H] (ordres de grandeur cliniques terrestres).
+ * Elles remplacent les couleurs vertes fixées en dur : une valeur anormale n'est jamais affichée en vert.
+ */
+export const BANDS = {
+  fraction_ejection: { redLow: 45, amberLow: 55 },                          // % (FEVG normale 55–70)
+  taille: { redLow: 85, amberLow: 92 },                                     // masse ventriculaire, % vs J0
+  fc_repos: { redLow: 40, amberLow: 45, amberHigh: 90, redHigh: 110 },      // bpm
+  tension_sys: { redLow: 80, amberLow: 90, amberHigh: 130, redHigh: 140 },  // mmHg
+  tension_dia: { redLow: 50, amberLow: 60, amberHigh: 85, redHigh: 90 },    // mmHg
+  volume_jambes: { redLow: 75, amberLow: 80 },                              // % vs J0 (−10 à −15 % = transfert de fluides attendu)
+  pvt: { amberHigh: 300, redHigh: 350 },                                    // ms, moyenne 7 j (temps de réaction)
+  dose_jour: { amberHigh: 1.85, redHigh: 3 },                               // mSv/j (croisière prévue 1,84)
+} satisfies Record<string, Band>;
+
+/** Calculs rénaux vus au scan : 1 ou plus → ambre (hydratation + échographie des reins, ROADMAP §8). */
+export const stonesColor = (n: number): Color => (!Number.isFinite(n) ? 'grey' : n >= 1 ? 'amber' : 'green');
