@@ -1,0 +1,137 @@
+{
+ "id": "blood-age",
+ "version": 2,
+ "title": "Âge sanguin — régression ElasticNet entraînée sur NHANES 2015–2018",
+ "learning": "Supervisé (régression). Cible : âge chronologique. Modèle linéaire régularisé (ElasticNet, validation croisée 5 plis). Entraîné hors ligne avant la démo.",
+ "data": "NHANES 2015–2016 et 2017–2018 (CDC) : 9326 adultes de 20 à 79 ans, prises de sang réelles (80 % entraînement, 20 % test). Données terrestres.",
+ "use": "Suivre la VARIATION de l'âge sanguin de Haddad d'un prélèvement à l'autre ; PhenoAge reste la référence publiée.",
+ "tag": "Publié",
+ "limits": [
+  "Les analyses de routine n'expliquent qu'une partie de l'âge (R² = 0.279) : erreur moyenne ± 11.76 ans sur une personne.",
+  "La valeur absolue est imprécise ; la variation chez une même personne est le signal utile.",
+  "Population terrestre générale (États-Unis), pas des astronautes. Indicateur, pas diagnostic.",
+  "Klemera-Doubal testé : les marqueurs portent trop peu d'information (r = 0.511), l'estimation retombe sur l'âge réel (écart ± 0.16 an)."
+ ],
+ "markers": [
+  {
+   "key": "albumine",
+   "unit": "g/L",
+   "log": false,
+   "mean": 41.867828,
+   "sd": 3.724521,
+   "coef": -1.47137
+  },
+  {
+   "key": "creatinine",
+   "unit": "µmol/L",
+   "log": true,
+   "mean": 4.297067,
+   "sd": 0.295719,
+   "coef": 1.771132
+  },
+  {
+   "key": "glucose",
+   "unit": "mmol/L",
+   "log": true,
+   "mean": 1.70808,
+   "sd": 0.26737,
+   "coef": 3.445736
+  },
+  {
+   "key": "phosphatases_alcalines",
+   "unit": "U/L",
+   "log": true,
+   "mean": 4.259251,
+   "sd": 0.312505,
+   "coef": 1.547995
+  },
+  {
+   "key": "calcium",
+   "unit": "mmol/L",
+   "log": false,
+   "mean": 2.327825,
+   "sd": 0.089848,
+   "coef": 0.274726
+  },
+  {
+   "key": "leucocytes",
+   "unit": "10³/µL",
+   "log": false,
+   "mean": 7.388579,
+   "sd": 5.06039,
+   "coef": -0.0
+  },
+  {
+   "key": "lymphocytes_pct",
+   "unit": "%",
+   "log": false,
+   "mean": 31.397788,
+   "sd": 8.621778,
+   "coef": -0.0
+  },
+  {
+   "key": "vgm",
+   "unit": "fL",
+   "log": false,
+   "mean": 88.314236,
+   "sd": 6.149297,
+   "coef": 3.111191
+  },
+  {
+   "key": "idr",
+   "unit": "%",
+   "log": false,
+   "mean": 13.829598,
+   "sd": 1.358495,
+   "coef": 2.527459
+  },
+  {
+   "key": "hemoglobine",
+   "unit": "g/dL",
+   "log": false,
+   "mean": 13.981877,
+   "sd": 1.55327,
+   "coef": -0.149643
+  },
+  {
+   "key": "hematocrite",
+   "unit": "%",
+   "log": false,
+   "mean": 41.840375,
+   "sd": 4.224393,
+   "coef": -0.0
+  },
+  {
+   "key": "crp",
+   "unit": "mg/L",
+   "log": true,
+   "mean": 0.675314,
+   "sd": 1.251158,
+   "coef": 0.0
+  },
+  {
+   "key": "vitamine_d",
+   "unit": "nmol/L",
+   "log": false,
+   "mean": 65.358168,
+   "sd": 29.241593,
+   "coef": 4.188252
+  }
+ ],
+ "intercept": 48.363807,
+ "bias": {
+  "alpha": 36.74272,
+  "beta": -0.759715
+ },
+ "metrics": {
+  "n_train": 7460,
+  "n_test": 1866,
+  "r2": 0.279,
+  "mae_years": 11.76,
+  "gap_sd_years": 6.23,
+  "gap_vs_age_corr_after_correction": -0.0,
+  "comparison_r2_gradient_boosting": 0.394,
+  "comparison_kdm_r_markers_vs_age": 0.511,
+  "comparison_kdm_gap_sd_years": 0.16
+ }
+}
