@@ -1,0 +1,263 @@
+/* Timeline de la page Body — préfixe .tl. Couleurs : variables --sz-* uniquement. */
+
+.tl {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  width: 100%;
+  height: 84px;
+  background: var(--sz-panel);
+  border: 1px solid var(--sz-border);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ── Blocs de commandes ── */
+
+.tl__left,
+.tl__right {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+  padding: 7px 10px 8px;
+}
+.tl__left { border-right: 1px solid var(--sz-border); }
+.tl__right { border-left: 1px solid var(--sz-border); }
+
+.tl__cap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 16px;
+  white-space: nowrap;
+}
+.tl__fill { flex: 1; min-width: 8px; }
+
+.tl__buttons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.tl__buttons .sz-btn { padding: 0 8px; }
+.tl .sz-btn:focus-visible { outline-offset: -3px; }
+
+.tl__play.sz-btn {
+  width: 30px;
+  padding: 0;
+  border-color: var(--sz-border-strong);
+}
+.tl__play.sz-btn[aria-pressed='true'] {
+  background: var(--sz-text);
+  border-color: var(--sz-text);
+  color: var(--sz-bg);
+}
+
+.tl__hint {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 14px;
+  font-size: 10px;
+  white-space: nowrap;
+}
+.tl__key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 13px;
+  height: 13px;
+  padding: 0 3px;
+  border: 1px solid var(--sz-border-strong);
+  font: inherit;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  color: var(--sz-text-dim);
+}
+.tl__sep {
+  width: 1px;
+  height: 8px;
+  margin: 0 3px;
+  background: var(--sz-border-strong);
+}
+
+/* Bascule d'adhérence : deux boutons accolés */
+.tl__toggle { display: flex; }
+.tl__toggle .sz-btn {
+  flex: 1;
+  padding: 0 9px;
+  color: var(--sz-text-dim);
+}
+.tl__toggle .sz-btn + .sz-btn { margin-left: -1px; }
+.tl__toggle .sz-btn[data-active='true'] {
+  position: relative;
+  z-index: 1;
+  color: var(--sz-bg);
+  background: var(--sz-text);
+  border-color: var(--sz-text);
+}
+
+.tl__impact {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 14px;
+  white-space: nowrap;
+}
+.tl__impact-val {
+  color: var(--sz-text-dim);
+  transition: color 120ms;
+}
+.tl__impact-val[data-on='true'] {
+  color: var(--sz-text);
+  box-shadow: 0 1px 0 0 var(--sz-text);
+}
+.tl__impact-bar {
+  width: 1px;
+  height: 9px;
+  background: var(--sz-border-strong);
+}
+
+/* ── Piste ── */
+
+.tl__track {
+  position: relative;
+  min-width: 0;
+  height: 100%;
+  overflow: hidden;
+  cursor: ew-resize;
+  touch-action: none;
+  contain: layout paint;
+}
+.tl__track:focus-visible { outline-offset: -2px; }
+
+.tl__svg {
+  position: absolute;
+  inset: 0;
+  max-width: none;
+  pointer-events: none;
+  font-family: var(--sz-font-mono);
+  shape-rendering: crispEdges;
+}
+.tl__svg text { shape-rendering: auto; }
+
+/* Zones */
+.tl__zone--measured { fill: color-mix(in srgb, var(--sz-text) 13%, transparent); }
+.tl__hatchline {
+  stroke: color-mix(in srgb, var(--sz-text-dim) 42%, transparent);
+  stroke-width: 1;
+}
+.tl__edge { stroke: var(--sz-text-dim); stroke-width: 1; }
+.tl__edge--proj {
+  stroke: var(--sz-border-strong);
+  stroke-dasharray: 4 3;
+}
+.tl__zonelabel {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  fill: var(--sz-text);
+}
+.tl__zonelabel--proj { fill: var(--sz-text-dim); }
+.tl__zonelabel-bg { fill: var(--sz-bg); }
+
+/* Ligne de base et graduations */
+.tl__base { stroke: var(--sz-text); stroke-width: 1; }
+.tl__base--proj {
+  stroke: var(--sz-text-dim);
+  stroke-dasharray: 4 3;
+}
+.tl__tick { stroke: var(--sz-text-dim); stroke-width: 1; }
+.tl__tick--mid,
+.tl__tick--major { stroke: var(--sz-text); }
+.tl__tick[data-proj='true'] { stroke: var(--sz-border-strong); }
+.tl__tick--mid[data-proj='true'],
+.tl__tick--major[data-proj='true'] { stroke: var(--sz-text-dim); }
+
+.tl__ticklabel {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  fill: var(--sz-text);
+  font-variant-numeric: tabular-nums;
+}
+.tl__ticklabel[data-proj='true'] { fill: var(--sz-text-dim); }
+
+/* Ruban d'alertes */
+.tl__ribbon-rail { stroke: var(--sz-border); stroke-width: 1; }
+.tl__ribbon { pointer-events: stroke; }
+.tl__ribbon[data-proj='true'] {
+  stroke-dasharray: 3 2;
+  opacity: 0.85;
+}
+
+/* Repères de mission */
+.tl__mark line {
+  stroke: var(--sz-text-dim);
+  stroke-width: 1;
+  stroke-dasharray: 2 2;
+}
+.tl__mark text {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  fill: var(--sz-text-dim);
+}
+.tl__mark--strong line {
+  stroke: var(--sz-text);
+  stroke-dasharray: none;
+}
+.tl__mark--strong text { fill: var(--sz-text); }
+.tl__mark--strong path { fill: var(--sz-text); }
+
+/* ── Tête de lecture (déplacée par transform uniquement) ── */
+
+.tl__head {
+  position: absolute;
+  top: 0;
+  left: -5.5px;
+  width: 11px;
+  height: 100%;
+  pointer-events: none;
+  will-change: transform;
+}
+.tl__head-svg { max-width: none; overflow: visible; }
+.tl__head-svg line {
+  stroke: var(--sz-text);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+.tl__head-svg path { fill: var(--sz-text); }
+.tl[data-projected='true'] .tl__head-svg line { stroke-dasharray: 3 2; }
+
+.tl__readout {
+  position: absolute;
+  top: 3px;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 15px;
+  border: 1px solid var(--sz-text);
+  background: var(--sz-bg);
+  color: var(--sz-text);
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  pointer-events: none;
+  will-change: transform;
+}
+.tl__readout-day { font-weight: 600; }
+.tl__readout-dash { color: var(--sz-text-dim); }
+.tl[data-projected='true'] .tl__readout {
+  border-style: dashed;
+  border-color: var(--sz-text-dim);
+}
+.tl[data-projected='true'] .tl__readout-mode { color: var(--sz-text-dim); }
+.tl__track[data-dragging='true'] .tl__readout {
+  background: var(--sz-text);
+  color: var(--sz-bg);
+  border-style: solid;
+  border-color: var(--sz-text);
+}
+.tl__track[data-dragging='true'] .tl__readout-dash,
+.tl__track[data-dragging='true'] .tl__readout-mode { color: var(--sz-bg); }

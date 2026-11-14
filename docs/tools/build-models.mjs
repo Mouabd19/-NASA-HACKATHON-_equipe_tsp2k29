@@ -223,6 +223,6 @@ for (const [id, budget] of Object.entries(ISOLATED)) {
 // 'sang' : pas de mesh propre ; ancré sur l'aorte (calque cardio).
 for (const o of [...Object.keys(ISOLATED), 'aorte', 'arteres', 'veines']) manifest.organs.push({ id: o, file: o in ISOLATED ? `organs/${o}.glb` : undefined, anchor: anchors[o] });
 manifest.organs.push({ id: 'sang', anchor: anchors.aorte });
-manifest.credits = 'Z-Anatomy - The open source atlas of anatomy - CC-BY-SA 4.0 · BodyParts3D - The Database Center for Life Science - CC-BY-SA 2.1 Japan · Kidney - by lissiecowley - CC-BY-NC 4.0 · Anatomy of the Inner Ear / Cranial Nerves and Foramina - University of Dundee · export glTF : nqwrc/3d-anatomy · ensemble distribué sous CC BY-NC-SA 4.0';
+manifest.credits = 'Z-Anatomy — CC BY-SA 4.0 · BodyParts3D — CC BY-SA 2.1 Japon · Kidney (lissiecowley) — CC BY-NC 4.0 · Inner Ear / Cranial Nerves (University of Dundee) · export glTF : nqwrc/3d-anatomy · ensemble distribué sous CC BY-NC-SA 4.0, usage hackathon non commercial';
 fs.writeFileSync(path.join(OUT, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
 console.table(report);

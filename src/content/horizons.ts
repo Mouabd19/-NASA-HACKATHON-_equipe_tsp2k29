@@ -16,6 +16,12 @@ export function lightTimeMin(date: string): number {
   return at(date).lightTimeMin;
 }
 
+/** Utilisé par les pages de Walid : 'table' si la date est dans horizons.json (J0 → J860), sinon 'approx' (valeur bornée). */
+export function lightTimeSource(date: string): 'table' | 'approx' {
+  const i = Math.round((Date.parse(date.slice(0, 10) + 'T00:00:00Z') - t0) / DAY_MS);
+  return i >= 0 && i < data.days.length ? 'table' : 'approx';
+}
+
 /** Ajout non cassant : vrai pendant la conjonction solaire (aucun lien avec la Terre). */
 export function isConjunction(date: string): boolean {
   return at(date).elongationDeg < CONJ_DEG;

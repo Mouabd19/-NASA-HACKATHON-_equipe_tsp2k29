@@ -4,28 +4,28 @@
       "id": "squelette",
       "file": "squelette.glb",
       "organs": [
-        "femur",
         "hanche",
-        "rachis"
+        "rachis",
+        "femur"
       ]
     },
     {
       "id": "muscles",
       "file": "muscles.glb",
       "organs": [
-        "paravertebraux",
         "cuisse",
-        "mollet"
+        "mollet",
+        "paravertebraux"
       ]
     },
     {
       "id": "organes",
       "file": "organes.glb",
       "organs": [
-        "foie",
-        "poumons",
-        "reins",
         "coeur",
+        "reins",
+        "poumons",
+        "foie",
         "cerveau"
       ]
     },
@@ -33,22 +33,79 @@
       "id": "cardio",
       "file": "cardio.glb",
       "organs": [
-        "coeur",
-        "arteres",
-        "aorte",
-        "veines"
+        "sang"
       ]
     },
     {
       "id": "nerveux",
       "file": "nerveux.glb",
       "organs": [
-        "cerveau",
         "yeux"
+      ]
+    },
+    {
+      "id": "exposition",
+      "file": "avatar.glb",
+      "organs": [
+        "dose"
       ]
     }
   ],
   "organs": [
+    {
+      "id": "hanche",
+      "file": "organs/hanche.glb",
+      "anchor": [
+        0.069,
+        0.905,
+        0.086
+      ]
+    },
+    {
+      "id": "rachis",
+      "file": "organs/rachis.glb",
+      "anchor": [
+        0,
+        1.192,
+        -0.131
+      ]
+    },
+    {
+      "id": "femur",
+      "file": "organs/femur.glb",
+      "anchor": [
+        0.09,
+        0.83,
+        0.049
+      ]
+    },
+    {
+      "id": "cuisse",
+      "file": "organs/cuisse.glb",
+      "anchor": [
+        0.084,
+        0.646,
+        0.09
+      ]
+    },
+    {
+      "id": "mollet",
+      "file": "organs/mollet.glb",
+      "anchor": [
+        0.085,
+        0.32,
+        0.012
+      ]
+    },
+    {
+      "id": "paravertebraux",
+      "file": "organs/paravertebraux.glb",
+      "anchor": [
+        0.051,
+        1.228,
+        -0.133
+      ]
+    },
     {
       "id": "coeur",
       "file": "organs/coeur.glb",
@@ -104,91 +161,42 @@
       ]
     },
     {
-      "id": "hanche",
-      "file": "organs/hanche.glb",
-      "anchor": [
-        0.069,
-        0.905,
-        0.086
-      ]
-    },
-    {
-      "id": "femur",
-      "file": "organs/femur.glb",
-      "anchor": [
-        0.09,
-        0.83,
-        0.049
-      ]
-    },
-    {
-      "id": "rachis",
-      "file": "organs/rachis.glb",
-      "anchor": [
-        0,
-        1.192,
-        -0.131
-      ]
-    },
-    {
-      "id": "cuisse",
-      "file": "organs/cuisse.glb",
-      "anchor": [
-        0.084,
-        0.646,
-        0.09
-      ]
-    },
-    {
-      "id": "mollet",
-      "file": "organs/mollet.glb",
-      "anchor": [
-        0.085,
-        0.32,
-        0.012
-      ]
-    },
-    {
-      "id": "paravertebraux",
-      "file": "organs/paravertebraux.glb",
-      "anchor": [
-        0.051,
-        1.228,
-        -0.133
-      ]
-    },
-    {
-      "id": "aorte",
-      "anchor": [
-        0.011,
-        1.197,
-        0.074
-      ]
-    },
-    {
-      "id": "arteres",
-      "anchor": [
-        0.164,
-        0.854,
-        0.162
-      ]
-    },
-    {
-      "id": "veines",
-      "anchor": [
-        0.153,
-        0.838,
-        0.166
-      ]
-    },
-    {
       "id": "sang",
       "anchor": [
         0.011,
         1.197,
         0.074
       ]
+    },
+    {
+      "id": "dose",
+      "anchor": [
+        -0.15,
+        1.44,
+        0.12
+      ]
     }
   ],
-  "credits": "Z-Anatomy - The open source atlas of anatomy - CC-BY-SA 4.0 · BodyParts3D - The Database Center for Life Science - CC-BY-SA 2.1 Japan · Kidney - by lissiecowley - CC-BY-NC 4.0 · Anatomy of the Inner Ear / Cranial Nerves and Foramina - University of Dundee · export glTF : nqwrc/3d-anatomy · ensemble distribué sous CC BY-NC-SA 4.0"
+  "credits": "Z-Anatomy — CC BY-SA 4.0 · BodyParts3D — CC BY-SA 2.1 Japon · Kidney (lissiecowley) — CC BY-NC 4.0 · Inner Ear / Cranial Nerves (University of Dundee) · export glTF : nqwrc/3d-anatomy · ensemble distribué sous CC BY-NC-SA 4.0, usage hackathon non commercial",
+  "avatar": "avatar.glb",
+  "extraNodes": {
+    "cardio.glb": [
+      "coeur",
+      "aorte",
+      "arteres",
+      "veines"
+    ],
+    "organes.glb": [
+      "coeur",
+      "poumons",
+      "foie",
+      "reins",
+      "cerveau"
+    ],
+    "nerveux.glb": [
+      "cerveau",
+      "yeux"
+    ],
+    "note": "organId présents dans chaque .glb (userData.organId), y compris hors contrat"
+  }
 }

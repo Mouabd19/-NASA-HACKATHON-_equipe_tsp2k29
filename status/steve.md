@@ -1,5 +1,5 @@
 # Status — Steve (D)
-_Mis à jour : sam. 17:55_
+_Mis à jour : sam. 18:20_
 
 ## Livré (poussé sur `feature/steve-models` ; PR vers `develop` dès que Walid aura créé la branche)
 - **Modèles 3D** (jalon 17:00, en avance) : `public/models/{squelette,muscles,organes,cardio,nerveux}.glb` (170–260 k triangles chacun, 1,2–2,9 Mo, ~1 M triangles si tout est affiché) + `manifest.json` (ancres des ⚠) + `CREDITS.md`.
@@ -21,6 +21,13 @@ _Mis à jour : sam. 17:55_
 - Constante finale de PhenoAge : 0.090165 (Aging 2018) vs 0.09165 (correction PLOS Med 2019). Recommandation : 0.090165.
 
 ## Demandes aux autres
+- @Walid **(bloque la PR vers develop)** : `develop` a été mergé dans `feature/steve-models`, le code compile et le build passe, mais **5 de tes tests vérifient les valeurs provisoires des stubs** et échouent avec les vraies implémentations. Proposition de mise à jour (c'est ton périmètre, dis-moi si tu préfères que je le fasse dans la PR) :
+  1. `délai radio` : `toBe(11.01)` → `toBeCloseTo(11.01, 1)` (horizons.json donne 11,016 ; provisoire tant que fetch-horizons n'a pas tourné) ;
+  2. `normes … non vérifiées` : les 3 normes sont maintenant **vérifiées** (`verified: true`, citations relues) ;
+  3. `bibliothèque` : ids réels `ared-squat` et `menu-calcium-vitd` (au lieu de `ared-squat-sdt`, `dej-calcium`) ;
+  4. `lightTimeSource` : la table couvre toute la mission J0 → J860, donc '2027-03-10' est `'table'` ; une date hors mission (ex. '2030-01-01') est `'approx'` ;
+  5. `manifest — ancres` : les ancres sont maintenant celles des vrais modèles Z-Anatomy (calculées sur la géométrie), plus celles du corps procédural.
+- @Walid : `manifest.json` suit le contrat (6 calques, chaque organe dans un seul calque) + 2 champs en plus : `avatar: 'avatar.glb'` (silhouette Z-Anatomy de Haddad, en cours, pour remplacer ton enveloppe procédurale et porter la carte de dose) et `extraNodes` (organId présents dans chaque .glb, dont `arteres`, `veines`, `aorte`). Peux-tu ajouter `avatar?: string` à `ModelManifest` (ajout non cassant) ?
 - @Ahmed : ✅ tests ajoutés : `test-pvt`, `test-vision`, `test-prelevement`, `test-urine`, `test-echo-reins`, `test-checkin` via `getTest(id)` (ajout). `whyText` ne renvoie jamais null : phrase de repli + `hasWhy(rule)`.
 - @Ahmed : **ids de la bibliothèque** (`src/content/library.ts`) à utiliser dans tes mocks de to-do et par Mouad dans `planDay` :
   - exercices : `ared-squat`, `ared-souleve-de-terre`, `ared-mollets`, `velo-intervalles`, `velo-continu`, `tapis-intervalles`, `tapis-continu`, `mobilite-dos`, `respiration` ;
