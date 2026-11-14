@@ -50,7 +50,7 @@ function forecastText(organ: 'hanche' | 'cuisse' | 'coeur', horizon: 210 | 860):
   const cur = organForecast(organ, horizon, 0);
   const plan = organForecast(organ, horizon, 1);
   if (!cur || !plan) return null;
-  return `Modèle d'IA B (régression quantile, entraîné sur 2 000 astronautes virtuels calibrés NASA) : à J${horizon}, ` +
+  return `Modèle d'IA B (régression quantile, entraîné sur 2 000 astronautes virtuels calibrés NASA), à partir des mesures J0–J${DAY_TODAY} : à J${horizon}, ` +
     `${fr(cur.p50, 1)} % ${cur.unit.replace(/^% /, '')} au rythme actuel (fourchette 10–90 % : ${fr(cur.p10, 1)}–${fr(cur.p90, 1)}), ` +
     `${fr(plan.p50, 1)} % avec le plan.`;
 }
