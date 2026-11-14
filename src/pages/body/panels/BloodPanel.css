@@ -1,11 +1,9 @@
-/* BloodPanel — tableau de résultats de laboratoire. Préfixe bp-. Couleurs : variables --sz-* uniquement. */
+/* BloodPanel — préfixe bp-. Couleurs : variables --sz-* uniquement. */
 
 .bp {
   width: 100%;
   max-height: 100%;
   min-height: 0;
-  /* Colonnes : analyte · valeur · unité · position dans l'intervalle · tendance */
-  --bp-grid: minmax(0, 1fr) 32px 40px 36px 56px;
 }
 .bp > .sz-panel__body {
   display: flex;
@@ -14,124 +12,159 @@
   min-height: 0;
 }
 
-/* Liste : barre de défilement toujours visible quand il reste des lignes (8 px réservés, repris sur la marge droite) */
+.bp-day { color: var(--sz-text); font-variant-numeric: tabular-nums; }
+
 .bp-scroll {
   flex: 1;
   min-height: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  scrollbar-gutter: stable;
-  scrollbar-width: auto;
-  scrollbar-color: auto;
 }
-.bp-scroll .bp-row,
-.bp-scroll .bp-group__head,
-.bp-scroll .bp-detail,
-.bp-scroll .bp-legend { padding-right: 8px; }
 
 .bp-banner,
-.bp-none {
-  flex: none;
-  padding: 8px var(--sz-pad);
-  font-size: var(--sz-fs-small);
-  line-height: 1.4;
-  color: var(--sz-text-dim);
+.bp-none,
+.bp-group,
+.bp-legend,
+.bp-detail__meta,
+.bp-detail__foot,
+.bp-detail__note,
+.bp-row__empty {
+  font-family: var(--sz-font-text);
+  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: var(--sz-tracking);
+  font-variant-numeric: tabular-nums;
 }
-.bp-banner { border-bottom: 1px solid var(--sz-border); }
-.bp-none { padding: 12px var(--sz-pad) var(--sz-pad); }
 
-/* En-tête de colonnes (fixe, hors défilement) */
-.bp-cols,
+.bp-banner {
+  flex: none;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--sz-border);
+  border-left: 2px solid var(--sz-unknown);
+  background: var(--sz-panel);
+  color: var(--sz-text-dim);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.bp-none {
+  padding: 14px 10px;
+  color: var(--sz-unknown);
+  font-size: 11px;
+}
+
+.bp-group {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 5px 10px 4px;
+  background: color-mix(in srgb, var(--sz-bg) 92%, var(--sz-text));
+  border-bottom: 1px solid var(--sz-border);
+  color: var(--sz-text-dim);
+  font-size: 11px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.bp-list + .bp-group { border-top: 1px solid var(--sz-border); }
+.bp-group__n { color: var(--sz-unknown); }
+
+.bp-item { border-bottom: 1px solid color-mix(in srgb, var(--sz-border) 55%, transparent); }
+.bp-item:last-child { border-bottom: 0; }
+.bp-item[data-open='true'] { background: var(--sz-panel); }
+
 .bp-row {
   display: grid;
-  grid-template-columns: var(--bp-grid);
+  grid-template-columns: minmax(0, 1fr) auto 8px 44px 46px;
   align-items: center;
-  column-gap: 8px;
-  padding: 0 var(--sz-pad);
-}
-.bp-cols {
-  flex: none;
-  height: 28px;
-  border-bottom: 1px solid var(--sz-border);
-  font-size: var(--sz-fs-small);
-  font-weight: 500;
-  color: var(--sz-text-dim);
-  white-space: nowrap;
-}
-.bp-cols__num {
-  display: flex;
-  justify-content: flex-end;
-}
-
-/* Groupe : « Sang · J91 » — titre de section (.sz-section-title), même hauteur qu'une ligne */
-.bp-group__head {
-  display: flex;
-  align-items: center;
-  height: var(--sz-row-h);
-  padding: 0 var(--sz-pad);
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-}
-.bp-group__tag { margin-left: auto; font-weight: 400; }
-.bp-group__day {
-  font-weight: 400;
-  color: var(--sz-text-dim);
-  white-space: pre;
-}
-
-.bp-item { border-top: 1px solid var(--sz-border); }
-.bp-group + .bp-group { border-top: 1px solid var(--sz-border); }
-
-.bp-row {
+  column-gap: 7px;
   width: 100%;
-  height: var(--sz-row-h);
+  height: 30px;
+  padding: 0 10px;
   text-align: left;
-  font-size: var(--sz-fs-data);
+  position: relative;
   transition: background-color 120ms;
 }
-button.bp-row:hover,
-.bp-item[data-open='true'] > .bp-row { background: var(--sz-panel-hover); }
+button.bp-row:hover { background: var(--sz-panel-hover); }
 .bp-row:focus-visible { outline-offset: -2px; }
 
-.bp-row__label {
+/* Analytes surveillés : filet à gauche */
+.bp-item[data-watched='true'] > .bp-row::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  background: var(--sz-text-dim);
+}
+.bp-item[data-open='true'] > .bp-row::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--sz-text);
+}
+
+.bp-row__name {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   min-width: 0;
+  gap: 1px;
+}
+.bp-row__label {
+  font-family: var(--sz-font-text);
+  font-size: 11px;
+  line-height: 12px;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 500;
   color: var(--sz-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
-.bp-row__value {
+.bp-row__sub {
   display: flex;
-  justify-content: flex-end;
   align-items: baseline;
-  gap: 2px;
-  font-variant-numeric: tabular-nums;
-  color: var(--sz-text);
-  white-space: nowrap;
-}
-.bp-row__flag { font-size: var(--sz-fs-small); }
-
-.bp-row__unit {
-  /* l'unité se lit avec la valeur : écart réduit à 4 px */
-  margin-left: -4px;
-  min-width: 0;
-  font-size: var(--sz-fs-small);
+  gap: 5px;
+  font-family: var(--sz-font-text);
+  font-size: 11px;
+  line-height: 10px;
   color: var(--sz-text-dim);
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
+.bp-row__sub .sz-tag { font-size: 11px; line-height: 10px; color: var(--sz-unknown); }
+.bp-row__unit { letter-spacing: 0.04em; }
 
+.bp-row__value {
+  font-family: var(--sz-font-mono);
+  font-size: 13px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'zero' 1;
+  color: var(--sz-text);
+  text-align: right;
+  min-width: 38px;
+}
+.bp-row__trend {
+  font-size: 11px;
+  line-height: 1;
+  text-align: center;
+}
 .bp-row--empty { grid-template-columns: minmax(0, 1fr) auto; }
-.bp-row__empty { font-size: var(--sz-fs-small); color: var(--sz-text-muted); }
+.bp-row__empty { font-size: 11px; color: var(--sz-unknown); }
 
-/* Position dans l'intervalle de référence : piste, zone de référence, repère */
+/* Position dans l'intervalle de référence */
 .bp-range {
   position: relative;
   display: block;
-  width: 100%;
-  height: 12px;
+  width: 44px;
+  height: 10px;
 }
 .bp-range::before {
   content: '';
@@ -139,73 +172,89 @@ button.bp-row:hover,
   left: 0;
   right: 0;
   top: 50%;
-  height: 2px;
-  margin-top: -1px;
-  border-radius: 1px;
-  background: var(--sz-border-strong);
+  height: 1px;
+  background: var(--sz-border);
 }
 .bp-range__ref {
   position: absolute;
   left: 25%;
   width: 50%;
-  top: 50%;
-  height: 4px;
-  margin-top: -2px;
-  border-radius: 2px;
-  background: var(--sz-text-muted);
+  top: 3px;
+  bottom: 3px;
+  border-left: 1px solid var(--sz-border-strong);
+  border-right: 1px solid var(--sz-border-strong);
+  background: var(--sz-border);
 }
 .bp-range__mark {
   position: absolute;
   left: var(--bp-pos);
-  top: 1px;
-  bottom: 1px;
+  top: 0;
+  bottom: 0;
   width: 2px;
   margin-left: -1px;
-  border-radius: 1px;
   background: var(--bp-mark);
 }
+.bp-range[data-out='in'] .bp-range__mark { background: var(--sz-text); opacity: 0.7; }
 
 /* Ligne dépliée */
 .bp-detail {
-  padding: 8px var(--sz-pad) 12px;
-  background: var(--sz-panel-hover);
+  padding: 2px 10px 8px;
+  border-top: 1px solid color-mix(in srgb, var(--sz-border) 55%, transparent);
 }
-.bp-detail__line {
+.bp-detail__meta,
+.bp-detail__foot {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
   gap: 8px;
-  font-size: var(--sz-fs-small);
-  line-height: 20px;
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  color: var(--sz-text-dim);
   white-space: nowrap;
 }
-.bp-detail__key { color: var(--sz-text-dim); font-weight: 500; }
-.bp-detail__val {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: var(--sz-text);
-  font-variant-numeric: tabular-nums;
-}
-/* Graphique posé directement sur le bloc déplié : pas de cadre supplémentaire */
-.bp-detail__chart {
-  height: 112px;
-  margin: 4px 0;
-}
+.bp-detail__meta { padding-top: 4px; text-transform: none; }
+.bp-detail__n { color: var(--sz-unknown); }
+.bp-detail__chart { height: 120px; margin: 2px 8px 2px 0; }
+.bp-detail__chart .recharts-surface { overflow: visible; }
+.bp-detail__foot { color: var(--sz-text); text-transform: none; flex-wrap: wrap; row-gap: 0; white-space: normal; }
+.bp-detail__foot > span { white-space: nowrap; }
 .bp-detail__note {
-  margin-top: 8px;
-  font-size: var(--sz-fs-small);
-  line-height: 1.4;
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px dashed var(--sz-border);
+  font-size: 11px;
+  letter-spacing: 0.08em;
   color: var(--sz-text-dim);
 }
 
 .bp-legend {
-  padding: 8px var(--sz-pad) 12px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 10px;
+  padding: 6px 10px;
   border-top: 1px solid var(--sz-border);
-  font-size: var(--sz-fs-label);
-  line-height: 1.45;
-  color: var(--sz-text-muted);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--sz-unknown);
+}
+.bp-legend__key { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+.bp-legend__key .sz-tag { font-size: 11px; color: var(--sz-unknown); }
+.bp-legend__ref {
+  display: inline-block;
+  width: 12px;
+  height: 4px;
+  border-left: 1px solid var(--sz-border-strong);
+  border-right: 1px solid var(--sz-border-strong);
+  background: var(--sz-border);
 }
 
-/* Série d'un seul point : Recharts trace un disque, ramené à un point discret */
-.bp-detail__chart circle { r: 2px; }
+.bp .sz-tag { text-transform: none; }
+
+/* Liste défilante : fondu bas de 16 px — une ligne coupée se lit comme « ça défile », pas comme un bug. */
+.bp-scroll {
+  padding-bottom: 14px;
+  -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 16px), transparent);
+  mask-image: linear-gradient(to bottom, black calc(100% - 16px), transparent);
+}

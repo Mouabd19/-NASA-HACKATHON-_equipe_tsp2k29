@@ -1,53 +1,25 @@
-// Alertes du jour : alertsForDay(day), triées par gravité puis de haut en bas du corps (même ordre que les
-// étiquettes de la scène). Chaque ligne porte data-organ-id (lu par les traits de liaison) et met l'organe
-// en évidence en 3D au survol.
-import { useMemo, useRef } from 'react';
-import type { CSSProperties, JSX, KeyboardEvent } from 'react';
-import type { Alert, Color, DayBody, Level, OrganId } from '../../../types';
+// Alertes du jour : alertsForDay(day), triées par gravité. Chaque carte porte data-organ-id
+// (lu par les traits de liaison) et allume l'organe en 3D au survol.
+import { useMemo } from 'react';
+import type { JSX, KeyboardEvent } from 'react';
+import type { Alert, Color, DayBody, Level } from '../../../types';
 import { trend7d } from '../../../models/trend';
 import { getStandard } from '../../../content/standards';
-import { getAnchor } from '../../../three/anatomy';
-import { Panel, TagBadge, fmt, levelColor, sentenceCase, statusVar } from '../../../ui';
-import { useBody, useDayAlerts, useDayBody, useRowClip } from '../store';
+import { HatchBand, Panel, StatusChip, TagBadge, fmt, levelColor, sentenceCase } from '../../../ui';
+import { useBody, useDayAlerts, useDayBody } from '../store';
 import './AlertsPanel.css';
 
 const LEVEL_RANK: Record<Level, number> = { ROUGE: 0, ORANGE: 1, AMBRE: 2, DONNEES_INSUFFISANTES: 3, VERT: 4 };
 const LEVEL_LABEL: Record<Level, string> = {
-  ROUGE: 'Rouge',
-  ORANGE: 'Orange',
-  AMBRE: 'Ambre',
-  DONNEES_INSUFFISANTES: 'Données insuffisantes',
-  VERT: 'Nominal',
+  ROUGE: 'ROUGE',
+  ORANGE: 'ORANGE',
+  AMBRE: 'AMBRE',
+  DONNEES_INSUFFISANTES: 'DONNÉES INSUFFISANTES',
+  VERT: 'NOMINAL',
 };
 
-/** Une règle « V1 4027 » / « V2 7038 » vient de NASA-STD-3001 ; tout le reste est une règle de l'équipe (hypothèse). */
+/** Une règle « V1 4027 » / « V2 7038 » vient de NASA-STD-3001 ; tout le reste est une règle de l'équipe [H]. */
 const isNasaRule = (rule: string): boolean => /^V\d\s*\d+/i.test(rule.trim());
-
-/** Hauteur de l'organe sur le corps (ancre 3D) : plus haut = d'abord. Organe sans ancre : en dernier. */
-const bodyHeight = (id: OrganId): number => getAnchor(id)?.[1] ?? Number.NEGATIVE_INFINITY;
-
-/** Identifiant de règle interne → libellé lisible : « TENDANCE-7J » → « Tendance 7j ». */
-const ruleLabel = (rule: string): string => sentenceCase(rule.replace(/-/g, ' '));
-
-/**
- * Texte d'alerte issu des données, remis en casse de phrase : plus de flèche ni de capitales
- * (« → ROUGE » → « , rouge »), plus de crochets (« [H] » retiré, « [NASA V1 4002] » → « (NASA V1 4002) »).
- */
-function cleanMessage(message: string): string {
-  return message
-    .replace(/\s*→\s*(ROUGE|AMBRE|ORANGE|VERT)\b/g, (_m, level: string) => `, ${level.toLowerCase()}`)
-    .replace(/\s*→\s*/g, ', ')
-    .replace(/,?\s*(?:du\s+)?modèle\s*\[H\]/g, (m) => (m.includes('du') ? ' du modèle' : ''))
-    .replace(/\s*\[H\]/g, '')
-    .replace(/\[([^\]]+)\]/g, '($1)')
-    .replace(/\s+([.,])/g, '$1');
-}
-
-/** Première phrase du message : affichée seule tant que la ligne n'est pas sélectionnée. */
-function firstSentence(message: string): string {
-  const cut = message.search(/\.\s+(?=\p{Lu})/u);
-  return cut < 0 ? message : message.slice(0, cut + 1);
-}
 
 /** Tendance 7 j de la première métrique de l'organe qui en a une. */
 function alertTrend(a: Alert, body: DayBody, day: number): { value: number; label: string; model: boolean } | null {
@@ -77,44 +49,41 @@ export function AlertsPanel(): JSX.Element {
   const body = useDayBody();
   const raw = useDayAlerts();
   const alerts = useMemo(
-    () => [...raw].sort((a, b) => ((LEVEL_RANK[a.level] ?? 9) - (LEVEL_RANK[b.level] ?? 9)) || (bodyHeight(b.organId) - bodyHeight(a.organId))),
+    () => [...raw].sort((a, b) => (LEVEL_RANK[a.level] ?? 9) - (LEVEL_RANK[b.level] ?? 9)),
     [raw],
   );
-  // Jamais de demi-ligne en bas de liste.
-  const listRef = useRef<HTMLUListElement>(null);
-  useRowClip(listRef);
   const cards = useMemo(
     () => alerts.map((a) => ({ a, trend: alertTrend(a, body, day), std: isNasaRule(a.rule) ? getStandard(a.rule) : null })),
     [alerts, body, day],
   );
 
+  const nRed = alerts.filter((a) => a.level === 'ROUGE').length;
+
   return (
     <Panel
+      sys="ALR"
       title="Alertes"
       provenance="SIMULÉ"
       className="alr"
-      right={alerts.length > 0 ? (
-        <span className="alr__count" aria-label={`${alerts.length} alerte${alerts.length > 1 ? 's' : ''}`}>{alerts.length}</span>
-      ) : undefined}
+      right={
+        <span className="alr__count" data-red={nRed > 0}>
+          {String(alerts.length).padStart(2, '0')}
+        </span>
+      }
     >
       {body.projected ? (
-        <div className="alr__proj sz-detail">
-          Projection {adherence === 1 ? 'avec le plan' : 'au rythme actuel'} <TagBadge tag="H" />
-        </div>
+        <div className="alr__proj">PROJECTION {adherence === 1 ? 'AVEC LE PLAN' : 'AU RYTHME ACTUEL'} — CORPS PROJETÉ <TagBadge tag="H" /></div>
       ) : null}
 
       {cards.length === 0 ? (
-        <p className="alr__empty">
-          Aucune alerte<span className="sz-detail"> : tendances sur 7 jours dans la marge de bruit.</span>
-        </p>
+        <div className="alr__empty">
+          <span className="alr__empty-mark" aria-hidden="true" />
+          <span>Aucune alerte<span className="sz-detail"> — tendances 7 j dans la bande de bruit</span></span>
+        </div>
       ) : (
-        <ul className="alr__list" ref={listRef}>
+        <ul className="alr__list">
           {cards.map(({ a, trend, std }) => {
             const color: Color = levelColor[a.level] ?? 'grey';
-            const level = LEVEL_LABEL[a.level] ?? sentenceCase(a.level);
-            const title = sentenceCase(a.title);
-            const message = cleanMessage(a.message);
-            const isSelected = selected === a.organId;
             const onKey = (e: KeyboardEvent): void => {
               if (e.target !== e.currentTarget) return;
               if (e.key !== 'Enter' && e.key !== ' ') return;
@@ -125,14 +94,13 @@ export function AlertsPanel(): JSX.Element {
               <li key={a.id}>
                 <article
                   className="alr__card"
-                  data-row
                   role="button"
                   tabIndex={0}
                   data-organ-id={a.organId}
                   data-level={a.level}
                   data-color={color}
                   data-hovered={hovered === a.organId}
-                  data-selected={isSelected}
+                  data-selected={selected === a.organId}
                   onMouseEnter={() => setHovered(a.organId)}
                   onMouseLeave={() => setHovered(null)}
                   onFocus={() => setHovered(a.organId)}
@@ -140,44 +108,43 @@ export function AlertsPanel(): JSX.Element {
                   onClick={() => setSelected(a.organId)}
                   onKeyDown={onKey}
                 >
-                  <span
-                    className="sz-dot"
-                    data-color={color}
-                    style={{ '--sz-status': statusVar[color] } as CSSProperties}
-                    role="img"
-                    aria-label={level}
-                    title={level}
-                  />
-                  <h3 className="alr__title" title={`${level} : ${title}`}>{title}</h3>
-                  <button
-                    type="button"
-                    className="alr__open"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelected(a.organId);
-                      openOrganWindow(a.organId);
-                    }}
-                    aria-label={`Ouvrir la fiche : ${title}`}
-                    title="Ouvrir la fiche"
-                  >
-                    <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5L8 6l-3.5 3.5" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                  </button>
-
-                  <div className="alr__more sz-detail">
-                    <p className="alr__msg" title={message}>{isSelected ? message : firstSentence(message)}</p>
-                    <div className="alr__meta">
-                      <span title={std ? `${std.title}${std.verified ? '' : ' (référence à vérifier)'}` : `Règle interne de l’équipe : ${ruleLabel(a.rule)}`}>
-                        {isNasaRule(a.rule) ? <TagBadge tag="NASA" id={a.rule} /> : <TagBadge tag="H" />}
+                  {a.level === 'ROUGE' ? <HatchBand color="red" height={5} /> : null}
+                  <div className="alr__body">
+                    <div className="alr__top">
+                      <StatusChip color={color} label={LEVEL_LABEL[a.level] ?? a.level} />
+                      <span className="alr__fill" />
+                      <span title={std ? `${std.title}${std.verified ? '' : ' — référence à vérifier'}` : 'Règle interne de l’équipe (hypothèse)'}>
+                        {isNasaRule(a.rule) ? <TagBadge tag="NASA" id={a.rule} /> : <TagBadge tag="H" id={a.rule} />}
                       </span>
+                    </div>
+                    <h3 className="alr__title">{sentenceCase(a.title)}</h3>
+                    <p className="alr__msg sz-detail" title={a.message}>{a.message}</p>
+                    <div className="alr__foot">
                       {trend ? (
-                        <span className="alr__trend" title={`Pente sur 7 jours : ${trend.label}`}>
-                          {/* os : pente du MODÈLE (rien n'est mesuré par scanner), pas une tendance mesurée */}
-                          {trend.model ? 'Pente du modèle' : 'Tendance'} 7 j{' '}
-                          <span className="alr__v">{signed(trend.value, 2)} %/sem</span>
+                        <span className="alr__trend sz-detail" title={`Pente sur 7 jours — ${trend.label}`}>
+                          {/* os : pente du MODÈLE (rien n'est mesuré par le scanner), pas une tendance mesurée */}
+                          <span className="alr__k">{trend.model ? 'PENTE MODÈLE 7 J' : 'TENDANCE 7 J'}</span>
+                          <span className="alr__v">{signed(trend.value, 2)} %/SEM</span>
                         </span>
                       ) : (
-                        <span className="alr__trend">Tendance 7 j indisponible</span>
+                        <span className="alr__trend sz-detail">
+                          <span className="alr__k">TENDANCE 7 J</span>
+                          <span className="alr__v alr__v--none">INDISPONIBLE</span>
+                        </span>
                       )}
+                      <span className="alr__fill" />
+                      <button
+                        type="button"
+                        className="alr__detail"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelected(a.organId);
+                          openOrganWindow(a.organId);
+                        }}
+                        title="Ouvrir la fenêtre organe"
+                      >
+                        Ouvrir →
+                      </button>
                     </div>
                   </div>
                 </article>

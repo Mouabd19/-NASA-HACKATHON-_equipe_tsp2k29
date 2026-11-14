@@ -1,27 +1,27 @@
 // Carte de survol (ROADMAP §1 « Survol d'un élément ») : récap santé DU JOUR de l'organe survolé
-// (ou épinglé), reliée à son ancre écran par un trait de 1 px.
+// (ou épinglé), accrochée à son ancre écran par un trait coudé de 1 px.
 // La position est appliquée par ref dans une boucle requestAnimationFrame — aucun état React à 60 Hz.
 import { useEffect, useMemo, useRef } from 'react';
-import type { CSSProperties, JSX, SyntheticEvent } from 'react';
+import type { CSSProperties, JSX } from 'react';
 import type { Metric, OrganId, OrganState } from '../../../types';
 import { DAY_TODAY } from '../../../mocks/mission';
 import { trend7d } from '../../../models/trend';
 import { hasBioAgeModel } from '../../../models/bioAge';
-import { PROVENANCE_TEXT, ProvenanceBadge, Sparkline, StatusChip, fmt, fmtDay, statusVar } from '../../../ui';
+import { ProvenanceBadge, Sparkline, StatusChip, TagBadge, fmt, fmtDay, statusVar } from '../../../ui';
 import { LAYER_META, bodyAxis, hoverCardRect, plateSides, scenarioBody, screenAnchors, useBody } from '../store';
 import './HoverCard.css';
 
 // ── Réglages (tout ce qui se règle à l'œil est ici) ─────────────────────────
-const CARD_W = 304;        // largeur de la carte (px) — doit suivre --hvc-w dans le CSS
+const CARD_W = 280;        // largeur de la carte (px) — doit suivre --hvc-w dans le CSS
 const GAP_X = 64;          // distance horizontale mini ancre → bord de la carte
 const CLEAR_M = 0.37;      // la carte se pose HORS de la silhouette : bord intérieur à CLEAR_M mètres de l'axe du corps
-const SIDE_BIAS = 120;     // à place comparable, la carte va à GAUCHE (les étiquettes d'alerte sont à droite)
-const RISE = 0;            // décalage vertical ancre → accroche : 0 = trait horizontal (coudé seulement si la carte bute sur un bord)
-const HOOK_Y = 23;         // point d'accroche du trait, depuis le haut de la carte (milieu de l'en-tête)
-const MARGIN = 12;         // marge mini avec les bords du conteneur
+const SIDE_BIAS = 120;     // à place comparable, la carte va à GAUCHE (les traits d'alerte arrivent de la droite)
+const RISE = 44;           // la carte s'accroche RISE px au-dessus de l'ancre (trait en diagonale)
+const HOOK_Y = 13;         // point d'accroche du trait, depuis le haut de la carte
+const MARGIN = 10;         // marge mini avec les bords du conteneur
 const MARGIN_BOTTOM = 48;  // bas réservé à la ligne d'aide de la scène (comme warnKnobs.bottomMargin)
 const MARGIN_TOP = 40;     // haut réservé à l'étiquette de provenance de la scène
-const NODE_R = 3;          // rayon du point posé sur l'ancre
+const NODE = 7;            // côté du carré posé sur l'ancre
 const FOLLOW_SPEED = 14;   // lissage du suivi, en 1/s (indépendant du framerate)
 const MAX_METRICS = 3;
 const WINDOW_DAYS = 7;
@@ -32,25 +32,6 @@ interface TrendView {
   series: number[];
   band: [number, number] | undefined;
   dashedFrom: number | undefined;
-}
-
-/** Libellés trop longs pour une ligne de carte : forme courte à l'affichage (le libellé complet reste en infobulle). */
-const SHORT_LABEL: Record<string, string> = {
-  densite_osseuse: 'Densité estimée vs pré-vol',
-  gaine_nerf_optique: 'Gaine du nerf optique',
-};
-
-/** Libellé affiché d'une métrique : sans parenthèse technique (« (scan hebdo) », « (44) »). */
-export function metricLabel(m: Metric, short = false): string {
-  return (short ? SHORT_LABEL[m.key] : undefined) ?? m.label.replace(/\s*\([^)]*\)/g, '').trim();
-}
-
-/** Ligne de projection (« perte projetée à J860 ») : sortie de modèle sur un jour futur, pas une valeur du jour. */
-export const isProjectionMetric = (m: Metric): boolean => m.key.startsWith('projection');
-
-/** Même précision que le panneau Calques : 1 décimale à partir de 10 %, 2 en dessous. */
-function valueText(m: Metric): string {
-  return m.unit === '%' ? fmt(m.value, Math.abs(m.value) >= 10 ? 1 : 2) : fmt(m.value);
 }
 
 function signed(n: number, digits: number): string {
@@ -124,7 +105,8 @@ export function HoverCard(): JSX.Element | null {
   const rootRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const lineRef = useRef<SVGPolylineElement>(null);
-  const nodeRef = useRef<SVGCircleElement>(null);
+  const nodeRef = useRef<SVGRectElement>(null);
+  const tickRef = useRef<SVGLineElement>(null);
 
   useEffect(() => {
     if (organId === null) return undefined;
@@ -143,7 +125,8 @@ export function HoverCard(): JSX.Element | null {
       const card = cardRef.current;
       const line = lineRef.current;
       const node = nodeRef.current;
-      if (!root || !card || !line || !node) return;
+      const tick = tickRef.current;
+      if (!root || !card || !line || !node || !tick) return;
       const W = root.clientWidth;
       const H = root.clientHeight;
       if (W === 0 || H === 0) return;
@@ -196,16 +179,21 @@ export function HoverCard(): JSX.Element | null {
 
       if (anchored) {
         const hx = side === 1 ? x : x + cw;       // point d'accroche sur le bord de la carte
-        // l'accroche glisse le long du bord de la carte : le trait reste horizontal tant que l'ancre est à sa hauteur
-        const hy = Math.max(y + Math.min(HOOK_Y, ch / 2), Math.min(y + ch - Math.min(HOOK_Y, ch / 2), a.y));
+        const hy = y + HOOK_Y;
         line.setAttribute('points', elbow(a.x, a.y, hx, hy));
-        node.setAttribute('cx', a.x.toFixed(1));
-        node.setAttribute('cy', a.y.toFixed(1));
+        node.setAttribute('x', (Math.round(a.x) - (NODE - 1) / 2).toFixed(1));
+        node.setAttribute('y', (Math.round(a.y) - (NODE - 1) / 2).toFixed(1));
+        tick.setAttribute('x1', (hx + 0.5).toFixed(1));
+        tick.setAttribute('x2', (hx + 0.5).toFixed(1));
+        tick.setAttribute('y1', (hy - 4).toFixed(1));
+        tick.setAttribute('y2', (hy + 5).toFixed(1));
         line.style.display = '';
         node.style.display = '';
+        tick.style.display = '';
       } else {
         line.style.display = 'none';
         node.style.display = 'none';
+        tick.style.display = 'none';
       }
     };
     raf = requestAnimationFrame(frame);
@@ -214,135 +202,115 @@ export function HoverCard(): JSX.Element | null {
 
   if (organId === null || organ === null) return null;
 
-  const meta = LAYER_META[organ.layer] as { label: string } | undefined;
+  const meta = LAYER_META[organ.layer] as { sys: string; label: string } | undefined;
   const projected = day > DAY_TODAY;
   const unmodeled = organ.metrics.length === 0;
   const gap = organ.bioAge - organ.chronoAge;
   const gapKnown = hasBioAgeModel(organ.id) && Number.isFinite(gap);
   const metrics = organ.metrics.slice(0, MAX_METRICS);
-  // Provenance : une seule puce dans l'en-tête si elle est commune ; sinon un mot par ligne de métrique.
-  const commonProv = metrics.length > 0 && metrics.every((m) => m.provenance === metrics[0].provenance) ? metrics[0].provenance : null;
-  const trendIsFirst = trend !== null && metrics.length > 0 && trend.metric.key === metrics[0].key;
   const style = { '--hvc-status': statusVar[organ.status] } as CSSProperties;
-  const open = (): void => useBody.getState().openOrganWindow(organId);
 
   return (
     <div className="hvc" ref={rootRef} style={style} data-projected={projected} aria-live="polite">
       <svg className="hvc__wire" aria-hidden="true">
         <polyline ref={lineRef} className="hvc__line" fill="none" style={{ display: 'none' }} />
-        <circle ref={nodeRef} className="hvc__node" r={NODE_R} data-color={organ.status} style={{ display: 'none' }} />
+        <line ref={tickRef} className="hvc__tick" style={{ display: 'none' }} />
+        <rect ref={nodeRef} className="hvc__node" width={NODE} height={NODE} style={{ display: 'none' }} />
       </svg>
 
       <div className="hvc__card" ref={cardRef} style={{ visibility: 'hidden' }}>
-        {/* key : rejoue le fondu de 120 ms à chaque changement d'organe */}
+        {/* key : rejoue le fondu/glissé de 120 ms à chaque changement d'organe */}
         <div className="hvc__in" key={organId}>
-          <header className="hvc__head">
-            <div className="hvc__title">
-              <h3 className="hvc__name">{organ.name}</h3>
-              <StatusChip color={organ.status} />
-            </div>
-            {projected ? <p className="hvc__sub">Projection {fmtDay(day)}</p> : null}
-            {meta ? (
-              <p className="hvc__sub hvc__sub--row sz-detail">
-                {meta.label}
-                {commonProv ? <ProvenanceBadge value={commonProv} /> : null}
-              </p>
-            ) : null}
-            {organ.layer === 'squelette' ? (
-              <p className="hvc__sub sz-detail">Source : modèle, bilan au sol et marqueurs urinaires (pas le scanner).</p>
-            ) : null}
+          <header className="hvc__head sz-detail">
+            <span className="hvc__sys">
+              {meta ? `${meta.sys} / ${meta.label}` : String(organ.layer).toUpperCase()}
+            </span>
+            {pinned ? <span className="hvc__pin"><i aria-hidden="true" />ÉPINGLÉ</span> : null}
           </header>
 
+          <div className="hvc__title">
+            <h3 className="hvc__name">{organ.name}</h3>
+            <StatusChip color={organ.status} />
+          </div>
+
+          <div className="hvc__recap sz-detail">
+            <span className="hvc__recap-k">
+              {projected ? 'PROJECTION' : 'RÉCAP DU JOUR'} — {fmtDay(day)}
+            </span>
+            {projected ? <TagBadge tag="H" /> : null}
+          </div>
+
+          {organ.layer === 'squelette' ? (
+            <p className="hvc__src sz-detail">Source : modèle + bilan au sol + marqueurs urinaires — pas le scanner</p>
+          ) : null}
           {unmodeled ? (
             <p className="hvc__none">
-              Non modélisé<span className="sz-detail"> : aucune mesure pour cet organe, statut inconnu.</span>
+              Non modélisé<span className="sz-detail"> — aucune mesure pour cet organe. Statut inconnu (gris), pas « nominal ».</span>
             </p>
           ) : (
             <ul className="hvc__metrics">
               {metrics.map((m) => {
                 const th = thresholdText(m);
-                const proj = isProjectionMetric(m);
-                // mode Détails : origine du seuil (norme NASA ou seuil d'équipe), puis la provenance si elle varie d'une ligne à l'autre
-                const origin = [
-                  th ? (m.ref?.standardId ? `NASA ${m.ref.standardId}` : 'hypothèse d’équipe') : null,
-                  commonProv ? null : PROVENANCE_TEXT[m.provenance].toLocaleLowerCase('fr-FR'),
-                ].filter(Boolean).join(' · ');
                 return (
-                  <li className="hvc__m" key={m.key}>
-                    <div className="hvc__row">
-                      <span className="hvc__k" title={m.label}>{metricLabel(m, true)}</span>
-                      {/* une projection n'est pas un statut du jour : jamais de couleur vive */}
-                      <span className={`hvc__v${proj ? ' hvc__v--proj' : ''}`} data-color={proj ? undefined : m.color}>
-                        {valueText(m)}{m.unit ? <span className="sz-unit"> {m.unit}</span> : null}
+                  <li className="hvc__m" key={m.key} style={{ '--hvc-m': statusVar[m.color] } as CSSProperties}>
+                    <div className="hvc__m-top">
+                      <span className="hvc__m-label" title={m.label}>{m.label}</span>
+                      <span className="hvc__m-val">
+                        {fmt(m.value)}<span className="hvc__m-unit">{m.unit}</span>
                       </span>
                     </div>
-                    {th ? (
-                      <div className="hvc__note">
-                        Seuil {th}{origin ? <span className="sz-detail"> · {origin}</span> : null}
-                      </div>
-                    ) : origin ? (
-                      <div className="hvc__note sz-detail">{origin.charAt(0).toLocaleUpperCase('fr-FR') + origin.slice(1)}</div>
-                    ) : null}
+                    <div className="hvc__m-sub">
+                      {m.tag === 'NASA' ? <TagBadge tag="NASA" id={m.ref?.standardId} /> : <TagBadge tag={m.tag} />}
+                      <span className="hvc__m-th">{th ? `Seuil ${th}` : <span className="sz-detail">Sans seuil</span>}</span>
+                      {/* étiquette DU SEUIL : norme NASA avec identifiant, sinon hypothèse d'équipe */}
+                      {th && m.tag !== 'NASA' ? (m.ref?.standardId ? <TagBadge tag="NASA" id={m.ref.standardId} /> : <TagBadge tag="H" />) : null}
+                      <ProvenanceBadge value={m.provenance} />
+                    </div>
                   </li>
                 );
               })}
             </ul>
           )}
 
-          <div className="hvc__extra">
-            {trend ? (
-              <div className="hvc__m">
-                <div className="hvc__row hvc__row--mid">
-                  <span className="hvc__k">Tendance 7 j</span>
-                  <Sparkline
-                    values={trend.series}
-                    width={56}
-                    height={20}
-                    dashedFrom={trend.dashedFrom}
-                    label={`Tendance sur 7 jours : ${metricLabel(trend.metric)}`}
-                  />
-                  {trend.value === null ? (
-                    <span className="hvc__v hvc__v--none">Indisponible</span>
-                  ) : (
-                    <span className="hvc__v">{signed(trend.value, 2)}<span className="sz-unit"> %/sem</span></span>
-                  )}
-                </div>
-                {/* rappel de la métrique seulement si la tendance ne porte pas sur la première ligne de la carte */}
-                {trendIsFirst ? null : <div className="hvc__note">{metricLabel(trend.metric, true)}</div>}
-                {trend.band ? (
-                  <div className="hvc__note sz-detail">Bruit de mesure ± {fmt(trend.metric.noise ?? 0)} {trend.metric.unit}</div>
-                ) : null}
+          {trend ? (
+            <div className="hvc__trend">
+              <div className="hvc__trend-txt">
+                <span className="hvc__k">TENDANCE 7 J</span>
+                <span className="hvc__trend-v" data-none={trend.value === null}>
+                  {trend.value === null ? 'INDISPONIBLE' : `${signed(trend.value, 2)} %/SEM`}
+                </span>
+                <span className="hvc__trend-of" title={trend.metric.label}>
+                  {trend.metric.label}
+                </span>
               </div>
-            ) : null}
-
-            <div className="hvc__m">
-              <div className="hvc__row">
-                <span className="hvc__k" title="Hypothèse de l’équipe : perte cumulée rapportée à la vitesse de vieillissement terrestre">Écart d’âge estimé</span>
-                {gapKnown ? (
-                  <span className="hvc__v">{signed(gap, 1)}<span className="sz-unit"> ans</span></span>
-                ) : (
-                  <span className="hvc__v hvc__v--none">Non modélisé</span>
-                )}
+              <div className="hvc__trend-plot">
+              <Sparkline
+                values={trend.series}
+                width={96}
+                height={30}
+                color="var(--hvc-status)"
+                band={trend.band}
+                dashedFrom={trend.dashedFrom}
+              />
+                <span className="hvc__trend-noise sz-detail">
+                  {trend.band ? `BANDE = BRUIT ±${fmt(trend.metric.noise ?? 0)} ${trend.metric.unit}` : 'BRUIT NON RENSEIGNÉ'}
+                </span>
               </div>
             </div>
+          ) : null}
+
+          <div className="hvc__age">
+            <span className="hvc__k">ÉCART D’ÂGE ESTIMÉ <TagBadge tag="H" /></span>
+            {gapKnown ? (
+              <span className="hvc__age-v">{signed(gap, 1)} ANS</span>
+            ) : (
+              <span className="hvc__age-v hvc__age-v--none">— <small>NON MODÉLISÉ</small></span>
+            )}
           </div>
 
-          {pinned ? (
-            <footer className="hvc__foot" onPointerDown={stop} onPointerUp={stop} onClick={stop} onDoubleClick={stop}>
-              <button
-                type="button"
-                className="sz-btn sz-btn--sm"
-                onClick={open}
-                title={organId === 'cerveau' ? 'Ouvrir la page Santé mentale (ou double-clic sur l’organe)' : 'Ouvrir la fenêtre de détail (ou double-clic sur l’organe)'}
-              >
-                {organId === 'cerveau' ? 'Suivi santé mentale' : 'Ouvrir le détail'}
-              </button>
-            </footer>
-          ) : null}
+          <footer className="hvc__foot">{organId === 'cerveau' ? 'Double-clic : suivi santé mentale (prototype)' : 'Double-clic pour ouvrir'}</footer>
         </div>
       </div>
     </div>
   );
 }
-
-const stop = (e: SyntheticEvent): void => e.stopPropagation();

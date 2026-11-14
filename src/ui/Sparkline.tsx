@@ -1,11 +1,11 @@
-// Courbe miniature en SVG : polyligne fine, sans axes ni point final.
+// Courbe miniature en SVG : polyligne nette, sans axes.
 import type { JSX } from 'react';
 
 export interface SparklineProps {
   values: number[];
   width?: number;
   height?: number;
-  /** Couleur du trait. Neutre par défaut ; ne passer une couleur vive que pour un statut. */
+  /** Couleur du trait (défaut : texte). Toujours une variable CSS ou une valeur de tokens. */
   color?: string;
   /** Bande [bas, haut] en unités de valeur (bruit de mesure, intervalle) — aplat discret. */
   band?: [number, number];
@@ -13,14 +13,12 @@ export interface SparklineProps {
   dashedFrom?: number;
   refLow?: number;
   refHigh?: number;
-  /** Texte de remplacement (défaut : « Courbe de N points »). */
-  label?: string;
 }
 
-const PAD = 2;
+const PAD = 3;
 
 export function Sparkline({
-  values, width = 96, height = 24, color = 'var(--sz-text-dim)', band, dashedFrom, refLow, refHigh, label,
+  values, width = 96, height = 24, color = 'var(--sz-text)', band, dashedFrom, refLow, refHigh,
 }: SparklineProps): JSX.Element {
   const pts = values.map((v, i) => ({ v, i })).filter((p) => Number.isFinite(p.v));
   const empty = pts.length === 0;
@@ -40,6 +38,8 @@ export function Sparkline({
   const cut = dashedFrom === undefined ? Number.POSITIVE_INFINITY : Math.max(0, dashedFrom);
   const solid = pts.filter((p) => p.i <= cut);
   const dashed = pts.filter((p) => p.i >= cut);
+  const last = pts[pts.length - 1];
+  const lastDashed = last !== undefined && last.i > cut;
 
   return (
     <svg
@@ -48,8 +48,8 @@ export function Sparkline({
       height={height}
       viewBox={`0 0 ${width} ${height}`}
       role="img"
-      aria-label={label ?? (empty ? 'Aucune donnée' : `Courbe de ${pts.length} points`)}
-      style={{ color, display: 'block', flex: 'none' }}
+      aria-label={empty ? 'Aucune donnée' : `Courbe de ${pts.length} points`}
+      style={{ color, display: 'block', overflow: 'visible', flex: 'none' }}
     >
       {band && !empty ? (
         <rect
@@ -70,7 +70,7 @@ export function Sparkline({
           y2={Math.round(y(ref)) + 0.5}
           stroke="var(--sz-border-strong)"
           strokeWidth={1}
-          strokeDasharray="2 3"
+          strokeDasharray="1 3"
         />
       ) : null))}
       {empty ? (
@@ -80,9 +80,13 @@ export function Sparkline({
         <polyline points={path(solid)} fill="none" stroke="currentColor" strokeWidth={1.25} strokeLinejoin="round" strokeLinecap="round" />
       ) : null}
       {dashed.length > 1 ? (
-        <polyline points={path(dashed)} fill="none" stroke="currentColor" strokeWidth={1.25} strokeLinejoin="round" strokeDasharray="2 2.5" />
+        <polyline points={path(dashed)} fill="none" stroke="currentColor" strokeWidth={1.25} strokeLinejoin="round" strokeDasharray="2 2.5" opacity={0.75} />
       ) : null}
-      {/* Un seul point : rien à tracer (pas de tendance), la case garde son encombrement. */}
+      {last !== undefined ? (
+        lastDashed
+          ? <circle cx={x(last.i)} cy={y(last.v)} r={1.75} fill="var(--sz-bg)" stroke="currentColor" strokeWidth={1} />
+          : <circle cx={x(last.i)} cy={y(last.v)} r={2} fill="currentColor" />
+      ) : null}
     </svg>
   );
 }

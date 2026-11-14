@@ -1,85 +1,88 @@
-/* Panneau « Constantes » — SpO₂ et constantes de la montre. Préfixe sw-. Couleurs : variables --sz-* uniquement. */
+/* Spo2Widget — préfixe sw-. Couleurs : variables --sz-* uniquement. */
 
 .sw { width: 100%; }
+.sw > .sz-panel__body { padding: 8px 10px 0; }
+/* Le titre garde sa casse (SpO₂, pas SPO₂) */
+.sw .sz-panel__title { text-transform: none; }
 
-.sw-none {
-  font-size: var(--sz-fs-small);
-  color: var(--sz-text-dim);
+.sw-none,
+.sw-side,
+.sw-caption,
+.sw-vital__label,
+.sw-stale {
+  font-family: var(--sz-font-text);
+  text-transform: uppercase;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
 }
 
-/* Valeur du jour + intervalle sur 7 jours */
+.sw-none {
+  padding: 6px 0 14px;
+  font-size: 11px;
+  letter-spacing: var(--sz-tracking);
+  color: var(--sz-unknown);
+}
+
 .sw-head {
   display: flex;
   align-items: flex-end;
-  justify-content: space-between;
   gap: 12px;
-}
-.sw-main {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
 }
 .sw-big {
   display: flex;
   align-items: baseline;
-  gap: 4px;
+  gap: 3px;
   flex: none;
-}
-.sw-big .sz-chip { margin-left: 8px; align-self: center; }
-
-.sw-week {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  min-width: 0;
-  padding-bottom: 3px; /* même ligne de base que le chiffre principal */
-  white-space: nowrap;
-}
-.sw-week__val {
-  font-size: var(--sz-fs-data);
+  font-family: var(--sz-font-mono);
   font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.sw-big__num { font-size: 34px; font-weight: 300; letter-spacing: -0.02em; }
+.sw-big__unit { font-size: 13px; color: var(--sz-text-dim); }
+
+.sw-side {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 2px;
+  font-size: 11px;
+  line-height: 1.4;
+  letter-spacing: var(--sz-tracking);
   color: var(--sz-text);
 }
-
-.sw-stale {
-  margin-top: 4px;
-  font-size: var(--sz-fs-small);
-  color: var(--sz-text-dim);
-  font-variant-numeric: tabular-nums;
-}
-
-.sw-chart {
-  height: 64px;
-  margin-top: 12px;
-  border-radius: var(--sz-radius-sm);
-  background: var(--sz-inset);
-}
-
-/* Repères (mode Détails) : une ligne */
-.sw-meta {
+.sw-side__line {
   display: flex;
-  align-items: baseline;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  white-space: nowrap;
+}
+.sw-side__line:first-child { justify-content: flex-start; }
+.sw-side__line--dim { color: var(--sz-text-dim); border-top: 1px solid var(--sz-border); padding-top: 2px; }
+.sw-side__val { color: var(--sz-text); }
+.sw-status { width: 5px; height: 5px; flex: none; }
+
+.sw-chart { height: 76px; margin-top: 6px; }
+.sw-chart .recharts-surface { overflow: visible; }
+
+.sw-caption {
+  display: flex;
   justify-content: space-between;
   gap: 8px;
-  margin-top: 8px;
-  font-size: var(--sz-fs-small);
-  line-height: 18px;
-  color: var(--sz-text-dim);
+  padding: 5px 0 6px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--sz-unknown);
   white-space: nowrap;
 }
-.sw-meta__val {
-  color: var(--sz-text);
-  font-variant-numeric: tabular-nums;
-}
+.sw-caption .sz-tag { font-size: 11px; color: var(--sz-unknown); }
 
-/* Constantes : quatre colonnes égales « libellé + valeur » */
 .sw-vitals {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  column-gap: 12px;
-  margin-top: 12px;
-  padding-top: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0 -14px;
   border-top: 1px solid var(--sz-border);
 }
 .sw-vital {
@@ -87,22 +90,39 @@
   flex-direction: column;
   gap: 2px;
   min-width: 0;
+  padding: 6px 14px;
+  border-top: 1px solid var(--sz-border);
 }
-.sw-vital .sz-label { white-space: nowrap; }
+.sw-vital:nth-child(-n + 2) { border-top: 0; }
+.sw-vital:nth-child(2n) { border-left: 1px solid var(--sz-border); }
+.sw-vital__label {
+  font-size: 11px;
+  line-height: 1.3;
+  letter-spacing: 0.08em;
+  color: var(--sz-text-dim);
+  white-space: nowrap;
+}
 .sw-vital__val {
-  font-size: var(--sz-fs-data);
-  line-height: 1.4;
-  font-weight: 500;
+  font-family: var(--sz-font-mono);
+  font-size: 12px;
+  line-height: 1.1;
   font-variant-numeric: tabular-nums;
   color: var(--sz-text);
   white-space: nowrap;
 }
-.sw-vital__val--none { color: var(--sz-text-muted); }
+.sw-vital__val--none { color: var(--sz-unknown); }
+.sw-vital__unit { margin-left: 3px; font-size: 11px; color: var(--sz-text-dim); }
 
-/* Écran bas : la courbe cède sa hauteur au tableau d'analyses (la valeur et l'intervalle sur 7 jours restent) */
-@media (max-height: 760px) {
-  .sw-chart { display: none; }
+.sw-stale {
+  margin: 0 -14px;
+  padding: 4px 10px;
+  border-top: 1px solid var(--sz-border);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--sz-unknown);
 }
 
-/* Série d'un seul point : Recharts trace un disque, ramené à un point discret */
-.sw-chart circle { r: 2px; }
+.sw .sz-tag { text-transform: none; }
+
+.sw-caption--base, .sw-caption--vit { padding: 0 0 5px; }
+.sw-caption--base span:last-child { color: var(--sz-text-dim); }

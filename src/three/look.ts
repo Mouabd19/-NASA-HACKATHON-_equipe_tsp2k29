@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// LOOK — tous les réglages visuels du corps 3D, dans UN seul fichier.
+// LOOK — tous les réglages visuels du corps holographique, dans UN seul fichier.
 // Pour itérer sur le rendu : modifier une valeur ici, sauvegarder, regarder /body.
 // Aucune couleur ici : les couleurs viennent de src/ui/tokens.ts (règle 8).
 // ─────────────────────────────────────────────────────────────────────────────
@@ -25,24 +25,32 @@ export const look = {
   holo: {
     /** Atténuation des faces arrière (0 = invisibles, 1 = comme l'avant). */
     backFace: 0.4,
-    /** Remplissage du volume d'un organe teinté par son statut (aplat mat, sans lueur). */
-    tintCore: 0.1,
-    /** Gain d'opacité au survol / sélection (léger renfort, pas de flash). */
-    highlightBoost: 0.35,
-    /** Aplat ajouté à la pièce survolée / sélectionnée : elle se détache du corps, même en statut nominal. */
-    highlightFill: 0.3,
-    /** Part d'opacité retirée aux pièces non survolées (0..1) : le corps doit rester lisible autour de la sélection. */
-    dimFactor: 0.3,
+    /** Lignes de balayage horizontales : nombre de lignes par mètre. */
+    scanlineDensity: 150,
+    /** Contraste des lignes de balayage (0 = aucune). */
+    scanlineStrength: 0.22,
+    /** Vitesse de dérive des lignes (rad/s). */
+    scanlineSpeed: 0.9,
+    /** Amplitude du scintillement (0 = stable). */
+    flicker: 0.035,
+    /** Surbrillance d'un organe en alerte (multiplie la couleur de statut → nourrit le bloom). */
+    tintBoost: 0.15,
+    /** Remplissage du volume d'un organe en alerte (lueur « à cœur »). */
+    tintCore: 0.04,
+    /** Gain d'opacité au survol / sélection. */
+    highlightBoost: 0.8,
+    /** Part d'opacité retirée aux pièces non survolées (0..1). */
+    dimFactor: 0.68,
     /** Plafond d'alpha par fragment (évite le blanc brûlé en additif). */
-    alphaMax: 0.5,
+    alphaMax: 0.85,
   },
 
   /** Rendu par calque. L'enveloppe (« shell ») est toujours visible. */
   layers: {
     shell: { opacity: 1, core: 0.012, rim: 0.4, fresnelPower: 3.0 },
     squelette: { opacity: 1, core: 0.07, rim: 0.62, fresnelPower: 1.7 },
-    muscles: { opacity: 1, core: 0.03, rim: 0.62, fresnelPower: 1.7 },
-    organes: { opacity: 1, core: 0.03, rim: 0.55, fresnelPower: 2.0 },
+    muscles: { opacity: 1, core: 0.045, rim: 0.7, fresnelPower: 1.6 },
+    organes: { opacity: 1, core: 0.06, rim: 0.68, fresnelPower: 1.8 },
     cardio: { opacity: 1, core: 0.12, rim: 0.5, fresnelPower: 1.4 },
     nerveux: { opacity: 1, core: 0.4, rim: 0.9, fresnelPower: 1.2 },
     exposition: { opacity: 1, core: 0.035, rim: 0.4, fresnelPower: 2.0 },
@@ -60,12 +68,6 @@ export const look = {
   /** Opacité relative des pièces de CONTEXTE d'un calque (non cliquables : deltoïdes, pectoraux…). */
   context: { squelette: 1, muscles: 1, organes: 1, cardio: 1, nerveux: 0.85, exposition: 1 } satisfies Record<LayerId, number>,
 
-  /**
-   * Atténuation des pièces SANS alerte selon le nombre de calques actifs (indice = nombre de calques) : au-delà de
-   * trois calques le corps ne doit pas devenir une masse laiteuse. Les pièces en alerte gardent une opacité constante.
-   */
-  crowd: [1, 1, 1, 1, 0.75, 0.6, 0.5],
-
   /** Enveloppe du corps. */
   shell: {
     /** Opacité quand AUCUN calque interne n'est actif (silhouette seule). */
@@ -78,7 +80,7 @@ export const look = {
 
   /** Teinte de statut (0 = hologramme neutre, 1 = couleur de statut pleine). */
   status: {
-    /** Vert : l'organe reste neutre, avec une très légère teinte verte. */
+    /** Vert : l'organe reste neutre, avec un simple soupçon de vert. */
     green: 0.14,
     amber: 0.8,
     /** Poids de la teinte sur les pièces « périphériques » d'un organe étendu (réseau vasculaire hors crosse de l'aorte). */
@@ -86,32 +88,56 @@ export const look = {
     red: 1,
     /** Gris = inconnu / non modélisé (jamais vert par défaut). */
     grey: 0.95,
-    /** Opacité relative d'une pièce ROUGE, par calque : un grand aplat (muscles) ne doit pas écraser ce qu'il recouvre. */
-    redOpacity: { muscles: 0.7 } as Partial<Record<LayerId, number>>,
     /** Opacité relative des organes gris (plus éteints). */
-    greyOpacity: 0.6,
+    greyOpacity: 1,
     /** Vitesse de transition des teintes quand le jour change (1/s). */
     lerpSpeed: 7,
   },
 
-  /** Corps projeté (jour > aujourd'hui) : même rendu, plus léger, réduit au contour. */
+  /** Corps projeté (jour > aujourd'hui) : rendu « fantôme ». */
   ghost: {
-    /** Opacité relative du corps projeté. */
-    opacity: 0.6,
-    /** Part du remplissage conservée (0 = contour seul). */
-    fill: 0.3,
+    /** Opacité relative du fantôme. */
+    opacity: 0.55,
+    /** Tirets horizontaux : nombre de tranches par mètre. */
+    dashDensity: 72,
+    /** Part de chaque tranche qui reste visible (0..1). */
+    dashFill: 0.5,
     /** Vitesse de la transition mesuré ↔ projeté (1/s). */
     lerpSpeed: 5,
   },
 
-  /** Flux sanguin le long des vaisseaux. Désactivé (boost = 0) : la scène reste immobile. */
+  /** Balayage du scan (pieds → tête). */
+  scan: {
+    /** Durée du balayage, en secondes. */
+    duration: 3.2,
+    /** Épaisseur de la bande lumineuse sur le corps, en mètres. */
+    bandWidth: 0.05,
+    /** Intensité de la bande lumineuse. */
+    bandBoost: 0.55,
+    /** Traîne lumineuse sous le plan (0 = aucune) et sa longueur en mètres. */
+    trail: 0.6,
+    trailLength: 0.45,
+    /** Hauteurs de départ et d'arrivée du plan, en mètres. */
+    yStart: -0.05,
+    yEnd: 1.84,
+    /** Rayon de l'anneau qui matérialise le plan de scan. */
+    ringRadius: 0.34,
+    /** Opacité du disque et de l'anneau. */
+    discOpacity: 0.05,
+    ringOpacity: 0.8,
+    /** Opacité résiduelle AU-DESSUS du plan pendant le balayage : calques internes (le scanner « reconstruit » le corps) et enveloppe. */
+    hideInner: 0.06,
+    hideShell: 0.55,
+  },
+
+  /** Flux sanguin : tirets lumineux qui courent le long des vaisseaux. */
   flow: {
     /** Tirets par mètre de vaisseau. */
     density: 9,
     /** Vitesse (mètres par seconde). */
     speed: 0.22,
     /** Surbrillance d'un tiret. */
-    boost: 0,
+    boost: 2.2,
   },
 
   /** Carte de chaleur du calque exposition. */
@@ -149,14 +175,20 @@ export const look = {
     damping: 0.08,
     rotateSpeed: 0.7,
     zoomSpeed: 0.7,
+    /** Distance caméra → organe quand un organe est sélectionné. */
     /** Cadrage selon la hauteur du canevas : marge réservée (px) et hauteur de référence (px) où la distance par défaut est juste. */
     fitPadPx: 40,
     fitRefPx: 660,
+    focusDistance: 3.05,
+    /** Part du chemin (en hauteur) entre le centre du corps et l'organe épinglé (0 = cadrage inchangé, 1 = organe centré). */
+    focusPull: 0.55,
+    /** Vitesse du recentrage (1/s). */
+    focusSpeed: 3.2,
   },
 
-  /** Balancement du corps au repos. Désactivé : le corps reste de face tant qu'on ne le tourne pas. */
+  /** Léger balancement du corps au repos (donne vie sans perdre le gauche/droite). */
   sway: {
-    enabled: false,
+    enabled: true,
     /** Amplitude en radians (0,2 ≈ 11°). */
     amplitude: 0.2,
     /** Période complète en secondes. */
@@ -164,4 +196,34 @@ export const look = {
     /** Secondes d'inactivité avant de reprendre le balancement. */
     idleDelay: 4,
   },
+
+  /** Sol gradué + règle verticale. */
+  floor: {
+    radius: 0.62,
+    /** Opacité des traits. */
+    opacity: 0.3,
+    /** Opacité des graduations fines. */
+    minorOpacity: 0.14,
+    ruler: true,
+    /** Côté DROIT du corps : le haut-gauche de la scène porte les étiquettes de provenance (la règle ne les traverse plus). */
+    rulerX: 0.7,
+    rulerOpacity: 0.2,
+  },
+
+  /** Post-traitement. Le rendu doit rester correct avec enabled = false. */
+  bloom: {
+    enabled: true,
+    /** Seuil de luminance : seules les zones vives (alertes, liserés) diffusent. */
+    threshold: 0.7,
+    smoothing: 0.25,
+    intensity: 0.55,
+    radius: 0.62,
+    /** Anticrénelage du post-traitement (0, 2, 4 ou 8 échantillons ; 0 = le plus rapide). */
+    multisampling: 4,
+    /** Vignettage (0 = aucun). */
+    vignette: 0.55,
+    vignetteOffset: 0.3,
+  },
 };
+
+export type Look = typeof look;

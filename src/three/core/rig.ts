@@ -6,12 +6,10 @@ import type { Color, LayerId, OrganId } from '../../types';
 import { statusColor, tokens } from '../../ui/tokens';
 import { buildAnatomy, partLayers } from '../anatomy';
 import type { PartDef } from '../anatomy';
-import { createHologramMaterial } from '../HologramMaterial';
+import { createHologramMaterial, SCAN_Y_IDLE } from '../HologramMaterial';
 import { look } from '../look';
 
 const LAYERS: LayerId[] = ['squelette', 'muscles', 'organes', 'cardio', 'nerveux', 'exposition'];
-/** Ordre de dessin des pièces suivies, du plus enveloppant au plus interne : un os en alerte reste lisible sous un muscle. */
-const LAYER_RANK: Record<LayerId, number> = { exposition: 0, muscles: 0.1, organes: 0.2, cardio: 0.3, nerveux: 0.4, squelette: 0.5 };
 
 interface Entry {
   mat: THREE.ShaderMaterial;
@@ -25,9 +23,6 @@ interface Entry {
   tintWeight: number;
   opacityFactor: number;   // organes gris : plus éteints
   opacityFactorTarget: number;
-  /** Statut ambre ou rouge : opacité constante quel que soit le nombre de calques, dessinée après le reste. */
-  alert: boolean;
-  alertWeight: number;     // 0..1, lissé
 }
 
 export interface RigFrameState {
@@ -43,10 +38,16 @@ export interface BodyRig {
   staticGroup: THREE.Group;
   /** Pièces rattachées à un organe : cibles du survol / clic. */
   pickGroup: THREE.Group;
+  /** Plan de scan (anneau + disque). */
+  scanGroup: THREE.Group;
   /** Statuts du jour → teintes cibles (transition douce dans update). */
   setStatuses(statuses: Map<OrganId, Color>, immediate?: boolean): void;
+  /** Lance le balayage pieds → tête. */
+  startScan(): void;
   /** Avance l'animation. dt et t en secondes. */
   update(dt: number, t: number, s: RigFrameState): void;
+  /** Avancement du balayage (0..1), ou −1 s'il n'y en a pas, et hauteur du plan (m). */
+  scan(): { t: number; y: number };
   /** Fondu courant d'un calque (0..1). */
   layerFade(l: LayerId): number;
   /** Organe désigné par une liste d'intersections (la plus proche d'abord). */
@@ -60,7 +61,7 @@ export function createBodyRig(): BodyRig {
   const parts = buildAnatomy();
   const staticGroup = new THREE.Group();
   const pickGroup = new THREE.Group();
-  const shared = { time: { value: 0 }, ghost: { value: 0 } };
+  const shared = { time: { value: 0 }, scanY: { value: SCAN_Y_IDLE }, ghost: { value: 0 } };
   const neutral = new THREE.Color(tokens.color.holo);
   const statusColors: Record<Color, THREE.Color> = {
     green: new THREE.Color(statusColor.green),
@@ -76,17 +77,14 @@ export function createBodyRig(): BodyRig {
     let e = entries.get(key);
     if (!e) {
       const mat = createHologramMaterial({ layer: p.layer, fx: p.fx });
-      // Mélange alpha classique (et non additif) : les superpositions convergent vers la teinte du corps
-      // au lieu de saturer en blanc, et une teinte de statut reste mate. Le matériau partagé reste additif par défaut.
-      mat.blending = THREE.NormalBlending;
       // pièces SUIVIES (porteuses d'un statut) : elles restent lisibles même à l'arrière du corps (mollet, paravertébraux)
       if (p.organId && mat.uniforms.uDepthCue.value > 0) mat.uniforms.uDepthCue.value = Math.max(mat.uniforms.uDepthCue.value, look.depthCueTracked);
       mat.uniforms.uTime = shared.time;
+      mat.uniforms.uScanY = shared.scanY;
       mat.uniforms.uGhost = shared.ghost;
       e = {
         mat, meshes: [], organId: p.organId, layer: p.layer, layers: partLayers(p), modeled: p.modeled,
         tintTarget: neutral.clone(), mixTarget: 0, tintWeight: p.tintWeight ?? 1, opacityFactor: 1, opacityFactorTarget: 1,
-        alert: false, alertWeight: 0,
       };
       entries.set(key, e);
     }
@@ -103,18 +101,35 @@ export function createBodyRig(): BodyRig {
     mesh.updateMatrix();
     mesh.matrixAutoUpdate = false;
     mesh.frustumCulled = false;
-    // enveloppe d'abord, puis le contexte, puis les pièces suivies, puis celles en alerte (voir setStatuses)
-    mesh.renderOrder = p.layer === 'shell' ? 0 : p.organId ? 2 + LAYER_RANK[p.layer] : 1;
+    mesh.renderOrder = p.layer === 'shell' ? 0 : 1;
     mesh.userData = { organId: p.organId, layers: e.layers, modeled: p.modeled, size: p.geometry.boundingSphere?.radius ?? 1 };
     e.meshes.push(mesh);
     (p.organId ? pickGroup : staticGroup).add(mesh);
   }
   const list = [...entries.values()];
 
+  // plan de scan : anneau + disque très léger
+  const scanGroup = new THREE.Group();
+  const ringGeo = new THREE.BufferGeometry().setFromPoints(
+    Array.from({ length: 129 }, (_, i) => {
+      const a = (i / 128) * Math.PI * 2;
+      return new THREE.Vector3(Math.cos(a) * look.scan.ringRadius, 0, Math.sin(a) * look.scan.ringRadius);
+    }),
+  );
+  const ringMat = new THREE.LineBasicMaterial({ color: tokens.color.text, transparent: true, opacity: look.scan.ringOpacity, depthTest: false, depthWrite: false });
+  const discGeo = new THREE.CircleGeometry(look.scan.ringRadius, 64).rotateX(-Math.PI / 2);
+  const discMat = new THREE.MeshBasicMaterial({
+    color: tokens.color.holo, transparent: true, opacity: look.scan.discOpacity,
+    blending: THREE.AdditiveBlending, depthTest: false, depthWrite: false, side: THREE.DoubleSide,
+  });
+  scanGroup.add(new THREE.Line(ringGeo, ringMat), new THREE.Mesh(discGeo, discMat));
+  scanGroup.visible = false;
+
   const fade: Record<LayerId, number> = { squelette: 0, muscles: 0, organes: 0, cardio: 0, nerveux: 0, exposition: 0 };
   let fadeInit = false;
   let inner = 0;        // 0 = aucun calque interne, 1 = un seul, 2 = trois ou plus (lissé)
-  let crowd = 1;        // atténuation des pièces sans alerte quand beaucoup de calques sont actifs (lissé)
+  let scanT = -1; // < 0 : pas de balayage en cours
+  const scanInfo = { t: -1, y: 0 };
 
   const setStatuses = (statuses: Map<OrganId, Color>, immediate = false): void => {
     for (const e of list) {
@@ -124,14 +139,8 @@ export function createBodyRig(): BodyRig {
       e.tintTarget.copy(statusColors[st]);
       // gris (inconnu) : jamais atténué — une pièce périphérique grise doit rester grise, pas neutre
       e.mixTarget = look.status[st] * (st === 'grey' ? 1 : e.tintWeight);
-      e.opacityFactorTarget = st === 'grey' ? look.status.greyOpacity
-        : st === 'red' && e.layer !== 'shell' ? look.status.redOpacity[e.layer] ?? 1 : 1;
-      // une zone en alerte porte l'information : dessinée après les autres, jamais atténuée par le nombre de calques
-      e.alert = st === 'amber' || st === 'red';
-      const order = 2 + (e.alert ? 1 : 0) + (e.layer === 'shell' ? 0 : LAYER_RANK[e.layer]);
-      for (const m of e.meshes) m.renderOrder = order;
+      e.opacityFactorTarget = st === 'grey' ? look.status.greyOpacity : 1;
       if (immediate) {
-        e.alertWeight = e.alert ? 1 : 0;
         (e.mat.uniforms.uTint.value as THREE.Color).copy(e.tintTarget);
         e.mat.uniforms.uTintMix.value = e.mixTarget;
         e.opacityFactor = e.opacityFactorTarget;
@@ -143,6 +152,27 @@ export function createBodyRig(): BodyRig {
     shared.time.value = t;
     shared.ghost.value += ((s.ghost ? 1 : 0) - shared.ghost.value) * damp(look.ghost.lerpSpeed, dt);
 
+    // balayage
+    if (scanT >= 0) {
+      scanT += dt / look.scan.duration;
+      if (scanT >= 1) {
+        scanT = -1;
+        scanInfo.t = -1;
+        shared.scanY.value = SCAN_Y_IDLE;
+        scanGroup.visible = false;
+      } else {
+        const k = scanT * scanT * (3 - 2 * scanT);
+        const y = look.scan.yStart + (look.scan.yEnd - look.scan.yStart) * k;
+        shared.scanY.value = y;
+        scanInfo.t = k; scanInfo.y = y;
+        scanGroup.position.y = y;
+        scanGroup.visible = true;
+        const edge = Math.min(1, scanT * 8, (1 - scanT) * 8);
+        ringMat.opacity = look.scan.ringOpacity * edge;
+        discMat.opacity = look.scan.discOpacity * edge;
+      }
+    }
+
     // fondu des calques
     const kf = fadeInit ? damp(look.layerFadeSpeed, dt) : 1;
     fadeInit = true;
@@ -151,7 +181,6 @@ export function createBodyRig(): BodyRig {
       fade[l] += ((s.layers[l] ? 1 : 0) - fade[l]) * kf;
       if (s.layers[l]) innerTarget += 1;
     }
-    crowd += (look.crowd[Math.min(innerTarget, look.crowd.length - 1)] - crowd) * kf;
     innerTarget = innerTarget <= 1 ? innerTarget : Math.min(2, 1 + (innerTarget - 1) / 2);
     inner += (innerTarget - inner) * kf;
 
@@ -172,8 +201,7 @@ export function createBodyRig(): BodyRig {
       } else {
         f = 0;
         for (const l of e.layers) f = Math.max(f, fade[l]);
-        e.alertWeight += ((e.alert ? 1 : 0) - e.alertWeight) * ks;
-        base = look.layers[e.layer].opacity * (e.organId ? 1 : look.context[e.layer]) * (crowd + (1 - crowd) * e.alertWeight);
+        base = look.layers[e.layer].opacity * (e.organId ? 1 : look.context[e.layer]);
       }
       const visible = f > 0.004;
       for (const m of e.meshes) m.visible = visible;
@@ -209,10 +237,13 @@ export function createBodyRig(): BodyRig {
   };
 
   return {
-    staticGroup, pickGroup, setStatuses, update, pick,
+    staticGroup, pickGroup, scanGroup, setStatuses, update, pick,
+    startScan: () => { scanT = 0; shared.scanY.value = look.scan.yStart; },
     layerFade: (l) => fade[l],
+    scan: () => scanInfo,
     dispose: () => {
       for (const e of list) e.mat.dispose();
+      ringGeo.dispose(); ringMat.dispose(); discGeo.dispose(); discMat.dispose();
     },
   };
 }

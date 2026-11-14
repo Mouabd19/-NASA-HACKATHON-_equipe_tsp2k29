@@ -14,38 +14,33 @@ export interface WarnItem {
   color: Color;
   /** Position de l'ancre dans le repère du corps (mètres). */
   anchor: [number, number, number];
-  /** +1 = étiquette à droite de l'écran, −1 = à gauche. */
+  /** +1 = plaque à droite de l'écran, −1 = à gauche. */
   side: 1 | -1;
   projected: boolean;
-  /** Nom court de la zone (« Hanche »). */
+  /** Nom court de la zone, en capitales (« HANCHE »). */
   label: string;
   levelLabel: string;
-  /** Règle appliquée (« NASA V1 4027 », « Tendance 7 j ») — affichée en infobulle et en mode Détails. */
+  /** Règle appliquée, avec son étiquette d'honnêteté (« NASA V1 4027 »). */
   ruleLabel: string;
   leaving: boolean;
 }
 
 const LEVEL_LABEL: Record<Level, string> = {
-  VERT: 'Nominal',
-  AMBRE: 'Ambre',
-  ORANGE: 'Orange',
-  ROUGE: 'Rouge',
-  DONNEES_INSUFFISANTES: 'Données insuffisantes',
+  VERT: 'NOMINAL',
+  AMBRE: 'AMBRE',
+  ORANGE: 'ORANGE',
+  ROUGE: 'ROUGE',
+  DONNEES_INSUFFISANTES: 'DONNÉES INSUFF.',
 };
 
-/** Étiquettes par colonne : toutes à droite tant que la colonne tient, la gauche ne sert qu'au débordement. */
-const COLUMN_MAX = 9;
-
 function ruleLabel(rule: string): string {
-  if (/^V\d /.test(rule)) return `NASA ${rule}`;
-  // « TENDANCE-7J » → « Tendance 7 j » (espace insécable, comme partout ailleurs dans l'interface)
-  return sentenceCase(rule.replace(/-/g, ' ')).replace(/(\d)\s*j\b/gi, '$1\u00a0j');
+  return /^V\d /.test(rule) ? `NASA ${rule}` : rule;
 }
 
 export function warnItems(day: number, layers: Record<LayerId, boolean>, adherence = 0): WarnItem[] {
   const body = getDayBodyPlan(day, adherence);
   const out: WarnItem[] = [];
-  let right = 0;
+  let left = 0, right = 0;
   for (const alert of alertsForDayPlan(day, adherence)) {
     if (alert.level === 'VERT') continue; // un warning ne s'affiche jamais en vert
     const anchor = anatomy.getAnchor(alert.organId);
@@ -56,9 +51,9 @@ export function warnItems(day: number, layers: Record<LayerId, boolean>, adheren
     let active = false;
     for (const l of ls) if (layers[l]) active = true;
     if (!active) continue;
-    // Une seule colonne régulière, à droite du corps (la carte de survol se pose à gauche).
-    const side: 1 | -1 = right < COLUMN_MAX ? 1 : -1;
-    if (side > 0) right++;
+    // +X du corps = droite de l'écran (corps de face). Ancre centrale : on équilibre les colonnes.
+    const side: 1 | -1 = Math.abs(anchor[0]) < 0.01 ? (right <= left ? 1 : -1) : anchor[0] > 0 ? 1 : -1;
+    if (side > 0) right++; else left++;
     out.push({
       key: alert.id,
       alert,
@@ -68,7 +63,7 @@ export function warnItems(day: number, layers: Record<LayerId, boolean>, adheren
       side,
       projected: day > DAY_TODAY,
       label: sentenceCase(alert.title.split(' — ')[0] || String(alert.organId)),
-      levelLabel: LEVEL_LABEL[alert.level],
+      levelLabel: sentenceCase(LEVEL_LABEL[alert.level]),
       ruleLabel: ruleLabel(alert.rule),
       leaving: false,
     });

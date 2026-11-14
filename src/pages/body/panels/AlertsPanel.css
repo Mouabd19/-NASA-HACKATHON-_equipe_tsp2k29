@@ -1,133 +1,183 @@
-/* Panneau « Alertes » — préfixe .alr. Couleurs : variables --sz-* uniquement. */
+/* Panneau ALERTES DU JOUR — préfixe .alr. Couleurs : variables --sz-* uniquement. */
 
 .alr {
   width: 100%;
   max-height: 100%;
 }
 .alr > .sz-panel__body {
-  display: flex;
-  flex-direction: column;
   padding: 0;
-  overflow: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
-/* Nombre d'alertes : accolé au titre (et non à la croix), discret */
-.alr > .sz-panel__head > .sz-panel__fill { order: 1; }
-.alr > .sz-panel__head > .sz-prov,
-.alr > .sz-panel__head > .sz-close { order: 2; }
 .alr__count {
-  font-size: var(--sz-fs-data);
   font-variant-numeric: tabular-nums;
-  color: var(--sz-text-muted);
+  color: var(--sz-text);
 }
+.alr__count[data-red='true'] { color: var(--sz-red); }
 
 .alr__proj {
-  flex: none;
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  padding: 8px var(--sz-pad);
-  border-bottom: 1px solid var(--sz-border);
-  font-size: var(--sz-fs-small);
+  padding: 5px 10px;
+  border-bottom: 1px dashed var(--sz-border-strong);
+  font-family: var(--sz-font-text);
+  font-size: 11px;
   line-height: 1.4;
+  letter-spacing: var(--sz-tracking);
   color: var(--sz-text-dim);
   white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ── État vide : neutre, pas vert ── */
 
 .alr__empty {
-  padding: 12px var(--sz-pad);
-  font-size: var(--sz-fs-small);
-  line-height: 1.4;
-  color: var(--sz-text-muted);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px 10px;
+  font-family: var(--sz-font-text);
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: var(--sz-tracking);
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--sz-text-dim);
+}
+.alr__empty-mark {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  margin-top: 4px;
+  border: 1px solid var(--sz-text-dim);
 }
 
-/* ── Lignes ── */
+/* ── Cartes ── */
 
-/* Barre de défilement toujours visible quand il reste des alertes (8 px réservés, repris sur la marge droite) */
-.alr__list {
-  display: block;
-  flex: 1 1 auto;
-  min-height: 0;
-  padding: 4px 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scrollbar-gutter: stable;
-  scrollbar-width: auto;
-  scrollbar-color: auto;
-}
+.alr__list { display: block; }
+.alr__list > li + li { border-top: 1px solid var(--sz-border); }
 
 .alr__card {
-  display: grid;
-  grid-template-columns: 8px minmax(0, 1fr) 24px;
-  align-items: center;
-  column-gap: 8px;
-  min-height: var(--sz-row-h);
-  padding: 0 0 0 var(--sz-pad);
+  --alr-c: var(--sz-unknown);
+  position: relative;
+  display: block;
   cursor: pointer;
-  user-select: none;
   transition: background-color 120ms;
 }
-.alr__card[data-hovered='true'] { background: color-mix(in srgb, var(--sz-panel-hover) 60%, var(--sz-panel)); }
+.alr__card[data-color='red'] { --alr-c: var(--sz-red); }
+.alr__card[data-color='amber'] { --alr-c: var(--sz-amber); }
+.alr__card[data-color='green'] { --alr-c: var(--sz-ok); }
+
+/* Filet de gravité à gauche */
+.alr__card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--alr-c);
+  opacity: 0.7;
+}
+.alr__card[data-hovered='true'],
 .alr__card[data-selected='true'] { background: var(--sz-panel-hover); }
+.alr__card[data-hovered='true']::before,
+.alr__card[data-selected='true']::before { opacity: 1; }
+.alr__card[data-selected='true'] { box-shadow: inset 0 0 0 1px var(--sz-border-strong); }
+.alr__card[data-level='ROUGE'] { background-color: color-mix(in srgb, var(--sz-red) 5%, transparent); }
+.alr__card[data-level='ROUGE'][data-hovered='true'],
+.alr__card[data-level='ROUGE'][data-selected='true'] { background-color: color-mix(in srgb, var(--sz-red) 9%, transparent); }
 .alr__card:focus-visible { outline-offset: -2px; }
 
-.alr__title {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: var(--sz-fs-data);
-  line-height: 1.4;
-  font-weight: 400;
-  color: var(--sz-text);
-}
-.alr__card[data-selected='true'] .alr__title { font-weight: 500; }
-
-/* Chevron : ouvre la fiche de l'organe */
-.alr__open {
-  display: inline-grid;
-  place-items: center;
-  width: 24px;
-  height: 24px;
-  border-radius: var(--sz-radius-sm);
-  color: var(--sz-text-muted);
-  transition: background-color 120ms, color 120ms;
-}
-.alr__open svg { width: 12px; height: 12px; }
-.alr__card[data-hovered='true'] .alr__open { color: var(--sz-text-dim); }
-.alr__open:hover,
-.alr__open:focus-visible {
-  color: var(--sz-text);
-  background: var(--sz-border);
-}
-
-/* ── Mode Détails : message, règle et tendance sous le titre ── */
-
-.alr__more {
-  grid-column: 2 / 3;
-  min-width: 0;
-  padding-bottom: 8px;
-}
-/* Première phrase entière (jamais de coupe au milieu d'un chiffre) ; message complet sur la ligne sélectionnée */
-.alr__msg {
-  font-size: var(--sz-fs-small);
-  line-height: 1.4;
-  color: var(--sz-text-dim);
-}
-.alr__meta {
+.alr__body {
   display: flex;
   flex-direction: column;
-  margin-top: 4px;
-  font-size: var(--sz-fs-label);
-  line-height: 1.4;
-  color: var(--sz-text-muted);
+  gap: 5px;
+  padding: 8px 10px 8px 12px;
 }
-.alr__trend { white-space: nowrap; }
+
+.alr__top,
+.alr__foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.alr__fill { flex: 1; min-width: 0; }
+.alr__top .sz-chip { height: 16px; font-size: 11px; }
+
+.alr__title {
+  font-family: var(--sz-font-text);
+  font-size: 11px;
+  line-height: 1.35;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--sz-text);
+}
+
+.alr__msg {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  font-family: var(--sz-font-text);
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--sz-text-dim);
+}
+/* Carte épinglée : message complet */
+.alr__card[data-selected='true'] .alr__msg {
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+  color: var(--sz-text);
+}
+
+.alr__foot {
+  height: 16px;
+  font-family: var(--sz-font-text);
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: var(--sz-tracking);
+  text-transform: uppercase;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.alr__trend {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.alr__k { color: var(--sz-text-dim); }
 .alr__v {
   font-variant-numeric: tabular-nums;
+  color: var(--sz-text);
+}
+.alr__v--none { color: var(--sz-unknown); }
+
+.alr__detail {
+  flex: none;
+  height: 16px;
+  padding: 0 5px;
+  border: 1px solid var(--sz-border);
+  font-family: var(--sz-font-text);
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: var(--sz-tracking);
   color: var(--sz-text-dim);
+  transition: color 120ms, border-color 120ms, background-color 120ms;
+}
+.alr__detail:hover,
+.alr__card[data-hovered='true'] .alr__detail {
+  color: var(--sz-text);
+  border-color: var(--sz-border-strong);
+}
+.alr__detail:hover { background: var(--sz-panel-hover); }
+
+/* Liste défilante : fondu bas de 16 px — une ligne coupée se lit comme « ça défile », pas comme un bug. */
+.alr > .sz-panel__body {
+  padding-bottom: 14px;
+  -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 16px), transparent);
+  mask-image: linear-gradient(to bottom, black calc(100% - 16px), transparent);
 }

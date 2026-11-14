@@ -1,98 +1,71 @@
-/* Menu « Affichage » et barre de l'écran épuré, en haut à droite de la scène — préfixe .bv.
-   Couleurs : variables --sz-* uniquement. */
+/* Menu AFFICHAGE + statut minimal (Steve), en haut à droite de la scène de Walid. Sobre : beaucoup d'air, peu de traits. */
 
+/* ── Barre minimale ── */
 .bv {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: 10px;
+  right: 10px;
   z-index: 8;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 4px;
+  gap: 12px;
   pointer-events: none;
 }
 .bv > * { pointer-events: auto; }
-.bv__row { display: flex; align-items: center; gap: 8px; }
-
-/* Écran épuré : jour · statut · délai Terre, sur une ligne. */
-.bv__status {
+.bv__row { display: flex; align-items: center; gap: 22px; }
+.bv__btn {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  height: 24px;
-  padding: 0 8px;
+  gap: 10px;
+  height: 34px;
+  padding: 0 14px;
   border: 1px solid var(--sz-border);
-  border-radius: var(--sz-radius-sm);
-  background: var(--sz-panel);
-  color: var(--sz-text-dim);
-  font-size: var(--sz-fs-data);
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
+  background: rgba(5, 6, 7, 0.6);
+  backdrop-filter: blur(10px);
+  color: var(--sz-text);
+  font: 500 13px/1 var(--sz-font-text);
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
 }
-.bv__status > span:first-child { color: var(--sz-text); font-weight: 500; }
+.bv__btn:hover, .bv__btn[data-active='true'] { border-color: var(--sz-border-strong); background: rgba(255, 255, 255, 0.06); }
+.bv__burger { display: inline-flex; flex-direction: column; gap: 3px; }
+.bv__burger i { display: block; width: 12px; height: 1px; background: currentColor; }
+.bv__day { font: 600 22px/1 var(--sz-font-text); letter-spacing: -0.01em; color: var(--sz-text); }
+.bv__meta { font: 400 13px/1 var(--sz-font-text); color: var(--sz-text-dim); }
+.bv__status { display: inline-flex; align-items: center; gap: 8px; font: 500 13px/1 var(--sz-font-text); color: var(--c); }
+.bv__status i { width: 7px; height: 7px; border-radius: 50%; background: var(--c); box-shadow: 0 0 10px var(--c); }
 
-/* Menu : liste de cases à cocher (même apparence que celles du panneau Calques). */
+/* Menu horizontal */
 .bv__menu {
   display: flex;
-  flex-direction: column;
-  min-width: 176px;
-  padding: 4px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  max-width: 560px;
+  gap: 6px;
+  padding: 6px;
   border: 1px solid var(--sz-border);
-  border-radius: var(--sz-radius);
-  background: var(--sz-panel);
-  box-shadow: var(--sz-shadow-pop);
+  background: rgba(5, 6, 7, 0.72);
+  backdrop-filter: blur(14px);
+  animation: bv-in 0.18s ease-out;
 }
+@keyframes bv-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
 .bv__item {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
-  height: var(--sz-control-h);
-  padding: 0 8px;
-  border-radius: var(--sz-radius-sm);
-  font-size: var(--sz-fs-data);
-  line-height: 1;
-  text-align: left;
-  white-space: nowrap;
+  height: 32px;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  background: transparent;
   color: var(--sz-text-dim);
-  user-select: none;
-  transition: background-color 120ms, color 120ms;
+  font: 400 13px/1 var(--sz-font-text);
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
 }
-.bv__item:hover { background: var(--sz-panel-hover); color: var(--sz-text); }
-.bv__item:focus-visible { outline-offset: -2px; }
-.bv__item[aria-checked='true'] { color: var(--sz-text); }
-
-.bv__box {
-  flex: none;
-  display: grid;
-  place-items: center;
-  width: 14px;
-  height: 14px;
-  border: 1px solid var(--sz-border-strong);
-  border-radius: var(--sz-radius-xs);
-  background: var(--sz-inset);
-  color: var(--sz-bg);
-  transition: background-color 120ms, border-color 120ms;
-}
-.bv__box svg {
-  width: 14px;
-  height: 14px;
-  margin: -1px;
-  max-width: none;
-  opacity: 0;
-  transition: opacity 120ms;
-}
-.bv__item:hover .bv__box { border-color: var(--sz-text-muted); }
-.bv__item[aria-checked='true'] .bv__box {
-  background: var(--sz-accent);
-  border-color: var(--sz-accent);
-}
-.bv__item[aria-checked='true'] .bv__box svg { opacity: 1; }
-
-.bv__sep {
-  height: 1px;
-  margin: 4px 0;
-  background: var(--sz-border);
-}
-.bv__all { justify-content: flex-start; }
+.bv__item i { width: 6px; height: 6px; border: 1px solid currentColor; border-radius: 50%; }
+.bv__item:hover { color: var(--sz-text); background: rgba(255, 255, 255, 0.05); }
+.bv__item[data-open='true'] { color: var(--sz-text); border-color: var(--sz-border); }
+.bv__item[data-open='true'] i { background: var(--sz-text); }
+.bv__item--ghost { margin-left: 8px; color: var(--sz-text-dim); }

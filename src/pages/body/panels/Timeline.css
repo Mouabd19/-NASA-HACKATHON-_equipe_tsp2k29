@@ -1,12 +1,11 @@
-/* Chronologie de la page Corps — préfixe .tl. Couleurs : variables --sz-* uniquement.
-   Les cotes verticales de la frise reprennent l'objet Y de Timeline.tsx. */
+/* Timeline de la page Body — préfixe .tl. Couleurs : variables --sz-* uniquement. */
 
 .tl {
   position: relative;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   width: 100%;
-  height: 72px;
+  height: 84px;
   background: var(--sz-panel);
   border: 1px solid var(--sz-border);
   border-radius: var(--sz-radius);
@@ -15,70 +14,117 @@
   -webkit-user-select: none;
 }
 
-/* ── Blocs de commandes (gauche : lecture ; droite : projection) ── */
+/* ── Blocs de commandes ── */
 
-.tl__side {
+.tl__left,
+.tl__right {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 8px;
+  justify-content: space-between;
   min-width: 0;
-  padding: 0 var(--sz-pad);
+  padding: 7px 10px 8px;
 }
-.tl__side--left { border-right: 1px solid var(--sz-border); }
-.tl__side--right {
-  padding-right: 8px;
-  border-left: 1px solid var(--sz-border);
-}
+.tl__left { border-right: 1px solid var(--sz-border); }
+.tl__right { border-left: 1px solid var(--sz-border); }
 
-.tl__row {
+.tl__cap {
   display: flex;
   align-items: center;
   gap: 8px;
+  height: 16px;
   white-space: nowrap;
 }
-.tl__side--left .tl__row { gap: 4px; }
-.tl__side--left .tl__row .sz-detail { margin-left: 4px; }
-.tl__row .sz-detail { display: inline-flex; }
+.tl__fill { flex: 1; min-width: 8px; }
+.tl__close { margin-right: -6px; }
+/* sans le mode détails, les commandes se centrent verticalement */
+html[data-details='off'] .tl__left { justify-content: center; }
+html[data-details='off'] .tl__right { justify-content: center; gap: 6px; }
+
+.tl__buttons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.tl__buttons .sz-btn { padding: 0 8px; }
+.tl .sz-btn:focus-visible { outline-offset: -3px; }
 
 .tl__play.sz-btn {
-  width: 24px;
+  width: 30px;
   padding: 0;
-  margin-right: 4px;
+  border-color: var(--sz-border-strong);
+}
+.tl__play.sz-btn[aria-pressed='true'] {
+  background: var(--sz-text);
+  border-color: var(--sz-text);
+  color: var(--sz-bg);
 }
 
-.tl__close { margin-left: auto; }
-
-/* Ligne secondaire (mode Détails) : effet du plan. Elle ne peut pas élargir le bloc (width 0 + min-width 100 %). */
-.tl__note {
-  font-size: var(--sz-fs-label);
-  line-height: 16px;
-  color: var(--sz-text-muted);
-  font-variant-numeric: tabular-nums;
+.tl__hint {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 14px;
+  font-size: 11px;
   white-space: nowrap;
 }
-.tl__impact {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  width: 0;
-  min-width: 100%;
-  overflow: hidden;
+.tl__key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 13px;
+  height: 13px;
+  padding: 0 3px;
+  border: 1px solid var(--sz-border-strong);
+  font: inherit;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  color: var(--sz-text-dim);
 }
-.tl__impact-label {
-  flex: 0 1 auto;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.tl__impact-val { flex: none; }
-.tl__impact-val { transition: color 120ms; }
-.tl__impact-val[data-on='true'] {
-  color: var(--sz-text);
-  font-weight: 500;
+.tl__sep {
+  width: 1px;
+  height: 8px;
+  margin: 0 3px;
+  background: var(--sz-border-strong);
 }
 
-/* ── Frise ── */
+/* Bascule d'adhérence : deux boutons accolés */
+.tl__toggle { display: flex; }
+.tl__toggle .sz-btn {
+  flex: 1;
+  padding: 0 9px;
+  color: var(--sz-text-dim);
+}
+.tl__toggle .sz-btn + .sz-btn { margin-left: -1px; }
+.tl__toggle .sz-btn[data-active='true'] {
+  position: relative;
+  z-index: 1;
+  color: var(--sz-bg);
+  background: var(--sz-text);
+  border-color: var(--sz-text);
+}
+
+.tl__impact {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 14px;
+  white-space: nowrap;
+}
+.tl__impact-val {
+  color: var(--sz-text-dim);
+  transition: color 120ms;
+}
+.tl__impact-val[data-on='true'] {
+  color: var(--sz-text);
+  box-shadow: 0 1px 0 0 var(--sz-text);
+}
+.tl__impact-bar {
+  width: 1px;
+  height: 9px;
+  background: var(--sz-border-strong);
+}
+
+/* ── Piste ── */
 
 .tl__track {
   position: relative;
@@ -99,58 +145,125 @@
   font-family: var(--sz-font-text);
   shape-rendering: crispEdges;
 }
-.tl__svg text {
-  shape-rendering: auto;
-  font-size: var(--sz-fs-label);
-  fill: var(--sz-text-muted);
+.tl__svg text { shape-rendering: auto; }
+
+/* Zones */
+.tl__zone--measured { fill: color-mix(in srgb, var(--sz-text) 13%, transparent); }
+.tl__hatchline {
+  stroke: color-mix(in srgb, var(--sz-text-dim) 42%, transparent);
+  stroke-width: 1;
+}
+.tl__edge { stroke: var(--sz-text-dim); stroke-width: 1; }
+.tl__edge--proj {
+  stroke: var(--sz-border-strong);
+  stroke-dasharray: 4 3;
+}
+.tl__zonelabel {
+  font-size: 11px;
+  letter-spacing: 0;
+  fill: var(--sz-text);
+}
+.tl__zonelabel--proj { fill: var(--sz-text-dim); }
+.tl__zonelabel-bg { fill: var(--sz-bg); }
+
+/* Ligne de base et graduations */
+.tl__base { stroke: var(--sz-text); stroke-width: 1; }
+.tl__base--proj {
+  stroke: var(--sz-text-dim);
+  stroke-dasharray: 4 3;
+}
+.tl__tick { stroke: var(--sz-text-dim); stroke-width: 1; }
+.tl__tick--mid,
+.tl__tick--major { stroke: var(--sz-text); }
+.tl__tick[data-proj='true'] { stroke: var(--sz-border-strong); }
+.tl__tick--mid[data-proj='true'],
+.tl__tick--major[data-proj='true'] { stroke: var(--sz-text-dim); }
+
+.tl__ticklabel {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  fill: var(--sz-text);
   font-variant-numeric: tabular-nums;
 }
+.tl__ticklabel[data-proj='true'] { fill: var(--sz-text-dim); }
 
-/* Piste : jours mesurés en clair, projection en sombre */
-.tl__bar { shape-rendering: geometricPrecision; }
-.tl__bar--measured { fill: var(--sz-text-dim); }
-.tl__bar--projected { fill: var(--sz-border-strong); }
-
-/* Filet d'alertes : trait plein sur les jours mesurés, tirets sur la projection */
+/* Ruban d'alertes */
+.tl__ribbon-rail { stroke: var(--sz-border); stroke-width: 1; }
 .tl__ribbon { pointer-events: stroke; }
-.tl__ribbon[data-proj='true'] { stroke-dasharray: 4 3; }
+.tl__ribbon[data-proj='true'] {
+  stroke-dasharray: 3 2;
+  opacity: 0.85;
+}
 
-/* Graduations */
-.tl__tick { stroke: var(--sz-border-strong); stroke-width: 1; }
-.tl__tick--major { stroke: var(--sz-text-muted); }
+/* Repères de mission */
+.tl__mark line {
+  stroke: var(--sz-text-dim);
+  stroke-width: 1;
+  stroke-dasharray: 2 2;
+}
+.tl__mark text {
+  font-size: 11px;
+  letter-spacing: 0;
+  fill: var(--sz-text-dim);
+}
+.tl__mark--strong line {
+  stroke: var(--sz-text);
+  stroke-dasharray: none;
+}
+.tl__mark--strong text { fill: var(--sz-text); }
+.tl__mark--strong path { fill: var(--sz-text); }
 
-/* Jalons de mission : petit trait + libellé (masqué quand l'étiquette du curseur prend sa place) */
-.tl__mark line { stroke: var(--sz-text-muted); stroke-width: 1; }
+/* ── Tête de lecture (déplacée par transform uniquement) ── */
 
-/* ── Curseur (déplacé par transform uniquement) : poignée ronde sur la piste ── */
-
-.tl__cursor-knob {
+.tl__head {
   position: absolute;
-  top: 27px; /* centrée sur la piste (32–38) */
-  left: -8px;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  border: 2px solid var(--sz-panel);
-  background: var(--sz-text);
+  top: 0;
+  left: -5.5px;
+  width: 11px;
+  height: 100%;
   pointer-events: none;
   will-change: transform;
 }
+.tl__head-svg { max-width: none; overflow: visible; }
+.tl__head-svg line {
+  stroke: var(--sz-text);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+.tl__head-svg path { fill: var(--sz-text); }
+.tl[data-projected='true'] .tl__head-svg line { stroke-dasharray: 3 2; }
 
-/* Étiquette du curseur : « J300 », suivie de la date pendant le geste ; sans cadre, sur la rangée des jalons */
 .tl__readout {
   position: absolute;
-  top: 5px;
+  top: 3px;
   left: 0;
-  font-size: var(--sz-fs-small);
-  line-height: 16px;
-  font-variant-numeric: tabular-nums;
-  color: var(--sz-text-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 15px;
+  border: 1px solid var(--sz-text);
+  background: var(--sz-bg);
+  color: var(--sz-text);
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: var(--sz-tracking);
   white-space: nowrap;
   pointer-events: none;
   will-change: transform;
 }
-.tl__readout-day {
-  font-weight: 600;
-  color: var(--sz-text);
+.tl__readout-day { font-weight: 600; }
+.tl__readout-dash { color: var(--sz-text-dim); }
+.tl[data-projected='true'] .tl__readout {
+  border-style: dashed;
+  border-color: var(--sz-text-dim);
 }
+.tl[data-projected='true'] .tl__readout-mode { color: var(--sz-text-dim); }
+.tl__track[data-dragging='true'] .tl__readout {
+  background: var(--sz-text);
+  color: var(--sz-bg);
+  border-style: solid;
+  border-color: var(--sz-text);
+}
+.tl__track[data-dragging='true'] .tl__readout-dash,
+.tl__track[data-dragging='true'] .tl__readout-mode { color: var(--sz-bg); }
