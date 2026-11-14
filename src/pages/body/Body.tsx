@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { BodyScene } from '../../three/BodyScene';
 import { look } from '../../three/look';
 import { PanelCloseContext, ProvenanceBadge, TagBadge, fmt } from '../../ui';
-import { BODY_PANEL_LABEL, usePrefs } from '../../ui/prefs';
+import { usePrefs } from '../../ui/prefs';
 import type { BodyPanelId } from '../../ui/prefs';
 import { scenarioBody, useBody } from './store';
 import { useUrlState } from './urlState';
@@ -21,6 +21,7 @@ import { LeaderLines } from './panels/LeaderLines';
 import { Timeline } from './panels/Timeline';
 import { OrganWindow } from './panels/OrganWindow';
 import './Body.css';
+import { ViewMenu, useCleanScreen } from './Windows';
 
 /** Si la 3D tombe (pas de WebGL, erreur de shader), la page reste utilisable : message sobre, pas d'écran blanc. */
 class SceneBoundary extends Component<{ children: ReactNode }, { error: string | null }> {
@@ -128,42 +129,6 @@ function Closable({ id, children }: { id: BodyPanelId; children: ReactNode }): J
   return <PanelCloseContext.Provider value={() => closePanel(id)}>{children}</PanelCloseContext.Provider>;
 }
 
-/** Nom des panneaux dans la barre d'outils : le panneau de la montre s'intitule « Constantes ». */
-const PANEL_LABEL: Record<BodyPanelId, string> = { ...BODY_PANEL_LABEL, spo2: 'Constantes' };
-
-/** Barre d'outils de la scène : un bouton par panneau fermé pour le rouvrir, ou « Mode focus » si tout est ouvert. */
-function ClosedDock(): JSX.Element | null {
-  const closed = usePrefs((s) => s.closed);
-  const openPanel = usePrefs((s) => s.openPanel);
-  const openAll = usePrefs((s) => s.openAll);
-  const closePanel = usePrefs((s) => s.closePanel);
-  const all: BodyPanelId[] = ['header', 'blood', 'spo2', 'layers', 'alerts', 'timeline'];
-  const hidden = all.filter((id) => closed.includes(id));
-  return (
-    <div className="body-dock" role="toolbar" aria-label="Panneaux">
-      {hidden.map((id) => (
-        <button key={id} type="button" className="sz-btn sz-btn--sm" onClick={() => openPanel(id)} title={`Rouvrir : ${PANEL_LABEL[id]}`}>
-          <svg className="body-dock__plus" viewBox="0 0 10 10" aria-hidden="true"><path d="M5 1v8M1 5h8" stroke="currentColor" strokeWidth="1.3" /></svg>
-          {PANEL_LABEL[id]}
-        </button>
-      ))}
-      {hidden.length > 1 ? (
-        <button type="button" className="sz-btn sz-btn--ghost sz-btn--sm" onClick={openAll}>Tout afficher</button>
-      ) : null}
-      {hidden.length === 0 ? (
-        <button
-          type="button"
-          className="sz-btn sz-btn--ghost sz-btn--sm"
-          onClick={() => all.filter((id) => id !== 'timeline').forEach(closePanel)}
-          title="Fermer les panneaux autour du corps (la chronologie reste)"
-        >
-          Mode focus
-        </button>
-      ) : null}
-    </div>
-  );
-}
-
 /** (Steve) Double-clic sur le cerveau → page Santé mentale (prototype §11) au lieu de la fenêtre organe. */
 function useBrainToMental(): void {
   const navigate = useNavigate();
@@ -184,8 +149,9 @@ export function Body(): JSX.Element {
   const isOpen = (id: BodyPanelId): boolean => !closed.includes(id);
   const left = isOpen('blood') || isOpen('spo2');
   const right = isOpen('layers') || isOpen('alerts');
+  const clean = useCleanScreen();
   return (
-    <div className="body-page" data-left={left} data-right={right} data-top={isOpen('header')} data-bottom={isOpen('timeline')}>
+    <div className={`body-page${clean ? ' body-page--clean' : ''}`} data-left={left} data-right={right} data-top={isOpen('header')} data-bottom={isOpen('timeline')}>
       {isOpen('header') ? <div className="body-top"><Closable id="header"><Header /></Closable></div> : null}
 
       {left ? (
@@ -204,7 +170,7 @@ export function Body(): JSX.Element {
         <LeaderLines />
         <SceneChrome />
         <HoverCard />
-        <ClosedDock />
+        <ViewMenu />
       </section>
 
       {right ? (
