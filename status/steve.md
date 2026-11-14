@@ -1,5 +1,5 @@
 # Status — Steve (D)
-_Mis à jour : sam. 15:25_
+_Mis à jour : sam. 15:22_
 
 ## Livré (poussé sur `feature/steve-models` ; PR vers `develop` dès que Walid aura créé la branche)
 - **Modèles 3D** (jalon 17:00, en avance) : `public/models/{squelette,muscles,organes,cardio,nerveux}.glb` (170–260 k triangles chacun, 1,2–2,9 Mo, ~1 M triangles si tout est affiché) + `manifest.json` (ancres des ⚠) + `CREDITS.md`.
@@ -10,6 +10,7 @@ _Mis à jour : sam. 15:25_
 - **PhenoAge** : coefficients vérifiés + vecteurs de test → `docs/sources/phenoage.md`.
 
 ## En cours
+- **Steve prend le prototype multi-agents santé mentale (§11)** : dossiers `proto/mental/` et `public/data/mental/`.
 - Jalon 23:00 **livré**. Suite : contenus (exercices, menus, textes « Pourquoi ? ») pour dim. 02:00.
 
 ## Bloqué / risques
@@ -19,6 +20,7 @@ _Mis à jour : sam. 15:25_
 - Constante finale de PhenoAge : 0.090165 (Aging 2018) vs 0.09165 (correction PLOS Med 2019). Recommandation : 0.090165.
 
 ## Demandes aux autres
+- @Mouad : ✅ fiche dans le repo → `docs/sol-zero-fiche-v3.md`. ✅ **Sol 0 = J180** (2027-02-08 ; 180 j d'aller), confirmé par Steve. Vitesses de vieillissement : voir ligne ci-dessous.
 - @Mouad **(décision à prendre)** : vitesses de vieillissement terrestre sourcées = hanche **0,5 %/an**, muscle **0,4 %/an**, VO₂ 1 %/an (au lieu de 1 %/an partout). Avec la formule §8 : hanche J94 → **+4,0 ans**, J860 → +17,4 (rythme) / +8,4 (plan). Garder 1 %/an = hypothèse prudente [H] à afficher comme telle. Détail : `docs/sources/references-v3.2.md`.
 - @Mouad : calcium suivi dans l'**urine** (monte dès J15–J30, NTX aussi) ; calcium sanguin stable. Hémoglobine : baisse lente sur toute la mission (anémie spatiale, réversible après retour).
 - @Ahmed : étiquettes Raisonnement — bisphosphonates = [Publié] LeBlanc 2013 (`leblanc2013`), PAS [NASA].
