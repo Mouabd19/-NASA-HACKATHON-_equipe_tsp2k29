@@ -6,8 +6,8 @@ import { DAY_TODAY } from '../../mocks/mission';
 import { lightTimeMin } from '../../content/horizons';
 import { dayToDate, fmt } from '../../ui';
 import { scenarioBody, useBody } from './store';
-import { WINDOWS, useWindows } from './windows';
-import type { WinId } from './windows';
+import { WINDOWS, useWindows } from './windowStore';
+import type { WinId } from './windowStore';
 import './Windows.css';
 
 const RANK: Record<Color, number> = { grey: 0, green: 1, amber: 2, red: 3 };
