@@ -6,7 +6,7 @@
  "label": "Prototype — données SIMULÉES — signal IA, pas un diagnostic",
  "input": {
   "transcript": [
-   "07:02 — Réveil. Reste allongé plusieurs minutes avant de se lever.",
+   "07:02 — Réveil. Se lève directement.",
    "06:50 — Message reçu ou incident signalé la veille : un désaccord technique avec Ito pendant le briefing.",
    "07:30 — Petit-déjeuner avec l'équipage. Haddad : « Bien dormi, pour une fois. » Échange suivi avec Okafor (3 répliques). Regarde ses interlocuteurs dans les yeux.",
    "08:30 — Briefing avec la Terre (message différé). Haddad pose deux questions sur le planning et propose une modification.",
@@ -24,12 +24,12 @@
    "tempsAvecEquipageMin": 79,
    "repasSautes": 1,
    "pas": 3064,
-   "sommeilH": 5.5
+   "sommeilH": 7
   },
   "biomarkers": {
    "checkinHumeur": 3,
-   "checkinFatigue": 4,
-   "vfcMs": 43,
+   "checkinFatigue": 3,
+   "vfcMs": 58.8,
    "cortisolNmolL": null
   }
  },
@@ -41,38 +41,38 @@
     "faits": [
      {
       "heure": "07:02",
-      "fait": "Réveil ; reste allongé plusieurs minutes avant de se lever. Le coucher de la veille est enregistré à 23:40, pour 5,5 h de sommeil.",
+      "fait": "Se lève directement, sans temps de latence signalé.",
       "citation": null
      },
      {
-      "heure": "12:40",
-      "fait": "Participe au déjeuner commun ; le compte rendu ne précise pas s'il a mangé.",
-      "citation": "Pas maintenant."
+      "heure": "08:30",
+      "fait": "Pose deux questions sur le planning lors du briefing avec la Terre et propose une modification.",
+      "citation": null
+     },
+     {
+      "heure": "10:00",
+      "fait": "Termine la maintenance du système de filtration d'air dans les temps.",
+      "citation": null
      },
      {
       "heure": "14:00",
-      "fait": "Séance d'exercice complète : 60 min sur ARED puis vélo.",
+      "fait": "Réalise la séance d'exercice en entier (60 min ARED et vélo).",
       "citation": null
      },
      {
       "heure": "19:30",
-      "fait": "Saute le dîner commun ; Kovacs note son absence.",
+      "fait": "Saute le dîner commun ; son absence est notée par Kovacs.",
       "citation": null
      },
      {
       "heure": "21:00",
       "fait": "Décline la soirée film proposée par Ito et reste seul.",
       "citation": "Je préfère être seul un moment."
-     },
-     {
-      "heure": "23:40",
-      "fait": "Coucher.",
-      "citation": null
      }
     ],
-    "resume": "Haddad a fait une séance d'exercice complète et une maintenance dans les temps, avec 79 min passées avec l'équipage et 26 min de parole. Il a sauté le dîner commun, décliné la soirée film et s'est couché à 23:40 après 5,5 h de sommeil."
+    "resume": "Haddad se lève à 07:02 et termine l'ensemble des tâches prévues, dont la séance d'exercice complète à 14:00. Il saute le dîner commun et décline la soirée collective, puis se couche à 23:40 après 7 h de sommeil."
    },
-   "seconds": 10.5
+   "seconds": 8.5
   },
   {
    "id": "obs-paroles",
@@ -81,7 +81,7 @@
     "faits": [
      {
       "heure": "07:30",
-      "fait": "Au petit-déjeuner, Haddad s'adresse spontanément à l'équipage et regarde ses interlocuteurs dans les yeux.",
+      "fait": "Au petit-déjeuner avec l'équipage, échange de 3 répliques avec Okafor ; Haddad lui regarde les yeux.",
       "citation": "Bien dormi, pour une fois."
      },
      {
@@ -91,17 +91,17 @@
      },
      {
       "heure": "12:40",
-      "fait": "Au déjeuner commun, Haddad décline une interaction proposée par l'équipage.",
+      "fait": "Au déjeuner commun, Haddad répond par un refus.",
       "citation": "Pas maintenant."
      },
      {
       "heure": "17:30",
-      "fait": "Il enregistre un message court (2 min) pour l'appel vidéo différé avec sa famille.",
+      "fait": "Appel vidéo différé avec sa famille : Haddad enregistre un message court d'environ 2 minutes.",
       "citation": null
      },
      {
       "heure": "19:30",
-      "fait": "Il ne participe pas au dîner commun, absence relevée par Kovacs.",
+      "fait": "Il ne participe pas au dîner commun ; Kovacs note son absence.",
       "citation": null
      },
      {
@@ -110,9 +110,9 @@
       "citation": "Je préfère être seul un moment."
      }
     ],
-    "resume": "Haddad prend l'initiative dans le briefing du matin mais décline plusieurs invitations de l'équipage l'après-midi et le soir, dont le dîner et la soirée film. Son temps de parole est de 26 minutes et son temps passé avec l'équipage de 79 minutes sur la journée."
+    "resume": "Haddad échange peu avec l'équipage hors briefing : il prend l'initiative lors du briefing, mais répond par des refus au déjeuner et à la soirée film, et saute le dîner. Il enregistre un message court pour sa famille et ses échanges avec Okafor restent limités à quelques répliques."
    },
-   "seconds": 6.3
+   "seconds": 6.5
   },
   {
    "id": "obs-corps",
@@ -121,18 +121,13 @@
     "faits": [
      {
       "heure": "07:02",
-      "fait": "Reste allongé plusieurs minutes après le réveil avant de se lever.",
+      "fait": "Se lève dès le réveil, sans temporisation.",
       "citation": null
      },
      {
       "heure": "07:30",
-      "fait": "Déclare avoir bien dormi, alors que les capteurs indiquent 5,5 h de sommeil.",
+      "fait": "Déclare avoir bien dormi et regarde ses interlocuteurs dans les yeux pendant le petit-déjeuner.",
       "citation": "Bien dormi, pour une fois."
-     },
-     {
-      "heure": "07:30",
-      "fait": "Regarde ses interlocuteurs dans les yeux pendant l'échange de trois répliques avec Okafor.",
-      "citation": null
      },
      {
       "heure": "14:00",
@@ -140,19 +135,24 @@
       "citation": null
      },
      {
+      "heure": "16:00",
+      "fait": "Exécute les étapes de l'expérience de biologie demandées, avec peu d'échanges verbaux.",
+      "citation": null
+     },
+     {
       "heure": "17:30",
-      "fait": "Enregistre un message de 2 minutes pour sa famille, au ton neutre.",
+      "fait": "Enregistre un message de 2 minutes au ton neutre pour sa famille.",
       "citation": null
      },
      {
       "heure": "19:30",
-      "fait": "Saute le dîner commun, seul repas sauté de la journée.",
+      "fait": "Saute le dîner commun ; aucune plainte de faim n'est relevée.",
       "citation": null
      }
     ],
-    "resume": "Haddad rapporte un bon sommeil alors que les capteurs en mesurent 5,5 h, et signale un mal de tête après l'exercice de l'après-midi. Son ton est neutre dans le message enregistré et il saute le dîner."
+    "resume": "Haddad rapporte un sommeil de 7 h et une séance d'exercice complète, suivie d'un mal de tête signalé. Il a sauté le dîner sans plainte de faim, et sa parole est restée brève dans l'après-midi."
    },
-   "seconds": 7.3
+   "seconds": 6.2
   }
  ],
  "psychologists": [
@@ -164,44 +164,43 @@
     "confiance": "moyenne",
     "hypotheses": [
      {
-      "schema": "Retrait social progressif depuis J63, qui s'accentue aujourd'hui avec la fatigue déclarée.",
+      "schema": "Retrait social qui s'accentue : Haddad parle moins et évite les moments collectifs, ce qui s'écarte nettement de sa référence depuis J63.",
       "preuves": [
-       "Temps avec l'équipage : 127 min à J63, 197 à J64, puis 79 à J65 (-56 % vs référence).",
-       "Temps de parole : 38 min à J63 (-21 %), puis 26 min à J65 (-46 %).",
-       "Refus explicite de l'équipage : « Pas maintenant » au déjeuner et « Je préfère être seul un moment » le soir."
+       "Temps de parole aujourd'hui 26 min (-46 % vs référence 48.4), avec un écart déjà présent à J63 (38 min, -21 %).",
+       "Temps avec l'équipage aujourd'hui 79 min (-56 % vs référence 180.1), contre 127 min à J63 (-29 %).",
+       "Refus au déjeuner « Pas maintenant. », refus de la soirée film « Je préfère être seul un moment. » et dîner sauté sans plainte de faim."
       ]
      },
      {
-      "schema": "Écart entre le ressenti déclaré et les mesures de sommeil, à regarder.",
+      "schema": "Baisse de l'humeur déclarée et fatigue en hausse, à regarder au regard du retrait social.",
       "preuves": [
-       "Déclare « Bien dormi, pour une fois » alors que les capteurs mesurent 5,5 h (-17 % vs référence 6,6 h).",
-       "Coucher à 23:40 après une moyenne de 6,8 h sur 7 jours.",
-       "Fatigue déclarée à 4/5 aujourd'hui, contre 2/5 les jours précédents."
+       "Humeur déclarée 3/5 aujourd'hui (-21 % vs référence 3.8), alors qu'elle était à 4/5 les jours J62 à J64.",
+       "Fatigue déclarée 3/5, la plus haute depuis J60, et mal de tête signalé après la séance de 14:00.",
+       "Les échanges de l'après-midi sont brefs (expérience de biologie avec peu de paroles), ce qui va dans le même sens."
       ]
      },
      {
-      "schema": "Alimentation et récupération physique à surveiller après l'effort.",
+      "schema": "Possible tension physiologique à J63 qui n'a pas de suite claire, à garder en mémoire sans conclure.",
       "preuves": [
-       "Repas sautés : 1 aujourd'hui (+100 % vs référence 0,5), dîner commun manqué.",
-       "Mal de tête signalé après la séance de 60 min sur ARED puis vélo à 14:00.",
-       "Humeur déclarée passée de 4/5 (J59 à J63) à 3/5 (J64 et J65)."
+       "Cortisol à 401 nmol/L relevé à J63, jour où parole (-21 %) et temps avec l'équipage (-29 %) étaient déjà en retrait.",
+       "Aucune cause ponctuelle (panne, mauvaise nouvelle) n'est signalée par les observateurs pour J63 ou J65.",
+       "Cortisol du jour non mesuré (null), donc pas de comparaison possible aujourd'hui."
       ]
      }
     ],
     "ecartsReference": [
-     "Temps avec l'équipage : 79 min aujourd'hui contre 180,1 min de référence (-56 %).",
-     "Temps de parole : 26 min aujourd'hui contre 48,4 min de référence (-46 %).",
-     "Repas sautés : 1 aujourd'hui contre 0,5 de référence (+100 %)."
+     "Temps de parole : 26 min aujourd'hui (-46 % vs référence 48.4), moyenne 7 j 41.9 (-13 %).",
+     "Temps avec l'équipage : 79 min aujourd'hui (-56 % vs référence 180.1), moyenne 7 j 179.4 (0 %).",
+     "Humeur déclarée : 3/5 aujourd'hui (-21 % vs référence 3.8), moyenne 7 j 3.6 (-5 %)."
     ],
     "pointsRassurants": [
-     "Haddad prend l'initiative au briefing du matin : deux questions et une proposition de modification.",
-     "Échange spontané au petit-déjeuner, avec contact visuel avec Okafor.",
-     "Séance d'exercice complète réalisée dans les temps, et message envoyé à sa famille.",
-     "Pas, sommeil, humeur et VFC restent sous ou proches des seuils : VFC à -11 %, sommeil moyen 7 j à +3 %, humeur moyenne 7 j à 3,7."
+     "Sommeil stable : 7 h (+1 % vs référence 6.9), cohérent avec les jours précédents.",
+     "VFC dans la norme : 58.8 ms (+4 % vs référence 56.8), moyenne 7 j à 58.3 ms (+3 %).",
+     "Tâches tenues : maintenance de filtration terminée dans les temps et séance d'exercice complète à 14:00. Initiative prise au briefing avec la Terre, et contact visuel avec Okafor au petit-déjeuner."
     ],
-    "noteAuPsy": "Le retrait social et la fatigue apparaissent depuis J63 et s'accentuent aujourd'hui, mais aucun incident ponctuel n'est signalé pour les expliquer. Le signal ne dure pas encore 4 jours avec plusieurs indicateurs convergents, et les autres marqueurs restent dans la variation habituelle. Une attention rapprochée des prochains jours est suggérée, en particulier sur les repas, le sommeil déclaré et les interactions avec l'équipage."
+    "noteAuPsy": "Quatre indicateurs s'écartent de 20 % ou plus aujourd'hui, et le retrait social (parole, équipage) est présent depuis J63, ce qui justifie un suivi sans signaler de crise. Le signal ne dure pas encore 4 jours avec plusieurs sources concordantes, donc la condition d'échange n'est pas remplie à ce stade. Un point léger et informel dans les prochains jours serait pertinent, en gardant à l'esprit le cortisol élevé de J63 et l'absence de mesure du jour."
    },
-   "seconds": 10.8
+   "seconds": 12.9
   },
   {
    "id": "psy-anxiete",
@@ -211,43 +210,45 @@
     "confiance": "moyenne",
     "hypotheses": [
      {
-      "schema": "Retrait social qui s'accentue sur la journée : Haddad évite les temps partagés avec l'équipage, surtout l'après-midi et le soir.",
+      "schema": "Repli social marqué depuis la fin de la semaine : Haddad évite les échanges avec l'équipage, en dehors des obligations de briefing.",
       "preuves": [
-       "Temps avec l'équipage de 79 min contre une référence de 180,1 min (-56 %), et 26 min de parole contre 48,4 (-46 %).",
-       "Refus au déjeuner (« Pas maintenant »), puis à la soirée film (« Je préfère être seul un moment »), et absence au dîner commun.",
-       "Le temps avec l'équipage était de 127 min à J63 (-29 %) : c'est le deuxième jour de la fenêtre où deux indicateurs s'écartent."
+       "Temps avec l'équipage à 79 min aujourd'hui, soit -56 % par rapport à sa référence (180.1 min).",
+       "Temps de parole à 26 min, soit -46 % par rapport à sa référence (48.4 min). Refus « Pas maintenant » au déjeuner et soirée film déclinée avec la phrase « Je préfère être seul un moment ».",
+       "Écart déjà présent à J63 (équipage -29 %, parole -21 %), puis retour à la normale à J64 avant la rechute à J65."
       ]
      },
      {
-      "schema": "Sommeil court et fatigue en hausse, à regarder comme possible signe de tension.",
+      "schema": "Humeur basse et fatigue croissante, possiblement liées à une tension ou une irritabilité non exprimée.",
       "preuves": [
-       "Sommeil de 5,5 h contre une référence de 6,6 h (-17 %), avec un coucher à 23:40 et un réveil suivi de plusieurs minutes allongé.",
-       "Fatigue déclarée à 4/5 contre 2/5 chaque jour de J59 à J64.",
-       "Mal de tête signalé après la séance de 60 min sur ARED puis vélo."
+       "Humeur déclarée à 3/5 aujourd'hui, soit -21 % par rapport à sa référence (3.8).",
+       "Fatigue déclarée à 3/5, en hausse par rapport à J64 (2/5).",
+       "Cortisol à 401 nmol/L à J63, jour où l'équipage avait déjà été moins sollicité (127 min)."
       ]
      },
      {
-      "schema": "Écart possible entre le ressenti déclaré et les mesures, qui pourrait traduire une minimisation.",
+      "schema": "Signes somatiques discrets qui pourraient accompagner le repli, à observer sans les interpréter.",
       "preuves": [
-       "Déclare « Bien dormi, pour une fois » alors que les capteurs mesurent 5,5 h.",
-       "Humeur déclarée à 3/5 à J64 et J65, contre 4/5 de J59 à J63.",
-       "Message à la famille enregistré sur un ton neutre, sans contenu inquiet exprimé."
+       "Repas sautés : 1 aujourd'hui, soit +100 % par rapport à sa référence (0.5), avec le dîner manqué sans plainte de faim.",
+       "Mal de tête signalé à 14:00 après la séance d'exercice complète.",
+       "Pas à 3064, soit -17 % par rapport à sa référence (3695.9)."
       ]
      }
     ],
     "ecartsReference": [
-     "Temps avec l'équipage : 79 min contre 180,1 min de référence (-56 %).",
-     "Temps de parole : 26 min contre 48,4 min de référence (-46 %).",
-     "Repas sautés : 1 contre 0,5 de référence (+100 %), soit le dîner du soir."
+     "Temps avec l'équipage : 79 min, soit -56 % (référence 180.1 min).",
+     "Temps de parole : 26 min, soit -46 % (référence 48.4 min).",
+     "Humeur déclarée : 3/5, soit -21 % (référence 3.8)."
     ],
     "pointsRassurants": [
-     "Prise d'initiative au briefing de 08:30 (deux questions sur le planning et une proposition de modification).",
-     "Séance d'exercice complète et maintenance faite dans les temps. Moyenne des pas sur 7 jours à +9 % de la référence.",
-     "Sur 7 jours, sommeil (+3 %), humeur (+3 %) et VFC (+3 %) restent proches ou au-dessus de la référence. Le retrait n'est pas installé depuis plusieurs jours : J59 à J62 sont dans la norme."
+     "Sommeil de 7 h, dans sa variation normale (+1 %).",
+     "VFC à 58.8 ms, soit +4 % par rapport à sa référence.",
+     "Séance d'exercice complète et maintenance d'air terminée dans les temps.",
+     "Prise d'initiative au briefing avec la Terre (questions sur le planning et proposition de modification).",
+     "Petit-déjeuner avec Okafor où Haddad le regarde dans les yeux, et message enregistré pour sa famille."
     ],
-    "noteAuPsy": "Le signal repose surtout sur une seule journée (J65) et sur J63, avec un J64 qui ne l'atteint pas. Aucun incident extérieur n'est rapporté pour expliquer le retrait, et le cortisol de J65 est absent, ce qui limite l'analyse. Un point informel avec Haddad, sans pression et centré sur le sommeil et la fatigue, serait utile pour voir si le schéma se confirme les prochains jours."
+    "noteAuPsy": "Le signal dure depuis deux jours sur trois (J63 et J65), avec un repli social et une humeur déclarée en baisse, mais il n'est pas encore continu sur quatre jours. Les biomarqueurs physiologiques (sommeil, VFC) restent stables, et Haddad garde son autonomie et sa participation aux tâches. Un point informel avec Haddad, sans cadre évaluatif, serait pertinent dans les prochaines 24 h, en surveillant J66."
    },
-   "seconds": 12
+   "seconds": 11.4
   },
   {
    "id": "psy-social",
@@ -257,43 +258,43 @@
     "confiance": "moyenne",
     "hypotheses": [
      {
-      "schema": "Retrait social marqué aujourd'hui : moins de contacts avec l'équipage, refus d'invitations et repas sautés, sur un schéma proche de J63.",
+      "schema": "Retrait social marqué sur J63 et J65, à regarder : le temps avec l'équipage et la parole baissent nettement, avec des refus répétés hors briefing.",
       "preuves": [
-       "Temps avec l'équipage à 79 min, soit -56 % vs référence (180,1 min)",
-       "Temps de parole à 26 min, soit -46 % vs référence (48,4 min)",
-       "Refus du déjeuner commun, du dîner (absence relevée par Kovacs) et de la soirée film : « Je préfère être seul un moment. »"
+       "Temps avec l'équipage à 79 min aujourd'hui contre une référence de 180.1 min (-56 %), et à 127 min en J63 (-29 %).",
+       "Refus au déjeuner (« Pas maintenant ») et à la soirée film (« Je préfère être seul un moment »), dîner sauté.",
+       "Temps de parole à 26 min contre 48.4 min de référence (-46 %), et à 38 min en J63 (-21 %)."
       ]
      },
      {
-      "schema": "Fatigue en hausse, possiblement liée au sommeil court et à la séance d'exercice, à mettre en lien avec le retrait.",
+      "schema": "Baisse d'énergie et d'humeur en J65, à regarder : fatigue et humeur déclarées en recul par rapport à sa référence.",
       "preuves": [
-       "Fatigue déclarée à 4/5 aujourd'hui, contre 2/5 les six jours précédents",
-       "Sommeil de 5,5 h (-17 % vs référence), coucher à 23:40, déclaré « bien dormi » par Haddad",
-       "Mal de tête signalé après la séance de 60 min à 14:00"
+       "Fatigue déclarée à 3/5 en J65, contre 2/5 de J62 à J64.",
+       "Humeur déclarée à 3/5 contre une référence de 3.8 (-21 %).",
+       "Mal de tête signalé après la séance d'exercice de 14:00, et pas quotidiens à 3064 contre 3695.9 (-17 %)."
       ]
      },
      {
-      "schema": "Récurrence possible : deux épisodes de retrait (J63 puis J65) avec un rebond partiel à J64, à surveiller dans la durée.",
+      "schema": "Initiative professionnelle maintenue pendant que le lien informel se retire, à regarder : l'engagement sur les tâches reste élevé alors que les échanges spontanés diminuent.",
       "preuves": [
-       "J63 : 38 min de parole et 127 min avec l'équipage, soit deux indicateurs sous le seuil de -20 %, avec cortisol à 401 nmol/L",
-       "J64 : 43 min de parole et 197 min avec l'équipage, retour dans la normale, humeur à 3/5",
-       "J65 : trois indicateurs au-delà de 20 %, sans incident ponctuel signalé dans les rapports"
+       "Prend l'initiative au briefing avec la Terre à 08:30 (deux questions et une modification proposée).",
+       "Termine la maintenance de filtration dans les temps et réalise la séance d'exercice complète.",
+       "Échanges avec l'équipage limités à quelques répliques, dont trois avec Okafor au petit-déjeuner."
       ]
      }
     ],
     "ecartsReference": [
-     "Temps avec l'équipage : 79 min, soit -56 % vs référence 180,1 min",
-     "Temps de parole : 26 min, soit -46 % vs référence 48,4 min",
-     "Repas sautés : 1, soit +100 % vs référence 0,5 (dîner)"
+     "Temps avec l'équipage : 79 min contre 180.1 min de référence (-56 %).",
+     "Temps de parole : 26 min contre 48.4 min de référence (-46 %).",
+     "Repas sautés : 1 contre 0.5 de référence (+100 %)."
     ],
     "pointsRassurants": [
-     "Initiative spontanée au briefing de 08:30 : deux questions sur le planning et une proposition de modification",
-     "Contact spontané au petit-déjeuner avec regard échangé, humeur de 3/5 stable par rapport à la référence (-17 %, sous le seuil)",
-     "Séance d'exercice complète faite, message de 2 min enregistré pour la famille, et moyenne 7 jours du temps avec l'équipage dans la norme (0 %)"
+     "Sommeil stable à 7 h (+1 % vs référence), et déclaré comme bon au petit-déjeuner.",
+     "Initiative au briefing et tâches techniques terminées dans les temps.",
+     "Variabilité cardiaque dans la norme (58.8 ms, +4 %) et message enregistré pour la famille."
     ],
-    "noteAuPsy": "Journée marquée par un net retrait social (équipage 79 min, parole 26 min, deux refus explicites) et une fatigue en hausse à 4/5. Le signal n'est pas continu sur 4 jours (J64 revenu dans la normale), il s'agit plutôt d'un schéma à regarder avec J63. Un contact informel simple, sans pression, peut être utile au regard des refus répétés et de l'écart entre le sommeil déclaré et mesuré."
+    "noteAuPsy": "Le retrait social est présent en J63 et J65 mais pas sur les 4 derniers jours : J64 revient à un niveau proche de la référence (équipage 197 min). Le cortisol de J63 (401 nmol/L) n'a pas de mesure aujourd'hui, et aucune cause ponctuelle n'est rapportée. Un point informel avec Haddad serait utile pour repérer si le retrait se reproduit."
    },
-   "seconds": 13.1
+   "seconds": 12.7
   }
  ],
  "dossierPourLePsyHumain": {

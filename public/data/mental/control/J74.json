@@ -23,12 +23,12 @@
    "tempsAvecEquipageMin": 209,
    "repasSautes": 0,
    "pas": 3872,
-   "sommeilH": 6.8
+   "sommeilH": 7.1
   },
   "biomarkers": {
    "checkinHumeur": 3,
    "checkinFatigue": 2,
-   "vfcMs": 47,
+   "vfcMs": 46.9,
    "cortisolNmolL": null
   }
  },
@@ -40,38 +40,38 @@
     "faits": [
      {
       "heure": "06:44",
-      "fait": "Réveil et lever immédiat.",
+      "fait": "Se lève directement après le réveil.",
+      "citation": null
+     },
+     {
+      "heure": "08:30",
+      "fait": "Propose une modification du planning lors du briefing avec la Terre.",
       "citation": null
      },
      {
       "heure": "10:00",
-      "fait": "Maintenance du système de filtration d'air terminée dans les temps.",
+      "fait": "Termine la maintenance du système de filtration d'air dans les temps.",
       "citation": null
      },
      {
       "heure": "14:00",
-      "fait": "Séance d'exercice complète : 60 minutes sur ARED et vélo.",
+      "fait": "Réalise la séance d'exercice complète, soit 60 min d'ARED et de vélo.",
       "citation": null
      },
      {
       "heure": "16:00",
-      "fait": "Expérience de biologie menée avec Okafor ; Haddad propose une variante du protocole.",
+      "fait": "Participe à l'expérience de biologie avec Okafor et propose une variante du protocole.",
       "citation": null
-     },
-     {
-      "heure": "19:30",
-      "fait": "Dîner pris en commun ; Haddad demande à Ito de lui montrer sa modification sur la pompe.",
-      "citation": "Ito, tu me montres ta modif sur la pompe ?"
      },
      {
       "heure": "23:30",
-      "fait": "Coucher, après une soirée film avec l'équipage à 21:00. Sommeil de 6,8 h.",
+      "fait": "Se couche après une journée de 7,1 h de sommeil enregistrée.",
       "citation": null
      }
     ],
-    "resume": "Haddad a pris tous ses repas du jour (aucun sauté) et a terminé sa séance d'exercice complète. Il a passé 209 minutes avec l'équipage et a fait 3 872 pas."
+    "resume": "Haddad a pris ses trois repas avec l'équipage (0 repas sauté) et passé 209 min avec lui, en terminant la maintenance et la séance d'exercice complète. Il a enregistré 3 872 pas entre son lever à 06:44 et son coucher à 23:30."
    },
-   "seconds": 7.1
+   "seconds": 7.9
   },
   {
    "id": "obs-paroles",
@@ -80,38 +80,38 @@
     "faits": [
      {
       "heure": "07:30",
-      "fait": "Demande à l'équipage de cesser de lui demander comment il va, puis répond après un long silence.",
+      "fait": "Haddad demande à l'équipage de cesser de lui demander si ça va, et répond après un long silence.",
       "citation": "Tu peux arrêter de me demander si ça va ?"
      },
      {
       "heure": "08:30",
-      "fait": "Pose deux questions sur le planning lors du briefing avec la Terre et propose une modification.",
+      "fait": "Lors du briefing avec la Terre, Haddad pose deux questions sur le planning et propose une modification.",
       "citation": null
      },
      {
       "heure": "12:40",
-      "fait": "Fait une déclaration sur son ressenti lors du déjeuner commun.",
+      "fait": "Au déjeuner commun, Haddad décrit son ressenti concernant la mission à l'équipage.",
       "citation": "J'ai l'impression de tourner en rond ici."
      },
      {
       "heure": "16:00",
-      "fait": "Plaisante avec Okafor pendant l'expérience de biologie et propose de lui-même une variante du protocole.",
+      "fait": "Pendant l'expérience de biologie avec Okafor, Haddad plaisante et propose une variante du protocole.",
       "citation": null
      },
      {
       "heure": "17:30",
-      "fait": "Enregistre un message vidéo de 9 minutes pour sa famille lors de l'appel différé.",
+      "fait": "Haddad enregistre un message vidéo de 9 minutes destiné à sa famille lors de l'appel différé.",
       "citation": null
      },
      {
       "heure": "19:30",
-      "fait": "Initie une conversation avec Ito au dîner, à propos de la modification de la pompe.",
+      "fait": "Au dîner, Haddad interpelle Ito et lui demande de lui montrer sa modification sur la pompe.",
       "citation": "Ito, tu me montres ta modif sur la pompe ?"
      }
     ],
-    "resume": "Sur la journée, Haddad a parlé 53 minutes sur 209 minutes passées avec l'équipage. Il a initié au moins trois échanges (briefing, expérience, dîner) et a répondu seul à une question sur la fréquence des demandes de l'équipage."
+    "resume": "Haddad a pris l'initiative de questions et de propositions sur le planning, le protocole et une modification technique, et a enregistré un long message pour sa famille. Il a exprimé à l'équipage une remarque sur la routine de la mission et a demandé à ne plus être interrogé sur son état."
    },
-   "seconds": 5.9
+   "seconds": 4.7
   },
   {
    "id": "obs-corps",
@@ -125,33 +125,33 @@
      },
      {
       "heure": "07:30",
-      "fait": "Répond après un long silence à une question sur son état.",
+      "fait": "Marque un long silence avant de répondre à l'équipage lors du petit-déjeuner.",
       "citation": "Tu peux arrêter de me demander si ça va ?"
      },
      {
       "heure": "12:40",
-      "fait": "Décrit verbalement une sensation de stagnation pendant le déjeuner.",
+      "fait": "Exprime au déjeuner une sensation de stagnation physique et mentale liée au lieu de vie.",
       "citation": "J'ai l'impression de tourner en rond ici."
      },
      {
       "heure": "14:00",
-      "fait": "Séance d'exercice complète de 60 minutes (ARED et vélo).",
+      "fait": "Réalise la séance d'exercice complète prévue, soit 60 minutes d'ARED et de vélo.",
       "citation": null
      },
      {
       "heure": "17:30",
-      "fait": "Sourit pendant la diffusion d'un message enregistré de 9 minutes.",
+      "fait": "Sourit pendant toute la durée du message enregistré de 9 minutes destiné à sa famille.",
       "citation": null
      },
      {
       "heure": "23:30",
-      "fait": "Coucher après une journée de 3 872 pas, avec 6,8 h de sommeil et aucun repas sauté.",
+      "fait": "Se couche après une journée sans repas sauté ; sommeil enregistré de 7,1 h.",
       "citation": null
      }
     ],
-    "resume": "Haddad se lève directement, accomplit 60 minutes d'exercice et ne saute aucun repas, pour 3 872 pas dans la journée. Il décrit à deux reprises son ressenti, avec un long silence avant une réponse au petit-déjeuner et une sensation de tourner en rond au déjeuner."
+    "resume": "Haddad se lève sans délai, mange tous ses repas et complète sa séance d'exercice de 60 minutes. Il décrit une sensation de stagnation au déjeuner, marque un long silence avant de répondre à l'équipage le matin et sourit pendant son message à sa famille."
    },
-   "seconds": 8
+   "seconds": 7.8
   }
  ],
  "psychologists": [
@@ -163,44 +163,35 @@
     "confiance": "moyenne",
     "hypotheses": [
      {
-      "schema": "Lassitude liée à la monotonie de la mission, exprimée ponctuellement. Schéma à regarder si elle revient les prochains jours.",
+      "schema": "Lassitude liée à la routine de la mission, exprimée verbalement. À regarder si elle persiste.",
       "preuves": [
-       "Au déjeuner : « J'ai l'impression de tourner en rond ici. »",
-       "Humeur déclarée à 3/5 aujourd'hui, soit -17 % vs référence (moyenne 7 j à -8 %)",
-       "Propose lui-même une modification du planning au briefing, ce qui montre de l'engagement"
+       "Au déjeuner, Haddad dit « J'ai l'impression de tourner en rond ici. » (observateur corps et paroles)",
+       "Humeur déclarée à 3/5 aujourd'hui, contre 4/5 les jours J68 à J73",
+       "Sensation de stagnation décrite par l'observateur corps, alors que l'activité physique reste complète"
       ]
      },
      {
-      "schema": "Besoin de distance vis-à-vis des sollicitations de l'équipage sur son état intérieur, sans retrait social global.",
+      "schema": "Besoin de retrait face aux sollicitations répétées de l'équipage, sans rupture des liens.",
       "preuves": [
-       "Demande à l'équipage d'arrêter de lui demander comment il va, après un long silence à 07:30",
-       "Temps passé avec l'équipage à 209 min, soit +16 % vs référence",
-       "Initie lui-même plusieurs échanges dans la journée (briefing, expérience, dîner)"
-      ]
-     },
-     {
-      "schema": "Creux des J70 à J71 non prolongé : signe de stabilisation plutôt que d'aggravation.",
-      "preuves": [
-       "Temps de parole à 20 min à J70 et 18 min à J71, puis 45, 33 et 53 min de J72 à J74",
-       "Sommeil à 7,4 h à J72 et 6,8 h aujourd'hui, après 5,6 h à J70 et J71",
-       "Fatigue déclarée à 2/5 depuis J72"
+       "Demande à ne plus être interrogé sur son état : « Tu peux arrêter de me demander si ça va ? » (07:30)",
+       "Long silence avant de répondre au petit-déjeuner (observateur corps)",
+       "Temps avec l'équipage à 209 min, soit +16 % vs référence, alors que le temps de parole reste proche de la référence (+10 %)"
       ]
      }
     ],
     "ecartsReference": [
-     "Humeur déclarée : 3 aujourd'hui, -17 % vs référence 3.6 (moyenne 7 j 3.3, -8 %)",
-     "Temps avec l'équipage : 209 min aujourd'hui, +16 % vs référence 180.1 (moyenne 7 j +6 %)",
-     "Temps de parole : 53 min aujourd'hui, +10 % vs référence 48.4 (moyenne 7 j 39.3 min, -19 %)"
+     "Humeur déclarée : 3/5 aujourd'hui, soit -21 % vs référence 3.8",
+     "VFC : 46.9 ms aujourd'hui, soit -17 % vs référence 56.8 ms ; moyenne 7 j à -15 %",
+     "Temps avec l'équipage : 209 min aujourd'hui, soit +16 % vs référence 180.1 min"
     ],
     "pointsRassurants": [
-     "Aucun repas sauté aujourd'hui et séance d'exercice complète de 60 min",
-     "Sommeil de 6,8 h (+3 % vs référence) et fatigue à 2/5",
-     "VFC à 47 ms (-3 % vs référence), stable sur la semaine (moyenne 48.4 ms)",
-     "Initiatives régulières : variante de protocole, proposition de planning, message vidéo enregistré pour sa famille"
+     "Aucun repas sauté aujourd'hui, et l'équipage est présent à chaque repas",
+     "Sommeil de 7,1 h (+3 % vs référence), en hausse depuis J70 et J71",
+     "Séance d'exercice complète, initiatives sur le planning et le protocole, et sourire pendant le message à sa famille"
     ],
-    "noteAuPsy": "Aucun indicateur ne dépasse 20 % d'écart aujourd'hui, et le creux des J70 et J71 ne se prolonge pas. Les propos sur la lassitude et la demande de ne plus être questionné sur son état sont à suivre sur quelques jours, sans conclure. Un échange informel sur le ressenti peut être proposé si ces remarques reviennent, le cortisol n'ayant pas été mesuré aujourd'hui."
+    "noteAuPsy": "Un seul indicateur s'écarte de plus de 20 % aujourd'hui (humeur), donc le niveau reste « rien » selon les seuils. Le signal qualitatif « tourner en rond » et la demande d'arrêter les questions sur son état méritent une attention à la prochaine journée, sans les surinterpréter. Le cortisol n'est pas disponible aujourd'hui et la VFC reste à surveiller sur plusieurs jours."
    },
-   "seconds": 13.1
+   "seconds": 10.2
   },
   {
    "id": "psy-anxiete",
@@ -210,36 +201,36 @@
     "confiance": "moyenne",
     "hypotheses": [
      {
-      "schema": "Irritabilité face aux sollicitations répétées de l'équipage sur son état. À surveiller si cela se répète.",
+      "schema": "Besoin de distance ponctuel face aux questions répétées de l'équipage sur son état, à regarder si la tension persiste.",
       "preuves": [
-       "Demande à l'équipage de cesser de lui demander comment il va (07:30, « Tu peux arrêter de me demander si ça va ? »), après un long silence avant de répondre.",
-       "Humeur déclarée à 3/5 aujourd'hui, soit -17 % vs référence (3.6).",
-       "Temps avec l'équipage à +16 % vs référence (209 min vs 180.1)."
+       "Demande à l'équipage d'arrêter de lui demander « si ça va » à 07:30, après un long silence (observateur paroles et corps).",
+       "Humeur déclarée à 3/5 aujourd'hui, alors qu'elle était à 4/5 sur J68, J69, J71, J72 et J73 (écart -21 % vs référence).",
+       "VFC à 46.9 ms, soit -17 % vs référence 56.8 ms (écart sous le seuil de 20 %)."
       ]
      },
      {
-      "schema": "Sentiment de stagnation ou d'ennui, avec une parole en léger recul sur la semaine.",
+      "schema": "Sentiment de stagnation lié au lieu de vie, sans signe de retrait physique.",
       "preuves": [
-       "Déclare « J'ai l'impression de tourner en rond ici. » au déjeuner (12:40), et le décrit comme une sensation de stagnation.",
-       "Temps de parole moyen sur 7 jours à -19 % vs référence (39.3 min vs 48.4), proche du seuil sans l'atteindre.",
-       "Humeur moyenne sur 7 jours à 3.3, soit -8 % vs référence (3.6)."
+       "Dit à 12:40 « J'ai l'impression de tourner en rond ici. » (observateurs paroles et corps).",
+       "Temps de parole moyen sur 7 jours à 39.3 min, soit -19 % vs référence 48.4 min, sans rupture nette des échanges.",
+       "Malgré ce ressenti, il propose une modification du planning à 08:30 et une variante du protocole à 16:00."
       ]
      }
     ],
     "ecartsReference": [
-     "Humeur déclarée : 3/5 aujourd'hui, -17 % vs référence (3.6) ; moyenne 7 j 3.3 (-8 %).",
-     "Temps de parole : 53 min, +10 % vs référence (48.4) ; moyenne 7 j 39.3 (-19 %).",
-     "Repas sautés : 0 aujourd'hui, -100 % vs référence (0.5) ; ce sens est favorable."
+     "Humeur déclarée : 3/5 aujourd'hui, soit -21 % vs référence 3.8.",
+     "VFC : 46.9 ms aujourd'hui, soit -17 % vs référence 56.8 ms (moyenne 7 j : -15 %).",
+     "Temps avec l'équipage : 209 min aujourd'hui, soit +16 % vs référence 180.1 min."
     ],
     "pointsRassurants": [
-     "Aucun repas sauté aujourd'hui, et séance d'exercice complète de 60 minutes.",
-     "Sommeil de 6.8 h (+3 %), pas à 3 872 (+5 %), VFC quasi stable (-3 %).",
-     "Initiatives sociales : propose une variante du protocole à Okafor (16:00), enregistre un message de 9 minutes pour sa famille (17:30), sourit pendant sa diffusion.",
-     "Aucun indicateur n'atteint 20 % d'écart défavorable aujourd'hui, et l'humeur était à 4/5 les deux jours précédents."
+     "Les trois repas sont pris avec l'équipage (0 repas sauté).",
+     "Sommeil de 7.1 h, dans la variation habituelle de Haddad (+3 %).",
+     "Séance d'exercice complète de 60 min et maintenance de filtration terminée dans les temps.",
+     "Initiative sur le planning et le protocole, et message vidéo de 9 min à sa famille avec sourire pendant toute la durée."
     ],
-    "noteAuPsy": "Aujourd'hui, un seul signal verbal de tension (demande d'arrêter les questions sur son état) et une remarque de stagnation, sans écart de 20 % sur au moins deux indicateurs. Les moyennes sur 7 jours restent proches de la référence, et le cortisol n'a pas été mesuré aujourd'hui. Un point d'attention reste la fréquence des questions de l'équipage sur son état, à observer dans les prochains jours."
+    "noteAuPsy": "Un seul indicateur (humeur déclarée) dépasse 20 % aujourd'hui, et aucun schéma sur 3 jours n'atteint le seuil d'alerte, donc le niveau reste « rien ». Le point à surveiller est la demande de Haddad d'arrêter les questions sur son état, combinée à une humeur à 3/5 et une VFC en baisse ; le cortisol n'est pas mesuré aujourd'hui (423 nmol/L isolé à J70). Un échange informel sur le ressenti de « tourner en rond » serait pertinent si le signal se répète les prochains jours."
    },
-   "seconds": 9.6
+   "seconds": 9.5
   },
   {
    "id": "psy-social",
@@ -249,36 +240,29 @@
     "confiance": "moyenne",
     "hypotheses": [
      {
-      "schema": "Schéma à regarder : lassitude verbale face à la routine de mission, sans signal social global.",
+      "schema": "Baisse d'humeur ponctuelle, sans schéma durable à ce stade. Une remarque sur la routine de la mission est à garder en mémoire.",
       "preuves": [
-       "Déclaration au déjeuner : « J'ai l'impression de tourner en rond ici. »",
-       "Humeur déclarée à 3/5, soit -17 % vs référence (3.6)",
-       "Demande à l'équipage de cesser de lui demander comment il va, après un long silence (07:30)"
-      ]
-     },
-     {
-      "schema": "Schéma à regarder : temps de parole moyen sur 7 jours en baisse, malgré un temps avec l'équipage stable.",
-      "preuves": [
-       "Temps de parole moyen 7 j : 39.3 min (-19 % vs référence)",
-       "Temps avec l'équipage aujourd'hui : 209 min (+16 % vs référence), donc présence sans parole proportionnelle sur J70 et J71",
-       "Parole basse à J70 (20 min) et J71 (18 min), sans explication ponctuelle notée"
+       "Humeur déclarée à 3/5 aujourd'hui, soit -21 % vs référence 3.8, et seul indicateur qui dépasse 20 %",
+       "Humeur à 4/5 sur J68, J69, J71, J72 et J73, donc pas de baisse sur 7 jours",
+       "Au déjeuner, Haddad dit « J'ai l'impression de tourner en rond ici. »"
       ]
      }
     ],
     "ecartsReference": [
-     "Temps de parole aujourd'hui : 53 min (+10 % vs référence 48.4)",
-     "Humeur déclarée aujourd'hui : 3/5 (-17 % vs référence 3.6)",
-     "Temps de parole moyenne 7 j : 39.3 min (-19 % vs référence)"
+     "Humeur déclarée : 3 vs 3.8 (-21 %), seul écart supérieur à 20 %",
+     "VFC : 46.9 ms vs 56.8 ms (-17 %), sous le seuil de 20 %, moyenne 7 j à -15 %",
+     "Temps avec l'équipage : 209 min vs 180.1 min (+16 %), sous le seuil de 20 %"
     ],
     "pointsRassurants": [
-     "Temps avec l'équipage aujourd'hui : 209 min (+16 %), et initiatives sociales (briefing, expérience, dîner)",
-     "Aucun repas sauté aujourd'hui, et séance d'exercice complète de 60 min",
-     "Message de 9 min enregistré pour la famille, avec sourire pendant la diffusion",
-     "Sommeil de 6.8 h (+3 %) et VFC stable à 47 ms (-3 %)"
+     "Aucun repas sauté aujourd'hui, comme sa référence",
+     "Sommeil de 7.1 h, dans sa variation normale (+3 %)",
+     "Séance d'exercice complète et maintenance terminée dans les temps",
+     "Initiatives au briefing et sur l'expérience de biologie, et message à sa famille enregistré avec un sourire",
+     "Temps de parole à +10 % vs référence et nombre de pas à +5 %"
     ],
-    "noteAuPsy": "Aucun indicateur ne dépasse le seuil de 20 % dans le sens d'un risque aujourd'hui, et les initiatives sociales restent présentes. La lassitude exprimée et la baisse de la parole sur 7 jours méritent une attention ouverte lors du prochain échange. Le cortisol du jour est absent, ce qui limite la confiance de l'analyse."
+    "noteAuPsy": "Un seul indicateur (humeur) dépasse 20 % aujourd'hui, et l'historique 7 jours ne montre pas de persistance, donc aucun signal d'alerte au sens de la grille. Les remarques de Haddad sur les questions répétées de l'équipage « Tu peux arrêter de me demander si ça va ? » et sur la sensation de tourner en rond sont factuelles et méritent d'être explorées lors d'un échange informel, sans les interpréter ici. À reprendre si la baisse d'humeur ou de VFC se prolonge sur les prochains jours."
    },
-   "seconds": 7.7
+   "seconds": 11.5
   }
  ],
  "dossierPourLePsyHumain": {
