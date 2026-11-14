@@ -84,6 +84,20 @@
   container-type: size;
 }
 
+/* Barre d'outils de la scène : panneaux fermés à rouvrir, « Mode focus ». */
+.body-dock {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 7;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  max-width: 50%;
+}
+.body-dock__plus { flex: none; width: 10px; height: 10px; color: var(--sz-text-dim); }
+
 /* Informations posées sur la scène (ne captent pas la souris). */
 .body-chrome {
   position: absolute;
@@ -181,9 +195,3 @@
 @media (max-height: 760px) {
   .body-page { --body-gap: 8px; }
 }
-
-/* ── Écran épuré : tous les panneaux fermés → la scène occupe toute la page ── */
-/* La grille est déjà réduite à la seule cellule de la scène (data-left/right/top/bottom = false) :
-   il ne reste qu'à retirer la marge et le cadre. */
-.body-page--clean { padding: 0; }
-.body-page--clean .body-scene { border: 0; border-radius: 0; }
