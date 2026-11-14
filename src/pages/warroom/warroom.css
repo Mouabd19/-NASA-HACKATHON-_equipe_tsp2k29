@@ -1,0 +1,49 @@
+/* Propriétaire : Ahmed (B). Styles globaux de la War Room et du Raisonnement, chargés une seule fois.
+   Couleurs : uniquement les variables --sz-* injectées par applyTokens() (src/ui/tokens.ts). Classes préfixées wr- pour ne pas toucher global.css. */
+.wr-btn:not(:disabled):hover { filter: brightness(1.12); }
+.wr-btn:not(:disabled):active { transform: scale(0.97); }
+.wr-seg:not([aria-checked="true"]):hover { background: color-mix(in srgb, var(--sz-text) 8%, transparent) !important; color: var(--sz-text) !important; }
+.wr-btn:focus-visible, .wr-seg:focus-visible, a:focus-visible, input:focus-visible,
+label:has(input:focus-visible), [tabindex="-1"]:focus-visible { outline: 2px solid var(--sz-holo); outline-offset: 2px; }
+[tabindex="-1"]:focus:not(:focus-visible) { outline: none; }
+.wr-link { color: var(--sz-holo); text-decoration: none; display: inline-flex; align-items: center; min-height: 44px; }
+.wr-link:hover { text-decoration: underline; }
+.wr-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* Grilles de la War Room */
+.wr-now { display: grid; gap: 16px; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+.wr-main { display: grid; gap: 16px; grid-template-columns: minmax(340px, 400px) minmax(0, 1fr); align-items: start; }
+.wr-side { display: grid; gap: 16px; min-width: 0; }
+@media (max-width: 960px) { .wr-main { grid-template-columns: 1fr; } }
+@media (max-width: 900px) { .wr-now { grid-template-columns: 1fr; } }
+
+/* Check-in : bascule selon la largeur de SA carte (colonne latérale ou pleine largeur) */
+.wr-checkin { container-type: inline-size; }
+.wr-row { display: grid; grid-template-columns: minmax(140px, 200px) minmax(0, 1fr); gap: 16px; align-items: center; }
+@container (max-width: 560px) { .wr-row { grid-template-columns: 1fr; gap: 8px; } }
+
+/* To-do : case ronde-carrée maison sur une vraie case native (clavier et lecteurs d'écran intacts) */
+.wr-check { appearance: none; -webkit-appearance: none; width: 24px; height: 24px; margin: 0; border-radius: 7px;
+  border: 2px solid var(--sz-border-strong); background: transparent; display: grid; place-content: center;
+  cursor: inherit; transition: background-color 150ms cubic-bezier(0.2, 0, 0, 1), border-color 150ms cubic-bezier(0.2, 0, 0, 1); }
+.wr-check::after { content: ""; width: 12px; height: 12px; opacity: 0; transform: scale(0.6);
+  transition: opacity 150ms cubic-bezier(0.2, 0, 0, 1), transform 150ms cubic-bezier(0.2, 0, 0, 1);
+  background: no-repeat center / contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2 6.2 4.8 9 10 3' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+.wr-check:checked { background: var(--sz-holo); border-color: var(--sz-holo); }
+.wr-check:checked::after { opacity: 1; transform: none; }
+.wr-check:not(:disabled):not(:checked):hover { border-color: color-mix(in srgb, var(--sz-text) 60%, transparent); }
+.wr-check:disabled { border-style: dashed; opacity: 0.5; }
+.wr-todo { container-type: inline-size; }
+.wr-todo-body { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 4px 12px; min-width: 0; }
+.wr-todo-side { display: flex; align-items: center; gap: 12px; }
+.wr-todo-row:last-child .wr-todo-body { border-bottom: 0 !important; }
+/* Liste étroite : l'heure et « Pourquoi » passent sous le titre, le titre garde toute la largeur */
+@container (max-width: 480px) {
+  .wr-todo-body { grid-template-columns: minmax(0, 1fr); }
+  .wr-todo-side .wr-link { margin-left: auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wr-btn:not(:disabled):active { transform: none; }
+  * { transition-duration: 0ms !important; }
+}

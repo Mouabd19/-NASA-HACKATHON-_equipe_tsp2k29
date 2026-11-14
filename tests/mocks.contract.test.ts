@@ -21,10 +21,11 @@ import { getSummary } from '../src/content/summaries';
 import { getStandard } from '../src/content/standards';
 import { lightTimeMin } from '../src/content/horizons';
 import { getExercise, getMeal, whyText } from '../src/content/library';
-import { baseline30d } from '../src/ingest/baseline30d';
-import { parseHealthExport } from '../src/ingest/healthExport';
-import { latestLive } from '../src/ingest/live';
-import { pullDone, pushTodo } from '../src/ingest/todoSync';
+// Les modules d'ingestion réels (Ahmed) lisent un vrai fichier et parlent à /api : on teste ici les mocks qu'ils remplacent.
+import {
+  mockBaseline30d as baseline30d, mockLatestLive as latestLive, mockParseHealthExport as parseHealthExport,
+  mockPullDone as pullDone, mockPushTodo as pushTodo,
+} from '../src/mocks';
 import { saveCheckIn, todayCheckIn } from '../src/ingest/checkin';
 import { CHRONO_AGE_J0, DAY_END, DAY_SOL0, DAY_TODAY, MISSION_START_DATE } from '../src/mocks/mission';
 import type { Color, LayerId, Measurement, OrganState } from '../src/types';
@@ -437,7 +438,7 @@ describe('content', () => {
   });
 });
 
-describe('ingest (stubs en mémoire, sans réseau)', () => {
+describe('ingest (mocks en mémoire, sans réseau)', () => {
   it('parseHealthExport + baseline30d + latestLive', async () => {
     const pct: number[] = [];
     const ms = await parseHealthExport({} as File, (p) => pct.push(p));

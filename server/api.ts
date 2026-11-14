@@ -1,120 +1,90 @@
-// Propriétaire : Ahmed (ROADMAP §7).
-// STUB — remplace l'implémentation sans changer la signature.
-// Plugin Vite (serveur de dev) : API locale en mémoire pour le Raccourci iOS / Apple Watch.
-//   GET  /api/todo            → TodoItem[] du jour (planDay(DAY_TODAY)) avec l'état « fait »
-//   POST /api/todo            → (ajout) remplace la liste (corps : TodoItem[])
-//   POST /api/todo/:id/done   → coche un item ({ ok, id })
-//   POST /ingest              → objet plat { type, value, unit, date } (mesure en direct)
-//   GET  /ingest/latest       → dernière mesure reçue (?type=OxygenSaturation pour filtrer), ou null
-// Branché dans vite.config.ts (serveur de dev uniquement ; `vite preview` ne sert pas ces routes).
-// Aucune dépendance : l'état vit en mémoire et se perd au redémarrage du serveur.
+// Propriétaire : Ahmed (B). API locale pour la montre — ROADMAP §7.
+// Plugin Vite : le même middleware tourne en `npm run dev` ET en `npm run preview` (build de démo).
+// État en mémoire, persisté dans server/.data/state.json (ignoré par git).
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import type { Plugin, ViteDevServer } from 'vite';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import type { Plugin } from 'vite';
+import { emptyState, handle, type ApiState } from './handlers.ts';
 
-interface Todo { id: string; done: boolean; [k: string]: unknown }
-interface Sample { type: string; value: number; unit: string; date: string; source: string }
+const ROUTES = /^\/(api\/|ingest(\/|$))/;
+const MAX_BODY = 256 * 1024;
 
-const MAX_BODY = 64 * 1024;
-
-function send(res: ServerResponse, status: number, body: unknown): void {
-  res.statusCode = status;
-  res.setHeader('Content-Type', 'application/json; charset=utf-8');
-  res.setHeader('Cache-Control', 'no-store');
-  res.end(JSON.stringify(body));
+function load(file: string): ApiState {
+  try {
+    const s = JSON.parse(readFileSync(file, 'utf8')) as ApiState;
+    return { todo: Array.isArray(s.todo) ? s.todo : [], live: Array.isArray(s.live) ? s.live : [] };
+  } catch {
+    return emptyState();
+  }
 }
 
-function readJson(req: IncomingMessage): Promise<unknown> {
-  return new Promise((resolve, reject) => {
-    let raw = '';
-    req.setEncoding('utf8');
-    req.on('data', (chunk: string) => {
-      raw += chunk;
-      if (raw.length > MAX_BODY) { reject(new Error('corps trop volumineux')); req.destroy(); }
+function save(file: string, s: ApiState): void {
+  try {
+    if (!existsSync(dirname(file))) mkdirSync(dirname(file), { recursive: true });
+    writeFileSync(file, JSON.stringify(s));
+  } catch { /* disque plein / lecture seule : l'état reste en mémoire */ }
+}
+
+function readBody(req: IncomingMessage): Promise<unknown> {
+  return new Promise((ok, ko) => {
+    let size = 0;
+    const parts: Buffer[] = [];
+    req.on('data', (c: Buffer) => {
+      size += c.length;
+      if (size > MAX_BODY) { ko(new Error('corps trop gros')); req.destroy(); return; }
+      parts.push(c);
     });
     req.on('end', () => {
-      try { resolve(raw ? JSON.parse(raw) : {}); } catch { reject(new Error('JSON invalide')); }
+      const raw = Buffer.concat(parts).toString('utf8').trim();
+      if (!raw) return ok(undefined);
+      try { ok(JSON.parse(raw)); } catch { ok(Object.fromEntries(new URLSearchParams(raw))); }
     });
-    req.on('error', reject);
+    req.on('error', ko);
   });
 }
 
-export function apiPlugin(): Plugin {
-  let todo: Todo[] | null = null;
-  const done = new Set<string>();
-  const latest = new Map<string, Sample>();
-  let last: Sample | null = null;
-
-  // La to-do vient du planificateur (stub ou vrai module), chargé par Vite à la première requête.
-  async function loadTodo(server: ViteDevServer): Promise<Todo[]> {
-    if (!todo) {
-      const plan = await server.ssrLoadModule('/src/models/planDay.ts');
-      const mission = await server.ssrLoadModule('/src/mocks/mission.ts');
-      todo = (plan.planDay as (day: number) => Todo[])(mission.DAY_TODAY as number);
+export function createApiMiddleware(file: string) {
+  const state = load(file);
+  return async (req: IncomingMessage, res: ServerResponse, next: () => void) => {
+    const url = new URL(req.url ?? '/', 'http://local');
+    if (!ROUTES.test(url.pathname)) return next();
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Cache-Control', 'no-store');
+    if (req.method === 'OPTIONS') { res.statusCode = 204; return res.end(); }
+    let body: unknown;
+    try {
+      body = req.method === 'GET' ? undefined : await readBody(req);
+    } catch (e) {
+      res.statusCode = 413;
+      return res.end(JSON.stringify({ error: String(e) }));
     }
-    return todo.map((t) => ({ ...t, done: t.done || done.has(t.id) }));
-  }
+    const out = handle(state, { method: req.method ?? 'GET', path: url.pathname.replace(/\/$/, '') || '/', query: url.searchParams, body });
+    if (out.changed) save(file, state);
+    res.statusCode = out.status;
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.end(JSON.stringify(out.json));
+  };
+}
 
+/** À enregistrer dans vite.config.ts (Walid) : plugins: [react(), solZeroApi()] + server.host / preview.host = true. */
+export function solZeroApi(opts: { stateFile?: string } = {}): Plugin {
+  let mw: ReturnType<typeof createApiMiddleware>;
   return {
     name: 'sol-zero-api',
-    apply: 'serve',
+    configResolved(cfg) {
+      mw = createApiMiddleware(opts.stateFile ?? resolve(cfg.root, 'server/.data/state.json'));
+    },
     configureServer(server) {
-      server.middlewares.use((req, res, next) => {
-        const url = new URL(req.url ?? '/', 'http://localhost');
-        const path = url.pathname.replace(/\/+$/, '') || '/';
-        const method = req.method ?? 'GET';
-        const handle = async (): Promise<boolean> => {
-          if (path === '/api/todo' && method === 'GET') {
-            send(res, 200, await loadTodo(server));
-            return true;
-          }
-          if (path === '/api/todo' && method === 'POST') {
-            const body = await readJson(req);
-            if (!Array.isArray(body)) { send(res, 400, { error: 'tableau de TodoItem attendu' }); return true; }
-            todo = body as Todo[];
-            done.clear();
-            for (const t of todo) if (t.done) done.add(t.id);
-            send(res, 200, { ok: true, count: todo.length });
-            return true;
-          }
-          const m = /^\/api\/todo\/([^/]+)\/done$/.exec(path);
-          if (m && method === 'POST') {
-            const id = decodeURIComponent(m[1]);
-            const items = await loadTodo(server);
-            if (!items.some((t) => t.id === id)) { send(res, 404, { error: 'item inconnu', id }); return true; }
-            done.add(id);
-            send(res, 200, { ok: true, id });
-            return true;
-          }
-          if (path === '/ingest' && method === 'POST') {
-            const b = (await readJson(req)) as Partial<Sample>;
-            const value = Number(b.value);
-            if (typeof b.type !== 'string' || !Number.isFinite(value)) {
-              send(res, 400, { error: 'objet plat { type, value, unit, date } attendu' });
-              return true;
-            }
-            const sample: Sample = {
-              type: b.type,
-              value,
-              unit: typeof b.unit === 'string' ? b.unit : '',
-              date: typeof b.date === 'string' ? b.date : new Date().toISOString(),
-              source: 'apple-watch-live',
-            };
-            latest.set(sample.type, sample);
-            last = sample;
-            send(res, 200, { ok: true });
-            return true;
-          }
-          if (path === '/ingest/latest' && method === 'GET') {
-            const type = url.searchParams.get('type');
-            send(res, 200, type ? latest.get(type) ?? null : last);
-            return true;
-          }
-          return false;
-        };
-        handle().then((handled) => { if (!handled) next(); }).catch((e: unknown) => {
-          send(res, 400, { error: e instanceof Error ? e.message : 'erreur' });
-        });
-      });
+      server.middlewares.use((req, res, next) => void mw(req, res, next));
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use((req, res, next) => void mw(req, res, next));
     },
   };
 }
+
+/** Nom attendu par vite.config.ts sur develop (Walid). */
+export const apiPlugin = solZeroApi;
