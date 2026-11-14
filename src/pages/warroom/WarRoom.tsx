@@ -12,6 +12,7 @@ import { lightTimeMin, lightTimeSource } from '../../content/horizons';
 import { CheckInCard } from './CheckInCard';
 import { NowNextCard } from './NowNextCard';
 import { TodoList } from './TodoList';
+import { MoodCard } from './MoodCard';
 import { LiveWidget, WatchImport } from './LiveWidget';
 import { Btn, Dot, T, fr } from './ui';
 import './warroom.css';
@@ -59,12 +60,13 @@ export function WarRoom() {
   }, []);
 
   const checkin = useMemo(() => todayCheckIn(), [version]);
-  const t = useMemo(() => triage(DAY), [version]);
+  // dataVersion : l'arrivée des vraies données montre recalcule le triage et le plan (fusion RÉEL de Mouad).
+  const t = useMemo(() => triage(DAY), [version, dataVersion]);
   const delay = lightTimeMin(DATE);
   // Valeur tabulée (JPL Horizons / test ROADMAP) → [Publié] ; approximation orbite circulaire → [H].
   const delayTag: Tag = lightTimeSource(DATE) === 'table' ? 'Publié' : 'H';
   const out = useMemo(() => router(t, POS, delay), [t, delay]);
-  const plan = useMemo(() => planDay(DAY), [version]);
+  const plan = useMemo(() => planDay(DAY), [version, dataVersion]);
   const items: TodoItem[] = useMemo(() => plan.map((i) => ({ ...i, done: i.done || done.has(i.id) })), [plan, done]);
   const summary = useMemo(() => getSummary('hanche', DAY), []);
   const summaryAt = useMemo(() => new Date(new Date(DATE + 'T06:00:00').getTime() + delay * 60_000), [delay]);
@@ -151,6 +153,7 @@ export function WarRoom() {
             <div className="wr-side">
               <CheckInCard day={DAY} done={checkin} />
               <LiveWidget dataVersion={dataVersion} />
+              <MoodCard key={version} />
               <WatchImport hasData={hasReal} onImported={() => setDataVersion((v) => v + 1)} />
             </div>
             <TodoList items={items} onToggle={toggle} synced={synced} level={t.level} />
