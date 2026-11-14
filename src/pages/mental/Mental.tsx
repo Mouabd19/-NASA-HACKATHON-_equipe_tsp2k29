@@ -42,8 +42,20 @@ const NIV_LABEL: Record<Niveau, string> = {
 };
 const nivColor = (n?: Niveau): string =>
   n === 'proposer_un_echange' ? T.status.red : n === 'a_surveiller' ? T.status.amber : n === 'rien' ? T.status.green : T.status.grey;
+/** Repère de verdict : même forme que les statuts du reste de l'app (rond, triangle, losange, cercle creux). */
+function nivShape(n: Niveau | undefined, cx: number, cy: number, r: number): JSX.Element {
+  const c = nivColor(n);
+  if (n === 'proposer_un_echange') return <path d={`M${cx} ${cy - r * 1.25} L${cx + r * 1.25} ${cy} L${cx} ${cy + r * 1.25} L${cx - r * 1.25} ${cy} Z`} fill={c} />;
+  if (n === 'a_surveiller') return <path d={`M${cx} ${cy - r * 1.15} L${cx + r * 1.2} ${cy + r * 0.9} H${cx - r * 1.2} Z`} fill={c} stroke={c} strokeWidth={1} strokeLinejoin="round" />;
+  if (n === 'rien') return <circle cx={cx} cy={cy} r={r} fill={c} />;
+  return <circle cx={cx} cy={cy} r={r - 1} fill="none" stroke={c} strokeWidth={1.5} />;
+}
+function NivMark({ n, size = 12 }: { n?: Niveau; size?: number }): JSX.Element {
+  return <svg width={size} height={size} viewBox="0 0 12 12" aria-hidden style={{ flex: 'none' }}>{nivShape(n, 6, 6, 4)}</svg>;
+}
 const rank = (n?: Niveau): number => (n === 'proposer_un_echange' ? 2 : n === 'a_surveiller' ? 1 : 0);
 const CONF: Record<string, string> = { elevee: 'élevée', moyenne: 'moyenne', faible: 'faible' };
+const low = (s: string): string => s.charAt(0).toLowerCase() + s.slice(1);
 const cap = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
 
 function Kpi({ value, text }: { value: string; text: string }): JSX.Element {
@@ -74,8 +86,8 @@ function Frise({ sel, onSel, mlAlert }: { sel: { sc: Sc; day: number }; onSel: (
   const d0 = drift[0].day, d1 = drift[drift.length - 1].day;
   const W = 1000, L = 190, R = 24;
   const x = (d: number): number => L + ((d - d0) / (d1 - d0)) * (W - L - R);
-  const TRACK = [{ sc: 'drift' as Sc, y: 34, name: 'Verdict des agents · avec trouble' }, { sc: 'control' as Sc, y: 66, name: 'Verdict des agents · témoin' }];
-  const CH = 64, GAP = 22, TOP = 100;
+  const TRACK = [{ sc: 'drift' as Sc, y: 50, name: 'Verdict · avec trouble' }, { sc: 'control' as Sc, y: 84, name: 'Verdict · témoin' }];
+  const CH = 64, GAP = 22, TOP = 122;
   const H = TOP + METRICS.length * (CH + GAP) + 24;
   const ticks: number[] = [];
   for (let d = d0; d <= d1; d += 4) ticks.push(d);
@@ -92,10 +104,17 @@ function Frise({ sel, onSel, mlAlert }: { sel: { sc: Sc; day: number }; onSel: (
         <text x={x(ONSET) + 6} y={10} {...txt} fill={T.status.amber}>trouble injecté à J{ONSET} (scénario « avec trouble »)</text>
         {mlAlert !== null ? (
           <g>
-            <line x1={x(mlAlert)} x2={x(mlAlert)} y1={84} y2={H - 24} stroke={T.holo} strokeDasharray="4 4" />
-            <text x={x(mlAlert) - 6} y={94} {...txt} fill={T.holo} textAnchor="end">modèle de Mouad : alerte J{mlAlert}</text>
+            <line x1={x(mlAlert)} x2={x(mlAlert)} y1={104} y2={H - 24} stroke={T.holo} strokeDasharray="4 4" />
+            <text x={x(mlAlert) - 6} y={114} {...txt} fill={T.holo} textAnchor="end">modèle de Mouad : alerte J{mlAlert}</text>
           </g>
         ) : null}
+        {/* jour sélectionné : repère vertical sur toute la frise */}
+        <line x1={x(sel.day)} x2={x(sel.day)} y1={30} y2={H - 24} stroke={T.holo} strokeWidth={1} opacity={0.55} />
+        {/* jours analysés par les agents : en-têtes de colonne */}
+        {DAYS.map((d) => (
+          <text key={d} x={x(d)} y={30} {...txt} textAnchor="middle" fontWeight={d === sel.day ? 700 : 400}
+            fill={d === sel.day ? T.text : T.textDim} style={{ fontVariantNumeric: 'tabular-nums' }}>J{d}</text>
+        ))}
         {/* pistes des verdicts */}
         {TRACK.map((t) => (
           <g key={t.sc}>
@@ -105,11 +124,12 @@ function Frise({ sel, onSel, mlAlert }: { sel: { sc: Sc; day: number }; onSel: (
               const n = dd.dossierPourLePsyHumain.niveau;
               const on = sel.sc === t.sc && sel.day === dd.day;
               return (
-                <g key={dd.day} role="button" tabIndex={0} aria-label={`${SC_LABEL[t.sc]}, J${dd.day} : ${NIV_LABEL[n]}`} style={{ cursor: 'pointer' }}
+                <g key={dd.day} role="button" tabIndex={0} aria-pressed={on}
+                  aria-label={`Ouvrir le dossier J${dd.day}, ${low(SC_LABEL[t.sc])} : ${NIV_LABEL[n]}`} style={{ cursor: 'pointer' }}
                   onClick={() => onSel(t.sc, dd.day)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSel(t.sc, dd.day); } }}>
-                  <circle cx={x(dd.day)} cy={t.y} r={14} fill="transparent" />
-                  {on ? <circle cx={x(dd.day)} cy={t.y} r={11} fill="none" stroke={T.text} strokeWidth={1.5} /> : null}
-                  <circle cx={x(dd.day)} cy={t.y} r={7} fill={nivColor(n)} />
+                  <title>{`J${dd.day} · ${NIV_LABEL[n]} — cliquer pour lire le dossier du jour`}</title>
+                  <rect x={x(dd.day) - 16} y={t.y - 14} width={32} height={28} rx={6} fill={on ? T.panelRaised : 'transparent'} stroke={on ? T.text : 'none'} strokeWidth={1.5} />
+                  {nivShape(n, x(dd.day), t.y, 6)}
                 </g>
               );
             })}
@@ -141,7 +161,7 @@ function Frise({ sel, onSel, mlAlert }: { sel: { sc: Sc; day: number }; onSel: (
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><svg width="24" height="4" aria-hidden><line x1="0" x2="24" y1="2" y2="2" stroke={T.text} strokeWidth="2" /></svg>Avec trouble</span>
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><svg width="24" height="4" aria-hidden><line x1="0" x2="24" y1="2" y2="2" stroke={T.textDim} strokeWidth="1.5" strokeDasharray="5 4" /></svg>Témoin (sans trouble)</span>
         {(['rien', 'a_surveiller', 'proposer_un_echange'] as Niveau[]).map((n) => (
-          <span key={n} style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><Dot color={nivColor(n)} />{NIV_LABEL[n]}</span>
+          <span key={n} style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><NivMark n={n} />{NIV_LABEL[n]}</span>
         ))}
         <span>Courbes : moyenne sur 3 jours</span>
       </div>
@@ -187,8 +207,8 @@ function Dossier({ x }: { x: DayFile }): JSX.Element {
   const faits = x.observers.flatMap((o) => (o.output?.faits ?? []).slice(0, 3)).slice(0, 8);
   return (
     <Panel title={`Dossier du jour · ${SC_LABEL[x.scenario]}`} accent={nivColor(d.niveau)} prov={<Prov p="SIMULÉ" />}>
-      <h2 style={{ margin: '0 0 4px', fontSize: 24, fontWeight: 600, letterSpacing: '-0.01em' }}>
-        J{x.day} · <span style={{ color: nivColor(d.niveau) }}>{NIV_LABEL[d.niveau]}</span>
+      <h2 style={{ margin: '0 0 4px', fontSize: 24, fontWeight: 600, letterSpacing: '-0.01em', display: 'flex', alignItems: 'center', gap: 10 }}>
+        J{x.day} · <NivMark n={d.niveau} size={16} /><span style={{ color: nivColor(d.niveau) }}>{NIV_LABEL[d.niveau]}</span>
       </h2>
       <div style={{ fontSize: T.fs.md, color: T.textDim, marginBottom: 24 }}>
         Règle : niveau retenu par au moins 2 psychologues sur 3 · votes {d.votes.map((v) => NIV_LABEL[v.niveau].toLowerCase()).join(' / ')}
@@ -201,7 +221,7 @@ function Dossier({ x }: { x: DayFile }): JSX.Element {
             <section key={p.id} style={{ background: T.panelRaised, border: `1px solid ${T.border}`, borderRadius: T.radius.inset, padding: 20, minWidth: 0 }}>
               <h3 style={{ margin: 0, fontSize: T.fs.md, fontWeight: 600 }}>{cap(p.label.replace('Psychologue — ', ''))}</h3>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '8px 0 12px', fontSize: T.fs.sm, color: nivColor(o.niveau) }}>
-                <Dot color={nivColor(o.niveau)} />{o.niveau ? NIV_LABEL[o.niveau] : '—'}
+                <NivMark n={o.niveau} />{o.niveau ? NIV_LABEL[o.niveau] : '—'}
                 {o.confiance ? <span style={{ color: T.textDim }}>· confiance {CONF[o.confiance] ?? o.confiance}</span> : null}
               </div>
               {o.hypotheses?.[0]?.schema ? <p style={{ margin: '0 0 8px', fontSize: T.fs.md, lineHeight: 1.45 }}>{o.hypotheses[0].schema}</p> : null}
@@ -228,6 +248,12 @@ function Dossier({ x }: { x: DayFile }): JSX.Element {
   );
 }
 
+/** Amène le dossier du jour à l'écran (sans animation si l'utilisateur la refuse). */
+function scrollToDossier(): void {
+  const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  document.getElementById('mental-dossier')?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+}
+
 export function Mental(): JSX.Element {
   const drift = DATA.drift;
   const ctrl = DATA.control;
@@ -236,6 +262,7 @@ export function Mental(): JSX.Element {
   const mlAlert = useMemo(() => moodSignals().find((s) => s.alert)?.day ?? null, []);
   const [sel, setSel] = useState<{ sc: Sc; day: number }>(() => ({ sc: 'drift', day: detected?.day ?? DAYS[DAYS.length - 1] }));
   const current = DATA[sel.sc].find((d) => d.day === sel.day);
+  const pick = (sc: Sc, day: number): void => { setSel({ sc, day }); setTimeout(scrollToDossier, 0); };
   const engine = SUMMARY.model ? SUMMARY.model.replace(/^claude-(\w+)-(\d+)-(\d+)$/, (_m, n: string, a: string, b: string) => `Claude ${cap(n)} ${a}.${b}`) : 'modèle de langage';
 
   if (!DAYS.length) {
@@ -271,11 +298,24 @@ export function Mental(): JSX.Element {
           </div>
         </Panel>
 
-        <Panel title="La frise · cliquez un verdict pour ouvrir le dossier du jour">
-          <Frise sel={sel} onSel={(sc, day) => setSel({ sc, day })} mlAlert={mlAlert} />
+        <Panel title="Frise · verdicts des agents aux 5 jours analysés">
+          <p style={{ margin: '0 0 12px', fontSize: T.fs.md, color: T.textDim }}>
+            Chaque repère est le verdict des psychologues IA pour un jour analysé. Choisissez-en un pour lire son dossier, juste en dessous.
+          </p>
+          <Frise sel={sel} onSel={pick} mlAlert={mlAlert} />
+          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10, marginTop: 16, paddingTop: 12, borderTop: `1px solid ${T.border}`, fontSize: T.fs.md }}>
+            <span style={{ color: T.textDim }}>Dossier affiché :</span>
+            <NivMark n={current?.dossierPourLePsyHumain.niveau} />
+            <strong style={{ fontWeight: 600 }}>J{sel.day} · {low(SC_LABEL[sel.sc])}</strong>
+            <span style={{ color: T.textDim }}>{current ? NIV_LABEL[current.dossierPourLePsyHumain.niveau] : ''}</span>
+            <span style={{ flex: 1 }} />
+            <Btn kind="quiet" onClick={() => scrollToDossier()}>Lire le dossier ↓</Btn>
+          </div>
         </Panel>
 
-        {current ? <Dossier key={`${sel.sc}${sel.day}`} x={current} /> : null}
+        <div id="mental-dossier" style={{ scrollMarginTop: 16 }}>
+          {current ? <Dossier key={`${sel.sc}${sel.day}`} x={current} /> : null}
+        </div>
 
         <p style={{ margin: '8px 0 0', fontSize: T.fs.sm, color: T.textDim }}>
           Données entièrement simulées (biomarqueurs : simulation de Mouad) · aucune personne réelle · signal à regarder, jamais un diagnostic.
