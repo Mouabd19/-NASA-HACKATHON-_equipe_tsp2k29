@@ -1,5 +1,5 @@
 # Status — Steve (D)
-_Mis à jour : sam. 18:50_
+_Mis à jour : sam. 18:20_
 
 ## Livré (poussé sur `feature/steve-models` ; PR vers `develop` dès que Walid aura créé la branche)
 - **Modèles 3D** (jalon 17:00, en avance) : `public/models/{squelette,muscles,organes,cardio,nerveux}.glb` (170–260 k triangles chacun, 1,2–2,9 Mo, ~1 M triangles si tout est affiché) + `manifest.json` (ancres des ⚠) + `CREDITS.md`.
