@@ -1,6 +1,5 @@
-// Propriétaire : Mouad (ROADMAP §7).
-// STUB — remplace l'implémentation sans changer la signature.
-// Pour l'instant : simple délégation vers src/mocks/ (données factices). Supprime le corps et code le vrai module.
+// Propriétaire : Mouad (ROADMAP §7). Couleur d'une valeur et pire couleur sur sa bande d'incertitude.
+// Module réel (aucune dépendance aux mocks) : une donnée manquante donne « grey », jamais vert.
 import type { Color } from '../types';
 
 /**
