@@ -104,6 +104,30 @@ export const look = {
     lerpSpeed: 5,
   },
 
+  /** Balayage du scanner au chargement de la page (pieds → tête), repris des versions précédentes. */
+  scan: {
+    /** Durée du balayage, en secondes. */
+    duration: 3.2,
+    /** Épaisseur de la bande lumineuse sur le corps, en mètres. */
+    bandWidth: 0.05,
+    /** Intensité de la bande lumineuse. */
+    bandBoost: 0.55,
+    /** Traîne lumineuse sous le plan (0 = aucune) et sa longueur en mètres. */
+    trail: 0.6,
+    trailLength: 0.45,
+    /** Hauteurs de départ et d'arrivée du plan, en mètres. */
+    yStart: -0.05,
+    yEnd: 1.84,
+    /** Rayon de l'anneau qui matérialise le plan de scan. */
+    ringRadius: 0.34,
+    /** Opacité du disque et de l'anneau. */
+    discOpacity: 0.05,
+    ringOpacity: 0.8,
+    /** Opacité résiduelle AU-DESSUS du plan pendant le balayage : calques internes (le scanner « reconstruit » le corps) et enveloppe. */
+    hideInner: 0.06,
+    hideShell: 0.55,
+  },
+
   /** Flux sanguin le long des vaisseaux. Désactivé (boost = 0) : la scène reste immobile. */
   flow: {
     /** Tirets par mètre de vaisseau. */

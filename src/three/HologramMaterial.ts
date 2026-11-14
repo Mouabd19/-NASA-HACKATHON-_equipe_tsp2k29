@@ -19,6 +19,9 @@ export interface HologramOpts {
   fx?: 'flow' | 'heat';
 }
 
+/** Hauteur de plan « hors champ » : tout le corps est sous le plan (teintes révélées), pas de bande visible. */
+export const SCAN_Y_IDLE = 1000;
+
 const vertexShader = /* glsl */ `
 varying vec3 vWorldPos;
 varying vec3 vWorldNormal;
@@ -42,6 +45,9 @@ uniform float uOpacity;
 uniform float uHighlight;
 uniform float uGhost;
 uniform float uDim;
+uniform float uScanY;
+uniform vec4 uScanLook;   // épaisseur de bande, intensité, traîne, longueur de traîne
+uniform float uScanHide;  // opacité résiduelle AU-DESSUS du plan de scan (1 = le balayage ne masque rien)
 uniform float uCore;
 uniform float uRim;
 uniform float uFresnelPower;
@@ -79,7 +85,9 @@ void main() {
   float fres = pow(1.0 - ndv, uFresnelPower);
 
   // organe non mis en avant : sa teinte de statut s'éteint à moitié (l'œil va à l'organe survolé / épinglé)
-  float tintMix = uTintMix * (1.0 - 0.5 * uDim);
+  // révélation des teintes par le plan de scan : sous le plan = teinté
+  float reveal = smoothstep(0.0, 0.04, uScanY - vWorldPos.y);
+  float tintMix = uTintMix * reveal * (1.0 - 0.5 * uDim);
   vec3 col = mix(uColor, uTint, tintMix);
 
   float a = uCore + uRim * fres;
@@ -94,7 +102,7 @@ void main() {
     // paliers DISCRETS et LINÉAIRES en luminance (pas en teinte : la couleur reste réservée aux statuts)
     a = uCore + uHeatLook.y * q + line * uHeatLook.z * (0.06 + 0.16 * q) + uRim * fres * (0.35 + 0.65 * q);
     // la teinte de statut (ambre / rouge si la dose dépasse le repère) ne colore que les zones les plus exposées
-    col = mix(uColor, uTint, clamp(uTintMix * smoothstep(0.55, 0.8, q), 0.0, 1.0));
+    col = mix(uColor, uTint, clamp(uTintMix * reveal * smoothstep(0.55, 0.8, q), 0.0, 1.0));
   }
 
   if (!gl_FrontFacing) a *= uBackFace;
@@ -105,6 +113,9 @@ void main() {
     float toward = dot(vWorldPos.xz, normalize(cameraPosition.xz + vec2(0.0, 1e-5)));
     a *= mix(uDepthCue, 1.0, smoothstep(-0.05, 0.035, toward));
   }
+
+  // balayage : au-dessus du plan, les calques internes ne sont pas encore « reconstruits »
+  a *= mix(uScanHide, 1.0, reveal);
 
   // flux sanguin : tirets qui courent le long du vaisseau (uv.x = mètres)
   if (uFlow > 0.0) {
@@ -123,6 +134,13 @@ void main() {
   a *= 1.0 + uHighlight * uHoverLook.x;
   a += uHighlight * uHoverLook.z * (0.45 + 0.55 * ndv) * (gl_FrontFacing ? 1.0 : uBackFace);
   a *= 1.0 - uDim * uHoverLook.y;
+
+  // bande lumineuse là où le plan de scan coupe le maillage, puis traîne sous le plan
+  float band = exp(-abs(vWorldPos.y - uScanY) / uScanLook.x);
+  col = mix(col, uColor * 1.6, band * 0.6);
+  a += band * uScanLook.y * (0.25 + fres);
+  float below = uScanY - vWorldPos.y;
+  a += uScanLook.z * (1.0 - smoothstep(0.0, uScanLook.w, below)) * step(0.0, below) * fres * step(uScanY, 100.0);
 
   a = min(a, uAlphaMax) * uOpacity;
   gl_FragColor = vec4(col, a);
@@ -150,6 +168,7 @@ export function createHologramMaterial(opts: HologramOpts = {}): THREE.ShaderMat
       uHighlight: { value: 0 },
       uGhost: { value: opts.ghost ? 1 : 0 },
       uDim: { value: 0 },
+      uScanY: { value: SCAN_Y_IDLE },
       uCore: { value: L.core },
       uRim: { value: L.rim },
       uFresnelPower: { value: L.fresnelPower },
@@ -162,6 +181,8 @@ export function createHologramMaterial(opts: HologramOpts = {}): THREE.ShaderMat
       uFlowLook: { value: new THREE.Vector3(look.flow.density, look.flow.speed, look.flow.boost) },
       uHeatLook: { value: new THREE.Vector3(look.heat.levels, look.heat.gain, look.heat.contour) },
       uAlphaMax: { value: h.alphaMax },
+      uScanLook: { value: new THREE.Vector4(look.scan.bandWidth, look.scan.bandBoost, look.scan.trail, look.scan.trailLength) },
+      uScanHide: { value: (opts.layer ?? 'organes') === 'shell' ? look.scan.hideShell : look.scan.hideInner },
       uDepthCue: { value: look.depthCue[opts.layer ?? 'organes'] ?? 0 },
     },
     transparent: true,

@@ -1,6 +1,6 @@
 // Page « Corps » : bandeau de synthèse · [analyses + SpO₂] | corps 3D | [calques + alertes] · chronologie.
 // La fenêtre organe est montée à la racine. Aucun composant ne dépend d'un autre : tout passe par le store useBody.
-import { Component, useEffect } from 'react';
+import { Component, useEffect, useRef } from 'react';
 import type { ErrorInfo, JSX, ReactNode } from 'react';
 import { DAY_TODAY } from '../../mocks/mission';
 import { useNavigate } from 'react-router-dom';
@@ -9,7 +9,7 @@ import { look } from '../../three/look';
 import { PanelCloseContext, ProvenanceBadge, TagBadge, fmt } from '../../ui';
 import { usePrefs } from '../../ui/prefs';
 import type { BodyPanelId } from '../../ui/prefs';
-import { scenarioBody, useBody } from './store';
+import { scanState, scenarioBody, useBody } from './store';
 import { useUrlState } from './urlState';
 import { Header } from './panels/Header';
 import { LayersPanel } from './panels/LayersPanel';
@@ -51,6 +51,29 @@ class SceneBoundary extends Component<{ children: ReactNode }, { error: string |
 }
 
 /** Informations posées sur la scène : mention « Projection » (toujours visible) et provenance (mode Détails). */
+/** Libellé « Scan 042 % » qui suit l'anneau pendant le balayage (position par ref : aucun état React à 60 Hz). */
+function ScanLabel(): JSX.Element {
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    let raf = 0;
+    let shown = false;
+    const frame = (): void => {
+      raf = requestAnimationFrame(frame);
+      const el = ref.current;
+      if (!el) return;
+      const on = scanState.t >= 0;
+      if (on) {
+        el.textContent = `Scan ${String(Math.round(scanState.t * 100)).padStart(3, '0')} %`;
+        el.style.transform = `translate(${Math.round(scanState.x + 10)}px, ${Math.round(scanState.y - 6)}px)`;
+      }
+      if (on !== shown) { shown = on; el.style.opacity = on ? '1' : '0'; }
+    };
+    raf = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+  return <span ref={ref} className="body-scanlabel" style={{ opacity: 0 }} aria-hidden="true" />;
+}
+
 function SceneChrome(): JSX.Element {
   const day = useBody((s) => s.day);
   const adherence = useBody((s) => s.adherence);
@@ -169,6 +192,7 @@ export function Body(): JSX.Element {
         <SceneBoundary><BodyScene /></SceneBoundary>
         <LeaderLines />
         <SceneChrome />
+        <ScanLabel />
         <HoverCard />
         <ViewMenu />
       </section>

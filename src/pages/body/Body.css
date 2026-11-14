@@ -187,3 +187,16 @@
    il ne reste qu'à retirer la marge et le cadre. */
 .body-page--clean { padding: 0; }
 .body-page--clean .body-scene { border: 0; border-radius: 0; }
+
+/* Libellé « Scan n % » qui suit l'anneau du scanner pendant le balayage au chargement */
+.body-scanlabel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 11px;
+  color: var(--sz-text-dim);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  transition: opacity 160ms;
+}
