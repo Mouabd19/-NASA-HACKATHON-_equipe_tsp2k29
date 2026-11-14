@@ -1,0 +1,172 @@
+{
+  "standard": "NASA-STD-3001 Volume 1, Revision C",
+  "approved": "2023-09-15",
+  "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C//nasa-std-3001-vol-1-rev-c-signature.pdf",
+  "checkedBy": "Steve (D)",
+  "checkedAt": "2026-11-14",
+  "standards": [
+    {
+      "id": "V1 4001",
+      "title": "Microgravity EVA Aerobic Capacity",
+      "section": "4.2",
+      "quote": "Crewmembers shall maintain an in-mission VO2max at or above 32.9 ml/min/kg for missions with microgravity EVAs as determined by either direct or indirect measures.",
+      "threshold": {
+        "metric": "vo2max",
+        "op": ">=",
+        "value": 32.9,
+        "unit": "ml/kg/min"
+      },
+      "usedFor": "Info (sortie en apesanteur)",
+      "verified": true,
+      "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C//nasa-std-3001-vol-1-rev-c-signature.pdf",
+      "partialQuote": false
+    },
+    {
+      "id": "V1 4002",
+      "title": "Extraterrestrial Surface EVA Aerobic Capacity",
+      "section": "4.2",
+      "quote": "Crewmembers shall maintain an in-mission VO2max at or above 36.5 ml/min/kg for missions with extraterrestrial surface EVAs as determined by either direct or indirect measures.",
+      "threshold": {
+        "metric": "vo2max",
+        "op": ">=",
+        "value": 36.5,
+        "unit": "ml/kg/min"
+      },
+      "usedFor": "Seuil rouge absolu VO₂max (sortie sur Mars)",
+      "verified": true,
+      "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C//nasa-std-3001-vol-1-rev-c-signature.pdf",
+      "partialQuote": false
+    },
+    {
+      "id": "V1 4003",
+      "title": "In-Mission Aerobic Capacity",
+      "section": "4.2",
+      "quote": "The in-mission aerobic capacity shall be maintained, either through countermeasures or work performance, at or above 80% of the pre-mission capacity determined by either direct or indirect measures.",
+      "threshold": {
+        "metric": "vo2max_pct_prevol",
+        "op": ">=",
+        "value": 80,
+        "unit": "%"
+      },
+      "usedFor": "Seuil rouge VO₂max relatif (déficit ≥ 20 %)",
+      "verified": true,
+      "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C//nasa-std-3001-vol-1-rev-c-signature.pdf",
+      "partialQuote": false
+    },
+    {
+      "id": "V1 4027",
+      "title": "In-Mission Bone Countermeasures",
+      "section": "4.7.2",
+      "quote": "Countermeasures shall maintain bone mineral density of the hip and spine at or above 95% of pre-mission values and at or above 90% for the femoral neck.",
+      "threshold": {
+        "metric": "bmd_pct_prevol",
+        "op": ">=",
+        "value": 95,
+        "unit": "%",
+        "femoralNeck": 90
+      },
+      "usedFor": "Seuil rouge hanche / rachis (perte > 5 %), col du fémur (perte > 10 %)",
+      "verified": true,
+      "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C//nasa-std-3001-vol-1-rev-c-signature.pdf",
+      "partialQuote": false
+    },
+    {
+      "id": "V1 4030",
+      "title": "Career Space Permissible Exposure Limit for Spaceflight Radiation Exposure",
+      "section": "4.8.2",
+      "quote": "An individual crewmember's total career effective radiation dose due to spaceflight radiation exposure shall be less than 600 mSv. This limit is universal for all ages and sexes.",
+      "threshold": {
+        "metric": "career_dose",
+        "op": "<",
+        "value": 600,
+        "unit": "mSv"
+      },
+      "usedFor": "Calque Exposition, information de mission (dose prévue 982 mSv)",
+      "verified": true,
+      "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C//nasa-std-3001-vol-1-rev-c-signature.pdf",
+      "partialQuote": false
+    },
+    {
+      "id": "V1 3006",
+      "title": "Crew Medical Officers",
+      "section": "5.2.1.1",
+      "quote": "The program(s) shall train a minimum of two crewmembers per vehicle/platform as Crew Medical Officers (CMOs).",
+      "usedFor": "Routage : le CMO de bord décide quand la Terre est loin",
+      "verified": true,
+      "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C//nasa-std-3001-vol-1-rev-c-signature.pdf",
+      "partialQuote": false
+    },
+    {
+      "id": "V1 5003",
+      "title": "Crew Medical Officer Training",
+      "section": "5.2.1",
+      "quote": "Crewmembers who have received a mission assignment as a Crew Medical Officer (CMO) shall be provided with detailed and specific medical training […]",
+      "usedFor": "Le CMO n'est pas forcément médecin (pitch)",
+      "verified": true,
+      "partialQuote": true,
+      "note": "Citation tronquée par l'outil de lecture ; la formule « souvent, mais pas obligatoirement, médecin » de la fiche n'a pas été relue dans ce passage.",
+      "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C//nasa-std-3001-vol-1-rev-c-signature.pdf"
+    },
+    {
+      "id": "V1 4011",
+      "title": "Behavioral Health and Cognition",
+      "section": "4.3.1",
+      "quote": "Pre-mission, in-mission, and post-mission crew behavioral health and crewmember cognitive status shall be within clinically accepted values […]",
+      "usedFor": "Check-in humeur, PVT, point psy",
+      "verified": true,
+      "partialQuote": true,
+      "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C//nasa-std-3001-vol-1-rev-c-signature.pdf"
+    },
+    {
+      "id": "V1 6001",
+      "title": "Circadian entrainment / crew schedule",
+      "section": "6.1",
+      "quote": "Crew schedule planning and operations shall be provided to include circadian entrainment […]",
+      "usedFor": "Sommeil, planification de la to-do",
+      "verified": true,
+      "partialQuote": true,
+      "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C//nasa-std-3001-vol-1-rev-c-signature.pdf"
+    },
+    {
+      "id": "V1 6004",
+      "title": "Psychological/Behavioral Health Support",
+      "section": "6.3.1",
+      "quote": "Programs shall implement psychological/behavioral health support programs for the crewmembers […]",
+      "usedFor": "Item « point psy » proposé, slide Vision",
+      "verified": true,
+      "partialQuote": true,
+      "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C//nasa-std-3001-vol-1-rev-c-signature.pdf"
+    },
+    {
+      "id": "V1 6010",
+      "title": "Private Psychological Conference (PPC)",
+      "section": "6.3.2.1",
+      "quote": "A PPC shall be scheduled on a routine basis, as determined by the Behavioral Health Provider […]",
+      "usedFor": "Point psy de routine avec le sol",
+      "verified": true,
+      "partialQuote": true,
+      "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C//nasa-std-3001-vol-1-rev-c-signature.pdf"
+    },
+    {
+      "id": "V1 7001",
+      "title": "Crew Health Monitoring Records",
+      "section": "7.1",
+      "quote": "The results of all crew health monitoring shall be kept in a permanent retrievable format […]",
+      "usedFor": "Historique des « corps du jour »",
+      "verified": true,
+      "partialQuote": true,
+      "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C//nasa-std-3001-vol-1-rev-c-signature.pdf"
+    },
+    {
+      "id": "GLOSS-bisphosphonates",
+      "title": "Bisphosphonates (glossaire, annexe C)",
+      "section": "Annexe C",
+      "quote": "A group of medicines that slows [down] or prevent bone loss, preserving bone strength.",
+      "usedFor": "Sol-routine hanche",
+      "verified": true,
+      "note": "Seule mention dans la Rev C. L'affirmation de la fiche (« perte ramenée à ~0 % », « < 5 % avec l'ARED », attribuée à la justification de V1 4027) N'EST PAS dans la norme : source à trouver (étape 3).",
+      "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C//nasa-std-3001-vol-1-rev-c-signature.pdf",
+      "partialQuote": false
+    }
+  ]
+}
