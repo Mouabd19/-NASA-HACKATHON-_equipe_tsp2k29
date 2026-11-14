@@ -1,0 +1,6038 @@
+{
+ "source": "Calcul local provisoire (astronomy-engine) — à remplacer par scripts/fetch-horizons.ts (NASA JPL Horizons)",
+ "tag": "H",
+ "provisional": true,
+ "fetchedAt": null,
+ "query": null,
+ "note": "Distance géocentrique Terre–Mars. Délai radio aller = distance / c. Conjonction solaire : élongation < 3°.",
+ "j0": "2026-08-12",
+ "days": [
+  {
+   "day": 0,
+   "date": "2026-08-12",
+   "distanceKm": 291741486,
+   "lightTimeMin": 16.219,
+   "elongationDeg": 48.9
+  },
+  {
+   "day": 1,
+   "date": "2026-08-13",
+   "distanceKm": 291056367,
+   "lightTimeMin": 16.181,
+   "elongationDeg": 49.2
+  },
+  {
+   "day": 2,
+   "date": "2026-08-14",
+   "distanceKm": 290364609,
+   "lightTimeMin": 16.143,
+   "elongationDeg": 49.5
+  },
+  {
+   "day": 3,
+   "date": "2026-08-15",
+   "distanceKm": 289666227,
+   "lightTimeMin": 16.104,
+   "elongationDeg": 49.8
+  },
+  {
+   "day": 4,
+   "date": "2026-08-16",
+   "distanceKm": 288961242,
+   "lightTimeMin": 16.065,
+   "elongationDeg": 50.11
+  },
+  {
+   "day": 5,
+   "date": "2026-08-17",
+   "distanceKm": 288249678,
+   "lightTimeMin": 16.025,
+   "elongationDeg": 50.41
+  },
+  {
+   "day": 6,
+   "date": "2026-08-18",
+   "distanceKm": 287531558,
+   "lightTimeMin": 15.985,
+   "elongationDeg": 50.72
+  },
+  {
+   "day": 7,
+   "date": "2026-08-19",
+   "distanceKm": 286806902,
+   "lightTimeMin": 15.945,
+   "elongationDeg": 51.03
+  },
+  {
+   "day": 8,
+   "date": "2026-08-20",
+   "distanceKm": 286075726,
+   "lightTimeMin": 15.904,
+   "elongationDeg": 51.34
+  },
+  {
+   "day": 9,
+   "date": "2026-08-21",
+   "distanceKm": 285338035,
+   "lightTimeMin": 15.863,
+   "elongationDeg": 51.65
+  },
+  {
+   "day": 10,
+   "date": "2026-08-22",
+   "distanceKm": 284593828,
+   "lightTimeMin": 15.822,
+   "elongationDeg": 51.96
+  },
+  {
+   "day": 11,
+   "date": "2026-08-23",
+   "distanceKm": 283843095,
+   "lightTimeMin": 15.78,
+   "elongationDeg": 52.28
+  },
+  {
+   "day": 12,
+   "date": "2026-08-24",
+   "distanceKm": 283085816,
+   "lightTimeMin": 15.738,
+   "elongationDeg": 52.6
+  },
+  {
+   "day": 13,
+   "date": "2026-08-25",
+   "distanceKm": 282321963,
+   "lightTimeMin": 15.695,
+   "elongationDeg": 52.92
+  },
+  {
+   "day": 14,
+   "date": "2026-08-26",
+   "distanceKm": 281551502,
+   "lightTimeMin": 15.653,
+   "elongationDeg": 53.24
+  },
+  {
+   "day": 15,
+   "date": "2026-08-27",
+   "distanceKm": 280774393,
+   "lightTimeMin": 15.609,
+   "elongationDeg": 53.56
+  },
+  {
+   "day": 16,
+   "date": "2026-08-28",
+   "distanceKm": 279990589,
+   "lightTimeMin": 15.566,
+   "elongationDeg": 53.88
+  },
+  {
+   "day": 17,
+   "date": "2026-08-29",
+   "distanceKm": 279200038,
+   "lightTimeMin": 15.522,
+   "elongationDeg": 54.21
+  },
+  {
+   "day": 18,
+   "date": "2026-08-30",
+   "distanceKm": 278402685,
+   "lightTimeMin": 15.478,
+   "elongationDeg": 54.54
+  },
+  {
+   "day": 19,
+   "date": "2026-08-31",
+   "distanceKm": 277598470,
+   "lightTimeMin": 15.433,
+   "elongationDeg": 54.87
+  },
+  {
+   "day": 20,
+   "date": "2026-09-01",
+   "distanceKm": 276787332,
+   "lightTimeMin": 15.388,
+   "elongationDeg": 55.2
+  },
+  {
+   "day": 21,
+   "date": "2026-09-02",
+   "distanceKm": 275969210,
+   "lightTimeMin": 15.342,
+   "elongationDeg": 55.54
+  },
+  {
+   "day": 22,
+   "date": "2026-09-03",
+   "distanceKm": 275144041,
+   "lightTimeMin": 15.296,
+   "elongationDeg": 55.87
+  },
+  {
+   "day": 23,
+   "date": "2026-09-04",
+   "distanceKm": 274311769,
+   "lightTimeMin": 15.25,
+   "elongationDeg": 56.21
+  },
+  {
+   "day": 24,
+   "date": "2026-09-05",
+   "distanceKm": 273472343,
+   "lightTimeMin": 15.203,
+   "elongationDeg": 56.55
+  },
+  {
+   "day": 25,
+   "date": "2026-09-06",
+   "distanceKm": 272625722,
+   "lightTimeMin": 15.156,
+   "elongationDeg": 56.89
+  },
+  {
+   "day": 26,
+   "date": "2026-09-07",
+   "distanceKm": 271771873,
+   "lightTimeMin": 15.109,
+   "elongationDeg": 57.23
+  },
+  {
+   "day": 27,
+   "date": "2026-09-08",
+   "distanceKm": 270910781,
+   "lightTimeMin": 15.061,
+   "elongationDeg": 57.58
+  },
+  {
+   "day": 28,
+   "date": "2026-09-09",
+   "distanceKm": 270042440,
+   "lightTimeMin": 15.013,
+   "elongationDeg": 57.93
+  },
+  {
+   "day": 29,
+   "date": "2026-09-10",
+   "distanceKm": 269166863,
+   "lightTimeMin": 14.964,
+   "elongationDeg": 58.28
+  },
+  {
+   "day": 30,
+   "date": "2026-09-11",
+   "distanceKm": 268284072,
+   "lightTimeMin": 14.915,
+   "elongationDeg": 58.63
+  },
+  {
+   "day": 31,
+   "date": "2026-09-12",
+   "distanceKm": 267394105,
+   "lightTimeMin": 14.866,
+   "elongationDeg": 58.99
+  },
+  {
+   "day": 32,
+   "date": "2026-09-13",
+   "distanceKm": 266497004,
+   "lightTimeMin": 14.816,
+   "elongationDeg": 59.34
+  },
+  {
+   "day": 33,
+   "date": "2026-09-14",
+   "distanceKm": 265592821,
+   "lightTimeMin": 14.765,
+   "elongationDeg": 59.7
+  },
+  {
+   "day": 34,
+   "date": "2026-09-15",
+   "distanceKm": 264681608,
+   "lightTimeMin": 14.715,
+   "elongationDeg": 60.06
+  },
+  {
+   "day": 35,
+   "date": "2026-09-16",
+   "distanceKm": 263763420,
+   "lightTimeMin": 14.664,
+   "elongationDeg": 60.43
+  },
+  {
+   "day": 36,
+   "date": "2026-09-17",
+   "distanceKm": 262838304,
+   "lightTimeMin": 14.612,
+   "elongationDeg": 60.79
+  },
+  {
+   "day": 37,
+   "date": "2026-09-18",
+   "distanceKm": 261906306,
+   "lightTimeMin": 14.56,
+   "elongationDeg": 61.16
+  },
+  {
+   "day": 38,
+   "date": "2026-09-19",
+   "distanceKm": 260967463,
+   "lightTimeMin": 14.508,
+   "elongationDeg": 61.53
+  },
+  {
+   "day": 39,
+   "date": "2026-09-20",
+   "distanceKm": 260021805,
+   "lightTimeMin": 14.456,
+   "elongationDeg": 61.9
+  },
+  {
+   "day": 40,
+   "date": "2026-09-21",
+   "distanceKm": 259069355,
+   "lightTimeMin": 14.403,
+   "elongationDeg": 62.28
+  },
+  {
+   "day": 41,
+   "date": "2026-09-22",
+   "distanceKm": 258110126,
+   "lightTimeMin": 14.349,
+   "elongationDeg": 62.66
+  },
+  {
+   "day": 42,
+   "date": "2026-09-23",
+   "distanceKm": 257144124,
+   "lightTimeMin": 14.296,
+   "elongationDeg": 63.04
+  },
+  {
+   "day": 43,
+   "date": "2026-09-24",
+   "distanceKm": 256171348,
+   "lightTimeMin": 14.242,
+   "elongationDeg": 63.42
+  },
+  {
+   "day": 44,
+   "date": "2026-09-25",
+   "distanceKm": 255191792,
+   "lightTimeMin": 14.187,
+   "elongationDeg": 63.8
+  },
+  {
+   "day": 45,
+   "date": "2026-09-26",
+   "distanceKm": 254205441,
+   "lightTimeMin": 14.132,
+   "elongationDeg": 64.19
+  },
+  {
+   "day": 46,
+   "date": "2026-09-27",
+   "distanceKm": 253212278,
+   "lightTimeMin": 14.077,
+   "elongationDeg": 64.58
+  },
+  {
+   "day": 47,
+   "date": "2026-09-28",
+   "distanceKm": 252212280,
+   "lightTimeMin": 14.021,
+   "elongationDeg": 64.97
+  },
+  {
+   "day": 48,
+   "date": "2026-09-29",
+   "distanceKm": 251205424,
+   "lightTimeMin": 13.966,
+   "elongationDeg": 65.36
+  },
+  {
+   "day": 49,
+   "date": "2026-09-30",
+   "distanceKm": 250191682,
+   "lightTimeMin": 13.909,
+   "elongationDeg": 65.76
+  },
+  {
+   "day": 50,
+   "date": "2026-10-01",
+   "distanceKm": 249171030,
+   "lightTimeMin": 13.852,
+   "elongationDeg": 66.15
+  },
+  {
+   "day": 51,
+   "date": "2026-10-02",
+   "distanceKm": 248143448,
+   "lightTimeMin": 13.795,
+   "elongationDeg": 66.56
+  },
+  {
+   "day": 52,
+   "date": "2026-10-03",
+   "distanceKm": 247108918,
+   "lightTimeMin": 13.738,
+   "elongationDeg": 66.96
+  },
+  {
+   "day": 53,
+   "date": "2026-10-04",
+   "distanceKm": 246067436,
+   "lightTimeMin": 13.68,
+   "elongationDeg": 67.37
+  },
+  {
+   "day": 54,
+   "date": "2026-10-05",
+   "distanceKm": 245019004,
+   "lightTimeMin": 13.622,
+   "elongationDeg": 67.77
+  },
+  {
+   "day": 55,
+   "date": "2026-10-06",
+   "distanceKm": 243963640,
+   "lightTimeMin": 13.563,
+   "elongationDeg": 68.19
+  },
+  {
+   "day": 56,
+   "date": "2026-10-07",
+   "distanceKm": 242901374,
+   "lightTimeMin": 13.504,
+   "elongationDeg": 68.6
+  },
+  {
+   "day": 57,
+   "date": "2026-10-08",
+   "distanceKm": 241832252,
+   "lightTimeMin": 13.444,
+   "elongationDeg": 69.02
+  },
+  {
+   "day": 58,
+   "date": "2026-10-09",
+   "distanceKm": 240756333,
+   "lightTimeMin": 13.385,
+   "elongationDeg": 69.44
+  },
+  {
+   "day": 59,
+   "date": "2026-10-10",
+   "distanceKm": 239673689,
+   "lightTimeMin": 13.324,
+   "elongationDeg": 69.86
+  },
+  {
+   "day": 60,
+   "date": "2026-10-11",
+   "distanceKm": 238584403,
+   "lightTimeMin": 13.264,
+   "elongationDeg": 70.29
+  },
+  {
+   "day": 61,
+   "date": "2026-10-12",
+   "distanceKm": 237488567,
+   "lightTimeMin": 13.203,
+   "elongationDeg": 70.72
+  },
+  {
+   "day": 62,
+   "date": "2026-10-13",
+   "distanceKm": 236386276,
+   "lightTimeMin": 13.142,
+   "elongationDeg": 71.15
+  },
+  {
+   "day": 63,
+   "date": "2026-10-14",
+   "distanceKm": 235277631,
+   "lightTimeMin": 13.08,
+   "elongationDeg": 71.59
+  },
+  {
+   "day": 64,
+   "date": "2026-10-15",
+   "distanceKm": 234162731,
+   "lightTimeMin": 13.018,
+   "elongationDeg": 72.02
+  },
+  {
+   "day": 65,
+   "date": "2026-10-16",
+   "distanceKm": 233041672,
+   "lightTimeMin": 12.956,
+   "elongationDeg": 72.47
+  },
+  {
+   "day": 66,
+   "date": "2026-10-17",
+   "distanceKm": 231914548,
+   "lightTimeMin": 12.893,
+   "elongationDeg": 72.91
+  },
+  {
+   "day": 67,
+   "date": "2026-10-18",
+   "distanceKm": 230781444,
+   "lightTimeMin": 12.83,
+   "elongationDeg": 73.36
+  },
+  {
+   "day": 68,
+   "date": "2026-10-19",
+   "distanceKm": 229642442,
+   "lightTimeMin": 12.767,
+   "elongationDeg": 73.81
+  },
+  {
+   "day": 69,
+   "date": "2026-10-20",
+   "distanceKm": 228497613,
+   "lightTimeMin": 12.703,
+   "elongationDeg": 74.26
+  },
+  {
+   "day": 70,
+   "date": "2026-10-21",
+   "distanceKm": 227347023,
+   "lightTimeMin": 12.639,
+   "elongationDeg": 74.72
+  },
+  {
+   "day": 71,
+   "date": "2026-10-22",
+   "distanceKm": 226190730,
+   "lightTimeMin": 12.575,
+   "elongationDeg": 75.18
+  },
+  {
+   "day": 72,
+   "date": "2026-10-23",
+   "distanceKm": 225028784,
+   "lightTimeMin": 12.51,
+   "elongationDeg": 75.64
+  },
+  {
+   "day": 73,
+   "date": "2026-10-24",
+   "distanceKm": 223861229,
+   "lightTimeMin": 12.445,
+   "elongationDeg": 76.11
+  },
+  {
+   "day": 74,
+   "date": "2026-10-25",
+   "distanceKm": 222688104,
+   "lightTimeMin": 12.38,
+   "elongationDeg": 76.58
+  },
+  {
+   "day": 75,
+   "date": "2026-10-26",
+   "distanceKm": 221509443,
+   "lightTimeMin": 12.315,
+   "elongationDeg": 77.05
+  },
+  {
+   "day": 76,
+   "date": "2026-10-27",
+   "distanceKm": 220325280,
+   "lightTimeMin": 12.249,
+   "elongationDeg": 77.52
+  },
+  {
+   "day": 77,
+   "date": "2026-10-28",
+   "distanceKm": 219135644,
+   "lightTimeMin": 12.183,
+   "elongationDeg": 78
+  },
+  {
+   "day": 78,
+   "date": "2026-10-29",
+   "distanceKm": 217940569,
+   "lightTimeMin": 12.116,
+   "elongationDeg": 78.49
+  },
+  {
+   "day": 79,
+   "date": "2026-10-30",
+   "distanceKm": 216740092,
+   "lightTimeMin": 12.049,
+   "elongationDeg": 78.97
+  },
+  {
+   "day": 80,
+   "date": "2026-10-31",
+   "distanceKm": 215534256,
+   "lightTimeMin": 11.982,
+   "elongationDeg": 79.46
+  },
+  {
+   "day": 81,
+   "date": "2026-11-01",
+   "distanceKm": 214323115,
+   "lightTimeMin": 11.915,
+   "elongationDeg": 79.96
+  },
+  {
+   "day": 82,
+   "date": "2026-11-02",
+   "distanceKm": 213106732,
+   "lightTimeMin": 11.847,
+   "elongationDeg": 80.46
+  },
+  {
+   "day": 83,
+   "date": "2026-11-03",
+   "distanceKm": 211885185,
+   "lightTimeMin": 11.78,
+   "elongationDeg": 80.96
+  },
+  {
+   "day": 84,
+   "date": "2026-11-04",
+   "distanceKm": 210658566,
+   "lightTimeMin": 11.711,
+   "elongationDeg": 81.47
+  },
+  {
+   "day": 85,
+   "date": "2026-11-05",
+   "distanceKm": 209426982,
+   "lightTimeMin": 11.643,
+   "elongationDeg": 81.98
+  },
+  {
+   "day": 86,
+   "date": "2026-11-06",
+   "distanceKm": 208190555,
+   "lightTimeMin": 11.574,
+   "elongationDeg": 82.49
+  },
+  {
+   "day": 87,
+   "date": "2026-11-07",
+   "distanceKm": 206949420,
+   "lightTimeMin": 11.505,
+   "elongationDeg": 83.01
+  },
+  {
+   "day": 88,
+   "date": "2026-11-08",
+   "distanceKm": 205703724,
+   "lightTimeMin": 11.436,
+   "elongationDeg": 83.53
+  },
+  {
+   "day": 89,
+   "date": "2026-11-09",
+   "distanceKm": 204453628,
+   "lightTimeMin": 11.366,
+   "elongationDeg": 84.06
+  },
+  {
+   "day": 90,
+   "date": "2026-11-10",
+   "distanceKm": 203199296,
+   "lightTimeMin": 11.297,
+   "elongationDeg": 84.59
+  },
+  {
+   "day": 91,
+   "date": "2026-11-11",
+   "distanceKm": 201940901,
+   "lightTimeMin": 11.227,
+   "elongationDeg": 85.12
+  },
+  {
+   "day": 92,
+   "date": "2026-11-12",
+   "distanceKm": 200678620,
+   "lightTimeMin": 11.157,
+   "elongationDeg": 85.66
+  },
+  {
+   "day": 93,
+   "date": "2026-11-13",
+   "distanceKm": 199412629,
+   "lightTimeMin": 11.086,
+   "elongationDeg": 86.21
+  },
+  {
+   "day": 94,
+   "date": "2026-11-14",
+   "distanceKm": 198143104,
+   "lightTimeMin": 11.016,
+   "elongationDeg": 86.76
+  },
+  {
+   "day": 95,
+   "date": "2026-11-15",
+   "distanceKm": 196870218,
+   "lightTimeMin": 10.945,
+   "elongationDeg": 87.31
+  },
+  {
+   "day": 96,
+   "date": "2026-11-16",
+   "distanceKm": 195594140,
+   "lightTimeMin": 10.874,
+   "elongationDeg": 87.87
+  },
+  {
+   "day": 97,
+   "date": "2026-11-17",
+   "distanceKm": 194315031,
+   "lightTimeMin": 10.803,
+   "elongationDeg": 88.43
+  },
+  {
+   "day": 98,
+   "date": "2026-11-18",
+   "distanceKm": 193033050,
+   "lightTimeMin": 10.731,
+   "elongationDeg": 89
+  },
+  {
+   "day": 99,
+   "date": "2026-11-19",
+   "distanceKm": 191748346,
+   "lightTimeMin": 10.66,
+   "elongationDeg": 89.57
+  },
+  {
+   "day": 100,
+   "date": "2026-11-20",
+   "distanceKm": 190461062,
+   "lightTimeMin": 10.588,
+   "elongationDeg": 90.15
+  },
+  {
+   "day": 101,
+   "date": "2026-11-21",
+   "distanceKm": 189171335,
+   "lightTimeMin": 10.517,
+   "elongationDeg": 90.73
+  },
+  {
+   "day": 102,
+   "date": "2026-11-22",
+   "distanceKm": 187879296,
+   "lightTimeMin": 10.445,
+   "elongationDeg": 91.32
+  },
+  {
+   "day": 103,
+   "date": "2026-11-23",
+   "distanceKm": 186585074,
+   "lightTimeMin": 10.373,
+   "elongationDeg": 91.91
+  },
+  {
+   "day": 104,
+   "date": "2026-11-24",
+   "distanceKm": 185288795,
+   "lightTimeMin": 10.301,
+   "elongationDeg": 92.51
+  },
+  {
+   "day": 105,
+   "date": "2026-11-25",
+   "distanceKm": 183990588,
+   "lightTimeMin": 10.229,
+   "elongationDeg": 93.11
+  },
+  {
+   "day": 106,
+   "date": "2026-11-26",
+   "distanceKm": 182690583,
+   "lightTimeMin": 10.157,
+   "elongationDeg": 93.72
+  },
+  {
+   "day": 107,
+   "date": "2026-11-27",
+   "distanceKm": 181388918,
+   "lightTimeMin": 10.084,
+   "elongationDeg": 94.34
+  },
+  {
+   "day": 108,
+   "date": "2026-11-28",
+   "distanceKm": 180085743,
+   "lightTimeMin": 10.012,
+   "elongationDeg": 94.96
+  },
+  {
+   "day": 109,
+   "date": "2026-11-29",
+   "distanceKm": 178781215,
+   "lightTimeMin": 9.939,
+   "elongationDeg": 95.58
+  },
+  {
+   "day": 110,
+   "date": "2026-11-30",
+   "distanceKm": 177475510,
+   "lightTimeMin": 9.867,
+   "elongationDeg": 96.21
+  },
+  {
+   "day": 111,
+   "date": "2026-12-01",
+   "distanceKm": 176168818,
+   "lightTimeMin": 9.794,
+   "elongationDeg": 96.85
+  },
+  {
+   "day": 112,
+   "date": "2026-12-02",
+   "distanceKm": 174861344,
+   "lightTimeMin": 9.721,
+   "elongationDeg": 97.5
+  },
+  {
+   "day": 113,
+   "date": "2026-12-03",
+   "distanceKm": 173553314,
+   "lightTimeMin": 9.649,
+   "elongationDeg": 98.15
+  },
+  {
+   "day": 114,
+   "date": "2026-12-04",
+   "distanceKm": 172244967,
+   "lightTimeMin": 9.576,
+   "elongationDeg": 98.8
+  },
+  {
+   "day": 115,
+   "date": "2026-12-05",
+   "distanceKm": 170936561,
+   "lightTimeMin": 9.503,
+   "elongationDeg": 99.47
+  },
+  {
+   "day": 116,
+   "date": "2026-12-06",
+   "distanceKm": 169628368,
+   "lightTimeMin": 9.43,
+   "elongationDeg": 100.14
+  },
+  {
+   "day": 117,
+   "date": "2026-12-07",
+   "distanceKm": 168320673,
+   "lightTimeMin": 9.358,
+   "elongationDeg": 100.82
+  },
+  {
+   "day": 118,
+   "date": "2026-12-08",
+   "distanceKm": 167013774,
+   "lightTimeMin": 9.285,
+   "elongationDeg": 101.5
+  },
+  {
+   "day": 119,
+   "date": "2026-12-09",
+   "distanceKm": 165707976,
+   "lightTimeMin": 9.212,
+   "elongationDeg": 102.19
+  },
+  {
+   "day": 120,
+   "date": "2026-12-10",
+   "distanceKm": 164403594,
+   "lightTimeMin": 9.14,
+   "elongationDeg": 102.89
+  },
+  {
+   "day": 121,
+   "date": "2026-12-11",
+   "distanceKm": 163100950,
+   "lightTimeMin": 9.067,
+   "elongationDeg": 103.6
+  },
+  {
+   "day": 122,
+   "date": "2026-12-12",
+   "distanceKm": 161800368,
+   "lightTimeMin": 8.995,
+   "elongationDeg": 104.31
+  },
+  {
+   "day": 123,
+   "date": "2026-12-13",
+   "distanceKm": 160502174,
+   "lightTimeMin": 8.923,
+   "elongationDeg": 105.04
+  },
+  {
+   "day": 124,
+   "date": "2026-12-14",
+   "distanceKm": 159206695,
+   "lightTimeMin": 8.851,
+   "elongationDeg": 105.77
+  },
+  {
+   "day": 125,
+   "date": "2026-12-15",
+   "distanceKm": 157914257,
+   "lightTimeMin": 8.779,
+   "elongationDeg": 106.5
+  },
+  {
+   "day": 126,
+   "date": "2026-12-16",
+   "distanceKm": 156625182,
+   "lightTimeMin": 8.707,
+   "elongationDeg": 107.25
+  },
+  {
+   "day": 127,
+   "date": "2026-12-17",
+   "distanceKm": 155339787,
+   "lightTimeMin": 8.636,
+   "elongationDeg": 108
+  },
+  {
+   "day": 128,
+   "date": "2026-12-18",
+   "distanceKm": 154058387,
+   "lightTimeMin": 8.565,
+   "elongationDeg": 108.76
+  },
+  {
+   "day": 129,
+   "date": "2026-12-19",
+   "distanceKm": 152781290,
+   "lightTimeMin": 8.494,
+   "elongationDeg": 109.53
+  },
+  {
+   "day": 130,
+   "date": "2026-12-20",
+   "distanceKm": 151508805,
+   "lightTimeMin": 8.423,
+   "elongationDeg": 110.31
+  },
+  {
+   "day": 131,
+   "date": "2026-12-21",
+   "distanceKm": 150241237,
+   "lightTimeMin": 8.353,
+   "elongationDeg": 111.1
+  },
+  {
+   "day": 132,
+   "date": "2026-12-22",
+   "distanceKm": 148978894,
+   "lightTimeMin": 8.282,
+   "elongationDeg": 111.9
+  },
+  {
+   "day": 133,
+   "date": "2026-12-23",
+   "distanceKm": 147722089,
+   "lightTimeMin": 8.212,
+   "elongationDeg": 112.7
+  },
+  {
+   "day": 134,
+   "date": "2026-12-24",
+   "distanceKm": 146471145,
+   "lightTimeMin": 8.143,
+   "elongationDeg": 113.52
+  },
+  {
+   "day": 135,
+   "date": "2026-12-25",
+   "distanceKm": 145226395,
+   "lightTimeMin": 8.074,
+   "elongationDeg": 114.34
+  },
+  {
+   "day": 136,
+   "date": "2026-12-26",
+   "distanceKm": 143988190,
+   "lightTimeMin": 8.005,
+   "elongationDeg": 115.18
+  },
+  {
+   "day": 137,
+   "date": "2026-12-27",
+   "distanceKm": 142756900,
+   "lightTimeMin": 7.936,
+   "elongationDeg": 116.02
+  },
+  {
+   "day": 138,
+   "date": "2026-12-28",
+   "distanceKm": 141532914,
+   "lightTimeMin": 7.868,
+   "elongationDeg": 116.87
+  },
+  {
+   "day": 139,
+   "date": "2026-12-29",
+   "distanceKm": 140316646,
+   "lightTimeMin": 7.801,
+   "elongationDeg": 117.74
+  },
+  {
+   "day": 140,
+   "date": "2026-12-30",
+   "distanceKm": 139108528,
+   "lightTimeMin": 7.734,
+   "elongationDeg": 118.61
+  },
+  {
+   "day": 141,
+   "date": "2026-12-31",
+   "distanceKm": 137909019,
+   "lightTimeMin": 7.667,
+   "elongationDeg": 119.5
+  },
+  {
+   "day": 142,
+   "date": "2027-01-01",
+   "distanceKm": 136718596,
+   "lightTimeMin": 7.601,
+   "elongationDeg": 120.39
+  },
+  {
+   "day": 143,
+   "date": "2027-01-02",
+   "distanceKm": 135537757,
+   "lightTimeMin": 7.535,
+   "elongationDeg": 121.3
+  },
+  {
+   "day": 144,
+   "date": "2027-01-03",
+   "distanceKm": 134367018,
+   "lightTimeMin": 7.47,
+   "elongationDeg": 122.22
+  },
+  {
+   "day": 145,
+   "date": "2027-01-04",
+   "distanceKm": 133206912,
+   "lightTimeMin": 7.406,
+   "elongationDeg": 123.15
+  },
+  {
+   "day": 146,
+   "date": "2027-01-05",
+   "distanceKm": 132057985,
+   "lightTimeMin": 7.342,
+   "elongationDeg": 124.09
+  },
+  {
+   "day": 147,
+   "date": "2027-01-06",
+   "distanceKm": 130920799,
+   "lightTimeMin": 7.278,
+   "elongationDeg": 125.04
+  },
+  {
+   "day": 148,
+   "date": "2027-01-07",
+   "distanceKm": 129795925,
+   "lightTimeMin": 7.216,
+   "elongationDeg": 126.01
+  },
+  {
+   "day": 149,
+   "date": "2027-01-08",
+   "distanceKm": 128683945,
+   "lightTimeMin": 7.154,
+   "elongationDeg": 126.99
+  },
+  {
+   "day": 150,
+   "date": "2027-01-09",
+   "distanceKm": 127585448,
+   "lightTimeMin": 7.093,
+   "elongationDeg": 127.98
+  },
+  {
+   "day": 151,
+   "date": "2027-01-10",
+   "distanceKm": 126501027,
+   "lightTimeMin": 7.033,
+   "elongationDeg": 128.98
+  },
+  {
+   "day": 152,
+   "date": "2027-01-11",
+   "distanceKm": 125431281,
+   "lightTimeMin": 6.973,
+   "elongationDeg": 129.99
+  },
+  {
+   "day": 153,
+   "date": "2027-01-12",
+   "distanceKm": 124376806,
+   "lightTimeMin": 6.915,
+   "elongationDeg": 131.02
+  },
+  {
+   "day": 154,
+   "date": "2027-01-13",
+   "distanceKm": 123338197,
+   "lightTimeMin": 6.857,
+   "elongationDeg": 132.06
+  },
+  {
+   "day": 155,
+   "date": "2027-01-14",
+   "distanceKm": 122316043,
+   "lightTimeMin": 6.8,
+   "elongationDeg": 133.11
+  },
+  {
+   "day": 156,
+   "date": "2027-01-15",
+   "distanceKm": 121310930,
+   "lightTimeMin": 6.744,
+   "elongationDeg": 134.17
+  },
+  {
+   "day": 157,
+   "date": "2027-01-16",
+   "distanceKm": 120323436,
+   "lightTimeMin": 6.689,
+   "elongationDeg": 135.25
+  },
+  {
+   "day": 158,
+   "date": "2027-01-17",
+   "distanceKm": 119354131,
+   "lightTimeMin": 6.635,
+   "elongationDeg": 136.33
+  },
+  {
+   "day": 159,
+   "date": "2027-01-18",
+   "distanceKm": 118403583,
+   "lightTimeMin": 6.583,
+   "elongationDeg": 137.44
+  },
+  {
+   "day": 160,
+   "date": "2027-01-19",
+   "distanceKm": 117472359,
+   "lightTimeMin": 6.531,
+   "elongationDeg": 138.55
+  },
+  {
+   "day": 161,
+   "date": "2027-01-20",
+   "distanceKm": 116561025,
+   "lightTimeMin": 6.48,
+   "elongationDeg": 139.67
+  },
+  {
+   "day": 162,
+   "date": "2027-01-21",
+   "distanceKm": 115670154,
+   "lightTimeMin": 6.431,
+   "elongationDeg": 140.81
+  },
+  {
+   "day": 163,
+   "date": "2027-01-22",
+   "distanceKm": 114800328,
+   "lightTimeMin": 6.382,
+   "elongationDeg": 141.96
+  },
+  {
+   "day": 164,
+   "date": "2027-01-23",
+   "distanceKm": 113952142,
+   "lightTimeMin": 6.335,
+   "elongationDeg": 143.13
+  },
+  {
+   "day": 165,
+   "date": "2027-01-24",
+   "distanceKm": 113126201,
+   "lightTimeMin": 6.289,
+   "elongationDeg": 144.3
+  },
+  {
+   "day": 166,
+   "date": "2027-01-25",
+   "distanceKm": 112323129,
+   "lightTimeMin": 6.244,
+   "elongationDeg": 145.49
+  },
+  {
+   "day": 167,
+   "date": "2027-01-26",
+   "distanceKm": 111543561,
+   "lightTimeMin": 6.201,
+   "elongationDeg": 146.69
+  },
+  {
+   "day": 168,
+   "date": "2027-01-27",
+   "distanceKm": 110788144,
+   "lightTimeMin": 6.159,
+   "elongationDeg": 147.9
+  },
+  {
+   "day": 169,
+   "date": "2027-01-28",
+   "distanceKm": 110057534,
+   "lightTimeMin": 6.119,
+   "elongationDeg": 149.13
+  },
+  {
+   "day": 170,
+   "date": "2027-01-29",
+   "distanceKm": 109352390,
+   "lightTimeMin": 6.079,
+   "elongationDeg": 150.36
+  },
+  {
+   "day": 171,
+   "date": "2027-01-30",
+   "distanceKm": 108673373,
+   "lightTimeMin": 6.042,
+   "elongationDeg": 151.61
+  },
+  {
+   "day": 172,
+   "date": "2027-01-31",
+   "distanceKm": 108021137,
+   "lightTimeMin": 6.005,
+   "elongationDeg": 152.86
+  },
+  {
+   "day": 173,
+   "date": "2027-02-01",
+   "distanceKm": 107396331,
+   "lightTimeMin": 5.971,
+   "elongationDeg": 154.13
+  },
+  {
+   "day": 174,
+   "date": "2027-02-02",
+   "distanceKm": 106799586,
+   "lightTimeMin": 5.937,
+   "elongationDeg": 155.4
+  },
+  {
+   "day": 175,
+   "date": "2027-02-03",
+   "distanceKm": 106231521,
+   "lightTimeMin": 5.906,
+   "elongationDeg": 156.69
+  },
+  {
+   "day": 176,
+   "date": "2027-02-04",
+   "distanceKm": 105692734,
+   "lightTimeMin": 5.876,
+   "elongationDeg": 157.98
+  },
+  {
+   "day": 177,
+   "date": "2027-02-05",
+   "distanceKm": 105183799,
+   "lightTimeMin": 5.848,
+   "elongationDeg": 159.27
+  },
+  {
+   "day": 178,
+   "date": "2027-02-06",
+   "distanceKm": 104705264,
+   "lightTimeMin": 5.821,
+   "elongationDeg": 160.58
+  },
+  {
+   "day": 179,
+   "date": "2027-02-07",
+   "distanceKm": 104257648,
+   "lightTimeMin": 5.796,
+   "elongationDeg": 161.88
+  },
+  {
+   "day": 180,
+   "date": "2027-02-08",
+   "distanceKm": 103841435,
+   "lightTimeMin": 5.773,
+   "elongationDeg": 163.19
+  },
+  {
+   "day": 181,
+   "date": "2027-02-09",
+   "distanceKm": 103457070,
+   "lightTimeMin": 5.752,
+   "elongationDeg": 164.5
+  },
+  {
+   "day": 182,
+   "date": "2027-02-10",
+   "distanceKm": 103104959,
+   "lightTimeMin": 5.732,
+   "elongationDeg": 165.81
+  },
+  {
+   "day": 183,
+   "date": "2027-02-11",
+   "distanceKm": 102785460,
+   "lightTimeMin": 5.714,
+   "elongationDeg": 167.11
+  },
+  {
+   "day": 184,
+   "date": "2027-02-12",
+   "distanceKm": 102498885,
+   "lightTimeMin": 5.698,
+   "elongationDeg": 168.39
+  },
+  {
+   "day": 185,
+   "date": "2027-02-13",
+   "distanceKm": 102245497,
+   "lightTimeMin": 5.684,
+   "elongationDeg": 169.66
+  },
+  {
+   "day": 186,
+   "date": "2027-02-14",
+   "distanceKm": 102025510,
+   "lightTimeMin": 5.672,
+   "elongationDeg": 170.89
+  },
+  {
+   "day": 187,
+   "date": "2027-02-15",
+   "distanceKm": 101839093,
+   "lightTimeMin": 5.662,
+   "elongationDeg": 172.08
+  },
+  {
+   "day": 188,
+   "date": "2027-02-16",
+   "distanceKm": 101686371,
+   "lightTimeMin": 5.653,
+   "elongationDeg": 173.19
+  },
+  {
+   "day": 189,
+   "date": "2027-02-17",
+   "distanceKm": 101567429,
+   "lightTimeMin": 5.647,
+   "elongationDeg": 174.17
+  },
+  {
+   "day": 190,
+   "date": "2027-02-18",
+   "distanceKm": 101482319,
+   "lightTimeMin": 5.642,
+   "elongationDeg": 174.96
+  },
+  {
+   "day": 191,
+   "date": "2027-02-19",
+   "distanceKm": 101431061,
+   "lightTimeMin": 5.639,
+   "elongationDeg": 175.44
+  },
+  {
+   "day": 192,
+   "date": "2027-02-20",
+   "distanceKm": 101413651,
+   "lightTimeMin": 5.638,
+   "elongationDeg": 175.51
+  },
+  {
+   "day": 193,
+   "date": "2027-02-21",
+   "distanceKm": 101430059,
+   "lightTimeMin": 5.639,
+   "elongationDeg": 175.17
+  },
+  {
+   "day": 194,
+   "date": "2027-02-22",
+   "distanceKm": 101480234,
+   "lightTimeMin": 5.642,
+   "elongationDeg": 174.47
+  },
+  {
+   "day": 195,
+   "date": "2027-02-23",
+   "distanceKm": 101564101,
+   "lightTimeMin": 5.646,
+   "elongationDeg": 173.55
+  },
+  {
+   "day": 196,
+   "date": "2027-02-24",
+   "distanceKm": 101681561,
+   "lightTimeMin": 5.653,
+   "elongationDeg": 172.48
+  },
+  {
+   "day": 197,
+   "date": "2027-02-25",
+   "distanceKm": 101832489,
+   "lightTimeMin": 5.661,
+   "elongationDeg": 171.32
+  },
+  {
+   "day": 198,
+   "date": "2027-02-26",
+   "distanceKm": 102016727,
+   "lightTimeMin": 5.672,
+   "elongationDeg": 170.1
+  },
+  {
+   "day": 199,
+   "date": "2027-02-27",
+   "distanceKm": 102234087,
+   "lightTimeMin": 5.684,
+   "elongationDeg": 168.85
+  },
+  {
+   "day": 200,
+   "date": "2027-02-28",
+   "distanceKm": 102484342,
+   "lightTimeMin": 5.698,
+   "elongationDeg": 167.58
+  },
+  {
+   "day": 201,
+   "date": "2027-03-01",
+   "distanceKm": 102767230,
+   "lightTimeMin": 5.713,
+   "elongationDeg": 166.29
+  },
+  {
+   "day": 202,
+   "date": "2027-03-02",
+   "distanceKm": 103082447,
+   "lightTimeMin": 5.731,
+   "elongationDeg": 164.99
+  },
+  {
+   "day": 203,
+   "date": "2027-03-03",
+   "distanceKm": 103429653,
+   "lightTimeMin": 5.75,
+   "elongationDeg": 163.69
+  },
+  {
+   "day": 204,
+   "date": "2027-03-04",
+   "distanceKm": 103808469,
+   "lightTimeMin": 5.771,
+   "elongationDeg": 162.39
+  },
+  {
+   "day": 205,
+   "date": "2027-03-05",
+   "distanceKm": 104218478,
+   "lightTimeMin": 5.794,
+   "elongationDeg": 161.09
+  },
+  {
+   "day": 206,
+   "date": "2027-03-06",
+   "distanceKm": 104659228,
+   "lightTimeMin": 5.818,
+   "elongationDeg": 159.8
+  },
+  {
+   "day": 207,
+   "date": "2027-03-07",
+   "distanceKm": 105130233,
+   "lightTimeMin": 5.845,
+   "elongationDeg": 158.51
+  },
+  {
+   "day": 208,
+   "date": "2027-03-08",
+   "distanceKm": 105630976,
+   "lightTimeMin": 5.872,
+   "elongationDeg": 157.22
+  },
+  {
+   "day": 209,
+   "date": "2027-03-09",
+   "distanceKm": 106160907,
+   "lightTimeMin": 5.902,
+   "elongationDeg": 155.95
+  },
+  {
+   "day": 210,
+   "date": "2027-03-10",
+   "distanceKm": 106719446,
+   "lightTimeMin": 5.933,
+   "elongationDeg": 154.68
+  },
+  {
+   "day": 211,
+   "date": "2027-03-11",
+   "distanceKm": 107305987,
+   "lightTimeMin": 5.966,
+   "elongationDeg": 153.42
+  },
+  {
+   "day": 212,
+   "date": "2027-03-12",
+   "distanceKm": 107919896,
+   "lightTimeMin": 6,
+   "elongationDeg": 152.18
+  },
+  {
+   "day": 213,
+   "date": "2027-03-13",
+   "distanceKm": 108560519,
+   "lightTimeMin": 6.035,
+   "elongationDeg": 150.94
+  },
+  {
+   "day": 214,
+   "date": "2027-03-14",
+   "distanceKm": 109227184,
+   "lightTimeMin": 6.072,
+   "elongationDeg": 149.71
+  },
+  {
+   "day": 215,
+   "date": "2027-03-15",
+   "distanceKm": 109919205,
+   "lightTimeMin": 6.111,
+   "elongationDeg": 148.5
+  },
+  {
+   "day": 216,
+   "date": "2027-03-16",
+   "distanceKm": 110635890,
+   "lightTimeMin": 6.151,
+   "elongationDeg": 147.3
+  },
+  {
+   "day": 217,
+   "date": "2027-03-17",
+   "distanceKm": 111376546,
+   "lightTimeMin": 6.192,
+   "elongationDeg": 146.11
+  },
+  {
+   "day": 218,
+   "date": "2027-03-18",
+   "distanceKm": 112140484,
+   "lightTimeMin": 6.234,
+   "elongationDeg": 144.93
+  },
+  {
+   "day": 219,
+   "date": "2027-03-19",
+   "distanceKm": 112927025,
+   "lightTimeMin": 6.278,
+   "elongationDeg": 143.77
+  },
+  {
+   "day": 220,
+   "date": "2027-03-20",
+   "distanceKm": 113735508,
+   "lightTimeMin": 6.323,
+   "elongationDeg": 142.62
+  },
+  {
+   "day": 221,
+   "date": "2027-03-21",
+   "distanceKm": 114565286,
+   "lightTimeMin": 6.369,
+   "elongationDeg": 141.48
+  },
+  {
+   "day": 222,
+   "date": "2027-03-22",
+   "distanceKm": 115415731,
+   "lightTimeMin": 6.416,
+   "elongationDeg": 140.35
+  },
+  {
+   "day": 223,
+   "date": "2027-03-23",
+   "distanceKm": 116286236,
+   "lightTimeMin": 6.465,
+   "elongationDeg": 139.24
+  },
+  {
+   "day": 224,
+   "date": "2027-03-24",
+   "distanceKm": 117176208,
+   "lightTimeMin": 6.514,
+   "elongationDeg": 138.14
+  },
+  {
+   "day": 225,
+   "date": "2027-03-25",
+   "distanceKm": 118085071,
+   "lightTimeMin": 6.565,
+   "elongationDeg": 137.05
+  },
+  {
+   "day": 226,
+   "date": "2027-03-26",
+   "distanceKm": 119012260,
+   "lightTimeMin": 6.616,
+   "elongationDeg": 135.98
+  },
+  {
+   "day": 227,
+   "date": "2027-03-27",
+   "distanceKm": 119957217,
+   "lightTimeMin": 6.669,
+   "elongationDeg": 134.92
+  },
+  {
+   "day": 228,
+   "date": "2027-03-28",
+   "distanceKm": 120919390,
+   "lightTimeMin": 6.722,
+   "elongationDeg": 133.87
+  },
+  {
+   "day": 229,
+   "date": "2027-03-29",
+   "distanceKm": 121898230,
+   "lightTimeMin": 6.777,
+   "elongationDeg": 132.84
+  },
+  {
+   "day": 230,
+   "date": "2027-03-30",
+   "distanceKm": 122893189,
+   "lightTimeMin": 6.832,
+   "elongationDeg": 131.82
+  },
+  {
+   "day": 231,
+   "date": "2027-03-31",
+   "distanceKm": 123903719,
+   "lightTimeMin": 6.888,
+   "elongationDeg": 130.81
+  },
+  {
+   "day": 232,
+   "date": "2027-04-01",
+   "distanceKm": 124929272,
+   "lightTimeMin": 6.945,
+   "elongationDeg": 129.81
+  },
+  {
+   "day": 233,
+   "date": "2027-04-02",
+   "distanceKm": 125969301,
+   "lightTimeMin": 7.003,
+   "elongationDeg": 128.83
+  },
+  {
+   "day": 234,
+   "date": "2027-04-03",
+   "distanceKm": 127023256,
+   "lightTimeMin": 7.062,
+   "elongationDeg": 127.85
+  },
+  {
+   "day": 235,
+   "date": "2027-04-04",
+   "distanceKm": 128090591,
+   "lightTimeMin": 7.121,
+   "elongationDeg": 126.9
+  },
+  {
+   "day": 236,
+   "date": "2027-04-05",
+   "distanceKm": 129170759,
+   "lightTimeMin": 7.181,
+   "elongationDeg": 125.95
+  },
+  {
+   "day": 237,
+   "date": "2027-04-06",
+   "distanceKm": 130263216,
+   "lightTimeMin": 7.242,
+   "elongationDeg": 125.01
+  },
+  {
+   "day": 238,
+   "date": "2027-04-07",
+   "distanceKm": 131367420,
+   "lightTimeMin": 7.303,
+   "elongationDeg": 124.09
+  },
+  {
+   "day": 239,
+   "date": "2027-04-08",
+   "distanceKm": 132482834,
+   "lightTimeMin": 7.365,
+   "elongationDeg": 123.18
+  },
+  {
+   "day": 240,
+   "date": "2027-04-09",
+   "distanceKm": 133608923,
+   "lightTimeMin": 7.428,
+   "elongationDeg": 122.28
+  },
+  {
+   "day": 241,
+   "date": "2027-04-10",
+   "distanceKm": 134745160,
+   "lightTimeMin": 7.491,
+   "elongationDeg": 121.39
+  },
+  {
+   "day": 242,
+   "date": "2027-04-11",
+   "distanceKm": 135891028,
+   "lightTimeMin": 7.555,
+   "elongationDeg": 120.52
+  },
+  {
+   "day": 243,
+   "date": "2027-04-12",
+   "distanceKm": 137046019,
+   "lightTimeMin": 7.619,
+   "elongationDeg": 119.65
+  },
+  {
+   "day": 244,
+   "date": "2027-04-13",
+   "distanceKm": 138209640,
+   "lightTimeMin": 7.684,
+   "elongationDeg": 118.8
+  },
+  {
+   "day": 245,
+   "date": "2027-04-14",
+   "distanceKm": 139381416,
+   "lightTimeMin": 7.749,
+   "elongationDeg": 117.96
+  },
+  {
+   "day": 246,
+   "date": "2027-04-15",
+   "distanceKm": 140560893,
+   "lightTimeMin": 7.814,
+   "elongationDeg": 117.12
+  },
+  {
+   "day": 247,
+   "date": "2027-04-16",
+   "distanceKm": 141747637,
+   "lightTimeMin": 7.88,
+   "elongationDeg": 116.3
+  },
+  {
+   "day": 248,
+   "date": "2027-04-17",
+   "distanceKm": 142941241,
+   "lightTimeMin": 7.947,
+   "elongationDeg": 115.49
+  },
+  {
+   "day": 249,
+   "date": "2027-04-18",
+   "distanceKm": 144141319,
+   "lightTimeMin": 8.013,
+   "elongationDeg": 114.69
+  },
+  {
+   "day": 250,
+   "date": "2027-04-19",
+   "distanceKm": 145347513,
+   "lightTimeMin": 8.08,
+   "elongationDeg": 113.89
+  },
+  {
+   "day": 251,
+   "date": "2027-04-20",
+   "distanceKm": 146559484,
+   "lightTimeMin": 8.148,
+   "elongationDeg": 113.11
+  },
+  {
+   "day": 252,
+   "date": "2027-04-21",
+   "distanceKm": 147776915,
+   "lightTimeMin": 8.216,
+   "elongationDeg": 112.34
+  },
+  {
+   "day": 253,
+   "date": "2027-04-22",
+   "distanceKm": 148999507,
+   "lightTimeMin": 8.283,
+   "elongationDeg": 111.58
+  },
+  {
+   "day": 254,
+   "date": "2027-04-23",
+   "distanceKm": 150226973,
+   "lightTimeMin": 8.352,
+   "elongationDeg": 110.82
+  },
+  {
+   "day": 255,
+   "date": "2027-04-24",
+   "distanceKm": 151459037,
+   "lightTimeMin": 8.42,
+   "elongationDeg": 110.07
+  },
+  {
+   "day": 256,
+   "date": "2027-04-25",
+   "distanceKm": 152695430,
+   "lightTimeMin": 8.489,
+   "elongationDeg": 109.34
+  },
+  {
+   "day": 257,
+   "date": "2027-04-26",
+   "distanceKm": 153935887,
+   "lightTimeMin": 8.558,
+   "elongationDeg": 108.61
+  },
+  {
+   "day": 258,
+   "date": "2027-04-27",
+   "distanceKm": 155180146,
+   "lightTimeMin": 8.627,
+   "elongationDeg": 107.89
+  },
+  {
+   "day": 259,
+   "date": "2027-04-28",
+   "distanceKm": 156427941,
+   "lightTimeMin": 8.696,
+   "elongationDeg": 107.17
+  },
+  {
+   "day": 260,
+   "date": "2027-04-29",
+   "distanceKm": 157679009,
+   "lightTimeMin": 8.766,
+   "elongationDeg": 106.47
+  },
+  {
+   "day": 261,
+   "date": "2027-04-30",
+   "distanceKm": 158933081,
+   "lightTimeMin": 8.836,
+   "elongationDeg": 105.77
+  },
+  {
+   "day": 262,
+   "date": "2027-05-01",
+   "distanceKm": 160189886,
+   "lightTimeMin": 8.906,
+   "elongationDeg": 105.08
+  },
+  {
+   "day": 263,
+   "date": "2027-05-02",
+   "distanceKm": 161449151,
+   "lightTimeMin": 8.976,
+   "elongationDeg": 104.4
+  },
+  {
+   "day": 264,
+   "date": "2027-05-03",
+   "distanceKm": 162710599,
+   "lightTimeMin": 9.046,
+   "elongationDeg": 103.73
+  },
+  {
+   "day": 265,
+   "date": "2027-05-04",
+   "distanceKm": 163973951,
+   "lightTimeMin": 9.116,
+   "elongationDeg": 103.06
+  },
+  {
+   "day": 266,
+   "date": "2027-05-05",
+   "distanceKm": 165238926,
+   "lightTimeMin": 9.186,
+   "elongationDeg": 102.4
+  },
+  {
+   "day": 267,
+   "date": "2027-05-06",
+   "distanceKm": 166505246,
+   "lightTimeMin": 9.257,
+   "elongationDeg": 101.75
+  },
+  {
+   "day": 268,
+   "date": "2027-05-07",
+   "distanceKm": 167772630,
+   "lightTimeMin": 9.327,
+   "elongationDeg": 101.1
+  },
+  {
+   "day": 269,
+   "date": "2027-05-08",
+   "distanceKm": 169040804,
+   "lightTimeMin": 9.398,
+   "elongationDeg": 100.46
+  },
+  {
+   "day": 270,
+   "date": "2027-05-09",
+   "distanceKm": 170309498,
+   "lightTimeMin": 9.468,
+   "elongationDeg": 99.83
+  },
+  {
+   "day": 271,
+   "date": "2027-05-10",
+   "distanceKm": 171578452,
+   "lightTimeMin": 9.539,
+   "elongationDeg": 99.21
+  },
+  {
+   "day": 272,
+   "date": "2027-05-11",
+   "distanceKm": 172847413,
+   "lightTimeMin": 9.609,
+   "elongationDeg": 98.59
+  },
+  {
+   "day": 273,
+   "date": "2027-05-12",
+   "distanceKm": 174116144,
+   "lightTimeMin": 9.68,
+   "elongationDeg": 97.97
+  },
+  {
+   "day": 274,
+   "date": "2027-05-13",
+   "distanceKm": 175384422,
+   "lightTimeMin": 9.75,
+   "elongationDeg": 97.37
+  },
+  {
+   "day": 275,
+   "date": "2027-05-14",
+   "distanceKm": 176652041,
+   "lightTimeMin": 9.821,
+   "elongationDeg": 96.77
+  },
+  {
+   "day": 276,
+   "date": "2027-05-15",
+   "distanceKm": 177918811,
+   "lightTimeMin": 9.891,
+   "elongationDeg": 96.17
+  },
+  {
+   "day": 277,
+   "date": "2027-05-16",
+   "distanceKm": 179184559,
+   "lightTimeMin": 9.962,
+   "elongationDeg": 95.58
+  },
+  {
+   "day": 278,
+   "date": "2027-05-17",
+   "distanceKm": 180449132,
+   "lightTimeMin": 10.032,
+   "elongationDeg": 95
+  },
+  {
+   "day": 279,
+   "date": "2027-05-18",
+   "distanceKm": 181712388,
+   "lightTimeMin": 10.102,
+   "elongationDeg": 94.42
+  },
+  {
+   "day": 280,
+   "date": "2027-05-19",
+   "distanceKm": 182974202,
+   "lightTimeMin": 10.172,
+   "elongationDeg": 93.85
+  },
+  {
+   "day": 281,
+   "date": "2027-05-20",
+   "distanceKm": 184234459,
+   "lightTimeMin": 10.242,
+   "elongationDeg": 93.28
+  },
+  {
+   "day": 282,
+   "date": "2027-05-21",
+   "distanceKm": 185493054,
+   "lightTimeMin": 10.312,
+   "elongationDeg": 92.72
+  },
+  {
+   "day": 283,
+   "date": "2027-05-22",
+   "distanceKm": 186749886,
+   "lightTimeMin": 10.382,
+   "elongationDeg": 92.16
+  },
+  {
+   "day": 284,
+   "date": "2027-05-23",
+   "distanceKm": 188004860,
+   "lightTimeMin": 10.452,
+   "elongationDeg": 91.61
+  },
+  {
+   "day": 285,
+   "date": "2027-05-24",
+   "distanceKm": 189257881,
+   "lightTimeMin": 10.522,
+   "elongationDeg": 91.06
+  },
+  {
+   "day": 286,
+   "date": "2027-05-25",
+   "distanceKm": 190508852,
+   "lightTimeMin": 10.591,
+   "elongationDeg": 90.52
+  },
+  {
+   "day": 287,
+   "date": "2027-05-26",
+   "distanceKm": 191757674,
+   "lightTimeMin": 10.661,
+   "elongationDeg": 89.98
+  },
+  {
+   "day": 288,
+   "date": "2027-05-27",
+   "distanceKm": 193004241,
+   "lightTimeMin": 10.73,
+   "elongationDeg": 89.45
+  },
+  {
+   "day": 289,
+   "date": "2027-05-28",
+   "distanceKm": 194248444,
+   "lightTimeMin": 10.799,
+   "elongationDeg": 88.92
+  },
+  {
+   "day": 290,
+   "date": "2027-05-29",
+   "distanceKm": 195490163,
+   "lightTimeMin": 10.868,
+   "elongationDeg": 88.4
+  },
+  {
+   "day": 291,
+   "date": "2027-05-30",
+   "distanceKm": 196729273,
+   "lightTimeMin": 10.937,
+   "elongationDeg": 87.87
+  },
+  {
+   "day": 292,
+   "date": "2027-05-31",
+   "distanceKm": 197965640,
+   "lightTimeMin": 11.006,
+   "elongationDeg": 87.36
+  },
+  {
+   "day": 293,
+   "date": "2027-06-01",
+   "distanceKm": 199199123,
+   "lightTimeMin": 11.074,
+   "elongationDeg": 86.85
+  },
+  {
+   "day": 294,
+   "date": "2027-06-02",
+   "distanceKm": 200429576,
+   "lightTimeMin": 11.143,
+   "elongationDeg": 86.34
+  },
+  {
+   "day": 295,
+   "date": "2027-06-03",
+   "distanceKm": 201656847,
+   "lightTimeMin": 11.211,
+   "elongationDeg": 85.83
+  },
+  {
+   "day": 296,
+   "date": "2027-06-04",
+   "distanceKm": 202880782,
+   "lightTimeMin": 11.279,
+   "elongationDeg": 85.33
+  },
+  {
+   "day": 297,
+   "date": "2027-06-05",
+   "distanceKm": 204101227,
+   "lightTimeMin": 11.347,
+   "elongationDeg": 84.84
+  },
+  {
+   "day": 298,
+   "date": "2027-06-06",
+   "distanceKm": 205318031,
+   "lightTimeMin": 11.414,
+   "elongationDeg": 84.35
+  },
+  {
+   "day": 299,
+   "date": "2027-06-07",
+   "distanceKm": 206531048,
+   "lightTimeMin": 11.482,
+   "elongationDeg": 83.86
+  },
+  {
+   "day": 300,
+   "date": "2027-06-08",
+   "distanceKm": 207740139,
+   "lightTimeMin": 11.549,
+   "elongationDeg": 83.37
+  },
+  {
+   "day": 301,
+   "date": "2027-06-09",
+   "distanceKm": 208945175,
+   "lightTimeMin": 11.616,
+   "elongationDeg": 82.89
+  },
+  {
+   "day": 302,
+   "date": "2027-06-10",
+   "distanceKm": 210146041,
+   "lightTimeMin": 11.683,
+   "elongationDeg": 82.42
+  },
+  {
+   "day": 303,
+   "date": "2027-06-11",
+   "distanceKm": 211342633,
+   "lightTimeMin": 11.749,
+   "elongationDeg": 81.94
+  },
+  {
+   "day": 304,
+   "date": "2027-06-12",
+   "distanceKm": 212534861,
+   "lightTimeMin": 11.816,
+   "elongationDeg": 81.47
+  },
+  {
+   "day": 305,
+   "date": "2027-06-13",
+   "distanceKm": 213722649,
+   "lightTimeMin": 11.882,
+   "elongationDeg": 81.01
+  },
+  {
+   "day": 306,
+   "date": "2027-06-14",
+   "distanceKm": 214905932,
+   "lightTimeMin": 11.947,
+   "elongationDeg": 80.54
+  },
+  {
+   "day": 307,
+   "date": "2027-06-15",
+   "distanceKm": 216084661,
+   "lightTimeMin": 12.013,
+   "elongationDeg": 80.08
+  },
+  {
+   "day": 308,
+   "date": "2027-06-16",
+   "distanceKm": 217258795,
+   "lightTimeMin": 12.078,
+   "elongationDeg": 79.63
+  },
+  {
+   "day": 309,
+   "date": "2027-06-17",
+   "distanceKm": 218428300,
+   "lightTimeMin": 12.143,
+   "elongationDeg": 79.17
+  },
+  {
+   "day": 310,
+   "date": "2027-06-18",
+   "distanceKm": 219593153,
+   "lightTimeMin": 12.208,
+   "elongationDeg": 78.72
+  },
+  {
+   "day": 311,
+   "date": "2027-06-19",
+   "distanceKm": 220753333,
+   "lightTimeMin": 12.273,
+   "elongationDeg": 78.27
+  },
+  {
+   "day": 312,
+   "date": "2027-06-20",
+   "distanceKm": 221908822,
+   "lightTimeMin": 12.337,
+   "elongationDeg": 77.83
+  },
+  {
+   "day": 313,
+   "date": "2027-06-21",
+   "distanceKm": 223059604,
+   "lightTimeMin": 12.401,
+   "elongationDeg": 77.39
+  },
+  {
+   "day": 314,
+   "date": "2027-06-22",
+   "distanceKm": 224205662,
+   "lightTimeMin": 12.464,
+   "elongationDeg": 76.95
+  },
+  {
+   "day": 315,
+   "date": "2027-06-23",
+   "distanceKm": 225346974,
+   "lightTimeMin": 12.528,
+   "elongationDeg": 76.51
+  },
+  {
+   "day": 316,
+   "date": "2027-06-24",
+   "distanceKm": 226483514,
+   "lightTimeMin": 12.591,
+   "elongationDeg": 76.08
+  },
+  {
+   "day": 317,
+   "date": "2027-06-25",
+   "distanceKm": 227615248,
+   "lightTimeMin": 12.654,
+   "elongationDeg": 75.65
+  },
+  {
+   "day": 318,
+   "date": "2027-06-26",
+   "distanceKm": 228742136,
+   "lightTimeMin": 12.717,
+   "elongationDeg": 75.22
+  },
+  {
+   "day": 319,
+   "date": "2027-06-27",
+   "distanceKm": 229864125,
+   "lightTimeMin": 12.779,
+   "elongationDeg": 74.79
+  },
+  {
+   "day": 320,
+   "date": "2027-06-28",
+   "distanceKm": 230981155,
+   "lightTimeMin": 12.841,
+   "elongationDeg": 74.37
+  },
+  {
+   "day": 321,
+   "date": "2027-06-29",
+   "distanceKm": 232093155,
+   "lightTimeMin": 12.903,
+   "elongationDeg": 73.95
+  },
+  {
+   "day": 322,
+   "date": "2027-06-30",
+   "distanceKm": 233200045,
+   "lightTimeMin": 12.965,
+   "elongationDeg": 73.53
+  },
+  {
+   "day": 323,
+   "date": "2027-07-01",
+   "distanceKm": 234301737,
+   "lightTimeMin": 13.026,
+   "elongationDeg": 73.12
+  },
+  {
+   "day": 324,
+   "date": "2027-07-02",
+   "distanceKm": 235398138,
+   "lightTimeMin": 13.087,
+   "elongationDeg": 72.7
+  },
+  {
+   "day": 325,
+   "date": "2027-07-03",
+   "distanceKm": 236489153,
+   "lightTimeMin": 13.147,
+   "elongationDeg": 72.29
+  },
+  {
+   "day": 326,
+   "date": "2027-07-04",
+   "distanceKm": 237574687,
+   "lightTimeMin": 13.208,
+   "elongationDeg": 71.88
+  },
+  {
+   "day": 327,
+   "date": "2027-07-05",
+   "distanceKm": 238654647,
+   "lightTimeMin": 13.268,
+   "elongationDeg": 71.48
+  },
+  {
+   "day": 328,
+   "date": "2027-07-06",
+   "distanceKm": 239728948,
+   "lightTimeMin": 13.327,
+   "elongationDeg": 71.07
+  },
+  {
+   "day": 329,
+   "date": "2027-07-07",
+   "distanceKm": 240797513,
+   "lightTimeMin": 13.387,
+   "elongationDeg": 70.67
+  },
+  {
+   "day": 330,
+   "date": "2027-07-08",
+   "distanceKm": 241860274,
+   "lightTimeMin": 13.446,
+   "elongationDeg": 70.27
+  },
+  {
+   "day": 331,
+   "date": "2027-07-09",
+   "distanceKm": 242917176,
+   "lightTimeMin": 13.505,
+   "elongationDeg": 69.88
+  },
+  {
+   "day": 332,
+   "date": "2027-07-10",
+   "distanceKm": 243968176,
+   "lightTimeMin": 13.563,
+   "elongationDeg": 69.48
+  },
+  {
+   "day": 333,
+   "date": "2027-07-11",
+   "distanceKm": 245013243,
+   "lightTimeMin": 13.621,
+   "elongationDeg": 69.09
+  },
+  {
+   "day": 334,
+   "date": "2027-07-12",
+   "distanceKm": 246052356,
+   "lightTimeMin": 13.679,
+   "elongationDeg": 68.7
+  },
+  {
+   "day": 335,
+   "date": "2027-07-13",
+   "distanceKm": 247085506,
+   "lightTimeMin": 13.736,
+   "elongationDeg": 68.31
+  },
+  {
+   "day": 336,
+   "date": "2027-07-14",
+   "distanceKm": 248112692,
+   "lightTimeMin": 13.794,
+   "elongationDeg": 67.92
+  },
+  {
+   "day": 337,
+   "date": "2027-07-15",
+   "distanceKm": 249133921,
+   "lightTimeMin": 13.85,
+   "elongationDeg": 67.54
+  },
+  {
+   "day": 338,
+   "date": "2027-07-16",
+   "distanceKm": 250149207,
+   "lightTimeMin": 13.907,
+   "elongationDeg": 67.16
+  },
+  {
+   "day": 339,
+   "date": "2027-07-17",
+   "distanceKm": 251158568,
+   "lightTimeMin": 13.963,
+   "elongationDeg": 66.78
+  },
+  {
+   "day": 340,
+   "date": "2027-07-18",
+   "distanceKm": 252162026,
+   "lightTimeMin": 14.019,
+   "elongationDeg": 66.4
+  },
+  {
+   "day": 341,
+   "date": "2027-07-19",
+   "distanceKm": 253159604,
+   "lightTimeMin": 14.074,
+   "elongationDeg": 66.02
+  },
+  {
+   "day": 342,
+   "date": "2027-07-20",
+   "distanceKm": 254151326,
+   "lightTimeMin": 14.129,
+   "elongationDeg": 65.65
+  },
+  {
+   "day": 343,
+   "date": "2027-07-21",
+   "distanceKm": 255137213,
+   "lightTimeMin": 14.184,
+   "elongationDeg": 65.27
+  },
+  {
+   "day": 344,
+   "date": "2027-07-22",
+   "distanceKm": 256117282,
+   "lightTimeMin": 14.239,
+   "elongationDeg": 64.9
+  },
+  {
+   "day": 345,
+   "date": "2027-07-23",
+   "distanceKm": 257091546,
+   "lightTimeMin": 14.293,
+   "elongationDeg": 64.53
+  },
+  {
+   "day": 346,
+   "date": "2027-07-24",
+   "distanceKm": 258060007,
+   "lightTimeMin": 14.347,
+   "elongationDeg": 64.17
+  },
+  {
+   "day": 347,
+   "date": "2027-07-25",
+   "distanceKm": 259022660,
+   "lightTimeMin": 14.4,
+   "elongationDeg": 63.8
+  },
+  {
+   "day": 348,
+   "date": "2027-07-26",
+   "distanceKm": 259979489,
+   "lightTimeMin": 14.453,
+   "elongationDeg": 63.43
+  },
+  {
+   "day": 349,
+   "date": "2027-07-27",
+   "distanceKm": 260930464,
+   "lightTimeMin": 14.506,
+   "elongationDeg": 63.07
+  },
+  {
+   "day": 350,
+   "date": "2027-07-28",
+   "distanceKm": 261875548,
+   "lightTimeMin": 14.559,
+   "elongationDeg": 62.71
+  },
+  {
+   "day": 351,
+   "date": "2027-07-29",
+   "distanceKm": 262814692,
+   "lightTimeMin": 14.611,
+   "elongationDeg": 62.35
+  },
+  {
+   "day": 352,
+   "date": "2027-07-30",
+   "distanceKm": 263747839,
+   "lightTimeMin": 14.663,
+   "elongationDeg": 61.99
+  },
+  {
+   "day": 353,
+   "date": "2027-07-31",
+   "distanceKm": 264674928,
+   "lightTimeMin": 14.714,
+   "elongationDeg": 61.63
+  },
+  {
+   "day": 354,
+   "date": "2027-08-01",
+   "distanceKm": 265595896,
+   "lightTimeMin": 14.766,
+   "elongationDeg": 61.28
+  },
+  {
+   "day": 355,
+   "date": "2027-08-02",
+   "distanceKm": 266510681,
+   "lightTimeMin": 14.816,
+   "elongationDeg": 60.93
+  },
+  {
+   "day": 356,
+   "date": "2027-08-03",
+   "distanceKm": 267419226,
+   "lightTimeMin": 14.867,
+   "elongationDeg": 60.57
+  },
+  {
+   "day": 357,
+   "date": "2027-08-04",
+   "distanceKm": 268321482,
+   "lightTimeMin": 14.917,
+   "elongationDeg": 60.22
+  },
+  {
+   "day": 358,
+   "date": "2027-08-05",
+   "distanceKm": 269217406,
+   "lightTimeMin": 14.967,
+   "elongationDeg": 59.87
+  },
+  {
+   "day": 359,
+   "date": "2027-08-06",
+   "distanceKm": 270106970,
+   "lightTimeMin": 15.016,
+   "elongationDeg": 59.53
+  },
+  {
+   "day": 360,
+   "date": "2027-08-07",
+   "distanceKm": 270990155,
+   "lightTimeMin": 15.065,
+   "elongationDeg": 59.18
+  },
+  {
+   "day": 361,
+   "date": "2027-08-08",
+   "distanceKm": 271866953,
+   "lightTimeMin": 15.114,
+   "elongationDeg": 58.83
+  },
+  {
+   "day": 362,
+   "date": "2027-08-09",
+   "distanceKm": 272737367,
+   "lightTimeMin": 15.163,
+   "elongationDeg": 58.49
+  },
+  {
+   "day": 363,
+   "date": "2027-08-10",
+   "distanceKm": 273601409,
+   "lightTimeMin": 15.211,
+   "elongationDeg": 58.15
+  },
+  {
+   "day": 364,
+   "date": "2027-08-11",
+   "distanceKm": 274459102,
+   "lightTimeMin": 15.258,
+   "elongationDeg": 57.81
+  },
+  {
+   "day": 365,
+   "date": "2027-08-12",
+   "distanceKm": 275310471,
+   "lightTimeMin": 15.306,
+   "elongationDeg": 57.47
+  },
+  {
+   "day": 366,
+   "date": "2027-08-13",
+   "distanceKm": 276155554,
+   "lightTimeMin": 15.353,
+   "elongationDeg": 57.13
+  },
+  {
+   "day": 367,
+   "date": "2027-08-14",
+   "distanceKm": 276994387,
+   "lightTimeMin": 15.399,
+   "elongationDeg": 56.8
+  },
+  {
+   "day": 368,
+   "date": "2027-08-15",
+   "distanceKm": 277827016,
+   "lightTimeMin": 15.446,
+   "elongationDeg": 56.46
+  },
+  {
+   "day": 369,
+   "date": "2027-08-16",
+   "distanceKm": 278653486,
+   "lightTimeMin": 15.491,
+   "elongationDeg": 56.13
+  },
+  {
+   "day": 370,
+   "date": "2027-08-17",
+   "distanceKm": 279473846,
+   "lightTimeMin": 15.537,
+   "elongationDeg": 55.79
+  },
+  {
+   "day": 371,
+   "date": "2027-08-18",
+   "distanceKm": 280288143,
+   "lightTimeMin": 15.582,
+   "elongationDeg": 55.46
+  },
+  {
+   "day": 372,
+   "date": "2027-08-19",
+   "distanceKm": 281096423,
+   "lightTimeMin": 15.627,
+   "elongationDeg": 55.13
+  },
+  {
+   "day": 373,
+   "date": "2027-08-20",
+   "distanceKm": 281898727,
+   "lightTimeMin": 15.672,
+   "elongationDeg": 54.8
+  },
+  {
+   "day": 374,
+   "date": "2027-08-21",
+   "distanceKm": 282695091,
+   "lightTimeMin": 15.716,
+   "elongationDeg": 54.48
+  },
+  {
+   "day": 375,
+   "date": "2027-08-22",
+   "distanceKm": 283485540,
+   "lightTimeMin": 15.76,
+   "elongationDeg": 54.15
+  },
+  {
+   "day": 376,
+   "date": "2027-08-23",
+   "distanceKm": 284270090,
+   "lightTimeMin": 15.804,
+   "elongationDeg": 53.82
+  },
+  {
+   "day": 377,
+   "date": "2027-08-24",
+   "distanceKm": 285048745,
+   "lightTimeMin": 15.847,
+   "elongationDeg": 53.5
+  },
+  {
+   "day": 378,
+   "date": "2027-08-25",
+   "distanceKm": 285821497,
+   "lightTimeMin": 15.89,
+   "elongationDeg": 53.17
+  },
+  {
+   "day": 379,
+   "date": "2027-08-26",
+   "distanceKm": 286588326,
+   "lightTimeMin": 15.933,
+   "elongationDeg": 52.85
+  },
+  {
+   "day": 380,
+   "date": "2027-08-27",
+   "distanceKm": 287349203,
+   "lightTimeMin": 15.975,
+   "elongationDeg": 52.53
+  },
+  {
+   "day": 381,
+   "date": "2027-08-28",
+   "distanceKm": 288104091,
+   "lightTimeMin": 16.017,
+   "elongationDeg": 52.21
+  },
+  {
+   "day": 382,
+   "date": "2027-08-29",
+   "distanceKm": 288852950,
+   "lightTimeMin": 16.058,
+   "elongationDeg": 51.89
+  },
+  {
+   "day": 383,
+   "date": "2027-08-30",
+   "distanceKm": 289595738,
+   "lightTimeMin": 16.1,
+   "elongationDeg": 51.57
+  },
+  {
+   "day": 384,
+   "date": "2027-08-31",
+   "distanceKm": 290332417,
+   "lightTimeMin": 16.141,
+   "elongationDeg": 51.25
+  },
+  {
+   "day": 385,
+   "date": "2027-09-01",
+   "distanceKm": 291062953,
+   "lightTimeMin": 16.181,
+   "elongationDeg": 50.94
+  },
+  {
+   "day": 386,
+   "date": "2027-09-02",
+   "distanceKm": 291787322,
+   "lightTimeMin": 16.222,
+   "elongationDeg": 50.62
+  },
+  {
+   "day": 387,
+   "date": "2027-09-03",
+   "distanceKm": 292505510,
+   "lightTimeMin": 16.262,
+   "elongationDeg": 50.31
+  },
+  {
+   "day": 388,
+   "date": "2027-09-04",
+   "distanceKm": 293217511,
+   "lightTimeMin": 16.301,
+   "elongationDeg": 50
+  },
+  {
+   "day": 389,
+   "date": "2027-09-05",
+   "distanceKm": 293923333,
+   "lightTimeMin": 16.34,
+   "elongationDeg": 49.68
+  },
+  {
+   "day": 390,
+   "date": "2027-09-06",
+   "distanceKm": 294622992,
+   "lightTimeMin": 16.379,
+   "elongationDeg": 49.37
+  },
+  {
+   "day": 391,
+   "date": "2027-09-07",
+   "distanceKm": 295316513,
+   "lightTimeMin": 16.418,
+   "elongationDeg": 49.06
+  },
+  {
+   "day": 392,
+   "date": "2027-09-08",
+   "distanceKm": 296003931,
+   "lightTimeMin": 16.456,
+   "elongationDeg": 48.75
+  },
+  {
+   "day": 393,
+   "date": "2027-09-09",
+   "distanceKm": 296685287,
+   "lightTimeMin": 16.494,
+   "elongationDeg": 48.45
+  },
+  {
+   "day": 394,
+   "date": "2027-09-10",
+   "distanceKm": 297360627,
+   "lightTimeMin": 16.531,
+   "elongationDeg": 48.14
+  },
+  {
+   "day": 395,
+   "date": "2027-09-11",
+   "distanceKm": 298030003,
+   "lightTimeMin": 16.569,
+   "elongationDeg": 47.83
+  },
+  {
+   "day": 396,
+   "date": "2027-09-12",
+   "distanceKm": 298693473,
+   "lightTimeMin": 16.606,
+   "elongationDeg": 47.53
+  },
+  {
+   "day": 397,
+   "date": "2027-09-13",
+   "distanceKm": 299351097,
+   "lightTimeMin": 16.642,
+   "elongationDeg": 47.22
+  },
+  {
+   "day": 398,
+   "date": "2027-09-14",
+   "distanceKm": 300002939,
+   "lightTimeMin": 16.678,
+   "elongationDeg": 46.92
+  },
+  {
+   "day": 399,
+   "date": "2027-09-15",
+   "distanceKm": 300649065,
+   "lightTimeMin": 16.714,
+   "elongationDeg": 46.62
+  },
+  {
+   "day": 400,
+   "date": "2027-09-16",
+   "distanceKm": 301289540,
+   "lightTimeMin": 16.75,
+   "elongationDeg": 46.32
+  },
+  {
+   "day": 401,
+   "date": "2027-09-17",
+   "distanceKm": 301924426,
+   "lightTimeMin": 16.785,
+   "elongationDeg": 46.01
+  },
+  {
+   "day": 402,
+   "date": "2027-09-18",
+   "distanceKm": 302553783,
+   "lightTimeMin": 16.82,
+   "elongationDeg": 45.71
+  },
+  {
+   "day": 403,
+   "date": "2027-09-19",
+   "distanceKm": 303177661,
+   "lightTimeMin": 16.855,
+   "elongationDeg": 45.42
+  },
+  {
+   "day": 404,
+   "date": "2027-09-20",
+   "distanceKm": 303796103,
+   "lightTimeMin": 16.889,
+   "elongationDeg": 45.12
+  },
+  {
+   "day": 405,
+   "date": "2027-09-21",
+   "distanceKm": 304409137,
+   "lightTimeMin": 16.923,
+   "elongationDeg": 44.82
+  },
+  {
+   "day": 406,
+   "date": "2027-09-22",
+   "distanceKm": 305016782,
+   "lightTimeMin": 16.957,
+   "elongationDeg": 44.52
+  },
+  {
+   "day": 407,
+   "date": "2027-09-23",
+   "distanceKm": 305619042,
+   "lightTimeMin": 16.991,
+   "elongationDeg": 44.23
+  },
+  {
+   "day": 408,
+   "date": "2027-09-24",
+   "distanceKm": 306215911,
+   "lightTimeMin": 17.024,
+   "elongationDeg": 43.93
+  },
+  {
+   "day": 409,
+   "date": "2027-09-25",
+   "distanceKm": 306807373,
+   "lightTimeMin": 17.057,
+   "elongationDeg": 43.64
+  },
+  {
+   "day": 410,
+   "date": "2027-09-26",
+   "distanceKm": 307393406,
+   "lightTimeMin": 17.089,
+   "elongationDeg": 43.34
+  },
+  {
+   "day": 411,
+   "date": "2027-09-27",
+   "distanceKm": 307973983,
+   "lightTimeMin": 17.122,
+   "elongationDeg": 43.05
+  },
+  {
+   "day": 412,
+   "date": "2027-09-28",
+   "distanceKm": 308549080,
+   "lightTimeMin": 17.153,
+   "elongationDeg": 42.76
+  },
+  {
+   "day": 413,
+   "date": "2027-09-29",
+   "distanceKm": 309118676,
+   "lightTimeMin": 17.185,
+   "elongationDeg": 42.47
+  },
+  {
+   "day": 414,
+   "date": "2027-09-30",
+   "distanceKm": 309682756,
+   "lightTimeMin": 17.217,
+   "elongationDeg": 42.17
+  },
+  {
+   "day": 415,
+   "date": "2027-10-01",
+   "distanceKm": 310241315,
+   "lightTimeMin": 17.248,
+   "elongationDeg": 41.88
+  },
+  {
+   "day": 416,
+   "date": "2027-10-02",
+   "distanceKm": 310794358,
+   "lightTimeMin": 17.278,
+   "elongationDeg": 41.6
+  },
+  {
+   "day": 417,
+   "date": "2027-10-03",
+   "distanceKm": 311341898,
+   "lightTimeMin": 17.309,
+   "elongationDeg": 41.31
+  },
+  {
+   "day": 418,
+   "date": "2027-10-04",
+   "distanceKm": 311883960,
+   "lightTimeMin": 17.339,
+   "elongationDeg": 41.02
+  },
+  {
+   "day": 419,
+   "date": "2027-10-05",
+   "distanceKm": 312420577,
+   "lightTimeMin": 17.369,
+   "elongationDeg": 40.73
+  },
+  {
+   "day": 420,
+   "date": "2027-10-06",
+   "distanceKm": 312951792,
+   "lightTimeMin": 17.398,
+   "elongationDeg": 40.45
+  },
+  {
+   "day": 421,
+   "date": "2027-10-07",
+   "distanceKm": 313477652,
+   "lightTimeMin": 17.427,
+   "elongationDeg": 40.16
+  },
+  {
+   "day": 422,
+   "date": "2027-10-08",
+   "distanceKm": 313998211,
+   "lightTimeMin": 17.456,
+   "elongationDeg": 39.88
+  },
+  {
+   "day": 423,
+   "date": "2027-10-09",
+   "distanceKm": 314513529,
+   "lightTimeMin": 17.485,
+   "elongationDeg": 39.59
+  },
+  {
+   "day": 424,
+   "date": "2027-10-10",
+   "distanceKm": 315023671,
+   "lightTimeMin": 17.513,
+   "elongationDeg": 39.31
+  },
+  {
+   "day": 425,
+   "date": "2027-10-11",
+   "distanceKm": 315528706,
+   "lightTimeMin": 17.542,
+   "elongationDeg": 39.03
+  },
+  {
+   "day": 426,
+   "date": "2027-10-12",
+   "distanceKm": 316028708,
+   "lightTimeMin": 17.569,
+   "elongationDeg": 38.74
+  },
+  {
+   "day": 427,
+   "date": "2027-10-13",
+   "distanceKm": 316523753,
+   "lightTimeMin": 17.597,
+   "elongationDeg": 38.46
+  },
+  {
+   "day": 428,
+   "date": "2027-10-14",
+   "distanceKm": 317013920,
+   "lightTimeMin": 17.624,
+   "elongationDeg": 38.18
+  },
+  {
+   "day": 429,
+   "date": "2027-10-15",
+   "distanceKm": 317499287,
+   "lightTimeMin": 17.651,
+   "elongationDeg": 37.9
+  },
+  {
+   "day": 430,
+   "date": "2027-10-16",
+   "distanceKm": 317979931,
+   "lightTimeMin": 17.678,
+   "elongationDeg": 37.62
+  },
+  {
+   "day": 431,
+   "date": "2027-10-17",
+   "distanceKm": 318455922,
+   "lightTimeMin": 17.704,
+   "elongationDeg": 37.35
+  },
+  {
+   "day": 432,
+   "date": "2027-10-18",
+   "distanceKm": 318927322,
+   "lightTimeMin": 17.73,
+   "elongationDeg": 37.07
+  },
+  {
+   "day": 433,
+   "date": "2027-10-19",
+   "distanceKm": 319394184,
+   "lightTimeMin": 17.756,
+   "elongationDeg": 36.79
+  },
+  {
+   "day": 434,
+   "date": "2027-10-20",
+   "distanceKm": 319856545,
+   "lightTimeMin": 17.782,
+   "elongationDeg": 36.51
+  },
+  {
+   "day": 435,
+   "date": "2027-10-21",
+   "distanceKm": 320314432,
+   "lightTimeMin": 17.808,
+   "elongationDeg": 36.24
+  },
+  {
+   "day": 436,
+   "date": "2027-10-22",
+   "distanceKm": 320767858,
+   "lightTimeMin": 17.833,
+   "elongationDeg": 35.96
+  },
+  {
+   "day": 437,
+   "date": "2027-10-23",
+   "distanceKm": 321216825,
+   "lightTimeMin": 17.858,
+   "elongationDeg": 35.69
+  },
+  {
+   "day": 438,
+   "date": "2027-10-24",
+   "distanceKm": 321661325,
+   "lightTimeMin": 17.882,
+   "elongationDeg": 35.41
+  },
+  {
+   "day": 439,
+   "date": "2027-10-25",
+   "distanceKm": 322101346,
+   "lightTimeMin": 17.907,
+   "elongationDeg": 35.14
+  },
+  {
+   "day": 440,
+   "date": "2027-10-26",
+   "distanceKm": 322536871,
+   "lightTimeMin": 17.931,
+   "elongationDeg": 34.87
+  },
+  {
+   "day": 441,
+   "date": "2027-10-27",
+   "distanceKm": 322967888,
+   "lightTimeMin": 17.955,
+   "elongationDeg": 34.6
+  },
+  {
+   "day": 442,
+   "date": "2027-10-28",
+   "distanceKm": 323394389,
+   "lightTimeMin": 17.979,
+   "elongationDeg": 34.32
+  },
+  {
+   "day": 443,
+   "date": "2027-10-29",
+   "distanceKm": 323816371,
+   "lightTimeMin": 18.002,
+   "elongationDeg": 34.05
+  },
+  {
+   "day": 444,
+   "date": "2027-10-30",
+   "distanceKm": 324233843,
+   "lightTimeMin": 18.025,
+   "elongationDeg": 33.78
+  },
+  {
+   "day": 445,
+   "date": "2027-10-31",
+   "distanceKm": 324646822,
+   "lightTimeMin": 18.048,
+   "elongationDeg": 33.51
+  },
+  {
+   "day": 446,
+   "date": "2027-11-01",
+   "distanceKm": 325055334,
+   "lightTimeMin": 18.071,
+   "elongationDeg": 33.24
+  },
+  {
+   "day": 447,
+   "date": "2027-11-02",
+   "distanceKm": 325459415,
+   "lightTimeMin": 18.094,
+   "elongationDeg": 32.97
+  },
+  {
+   "day": 448,
+   "date": "2027-11-03",
+   "distanceKm": 325859107,
+   "lightTimeMin": 18.116,
+   "elongationDeg": 32.71
+  },
+  {
+   "day": 449,
+   "date": "2027-11-04",
+   "distanceKm": 326254461,
+   "lightTimeMin": 18.138,
+   "elongationDeg": 32.44
+  },
+  {
+   "day": 450,
+   "date": "2027-11-05",
+   "distanceKm": 326645532,
+   "lightTimeMin": 18.16,
+   "elongationDeg": 32.17
+  },
+  {
+   "day": 451,
+   "date": "2027-11-06",
+   "distanceKm": 327032382,
+   "lightTimeMin": 18.181,
+   "elongationDeg": 31.9
+  },
+  {
+   "day": 452,
+   "date": "2027-11-07",
+   "distanceKm": 327415077,
+   "lightTimeMin": 18.202,
+   "elongationDeg": 31.64
+  },
+  {
+   "day": 453,
+   "date": "2027-11-08",
+   "distanceKm": 327793689,
+   "lightTimeMin": 18.223,
+   "elongationDeg": 31.37
+  },
+  {
+   "day": 454,
+   "date": "2027-11-09",
+   "distanceKm": 328168294,
+   "lightTimeMin": 18.244,
+   "elongationDeg": 31.11
+  },
+  {
+   "day": 455,
+   "date": "2027-11-10",
+   "distanceKm": 328538974,
+   "lightTimeMin": 18.265,
+   "elongationDeg": 30.85
+  },
+  {
+   "day": 456,
+   "date": "2027-11-11",
+   "distanceKm": 328905814,
+   "lightTimeMin": 18.285,
+   "elongationDeg": 30.58
+  },
+  {
+   "day": 457,
+   "date": "2027-11-12",
+   "distanceKm": 329268899,
+   "lightTimeMin": 18.305,
+   "elongationDeg": 30.32
+  },
+  {
+   "day": 458,
+   "date": "2027-11-13",
+   "distanceKm": 329628318,
+   "lightTimeMin": 18.325,
+   "elongationDeg": 30.06
+  },
+  {
+   "day": 459,
+   "date": "2027-11-14",
+   "distanceKm": 329984151,
+   "lightTimeMin": 18.345,
+   "elongationDeg": 29.8
+  },
+  {
+   "day": 460,
+   "date": "2027-11-15",
+   "distanceKm": 330336478,
+   "lightTimeMin": 18.365,
+   "elongationDeg": 29.54
+  },
+  {
+   "day": 461,
+   "date": "2027-11-16",
+   "distanceKm": 330685364,
+   "lightTimeMin": 18.384,
+   "elongationDeg": 29.28
+  },
+  {
+   "day": 462,
+   "date": "2027-11-17",
+   "distanceKm": 331030865,
+   "lightTimeMin": 18.403,
+   "elongationDeg": 29.02
+  },
+  {
+   "day": 463,
+   "date": "2027-11-18",
+   "distanceKm": 331373023,
+   "lightTimeMin": 18.422,
+   "elongationDeg": 28.76
+  },
+  {
+   "day": 464,
+   "date": "2027-11-19",
+   "distanceKm": 331711866,
+   "lightTimeMin": 18.441,
+   "elongationDeg": 28.5
+  },
+  {
+   "day": 465,
+   "date": "2027-11-20",
+   "distanceKm": 332047410,
+   "lightTimeMin": 18.46,
+   "elongationDeg": 28.24
+  },
+  {
+   "day": 466,
+   "date": "2027-11-21",
+   "distanceKm": 332379657,
+   "lightTimeMin": 18.478,
+   "elongationDeg": 27.98
+  },
+  {
+   "day": 467,
+   "date": "2027-11-22",
+   "distanceKm": 332708603,
+   "lightTimeMin": 18.497,
+   "elongationDeg": 27.73
+  },
+  {
+   "day": 468,
+   "date": "2027-11-23",
+   "distanceKm": 333034239,
+   "lightTimeMin": 18.515,
+   "elongationDeg": 27.47
+  },
+  {
+   "day": 469,
+   "date": "2027-11-24",
+   "distanceKm": 333356553,
+   "lightTimeMin": 18.533,
+   "elongationDeg": 27.21
+  },
+  {
+   "day": 470,
+   "date": "2027-11-25",
+   "distanceKm": 333675538,
+   "lightTimeMin": 18.55,
+   "elongationDeg": 26.96
+  },
+  {
+   "day": 471,
+   "date": "2027-11-26",
+   "distanceKm": 333991190,
+   "lightTimeMin": 18.568,
+   "elongationDeg": 26.7
+  },
+  {
+   "day": 472,
+   "date": "2027-11-27",
+   "distanceKm": 334303513,
+   "lightTimeMin": 18.585,
+   "elongationDeg": 26.45
+  },
+  {
+   "day": 473,
+   "date": "2027-11-28",
+   "distanceKm": 334612520,
+   "lightTimeMin": 18.602,
+   "elongationDeg": 26.19
+  },
+  {
+   "day": 474,
+   "date": "2027-11-29",
+   "distanceKm": 334918233,
+   "lightTimeMin": 18.619,
+   "elongationDeg": 25.94
+  },
+  {
+   "day": 475,
+   "date": "2027-11-30",
+   "distanceKm": 335220681,
+   "lightTimeMin": 18.636,
+   "elongationDeg": 25.69
+  },
+  {
+   "day": 476,
+   "date": "2027-12-01",
+   "distanceKm": 335519902,
+   "lightTimeMin": 18.653,
+   "elongationDeg": 25.43
+  },
+  {
+   "day": 477,
+   "date": "2027-12-02",
+   "distanceKm": 335815938,
+   "lightTimeMin": 18.669,
+   "elongationDeg": 25.18
+  },
+  {
+   "day": 478,
+   "date": "2027-12-03",
+   "distanceKm": 336108840,
+   "lightTimeMin": 18.686,
+   "elongationDeg": 24.93
+  },
+  {
+   "day": 479,
+   "date": "2027-12-04",
+   "distanceKm": 336398662,
+   "lightTimeMin": 18.702,
+   "elongationDeg": 24.68
+  },
+  {
+   "day": 480,
+   "date": "2027-12-05",
+   "distanceKm": 336685464,
+   "lightTimeMin": 18.718,
+   "elongationDeg": 24.43
+  },
+  {
+   "day": 481,
+   "date": "2027-12-06",
+   "distanceKm": 336969311,
+   "lightTimeMin": 18.733,
+   "elongationDeg": 24.18
+  },
+  {
+   "day": 482,
+   "date": "2027-12-07",
+   "distanceKm": 337250275,
+   "lightTimeMin": 18.749,
+   "elongationDeg": 23.93
+  },
+  {
+   "day": 483,
+   "date": "2027-12-08",
+   "distanceKm": 337528432,
+   "lightTimeMin": 18.765,
+   "elongationDeg": 23.68
+  },
+  {
+   "day": 484,
+   "date": "2027-12-09",
+   "distanceKm": 337803865,
+   "lightTimeMin": 18.78,
+   "elongationDeg": 23.43
+  },
+  {
+   "day": 485,
+   "date": "2027-12-10",
+   "distanceKm": 338076657,
+   "lightTimeMin": 18.795,
+   "elongationDeg": 23.19
+  },
+  {
+   "day": 486,
+   "date": "2027-12-11",
+   "distanceKm": 338346897,
+   "lightTimeMin": 18.81,
+   "elongationDeg": 22.94
+  },
+  {
+   "day": 487,
+   "date": "2027-12-12",
+   "distanceKm": 338614670,
+   "lightTimeMin": 18.825,
+   "elongationDeg": 22.69
+  },
+  {
+   "day": 488,
+   "date": "2027-12-13",
+   "distanceKm": 338880058,
+   "lightTimeMin": 18.84,
+   "elongationDeg": 22.45
+  },
+  {
+   "day": 489,
+   "date": "2027-12-14",
+   "distanceKm": 339143137,
+   "lightTimeMin": 18.854,
+   "elongationDeg": 22.2
+  },
+  {
+   "day": 490,
+   "date": "2027-12-15",
+   "distanceKm": 339403969,
+   "lightTimeMin": 18.869,
+   "elongationDeg": 21.96
+  },
+  {
+   "day": 491,
+   "date": "2027-12-16",
+   "distanceKm": 339662605,
+   "lightTimeMin": 18.883,
+   "elongationDeg": 21.71
+  },
+  {
+   "day": 492,
+   "date": "2027-12-17",
+   "distanceKm": 339919082,
+   "lightTimeMin": 18.897,
+   "elongationDeg": 21.47
+  },
+  {
+   "day": 493,
+   "date": "2027-12-18",
+   "distanceKm": 340173422,
+   "lightTimeMin": 18.912,
+   "elongationDeg": 21.23
+  },
+  {
+   "day": 494,
+   "date": "2027-12-19",
+   "distanceKm": 340425632,
+   "lightTimeMin": 18.926,
+   "elongationDeg": 20.98
+  },
+  {
+   "day": 495,
+   "date": "2027-12-20",
+   "distanceKm": 340675711,
+   "lightTimeMin": 18.94,
+   "elongationDeg": 20.74
+  },
+  {
+   "day": 496,
+   "date": "2027-12-21",
+   "distanceKm": 340923648,
+   "lightTimeMin": 18.953,
+   "elongationDeg": 20.5
+  },
+  {
+   "day": 497,
+   "date": "2027-12-22",
+   "distanceKm": 341169428,
+   "lightTimeMin": 18.967,
+   "elongationDeg": 20.26
+  },
+  {
+   "day": 498,
+   "date": "2027-12-23",
+   "distanceKm": 341413036,
+   "lightTimeMin": 18.981,
+   "elongationDeg": 20.02
+  },
+  {
+   "day": 499,
+   "date": "2027-12-24",
+   "distanceKm": 341654461,
+   "lightTimeMin": 18.994,
+   "elongationDeg": 19.78
+  },
+  {
+   "day": 500,
+   "date": "2027-12-25",
+   "distanceKm": 341893695,
+   "lightTimeMin": 19.007,
+   "elongationDeg": 19.54
+  },
+  {
+   "day": 501,
+   "date": "2027-12-26",
+   "distanceKm": 342130738,
+   "lightTimeMin": 19.02,
+   "elongationDeg": 19.3
+  },
+  {
+   "day": 502,
+   "date": "2027-12-27",
+   "distanceKm": 342365597,
+   "lightTimeMin": 19.033,
+   "elongationDeg": 19.06
+  },
+  {
+   "day": 503,
+   "date": "2027-12-28",
+   "distanceKm": 342598288,
+   "lightTimeMin": 19.046,
+   "elongationDeg": 18.82
+  },
+  {
+   "day": 504,
+   "date": "2027-12-29",
+   "distanceKm": 342828831,
+   "lightTimeMin": 19.059,
+   "elongationDeg": 18.58
+  },
+  {
+   "day": 505,
+   "date": "2027-12-30",
+   "distanceKm": 343057255,
+   "lightTimeMin": 19.072,
+   "elongationDeg": 18.34
+  },
+  {
+   "day": 506,
+   "date": "2027-12-31",
+   "distanceKm": 343283593,
+   "lightTimeMin": 19.085,
+   "elongationDeg": 18.1
+  },
+  {
+   "day": 507,
+   "date": "2028-01-01",
+   "distanceKm": 343507883,
+   "lightTimeMin": 19.097,
+   "elongationDeg": 17.87
+  },
+  {
+   "day": 508,
+   "date": "2028-01-02",
+   "distanceKm": 343730170,
+   "lightTimeMin": 19.109,
+   "elongationDeg": 17.63
+  },
+  {
+   "day": 509,
+   "date": "2028-01-03",
+   "distanceKm": 343950501,
+   "lightTimeMin": 19.122,
+   "elongationDeg": 17.4
+  },
+  {
+   "day": 510,
+   "date": "2028-01-04",
+   "distanceKm": 344168932,
+   "lightTimeMin": 19.134,
+   "elongationDeg": 17.16
+  },
+  {
+   "day": 511,
+   "date": "2028-01-05",
+   "distanceKm": 344385524,
+   "lightTimeMin": 19.146,
+   "elongationDeg": 16.93
+  },
+  {
+   "day": 512,
+   "date": "2028-01-06",
+   "distanceKm": 344600344,
+   "lightTimeMin": 19.158,
+   "elongationDeg": 16.69
+  },
+  {
+   "day": 513,
+   "date": "2028-01-07",
+   "distanceKm": 344813465,
+   "lightTimeMin": 19.17,
+   "elongationDeg": 16.46
+  },
+  {
+   "day": 514,
+   "date": "2028-01-08",
+   "distanceKm": 345024963,
+   "lightTimeMin": 19.181,
+   "elongationDeg": 16.22
+  },
+  {
+   "day": 515,
+   "date": "2028-01-09",
+   "distanceKm": 345234917,
+   "lightTimeMin": 19.193,
+   "elongationDeg": 15.99
+  },
+  {
+   "day": 516,
+   "date": "2028-01-10",
+   "distanceKm": 345443402,
+   "lightTimeMin": 19.205,
+   "elongationDeg": 15.76
+  },
+  {
+   "day": 517,
+   "date": "2028-01-11",
+   "distanceKm": 345650490,
+   "lightTimeMin": 19.216,
+   "elongationDeg": 15.53
+  },
+  {
+   "day": 518,
+   "date": "2028-01-12",
+   "distanceKm": 345856243,
+   "lightTimeMin": 19.228,
+   "elongationDeg": 15.3
+  },
+  {
+   "day": 519,
+   "date": "2028-01-13",
+   "distanceKm": 346060711,
+   "lightTimeMin": 19.239,
+   "elongationDeg": 15.06
+  },
+  {
+   "day": 520,
+   "date": "2028-01-14",
+   "distanceKm": 346263930,
+   "lightTimeMin": 19.25,
+   "elongationDeg": 14.83
+  },
+  {
+   "day": 521,
+   "date": "2028-01-15",
+   "distanceKm": 346465922,
+   "lightTimeMin": 19.261,
+   "elongationDeg": 14.6
+  },
+  {
+   "day": 522,
+   "date": "2028-01-16",
+   "distanceKm": 346666692,
+   "lightTimeMin": 19.273,
+   "elongationDeg": 14.37
+  },
+  {
+   "day": 523,
+   "date": "2028-01-17",
+   "distanceKm": 346866235,
+   "lightTimeMin": 19.284,
+   "elongationDeg": 14.14
+  },
+  {
+   "day": 524,
+   "date": "2028-01-18",
+   "distanceKm": 347064531,
+   "lightTimeMin": 19.295,
+   "elongationDeg": 13.92
+  },
+  {
+   "day": 525,
+   "date": "2028-01-19",
+   "distanceKm": 347261557,
+   "lightTimeMin": 19.306,
+   "elongationDeg": 13.69
+  },
+  {
+   "day": 526,
+   "date": "2028-01-20",
+   "distanceKm": 347457284,
+   "lightTimeMin": 19.317,
+   "elongationDeg": 13.46
+  },
+  {
+   "day": 527,
+   "date": "2028-01-21",
+   "distanceKm": 347651684,
+   "lightTimeMin": 19.327,
+   "elongationDeg": 13.23
+  },
+  {
+   "day": 528,
+   "date": "2028-01-22",
+   "distanceKm": 347844732,
+   "lightTimeMin": 19.338,
+   "elongationDeg": 13
+  },
+  {
+   "day": 529,
+   "date": "2028-01-23",
+   "distanceKm": 348036406,
+   "lightTimeMin": 19.349,
+   "elongationDeg": 12.78
+  },
+  {
+   "day": 530,
+   "date": "2028-01-24",
+   "distanceKm": 348226693,
+   "lightTimeMin": 19.359,
+   "elongationDeg": 12.55
+  },
+  {
+   "day": 531,
+   "date": "2028-01-25",
+   "distanceKm": 348415583,
+   "lightTimeMin": 19.37,
+   "elongationDeg": 12.32
+  },
+  {
+   "day": 532,
+   "date": "2028-01-26",
+   "distanceKm": 348603075,
+   "lightTimeMin": 19.38,
+   "elongationDeg": 12.1
+  },
+  {
+   "day": 533,
+   "date": "2028-01-27",
+   "distanceKm": 348789172,
+   "lightTimeMin": 19.391,
+   "elongationDeg": 11.87
+  },
+  {
+   "day": 534,
+   "date": "2028-01-28",
+   "distanceKm": 348973882,
+   "lightTimeMin": 19.401,
+   "elongationDeg": 11.65
+  },
+  {
+   "day": 535,
+   "date": "2028-01-29",
+   "distanceKm": 349157218,
+   "lightTimeMin": 19.411,
+   "elongationDeg": 11.42
+  },
+  {
+   "day": 536,
+   "date": "2028-01-30",
+   "distanceKm": 349339200,
+   "lightTimeMin": 19.421,
+   "elongationDeg": 11.2
+  },
+  {
+   "day": 537,
+   "date": "2028-01-31",
+   "distanceKm": 349519848,
+   "lightTimeMin": 19.431,
+   "elongationDeg": 10.97
+  },
+  {
+   "day": 538,
+   "date": "2028-02-01",
+   "distanceKm": 349699194,
+   "lightTimeMin": 19.441,
+   "elongationDeg": 10.75
+  },
+  {
+   "day": 539,
+   "date": "2028-02-02",
+   "distanceKm": 349877272,
+   "lightTimeMin": 19.451,
+   "elongationDeg": 10.53
+  },
+  {
+   "day": 540,
+   "date": "2028-02-03",
+   "distanceKm": 350054125,
+   "lightTimeMin": 19.461,
+   "elongationDeg": 10.3
+  },
+  {
+   "day": 541,
+   "date": "2028-02-04",
+   "distanceKm": 350229804,
+   "lightTimeMin": 19.471,
+   "elongationDeg": 10.08
+  },
+  {
+   "day": 542,
+   "date": "2028-02-05",
+   "distanceKm": 350404364,
+   "lightTimeMin": 19.48,
+   "elongationDeg": 9.86
+  },
+  {
+   "day": 543,
+   "date": "2028-02-06",
+   "distanceKm": 350577865,
+   "lightTimeMin": 19.49,
+   "elongationDeg": 9.64
+  },
+  {
+   "day": 544,
+   "date": "2028-02-07",
+   "distanceKm": 350750368,
+   "lightTimeMin": 19.5,
+   "elongationDeg": 9.42
+  },
+  {
+   "day": 545,
+   "date": "2028-02-08",
+   "distanceKm": 350921929,
+   "lightTimeMin": 19.509,
+   "elongationDeg": 9.2
+  },
+  {
+   "day": 546,
+   "date": "2028-02-09",
+   "distanceKm": 351092602,
+   "lightTimeMin": 19.519,
+   "elongationDeg": 8.98
+  },
+  {
+   "day": 547,
+   "date": "2028-02-10",
+   "distanceKm": 351262428,
+   "lightTimeMin": 19.528,
+   "elongationDeg": 8.76
+  },
+  {
+   "day": 548,
+   "date": "2028-02-11",
+   "distanceKm": 351431435,
+   "lightTimeMin": 19.537,
+   "elongationDeg": 8.54
+  },
+  {
+   "day": 549,
+   "date": "2028-02-12",
+   "distanceKm": 351599638,
+   "lightTimeMin": 19.547,
+   "elongationDeg": 8.32
+  },
+  {
+   "day": 550,
+   "date": "2028-02-13",
+   "distanceKm": 351767036,
+   "lightTimeMin": 19.556,
+   "elongationDeg": 8.1
+  },
+  {
+   "day": 551,
+   "date": "2028-02-14",
+   "distanceKm": 351933611,
+   "lightTimeMin": 19.565,
+   "elongationDeg": 7.88
+  },
+  {
+   "day": 552,
+   "date": "2028-02-15",
+   "distanceKm": 352099337,
+   "lightTimeMin": 19.575,
+   "elongationDeg": 7.66
+  },
+  {
+   "day": 553,
+   "date": "2028-02-16",
+   "distanceKm": 352264174,
+   "lightTimeMin": 19.584,
+   "elongationDeg": 7.44
+  },
+  {
+   "day": 554,
+   "date": "2028-02-17",
+   "distanceKm": 352428077,
+   "lightTimeMin": 19.593,
+   "elongationDeg": 7.23
+  },
+  {
+   "day": 555,
+   "date": "2028-02-18",
+   "distanceKm": 352590998,
+   "lightTimeMin": 19.602,
+   "elongationDeg": 7.01
+  },
+  {
+   "day": 556,
+   "date": "2028-02-19",
+   "distanceKm": 352752890,
+   "lightTimeMin": 19.611,
+   "elongationDeg": 6.79
+  },
+  {
+   "day": 557,
+   "date": "2028-02-20",
+   "distanceKm": 352913707,
+   "lightTimeMin": 19.62,
+   "elongationDeg": 6.57
+  },
+  {
+   "day": 558,
+   "date": "2028-02-21",
+   "distanceKm": 353073409,
+   "lightTimeMin": 19.629,
+   "elongationDeg": 6.36
+  },
+  {
+   "day": 559,
+   "date": "2028-02-22",
+   "distanceKm": 353231960,
+   "lightTimeMin": 19.638,
+   "elongationDeg": 6.14
+  },
+  {
+   "day": 560,
+   "date": "2028-02-23",
+   "distanceKm": 353389329,
+   "lightTimeMin": 19.646,
+   "elongationDeg": 5.93
+  },
+  {
+   "day": 561,
+   "date": "2028-02-24",
+   "distanceKm": 353545491,
+   "lightTimeMin": 19.655,
+   "elongationDeg": 5.71
+  },
+  {
+   "day": 562,
+   "date": "2028-02-25",
+   "distanceKm": 353700425,
+   "lightTimeMin": 19.664,
+   "elongationDeg": 5.49
+  },
+  {
+   "day": 563,
+   "date": "2028-02-26",
+   "distanceKm": 353854114,
+   "lightTimeMin": 19.672,
+   "elongationDeg": 5.28
+  },
+  {
+   "day": 564,
+   "date": "2028-02-27",
+   "distanceKm": 354006546,
+   "lightTimeMin": 19.681,
+   "elongationDeg": 5.07
+  },
+  {
+   "day": 565,
+   "date": "2028-02-28",
+   "distanceKm": 354157713,
+   "lightTimeMin": 19.689,
+   "elongationDeg": 4.85
+  },
+  {
+   "day": 566,
+   "date": "2028-02-29",
+   "distanceKm": 354307614,
+   "lightTimeMin": 19.697,
+   "elongationDeg": 4.64
+  },
+  {
+   "day": 567,
+   "date": "2028-03-01",
+   "distanceKm": 354456254,
+   "lightTimeMin": 19.706,
+   "elongationDeg": 4.43
+  },
+  {
+   "day": 568,
+   "date": "2028-03-02",
+   "distanceKm": 354603645,
+   "lightTimeMin": 19.714,
+   "elongationDeg": 4.21
+  },
+  {
+   "day": 569,
+   "date": "2028-03-03",
+   "distanceKm": 354749811,
+   "lightTimeMin": 19.722,
+   "elongationDeg": 4
+  },
+  {
+   "day": 570,
+   "date": "2028-03-04",
+   "distanceKm": 354894779,
+   "lightTimeMin": 19.73,
+   "elongationDeg": 3.79
+  },
+  {
+   "day": 571,
+   "date": "2028-03-05",
+   "distanceKm": 355038585,
+   "lightTimeMin": 19.738,
+   "elongationDeg": 3.58
+  },
+  {
+   "day": 572,
+   "date": "2028-03-06",
+   "distanceKm": 355181267,
+   "lightTimeMin": 19.746,
+   "elongationDeg": 3.37
+  },
+  {
+   "day": 573,
+   "date": "2028-03-07",
+   "distanceKm": 355322865,
+   "lightTimeMin": 19.754,
+   "elongationDeg": 3.16
+  },
+  {
+   "day": 574,
+   "date": "2028-03-08",
+   "distanceKm": 355463416,
+   "lightTimeMin": 19.762,
+   "elongationDeg": 2.95
+  },
+  {
+   "day": 575,
+   "date": "2028-03-09",
+   "distanceKm": 355602948,
+   "lightTimeMin": 19.769,
+   "elongationDeg": 2.75
+  },
+  {
+   "day": 576,
+   "date": "2028-03-10",
+   "distanceKm": 355741478,
+   "lightTimeMin": 19.777,
+   "elongationDeg": 2.54
+  },
+  {
+   "day": 577,
+   "date": "2028-03-11",
+   "distanceKm": 355879013,
+   "lightTimeMin": 19.785,
+   "elongationDeg": 2.34
+  },
+  {
+   "day": 578,
+   "date": "2028-03-12",
+   "distanceKm": 356015540,
+   "lightTimeMin": 19.792,
+   "elongationDeg": 2.14
+  },
+  {
+   "day": 579,
+   "date": "2028-03-13",
+   "distanceKm": 356151036,
+   "lightTimeMin": 19.8,
+   "elongationDeg": 1.94
+  },
+  {
+   "day": 580,
+   "date": "2028-03-14",
+   "distanceKm": 356285459,
+   "lightTimeMin": 19.807,
+   "elongationDeg": 1.75
+  },
+  {
+   "day": 581,
+   "date": "2028-03-15",
+   "distanceKm": 356418758,
+   "lightTimeMin": 19.815,
+   "elongationDeg": 1.56
+  },
+  {
+   "day": 582,
+   "date": "2028-03-16",
+   "distanceKm": 356550872,
+   "lightTimeMin": 19.822,
+   "elongationDeg": 1.39
+  },
+  {
+   "day": 583,
+   "date": "2028-03-17",
+   "distanceKm": 356681737,
+   "lightTimeMin": 19.829,
+   "elongationDeg": 1.22
+  },
+  {
+   "day": 584,
+   "date": "2028-03-18",
+   "distanceKm": 356811283,
+   "lightTimeMin": 19.837,
+   "elongationDeg": 1.07
+  },
+  {
+   "day": 585,
+   "date": "2028-03-19",
+   "distanceKm": 356939443,
+   "lightTimeMin": 19.844,
+   "elongationDeg": 0.94
+  },
+  {
+   "day": 586,
+   "date": "2028-03-20",
+   "distanceKm": 357066151,
+   "lightTimeMin": 19.851,
+   "elongationDeg": 0.85
+  },
+  {
+   "day": 587,
+   "date": "2028-03-21",
+   "distanceKm": 357191346,
+   "lightTimeMin": 19.858,
+   "elongationDeg": 0.81
+  },
+  {
+   "day": 588,
+   "date": "2028-03-22",
+   "distanceKm": 357314971,
+   "lightTimeMin": 19.865,
+   "elongationDeg": 0.83
+  },
+  {
+   "day": 589,
+   "date": "2028-03-23",
+   "distanceKm": 357436971,
+   "lightTimeMin": 19.871,
+   "elongationDeg": 0.89
+  },
+  {
+   "day": 590,
+   "date": "2028-03-24",
+   "distanceKm": 357557299,
+   "lightTimeMin": 19.878,
+   "elongationDeg": 1
+  },
+  {
+   "day": 591,
+   "date": "2028-03-25",
+   "distanceKm": 357675909,
+   "lightTimeMin": 19.885,
+   "elongationDeg": 1.14
+  },
+  {
+   "day": 592,
+   "date": "2028-03-26",
+   "distanceKm": 357792760,
+   "lightTimeMin": 19.891,
+   "elongationDeg": 1.3
+  },
+  {
+   "day": 593,
+   "date": "2028-03-27",
+   "distanceKm": 357907813,
+   "lightTimeMin": 19.898,
+   "elongationDeg": 1.48
+  },
+  {
+   "day": 594,
+   "date": "2028-03-28",
+   "distanceKm": 358021040,
+   "lightTimeMin": 19.904,
+   "elongationDeg": 1.66
+  },
+  {
+   "day": 595,
+   "date": "2028-03-29",
+   "distanceKm": 358132415,
+   "lightTimeMin": 19.91,
+   "elongationDeg": 1.85
+  },
+  {
+   "day": 596,
+   "date": "2028-03-30",
+   "distanceKm": 358241922,
+   "lightTimeMin": 19.916,
+   "elongationDeg": 2.05
+  },
+  {
+   "day": 597,
+   "date": "2028-03-31",
+   "distanceKm": 358349554,
+   "lightTimeMin": 19.922,
+   "elongationDeg": 2.24
+  },
+  {
+   "day": 598,
+   "date": "2028-04-01",
+   "distanceKm": 358455313,
+   "lightTimeMin": 19.928,
+   "elongationDeg": 2.45
+  },
+  {
+   "day": 599,
+   "date": "2028-04-02",
+   "distanceKm": 358559211,
+   "lightTimeMin": 19.934,
+   "elongationDeg": 2.65
+  },
+  {
+   "day": 600,
+   "date": "2028-04-03",
+   "distanceKm": 358661263,
+   "lightTimeMin": 19.939,
+   "elongationDeg": 2.85
+  },
+  {
+   "day": 601,
+   "date": "2028-04-04",
+   "distanceKm": 358761490,
+   "lightTimeMin": 19.945,
+   "elongationDeg": 3.06
+  },
+  {
+   "day": 602,
+   "date": "2028-04-05",
+   "distanceKm": 358859912,
+   "lightTimeMin": 19.95,
+   "elongationDeg": 3.27
+  },
+  {
+   "day": 603,
+   "date": "2028-04-06",
+   "distanceKm": 358956547,
+   "lightTimeMin": 19.956,
+   "elongationDeg": 3.48
+  },
+  {
+   "day": 604,
+   "date": "2028-04-07",
+   "distanceKm": 359051401,
+   "lightTimeMin": 19.961,
+   "elongationDeg": 3.69
+  },
+  {
+   "day": 605,
+   "date": "2028-04-08",
+   "distanceKm": 359144472,
+   "lightTimeMin": 19.966,
+   "elongationDeg": 3.9
+  },
+  {
+   "day": 606,
+   "date": "2028-04-09",
+   "distanceKm": 359235744,
+   "lightTimeMin": 19.971,
+   "elongationDeg": 4.11
+  },
+  {
+   "day": 607,
+   "date": "2028-04-10",
+   "distanceKm": 359325183,
+   "lightTimeMin": 19.976,
+   "elongationDeg": 4.32
+  },
+  {
+   "day": 608,
+   "date": "2028-04-11",
+   "distanceKm": 359412744,
+   "lightTimeMin": 19.981,
+   "elongationDeg": 4.53
+  },
+  {
+   "day": 609,
+   "date": "2028-04-12",
+   "distanceKm": 359498367,
+   "lightTimeMin": 19.986,
+   "elongationDeg": 4.74
+  },
+  {
+   "day": 610,
+   "date": "2028-04-13",
+   "distanceKm": 359581983,
+   "lightTimeMin": 19.991,
+   "elongationDeg": 4.96
+  },
+  {
+   "day": 611,
+   "date": "2028-04-14",
+   "distanceKm": 359663513,
+   "lightTimeMin": 19.995,
+   "elongationDeg": 5.17
+  },
+  {
+   "day": 612,
+   "date": "2028-04-15",
+   "distanceKm": 359742875,
+   "lightTimeMin": 20,
+   "elongationDeg": 5.38
+  },
+  {
+   "day": 613,
+   "date": "2028-04-16",
+   "distanceKm": 359819985,
+   "lightTimeMin": 20.004,
+   "elongationDeg": 5.6
+  },
+  {
+   "day": 614,
+   "date": "2028-04-17",
+   "distanceKm": 359894759,
+   "lightTimeMin": 20.008,
+   "elongationDeg": 5.81
+  },
+  {
+   "day": 615,
+   "date": "2028-04-18",
+   "distanceKm": 359967118,
+   "lightTimeMin": 20.012,
+   "elongationDeg": 6.03
+  },
+  {
+   "day": 616,
+   "date": "2028-04-19",
+   "distanceKm": 360036982,
+   "lightTimeMin": 20.016,
+   "elongationDeg": 6.24
+  },
+  {
+   "day": 617,
+   "date": "2028-04-20",
+   "distanceKm": 360104278,
+   "lightTimeMin": 20.02,
+   "elongationDeg": 6.46
+  },
+  {
+   "day": 618,
+   "date": "2028-04-21",
+   "distanceKm": 360168934,
+   "lightTimeMin": 20.023,
+   "elongationDeg": 6.68
+  },
+  {
+   "day": 619,
+   "date": "2028-04-22",
+   "distanceKm": 360230884,
+   "lightTimeMin": 20.027,
+   "elongationDeg": 6.89
+  },
+  {
+   "day": 620,
+   "date": "2028-04-23",
+   "distanceKm": 360290062,
+   "lightTimeMin": 20.03,
+   "elongationDeg": 7.11
+  },
+  {
+   "day": 621,
+   "date": "2028-04-24",
+   "distanceKm": 360346410,
+   "lightTimeMin": 20.033,
+   "elongationDeg": 7.33
+  },
+  {
+   "day": 622,
+   "date": "2028-04-25",
+   "distanceKm": 360399872,
+   "lightTimeMin": 20.036,
+   "elongationDeg": 7.54
+  },
+  {
+   "day": 623,
+   "date": "2028-04-26",
+   "distanceKm": 360450402,
+   "lightTimeMin": 20.039,
+   "elongationDeg": 7.76
+  },
+  {
+   "day": 624,
+   "date": "2028-04-27",
+   "distanceKm": 360497958,
+   "lightTimeMin": 20.042,
+   "elongationDeg": 7.98
+  },
+  {
+   "day": 625,
+   "date": "2028-04-28",
+   "distanceKm": 360542512,
+   "lightTimeMin": 20.044,
+   "elongationDeg": 8.2
+  },
+  {
+   "day": 626,
+   "date": "2028-04-29",
+   "distanceKm": 360584043,
+   "lightTimeMin": 20.046,
+   "elongationDeg": 8.42
+  },
+  {
+   "day": 627,
+   "date": "2028-04-30",
+   "distanceKm": 360622541,
+   "lightTimeMin": 20.048,
+   "elongationDeg": 8.64
+  },
+  {
+   "day": 628,
+   "date": "2028-05-01",
+   "distanceKm": 360658004,
+   "lightTimeMin": 20.05,
+   "elongationDeg": 8.86
+  },
+  {
+   "day": 629,
+   "date": "2028-05-02",
+   "distanceKm": 360690439,
+   "lightTimeMin": 20.052,
+   "elongationDeg": 9.08
+  },
+  {
+   "day": 630,
+   "date": "2028-05-03",
+   "distanceKm": 360719854,
+   "lightTimeMin": 20.054,
+   "elongationDeg": 9.3
+  },
+  {
+   "day": 631,
+   "date": "2028-05-04",
+   "distanceKm": 360746255,
+   "lightTimeMin": 20.055,
+   "elongationDeg": 9.52
+  },
+  {
+   "day": 632,
+   "date": "2028-05-05",
+   "distanceKm": 360769646,
+   "lightTimeMin": 20.057,
+   "elongationDeg": 9.74
+  },
+  {
+   "day": 633,
+   "date": "2028-05-06",
+   "distanceKm": 360790021,
+   "lightTimeMin": 20.058,
+   "elongationDeg": 9.96
+  },
+  {
+   "day": 634,
+   "date": "2028-05-07",
+   "distanceKm": 360807361,
+   "lightTimeMin": 20.059,
+   "elongationDeg": 10.19
+  },
+  {
+   "day": 635,
+   "date": "2028-05-08",
+   "distanceKm": 360821635,
+   "lightTimeMin": 20.06,
+   "elongationDeg": 10.41
+  },
+  {
+   "day": 636,
+   "date": "2028-05-09",
+   "distanceKm": 360832796,
+   "lightTimeMin": 20.06,
+   "elongationDeg": 10.63
+  },
+  {
+   "day": 637,
+   "date": "2028-05-10",
+   "distanceKm": 360840786,
+   "lightTimeMin": 20.061,
+   "elongationDeg": 10.85
+  },
+  {
+   "day": 638,
+   "date": "2028-05-11",
+   "distanceKm": 360845532,
+   "lightTimeMin": 20.061,
+   "elongationDeg": 11.08
+  },
+  {
+   "day": 639,
+   "date": "2028-05-12",
+   "distanceKm": 360846954,
+   "lightTimeMin": 20.061,
+   "elongationDeg": 11.3
+  },
+  {
+   "day": 640,
+   "date": "2028-05-13",
+   "distanceKm": 360844963,
+   "lightTimeMin": 20.061,
+   "elongationDeg": 11.53
+  },
+  {
+   "day": 641,
+   "date": "2028-05-14",
+   "distanceKm": 360839469,
+   "lightTimeMin": 20.061,
+   "elongationDeg": 11.75
+  },
+  {
+   "day": 642,
+   "date": "2028-05-15",
+   "distanceKm": 360830380,
+   "lightTimeMin": 20.06,
+   "elongationDeg": 11.98
+  },
+  {
+   "day": 643,
+   "date": "2028-05-16",
+   "distanceKm": 360817603,
+   "lightTimeMin": 20.059,
+   "elongationDeg": 12.21
+  },
+  {
+   "day": 644,
+   "date": "2028-05-17",
+   "distanceKm": 360801050,
+   "lightTimeMin": 20.058,
+   "elongationDeg": 12.43
+  },
+  {
+   "day": 645,
+   "date": "2028-05-18",
+   "distanceKm": 360780634,
+   "lightTimeMin": 20.057,
+   "elongationDeg": 12.66
+  },
+  {
+   "day": 646,
+   "date": "2028-05-19",
+   "distanceKm": 360756271,
+   "lightTimeMin": 20.056,
+   "elongationDeg": 12.89
+  },
+  {
+   "day": 647,
+   "date": "2028-05-20",
+   "distanceKm": 360727879,
+   "lightTimeMin": 20.054,
+   "elongationDeg": 13.12
+  },
+  {
+   "day": 648,
+   "date": "2028-05-21",
+   "distanceKm": 360695381,
+   "lightTimeMin": 20.053,
+   "elongationDeg": 13.35
+  },
+  {
+   "day": 649,
+   "date": "2028-05-22",
+   "distanceKm": 360658703,
+   "lightTimeMin": 20.05,
+   "elongationDeg": 13.58
+  },
+  {
+   "day": 650,
+   "date": "2028-05-23",
+   "distanceKm": 360617775,
+   "lightTimeMin": 20.048,
+   "elongationDeg": 13.81
+  },
+  {
+   "day": 651,
+   "date": "2028-05-24",
+   "distanceKm": 360572535,
+   "lightTimeMin": 20.046,
+   "elongationDeg": 14.04
+  },
+  {
+   "day": 652,
+   "date": "2028-05-25",
+   "distanceKm": 360522927,
+   "lightTimeMin": 20.043,
+   "elongationDeg": 14.27
+  },
+  {
+   "day": 653,
+   "date": "2028-05-26",
+   "distanceKm": 360468905,
+   "lightTimeMin": 20.04,
+   "elongationDeg": 14.5
+  },
+  {
+   "day": 654,
+   "date": "2028-05-27",
+   "distanceKm": 360410435,
+   "lightTimeMin": 20.037,
+   "elongationDeg": 14.73
+  },
+  {
+   "day": 655,
+   "date": "2028-05-28",
+   "distanceKm": 360347494,
+   "lightTimeMin": 20.033,
+   "elongationDeg": 14.97
+  },
+  {
+   "day": 656,
+   "date": "2028-05-29",
+   "distanceKm": 360280067,
+   "lightTimeMin": 20.029,
+   "elongationDeg": 15.2
+  },
+  {
+   "day": 657,
+   "date": "2028-05-30",
+   "distanceKm": 360208152,
+   "lightTimeMin": 20.025,
+   "elongationDeg": 15.43
+  },
+  {
+   "day": 658,
+   "date": "2028-05-31",
+   "distanceKm": 360131748,
+   "lightTimeMin": 20.021,
+   "elongationDeg": 15.67
+  },
+  {
+   "day": 659,
+   "date": "2028-06-01",
+   "distanceKm": 360050861,
+   "lightTimeMin": 20.017,
+   "elongationDeg": 15.9
+  },
+  {
+   "day": 660,
+   "date": "2028-06-02",
+   "distanceKm": 359965493,
+   "lightTimeMin": 20.012,
+   "elongationDeg": 16.14
+  },
+  {
+   "day": 661,
+   "date": "2028-06-03",
+   "distanceKm": 359875640,
+   "lightTimeMin": 20.007,
+   "elongationDeg": 16.38
+  },
+  {
+   "day": 662,
+   "date": "2028-06-04",
+   "distanceKm": 359781290,
+   "lightTimeMin": 20.002,
+   "elongationDeg": 16.61
+  },
+  {
+   "day": 663,
+   "date": "2028-06-05",
+   "distanceKm": 359682417,
+   "lightTimeMin": 19.996,
+   "elongationDeg": 16.85
+  },
+  {
+   "day": 664,
+   "date": "2028-06-06",
+   "distanceKm": 359578983,
+   "lightTimeMin": 19.99,
+   "elongationDeg": 17.09
+  },
+  {
+   "day": 665,
+   "date": "2028-06-07",
+   "distanceKm": 359470937,
+   "lightTimeMin": 19.984,
+   "elongationDeg": 17.33
+  },
+  {
+   "day": 666,
+   "date": "2028-06-08",
+   "distanceKm": 359358213,
+   "lightTimeMin": 19.978,
+   "elongationDeg": 17.57
+  },
+  {
+   "day": 667,
+   "date": "2028-06-09",
+   "distanceKm": 359240737,
+   "lightTimeMin": 19.972,
+   "elongationDeg": 17.81
+  },
+  {
+   "day": 668,
+   "date": "2028-06-10",
+   "distanceKm": 359118423,
+   "lightTimeMin": 19.965,
+   "elongationDeg": 18.05
+  },
+  {
+   "day": 669,
+   "date": "2028-06-11",
+   "distanceKm": 358991184,
+   "lightTimeMin": 19.958,
+   "elongationDeg": 18.29
+  },
+  {
+   "day": 670,
+   "date": "2028-06-12",
+   "distanceKm": 358858928,
+   "lightTimeMin": 19.95,
+   "elongationDeg": 18.54
+  },
+  {
+   "day": 671,
+   "date": "2028-06-13",
+   "distanceKm": 358721560,
+   "lightTimeMin": 19.943,
+   "elongationDeg": 18.78
+  },
+  {
+   "day": 672,
+   "date": "2028-06-14",
+   "distanceKm": 358578991,
+   "lightTimeMin": 19.935,
+   "elongationDeg": 19.02
+  },
+  {
+   "day": 673,
+   "date": "2028-06-15",
+   "distanceKm": 358431128,
+   "lightTimeMin": 19.927,
+   "elongationDeg": 19.27
+  },
+  {
+   "day": 674,
+   "date": "2028-06-16",
+   "distanceKm": 358277884,
+   "lightTimeMin": 19.918,
+   "elongationDeg": 19.52
+  },
+  {
+   "day": 675,
+   "date": "2028-06-17",
+   "distanceKm": 358119174,
+   "lightTimeMin": 19.909,
+   "elongationDeg": 19.76
+  },
+  {
+   "day": 676,
+   "date": "2028-06-18",
+   "distanceKm": 357954914,
+   "lightTimeMin": 19.9,
+   "elongationDeg": 20.01
+  },
+  {
+   "day": 677,
+   "date": "2028-06-19",
+   "distanceKm": 357785024,
+   "lightTimeMin": 19.891,
+   "elongationDeg": 20.26
+  },
+  {
+   "day": 678,
+   "date": "2028-06-20",
+   "distanceKm": 357609430,
+   "lightTimeMin": 19.881,
+   "elongationDeg": 20.51
+  },
+  {
+   "day": 679,
+   "date": "2028-06-21",
+   "distanceKm": 357428060,
+   "lightTimeMin": 19.871,
+   "elongationDeg": 20.76
+  },
+  {
+   "day": 680,
+   "date": "2028-06-22",
+   "distanceKm": 357240853,
+   "lightTimeMin": 19.86,
+   "elongationDeg": 21.01
+  },
+  {
+   "day": 681,
+   "date": "2028-06-23",
+   "distanceKm": 357047757,
+   "lightTimeMin": 19.85,
+   "elongationDeg": 21.26
+  },
+  {
+   "day": 682,
+   "date": "2028-06-24",
+   "distanceKm": 356848728,
+   "lightTimeMin": 19.839,
+   "elongationDeg": 21.51
+  },
+  {
+   "day": 683,
+   "date": "2028-06-25",
+   "distanceKm": 356643737,
+   "lightTimeMin": 19.827,
+   "elongationDeg": 21.77
+  },
+  {
+   "day": 684,
+   "date": "2028-06-26",
+   "distanceKm": 356432766,
+   "lightTimeMin": 19.816,
+   "elongationDeg": 22.02
+  },
+  {
+   "day": 685,
+   "date": "2028-06-27",
+   "distanceKm": 356215806,
+   "lightTimeMin": 19.803,
+   "elongationDeg": 22.28
+  },
+  {
+   "day": 686,
+   "date": "2028-06-28",
+   "distanceKm": 355992858,
+   "lightTimeMin": 19.791,
+   "elongationDeg": 22.53
+  },
+  {
+   "day": 687,
+   "date": "2028-06-29",
+   "distanceKm": 355763928,
+   "lightTimeMin": 19.778,
+   "elongationDeg": 22.79
+  },
+  {
+   "day": 688,
+   "date": "2028-06-30",
+   "distanceKm": 355529023,
+   "lightTimeMin": 19.765,
+   "elongationDeg": 23.04
+  },
+  {
+   "day": 689,
+   "date": "2028-07-01",
+   "distanceKm": 355288148,
+   "lightTimeMin": 19.752,
+   "elongationDeg": 23.3
+  },
+  {
+   "day": 690,
+   "date": "2028-07-02",
+   "distanceKm": 355041300,
+   "lightTimeMin": 19.738,
+   "elongationDeg": 23.56
+  },
+  {
+   "day": 691,
+   "date": "2028-07-03",
+   "distanceKm": 354788467,
+   "lightTimeMin": 19.724,
+   "elongationDeg": 23.82
+  },
+  {
+   "day": 692,
+   "date": "2028-07-04",
+   "distanceKm": 354529626,
+   "lightTimeMin": 19.71,
+   "elongationDeg": 24.08
+  },
+  {
+   "day": 693,
+   "date": "2028-07-05",
+   "distanceKm": 354264739,
+   "lightTimeMin": 19.695,
+   "elongationDeg": 24.34
+  },
+  {
+   "day": 694,
+   "date": "2028-07-06",
+   "distanceKm": 353993756,
+   "lightTimeMin": 19.68,
+   "elongationDeg": 24.61
+  },
+  {
+   "day": 695,
+   "date": "2028-07-07",
+   "distanceKm": 353716614,
+   "lightTimeMin": 19.665,
+   "elongationDeg": 24.87
+  },
+  {
+   "day": 696,
+   "date": "2028-07-08",
+   "distanceKm": 353433244,
+   "lightTimeMin": 19.649,
+   "elongationDeg": 25.14
+  },
+  {
+   "day": 697,
+   "date": "2028-07-09",
+   "distanceKm": 353143566,
+   "lightTimeMin": 19.633,
+   "elongationDeg": 25.4
+  },
+  {
+   "day": 698,
+   "date": "2028-07-10",
+   "distanceKm": 352847496,
+   "lightTimeMin": 19.616,
+   "elongationDeg": 25.67
+  },
+  {
+   "day": 699,
+   "date": "2028-07-11",
+   "distanceKm": 352544950,
+   "lightTimeMin": 19.599,
+   "elongationDeg": 25.93
+  },
+  {
+   "day": 700,
+   "date": "2028-07-12",
+   "distanceKm": 352235842,
+   "lightTimeMin": 19.582,
+   "elongationDeg": 26.2
+  },
+  {
+   "day": 701,
+   "date": "2028-07-13",
+   "distanceKm": 351920085,
+   "lightTimeMin": 19.565,
+   "elongationDeg": 26.47
+  },
+  {
+   "day": 702,
+   "date": "2028-07-14",
+   "distanceKm": 351597595,
+   "lightTimeMin": 19.547,
+   "elongationDeg": 26.74
+  },
+  {
+   "day": 703,
+   "date": "2028-07-15",
+   "distanceKm": 351268290,
+   "lightTimeMin": 19.528,
+   "elongationDeg": 27.01
+  },
+  {
+   "day": 704,
+   "date": "2028-07-16",
+   "distanceKm": 350932089,
+   "lightTimeMin": 19.51,
+   "elongationDeg": 27.29
+  },
+  {
+   "day": 705,
+   "date": "2028-07-17",
+   "distanceKm": 350588915,
+   "lightTimeMin": 19.491,
+   "elongationDeg": 27.56
+  },
+  {
+   "day": 706,
+   "date": "2028-07-18",
+   "distanceKm": 350238695,
+   "lightTimeMin": 19.471,
+   "elongationDeg": 27.83
+  },
+  {
+   "day": 707,
+   "date": "2028-07-19",
+   "distanceKm": 349881359,
+   "lightTimeMin": 19.451,
+   "elongationDeg": 28.11
+  },
+  {
+   "day": 708,
+   "date": "2028-07-20",
+   "distanceKm": 349516846,
+   "lightTimeMin": 19.431,
+   "elongationDeg": 28.39
+  },
+  {
+   "day": 709,
+   "date": "2028-07-21",
+   "distanceKm": 349145105,
+   "lightTimeMin": 19.41,
+   "elongationDeg": 28.67
+  },
+  {
+   "day": 710,
+   "date": "2028-07-22",
+   "distanceKm": 348766092,
+   "lightTimeMin": 19.389,
+   "elongationDeg": 28.94
+  },
+  {
+   "day": 711,
+   "date": "2028-07-23",
+   "distanceKm": 348379778,
+   "lightTimeMin": 19.368,
+   "elongationDeg": 29.22
+  },
+  {
+   "day": 712,
+   "date": "2028-07-24",
+   "distanceKm": 347986146,
+   "lightTimeMin": 19.346,
+   "elongationDeg": 29.51
+  },
+  {
+   "day": 713,
+   "date": "2028-07-25",
+   "distanceKm": 347585190,
+   "lightTimeMin": 19.324,
+   "elongationDeg": 29.79
+  },
+  {
+   "day": 714,
+   "date": "2028-07-26",
+   "distanceKm": 347176916,
+   "lightTimeMin": 19.301,
+   "elongationDeg": 30.07
+  },
+  {
+   "day": 715,
+   "date": "2028-07-27",
+   "distanceKm": 346761336,
+   "lightTimeMin": 19.278,
+   "elongationDeg": 30.36
+  },
+  {
+   "day": 716,
+   "date": "2028-07-28",
+   "distanceKm": 346338467,
+   "lightTimeMin": 19.254,
+   "elongationDeg": 30.64
+  },
+  {
+   "day": 717,
+   "date": "2028-07-29",
+   "distanceKm": 345908327,
+   "lightTimeMin": 19.23,
+   "elongationDeg": 30.93
+  },
+  {
+   "day": 718,
+   "date": "2028-07-30",
+   "distanceKm": 345470929,
+   "lightTimeMin": 19.206,
+   "elongationDeg": 31.22
+  },
+  {
+   "day": 719,
+   "date": "2028-07-31",
+   "distanceKm": 345026279,
+   "lightTimeMin": 19.181,
+   "elongationDeg": 31.5
+  },
+  {
+   "day": 720,
+   "date": "2028-08-01",
+   "distanceKm": 344574374,
+   "lightTimeMin": 19.156,
+   "elongationDeg": 31.79
+  },
+  {
+   "day": 721,
+   "date": "2028-08-02",
+   "distanceKm": 344115196,
+   "lightTimeMin": 19.131,
+   "elongationDeg": 32.08
+  },
+  {
+   "day": 722,
+   "date": "2028-08-03",
+   "distanceKm": 343648718,
+   "lightTimeMin": 19.105,
+   "elongationDeg": 32.38
+  },
+  {
+   "day": 723,
+   "date": "2028-08-04",
+   "distanceKm": 343174898,
+   "lightTimeMin": 19.078,
+   "elongationDeg": 32.67
+  },
+  {
+   "day": 724,
+   "date": "2028-08-05",
+   "distanceKm": 342693687,
+   "lightTimeMin": 19.052,
+   "elongationDeg": 32.96
+  },
+  {
+   "day": 725,
+   "date": "2028-08-06",
+   "distanceKm": 342205024,
+   "lightTimeMin": 19.025,
+   "elongationDeg": 33.26
+  },
+  {
+   "day": 726,
+   "date": "2028-08-07",
+   "distanceKm": 341708844,
+   "lightTimeMin": 18.997,
+   "elongationDeg": 33.56
+  },
+  {
+   "day": 727,
+   "date": "2028-08-08",
+   "distanceKm": 341205076,
+   "lightTimeMin": 18.969,
+   "elongationDeg": 33.85
+  },
+  {
+   "day": 728,
+   "date": "2028-08-09",
+   "distanceKm": 340693649,
+   "lightTimeMin": 18.941,
+   "elongationDeg": 34.15
+  },
+  {
+   "day": 729,
+   "date": "2028-08-10",
+   "distanceKm": 340174490,
+   "lightTimeMin": 18.912,
+   "elongationDeg": 34.45
+  },
+  {
+   "day": 730,
+   "date": "2028-08-11",
+   "distanceKm": 339647525,
+   "lightTimeMin": 18.882,
+   "elongationDeg": 34.75
+  },
+  {
+   "day": 731,
+   "date": "2028-08-12",
+   "distanceKm": 339112684,
+   "lightTimeMin": 18.853,
+   "elongationDeg": 35.06
+  },
+  {
+   "day": 732,
+   "date": "2028-08-13",
+   "distanceKm": 338569897,
+   "lightTimeMin": 18.822,
+   "elongationDeg": 35.36
+  },
+  {
+   "day": 733,
+   "date": "2028-08-14",
+   "distanceKm": 338019097,
+   "lightTimeMin": 18.792,
+   "elongationDeg": 35.67
+  },
+  {
+   "day": 734,
+   "date": "2028-08-15",
+   "distanceKm": 337460219,
+   "lightTimeMin": 18.761,
+   "elongationDeg": 35.97
+  },
+  {
+   "day": 735,
+   "date": "2028-08-16",
+   "distanceKm": 336893204,
+   "lightTimeMin": 18.729,
+   "elongationDeg": 36.28
+  },
+  {
+   "day": 736,
+   "date": "2028-08-17",
+   "distanceKm": 336318000,
+   "lightTimeMin": 18.697,
+   "elongationDeg": 36.59
+  },
+  {
+   "day": 737,
+   "date": "2028-08-18",
+   "distanceKm": 335734562,
+   "lightTimeMin": 18.665,
+   "elongationDeg": 36.9
+  },
+  {
+   "day": 738,
+   "date": "2028-08-19",
+   "distanceKm": 335142856,
+   "lightTimeMin": 18.632,
+   "elongationDeg": 37.21
+  },
+  {
+   "day": 739,
+   "date": "2028-08-20",
+   "distanceKm": 334542861,
+   "lightTimeMin": 18.599,
+   "elongationDeg": 37.53
+  },
+  {
+   "day": 740,
+   "date": "2028-08-21",
+   "distanceKm": 333934568,
+   "lightTimeMin": 18.565,
+   "elongationDeg": 37.84
+  },
+  {
+   "day": 741,
+   "date": "2028-08-22",
+   "distanceKm": 333317980,
+   "lightTimeMin": 18.53,
+   "elongationDeg": 38.16
+  },
+  {
+   "day": 742,
+   "date": "2028-08-23",
+   "distanceKm": 332693113,
+   "lightTimeMin": 18.496,
+   "elongationDeg": 38.48
+  },
+  {
+   "day": 743,
+   "date": "2028-08-24",
+   "distanceKm": 332059993,
+   "lightTimeMin": 18.461,
+   "elongationDeg": 38.79
+  },
+  {
+   "day": 744,
+   "date": "2028-08-25",
+   "distanceKm": 331418652,
+   "lightTimeMin": 18.425,
+   "elongationDeg": 39.12
+  },
+  {
+   "day": 745,
+   "date": "2028-08-26",
+   "distanceKm": 330769125,
+   "lightTimeMin": 18.389,
+   "elongationDeg": 39.44
+  },
+  {
+   "day": 746,
+   "date": "2028-08-27",
+   "distanceKm": 330111446,
+   "lightTimeMin": 18.352,
+   "elongationDeg": 39.76
+  },
+  {
+   "day": 747,
+   "date": "2028-08-28",
+   "distanceKm": 329445646,
+   "lightTimeMin": 18.315,
+   "elongationDeg": 40.08
+  },
+  {
+   "day": 748,
+   "date": "2028-08-29",
+   "distanceKm": 328771746,
+   "lightTimeMin": 18.278,
+   "elongationDeg": 40.41
+  },
+  {
+   "day": 749,
+   "date": "2028-08-30",
+   "distanceKm": 328089758,
+   "lightTimeMin": 18.24,
+   "elongationDeg": 40.74
+  },
+  {
+   "day": 750,
+   "date": "2028-08-31",
+   "distanceKm": 327399681,
+   "lightTimeMin": 18.201,
+   "elongationDeg": 41.06
+  },
+  {
+   "day": 751,
+   "date": "2028-09-01",
+   "distanceKm": 326701506,
+   "lightTimeMin": 18.163,
+   "elongationDeg": 41.39
+  },
+  {
+   "day": 752,
+   "date": "2028-09-02",
+   "distanceKm": 325995210,
+   "lightTimeMin": 18.123,
+   "elongationDeg": 41.72
+  },
+  {
+   "day": 753,
+   "date": "2028-09-03",
+   "distanceKm": 325280760,
+   "lightTimeMin": 18.084,
+   "elongationDeg": 42.06
+  },
+  {
+   "day": 754,
+   "date": "2028-09-04",
+   "distanceKm": 324558117,
+   "lightTimeMin": 18.043,
+   "elongationDeg": 42.39
+  },
+  {
+   "day": 755,
+   "date": "2028-09-05",
+   "distanceKm": 323827236,
+   "lightTimeMin": 18.003,
+   "elongationDeg": 42.73
+  },
+  {
+   "day": 756,
+   "date": "2028-09-06",
+   "distanceKm": 323088069,
+   "lightTimeMin": 17.962,
+   "elongationDeg": 43.06
+  },
+  {
+   "day": 757,
+   "date": "2028-09-07",
+   "distanceKm": 322340565,
+   "lightTimeMin": 17.92,
+   "elongationDeg": 43.4
+  },
+  {
+   "day": 758,
+   "date": "2028-09-08",
+   "distanceKm": 321584671,
+   "lightTimeMin": 17.878,
+   "elongationDeg": 43.74
+  },
+  {
+   "day": 759,
+   "date": "2028-09-09",
+   "distanceKm": 320820335,
+   "lightTimeMin": 17.836,
+   "elongationDeg": 44.08
+  },
+  {
+   "day": 760,
+   "date": "2028-09-10",
+   "distanceKm": 320047509,
+   "lightTimeMin": 17.793,
+   "elongationDeg": 44.42
+  },
+  {
+   "day": 761,
+   "date": "2028-09-11",
+   "distanceKm": 319266142,
+   "lightTimeMin": 17.749,
+   "elongationDeg": 44.77
+  },
+  {
+   "day": 762,
+   "date": "2028-09-12",
+   "distanceKm": 318476189,
+   "lightTimeMin": 17.705,
+   "elongationDeg": 45.11
+  },
+  {
+   "day": 763,
+   "date": "2028-09-13",
+   "distanceKm": 317677609,
+   "lightTimeMin": 17.661,
+   "elongationDeg": 45.46
+  },
+  {
+   "day": 764,
+   "date": "2028-09-14",
+   "distanceKm": 316870368,
+   "lightTimeMin": 17.616,
+   "elongationDeg": 45.81
+  },
+  {
+   "day": 765,
+   "date": "2028-09-15",
+   "distanceKm": 316054438,
+   "lightTimeMin": 17.571,
+   "elongationDeg": 46.16
+  },
+  {
+   "day": 766,
+   "date": "2028-09-16",
+   "distanceKm": 315229802,
+   "lightTimeMin": 17.525,
+   "elongationDeg": 46.51
+  },
+  {
+   "day": 767,
+   "date": "2028-09-17",
+   "distanceKm": 314396456,
+   "lightTimeMin": 17.479,
+   "elongationDeg": 46.87
+  },
+  {
+   "day": 768,
+   "date": "2028-09-18",
+   "distanceKm": 313554408,
+   "lightTimeMin": 17.432,
+   "elongationDeg": 47.22
+  },
+  {
+   "day": 769,
+   "date": "2028-09-19",
+   "distanceKm": 312703679,
+   "lightTimeMin": 17.384,
+   "elongationDeg": 47.58
+  },
+  {
+   "day": 770,
+   "date": "2028-09-20",
+   "distanceKm": 311844304,
+   "lightTimeMin": 17.337,
+   "elongationDeg": 47.94
+  },
+  {
+   "day": 771,
+   "date": "2028-09-21",
+   "distanceKm": 310976326,
+   "lightTimeMin": 17.288,
+   "elongationDeg": 48.3
+  },
+  {
+   "day": 772,
+   "date": "2028-09-22",
+   "distanceKm": 310099802,
+   "lightTimeMin": 17.24,
+   "elongationDeg": 48.66
+  },
+  {
+   "day": 773,
+   "date": "2028-09-23",
+   "distanceKm": 309214790,
+   "lightTimeMin": 17.19,
+   "elongationDeg": 49.02
+  },
+  {
+   "day": 774,
+   "date": "2028-09-24",
+   "distanceKm": 308321351,
+   "lightTimeMin": 17.141,
+   "elongationDeg": 49.39
+  },
+  {
+   "day": 775,
+   "date": "2028-09-25",
+   "distanceKm": 307419547,
+   "lightTimeMin": 17.091,
+   "elongationDeg": 49.75
+  },
+  {
+   "day": 776,
+   "date": "2028-09-26",
+   "distanceKm": 306509430,
+   "lightTimeMin": 17.04,
+   "elongationDeg": 50.12
+  },
+  {
+   "day": 777,
+   "date": "2028-09-27",
+   "distanceKm": 305591048,
+   "lightTimeMin": 16.989,
+   "elongationDeg": 50.49
+  },
+  {
+   "day": 778,
+   "date": "2028-09-28",
+   "distanceKm": 304664437,
+   "lightTimeMin": 16.938,
+   "elongationDeg": 50.86
+  },
+  {
+   "day": 779,
+   "date": "2028-09-29",
+   "distanceKm": 303729624,
+   "lightTimeMin": 16.886,
+   "elongationDeg": 51.24
+  },
+  {
+   "day": 780,
+   "date": "2028-09-30",
+   "distanceKm": 302786624,
+   "lightTimeMin": 16.833,
+   "elongationDeg": 51.61
+  },
+  {
+   "day": 781,
+   "date": "2028-10-01",
+   "distanceKm": 301835443,
+   "lightTimeMin": 16.78,
+   "elongationDeg": 51.99
+  },
+  {
+   "day": 782,
+   "date": "2028-10-02",
+   "distanceKm": 300876077,
+   "lightTimeMin": 16.727,
+   "elongationDeg": 52.37
+  },
+  {
+   "day": 783,
+   "date": "2028-10-03",
+   "distanceKm": 299908516,
+   "lightTimeMin": 16.673,
+   "elongationDeg": 52.75
+  },
+  {
+   "day": 784,
+   "date": "2028-10-04",
+   "distanceKm": 298932746,
+   "lightTimeMin": 16.619,
+   "elongationDeg": 53.13
+  },
+  {
+   "day": 785,
+   "date": "2028-10-05",
+   "distanceKm": 297948747,
+   "lightTimeMin": 16.564,
+   "elongationDeg": 53.51
+  },
+  {
+   "day": 786,
+   "date": "2028-10-06",
+   "distanceKm": 296956500,
+   "lightTimeMin": 16.509,
+   "elongationDeg": 53.89
+  },
+  {
+   "day": 787,
+   "date": "2028-10-07",
+   "distanceKm": 295955981,
+   "lightTimeMin": 16.453,
+   "elongationDeg": 54.28
+  },
+  {
+   "day": 788,
+   "date": "2028-10-08",
+   "distanceKm": 294947169,
+   "lightTimeMin": 16.397,
+   "elongationDeg": 54.67
+  },
+  {
+   "day": 789,
+   "date": "2028-10-09",
+   "distanceKm": 293930045,
+   "lightTimeMin": 16.341,
+   "elongationDeg": 55.06
+  },
+  {
+   "day": 790,
+   "date": "2028-10-10",
+   "distanceKm": 292904592,
+   "lightTimeMin": 16.284,
+   "elongationDeg": 55.45
+  },
+  {
+   "day": 791,
+   "date": "2028-10-11",
+   "distanceKm": 291870796,
+   "lightTimeMin": 16.226,
+   "elongationDeg": 55.85
+  },
+  {
+   "day": 792,
+   "date": "2028-10-12",
+   "distanceKm": 290828651,
+   "lightTimeMin": 16.168,
+   "elongationDeg": 56.24
+  },
+  {
+   "day": 793,
+   "date": "2028-10-13",
+   "distanceKm": 289778157,
+   "lightTimeMin": 16.11,
+   "elongationDeg": 56.64
+  },
+  {
+   "day": 794,
+   "date": "2028-10-14",
+   "distanceKm": 288719327,
+   "lightTimeMin": 16.051,
+   "elongationDeg": 57.04
+  },
+  {
+   "day": 795,
+   "date": "2028-10-15",
+   "distanceKm": 287652183,
+   "lightTimeMin": 15.992,
+   "elongationDeg": 57.44
+  },
+  {
+   "day": 796,
+   "date": "2028-10-16",
+   "distanceKm": 286576760,
+   "lightTimeMin": 15.932,
+   "elongationDeg": 57.85
+  },
+  {
+   "day": 797,
+   "date": "2028-10-17",
+   "distanceKm": 285493107,
+   "lightTimeMin": 15.872,
+   "elongationDeg": 58.25
+  },
+  {
+   "day": 798,
+   "date": "2028-10-18",
+   "distanceKm": 284401287,
+   "lightTimeMin": 15.811,
+   "elongationDeg": 58.66
+  },
+  {
+   "day": 799,
+   "date": "2028-10-19",
+   "distanceKm": 283301375,
+   "lightTimeMin": 15.75,
+   "elongationDeg": 59.07
+  },
+  {
+   "day": 800,
+   "date": "2028-10-20",
+   "distanceKm": 282193455,
+   "lightTimeMin": 15.688,
+   "elongationDeg": 59.48
+  },
+  {
+   "day": 801,
+   "date": "2028-10-21",
+   "distanceKm": 281077619,
+   "lightTimeMin": 15.626,
+   "elongationDeg": 59.9
+  },
+  {
+   "day": 802,
+   "date": "2028-10-22",
+   "distanceKm": 279953964,
+   "lightTimeMin": 15.564,
+   "elongationDeg": 60.31
+  },
+  {
+   "day": 803,
+   "date": "2028-10-23",
+   "distanceKm": 278822586,
+   "lightTimeMin": 15.501,
+   "elongationDeg": 60.73
+  },
+  {
+   "day": 804,
+   "date": "2028-10-24",
+   "distanceKm": 277683580,
+   "lightTimeMin": 15.438,
+   "elongationDeg": 61.15
+  },
+  {
+   "day": 805,
+   "date": "2028-10-25",
+   "distanceKm": 276537036,
+   "lightTimeMin": 15.374,
+   "elongationDeg": 61.57
+  },
+  {
+   "day": 806,
+   "date": "2028-10-26",
+   "distanceKm": 275383035,
+   "lightTimeMin": 15.31,
+   "elongationDeg": 62
+  },
+  {
+   "day": 807,
+   "date": "2028-10-27",
+   "distanceKm": 274221648,
+   "lightTimeMin": 15.245,
+   "elongationDeg": 62.42
+  },
+  {
+   "day": 808,
+   "date": "2028-10-28",
+   "distanceKm": 273052940,
+   "lightTimeMin": 15.18,
+   "elongationDeg": 62.85
+  },
+  {
+   "day": 809,
+   "date": "2028-10-29",
+   "distanceKm": 271876962,
+   "lightTimeMin": 15.115,
+   "elongationDeg": 63.28
+  },
+  {
+   "day": 810,
+   "date": "2028-10-30",
+   "distanceKm": 270693759,
+   "lightTimeMin": 15.049,
+   "elongationDeg": 63.71
+  },
+  {
+   "day": 811,
+   "date": "2028-10-31",
+   "distanceKm": 269503366,
+   "lightTimeMin": 14.983,
+   "elongationDeg": 64.15
+  },
+  {
+   "day": 812,
+   "date": "2028-11-01",
+   "distanceKm": 268305815,
+   "lightTimeMin": 14.916,
+   "elongationDeg": 64.58
+  },
+  {
+   "day": 813,
+   "date": "2028-11-02",
+   "distanceKm": 267101129,
+   "lightTimeMin": 14.849,
+   "elongationDeg": 65.02
+  },
+  {
+   "day": 814,
+   "date": "2028-11-03",
+   "distanceKm": 265889329,
+   "lightTimeMin": 14.782,
+   "elongationDeg": 65.46
+  },
+  {
+   "day": 815,
+   "date": "2028-11-04",
+   "distanceKm": 264670435,
+   "lightTimeMin": 14.714,
+   "elongationDeg": 65.91
+  },
+  {
+   "day": 816,
+   "date": "2028-11-05",
+   "distanceKm": 263444465,
+   "lightTimeMin": 14.646,
+   "elongationDeg": 66.35
+  },
+  {
+   "day": 817,
+   "date": "2028-11-06",
+   "distanceKm": 262211440,
+   "lightTimeMin": 14.577,
+   "elongationDeg": 66.8
+  },
+  {
+   "day": 818,
+   "date": "2028-11-07",
+   "distanceKm": 260971380,
+   "lightTimeMin": 14.508,
+   "elongationDeg": 67.25
+  },
+  {
+   "day": 819,
+   "date": "2028-11-08",
+   "distanceKm": 259724314,
+   "lightTimeMin": 14.439,
+   "elongationDeg": 67.7
+  },
+  {
+   "day": 820,
+   "date": "2028-11-09",
+   "distanceKm": 258470274,
+   "lightTimeMin": 14.369,
+   "elongationDeg": 68.15
+  },
+  {
+   "day": 821,
+   "date": "2028-11-10",
+   "distanceKm": 257209302,
+   "lightTimeMin": 14.299,
+   "elongationDeg": 68.61
+  },
+  {
+   "day": 822,
+   "date": "2028-11-11",
+   "distanceKm": 255941448,
+   "lightTimeMin": 14.229,
+   "elongationDeg": 69.07
+  },
+  {
+   "day": 823,
+   "date": "2028-11-12",
+   "distanceKm": 254666776,
+   "lightTimeMin": 14.158,
+   "elongationDeg": 69.53
+  },
+  {
+   "day": 824,
+   "date": "2028-11-13",
+   "distanceKm": 253385362,
+   "lightTimeMin": 14.087,
+   "elongationDeg": 70
+  },
+  {
+   "day": 825,
+   "date": "2028-11-14",
+   "distanceKm": 252097296,
+   "lightTimeMin": 14.015,
+   "elongationDeg": 70.46
+  },
+  {
+   "day": 826,
+   "date": "2028-11-15",
+   "distanceKm": 250802681,
+   "lightTimeMin": 13.943,
+   "elongationDeg": 70.93
+  },
+  {
+   "day": 827,
+   "date": "2028-11-16",
+   "distanceKm": 249501633,
+   "lightTimeMin": 13.871,
+   "elongationDeg": 71.4
+  },
+  {
+   "day": 828,
+   "date": "2028-11-17",
+   "distanceKm": 248194278,
+   "lightTimeMin": 13.798,
+   "elongationDeg": 71.88
+  },
+  {
+   "day": 829,
+   "date": "2028-11-18",
+   "distanceKm": 246880754,
+   "lightTimeMin": 13.725,
+   "elongationDeg": 72.36
+  },
+  {
+   "day": 830,
+   "date": "2028-11-19",
+   "distanceKm": 245561199,
+   "lightTimeMin": 13.652,
+   "elongationDeg": 72.84
+  },
+  {
+   "day": 831,
+   "date": "2028-11-20",
+   "distanceKm": 244235760,
+   "lightTimeMin": 13.578,
+   "elongationDeg": 73.32
+  },
+  {
+   "day": 832,
+   "date": "2028-11-21",
+   "distanceKm": 242904581,
+   "lightTimeMin": 13.504,
+   "elongationDeg": 73.81
+  },
+  {
+   "day": 833,
+   "date": "2028-11-22",
+   "distanceKm": 241567802,
+   "lightTimeMin": 13.43,
+   "elongationDeg": 74.29
+  },
+  {
+   "day": 834,
+   "date": "2028-11-23",
+   "distanceKm": 240225559,
+   "lightTimeMin": 13.355,
+   "elongationDeg": 74.78
+  },
+  {
+   "day": 835,
+   "date": "2028-11-24",
+   "distanceKm": 238877982,
+   "lightTimeMin": 13.28,
+   "elongationDeg": 75.28
+  },
+  {
+   "day": 836,
+   "date": "2028-11-25",
+   "distanceKm": 237525192,
+   "lightTimeMin": 13.205,
+   "elongationDeg": 75.77
+  },
+  {
+   "day": 837,
+   "date": "2028-11-26",
+   "distanceKm": 236167300,
+   "lightTimeMin": 13.129,
+   "elongationDeg": 76.27
+  },
+  {
+   "day": 838,
+   "date": "2028-11-27",
+   "distanceKm": 234804411,
+   "lightTimeMin": 13.054,
+   "elongationDeg": 76.77
+  },
+  {
+   "day": 839,
+   "date": "2028-11-28",
+   "distanceKm": 233436619,
+   "lightTimeMin": 12.978,
+   "elongationDeg": 77.28
+  },
+  {
+   "day": 840,
+   "date": "2028-11-29",
+   "distanceKm": 232064013,
+   "lightTimeMin": 12.901,
+   "elongationDeg": 77.79
+  },
+  {
+   "day": 841,
+   "date": "2028-11-30",
+   "distanceKm": 230686675,
+   "lightTimeMin": 12.825,
+   "elongationDeg": 78.3
+  },
+  {
+   "day": 842,
+   "date": "2028-12-01",
+   "distanceKm": 229304681,
+   "lightTimeMin": 12.748,
+   "elongationDeg": 78.81
+  },
+  {
+   "day": 843,
+   "date": "2028-12-02",
+   "distanceKm": 227918107,
+   "lightTimeMin": 12.671,
+   "elongationDeg": 79.33
+  },
+  {
+   "day": 844,
+   "date": "2028-12-03",
+   "distanceKm": 226527024,
+   "lightTimeMin": 12.594,
+   "elongationDeg": 79.85
+  },
+  {
+   "day": 845,
+   "date": "2028-12-04",
+   "distanceKm": 225131507,
+   "lightTimeMin": 12.516,
+   "elongationDeg": 80.37
+  },
+  {
+   "day": 846,
+   "date": "2028-12-05",
+   "distanceKm": 223731631,
+   "lightTimeMin": 12.438,
+   "elongationDeg": 80.9
+  },
+  {
+   "day": 847,
+   "date": "2028-12-06",
+   "distanceKm": 222327479,
+   "lightTimeMin": 12.36,
+   "elongationDeg": 81.43
+  },
+  {
+   "day": 848,
+   "date": "2028-12-07",
+   "distanceKm": 220919137,
+   "lightTimeMin": 12.282,
+   "elongationDeg": 81.96
+  },
+  {
+   "day": 849,
+   "date": "2028-12-08",
+   "distanceKm": 219506706,
+   "lightTimeMin": 12.203,
+   "elongationDeg": 82.49
+  },
+  {
+   "day": 850,
+   "date": "2028-12-09",
+   "distanceKm": 218090292,
+   "lightTimeMin": 12.125,
+   "elongationDeg": 83.03
+  },
+  {
+   "day": 851,
+   "date": "2028-12-10",
+   "distanceKm": 216670019,
+   "lightTimeMin": 12.046,
+   "elongationDeg": 83.58
+  },
+  {
+   "day": 852,
+   "date": "2028-12-11",
+   "distanceKm": 215246023,
+   "lightTimeMin": 11.966,
+   "elongationDeg": 84.12
+  },
+  {
+   "day": 853,
+   "date": "2028-12-12",
+   "distanceKm": 213818453,
+   "lightTimeMin": 11.887,
+   "elongationDeg": 84.67
+  },
+  {
+   "day": 854,
+   "date": "2028-12-13",
+   "distanceKm": 212387473,
+   "lightTimeMin": 11.807,
+   "elongationDeg": 85.23
+  },
+  {
+   "day": 855,
+   "date": "2028-12-14",
+   "distanceKm": 210953262,
+   "lightTimeMin": 11.728,
+   "elongationDeg": 85.79
+  },
+  {
+   "day": 856,
+   "date": "2028-12-15",
+   "distanceKm": 209516008,
+   "lightTimeMin": 11.648,
+   "elongationDeg": 86.35
+  },
+  {
+   "day": 857,
+   "date": "2028-12-16",
+   "distanceKm": 208075911,
+   "lightTimeMin": 11.568,
+   "elongationDeg": 86.91
+  },
+  {
+   "day": 858,
+   "date": "2028-12-17",
+   "distanceKm": 206633175,
+   "lightTimeMin": 11.488,
+   "elongationDeg": 87.48
+  },
+  {
+   "day": 859,
+   "date": "2028-12-18",
+   "distanceKm": 205188013,
+   "lightTimeMin": 11.407,
+   "elongationDeg": 88.06
+  },
+  {
+   "day": 860,
+   "date": "2028-12-19",
+   "distanceKm": 203740636,
+   "lightTimeMin": 11.327,
+   "elongationDeg": 88.64
+  }
+ ]
+}
