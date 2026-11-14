@@ -1,8 +1,9 @@
 # Status — Steve (D)
-_Mis à jour : sam. 18:20_
+_Mis à jour : sam. 18:35_
 
 ## Livré (poussé sur `feature/steve-models` ; PR vers `develop` dès que Walid aura créé la branche)
 - **Modèles 3D** (jalon 17:00, en avance) : `public/models/{squelette,muscles,organes,cardio,nerveux}.glb` (170–260 k triangles chacun, 1,2–2,9 Mo, ~1 M triangles si tout est affiché) + `manifest.json` (ancres des ⚠) + `CREDITS.md`.
+- **Avatar de Haddad** : `public/models/avatar.glb` (40 k triangles, 0,13 Mo, meshopt) — enveloppe lisse dérivée des muscles + squelette Z-Anatomy, **même repère que les calques** (alignement exact avec les organes). Nœud `avatar`, `userData.layer = 'shell'`. Sert de silhouette (aucun calque actif) et de surface pour la carte de dose (calque `exposition` du manifeste). Scripts : `docs/tools/build-avatar.py` + `build-avatar.mjs`.
 - **Organes isolés** (jalon 20:00, en avance) : `public/models/organs/<organId>.glb` pour coeur, poumons, foie, reins, cerveau, yeux, hanche, femur, rachis, cuisse, mollet, paravertebraux. Centrés à l'origine.
 - **Normes NASA Rev C** : `public/data/nasa/standards.json` (13 entrées : V1 4001/4002/4003/4027/4030/3006/5003/4011/6001/6004/6010/7001 + glossaire bisphosphonates), citations relues dans le PDF, `verified` + `partialQuote`. `src/content/standards.ts` → `getStandard(id)` (signature §7 ; id inconnu → `verified: false`).
 - **Délai radio** : `scripts/fetch-horizons.ts` (vraie API JPL Horizons) + `src/content/horizons.ts` → `lightTimeMin(date)` (test : **11,016 min le 2026-11-14** ✓) + ajouts non cassants `isConjunction(date)` (conjonction 2028-03-08 → 2028-04-03) et `horizonsTag`. Mission J0 = 2026-08-12 → J860.
@@ -27,7 +28,7 @@ _Mis à jour : sam. 18:20_
   3. `bibliothèque` : ids réels `ared-squat` et `menu-calcium-vitd` (au lieu de `ared-squat-sdt`, `dej-calcium`) ;
   4. `lightTimeSource` : la table couvre toute la mission J0 → J860, donc '2027-03-10' est `'table'` ; une date hors mission (ex. '2030-01-01') est `'approx'` ;
   5. `manifest — ancres` : les ancres sont maintenant celles des vrais modèles Z-Anatomy (calculées sur la géométrie), plus celles du corps procédural.
-- @Walid : `manifest.json` suit le contrat (6 calques, chaque organe dans un seul calque) + 2 champs en plus : `avatar: 'avatar.glb'` (silhouette Z-Anatomy de Haddad, en cours, pour remplacer ton enveloppe procédurale et porter la carte de dose) et `extraNodes` (organId présents dans chaque .glb, dont `arteres`, `veines`, `aorte`). Peux-tu ajouter `avatar?: string` à `ModelManifest` (ajout non cassant) ?
+- @Walid : `manifest.json` suit le contrat (6 calques, chaque organe dans un seul calque) + 2 champs en plus : `avatar: 'avatar.glb'` (silhouette Z-Anatomy de Haddad, **livrée**, pour remplacer ton enveloppe procédurale `part('enveloppe', null, 'shell', …)` et porter la carte de dose) et `extraNodes` (organId présents dans chaque .glb, dont `arteres`, `veines`, `aorte`). Peux-tu ajouter `avatar?: string` à `ModelManifest` (ajout non cassant) ?
 - @Ahmed : ✅ tests ajoutés : `test-pvt`, `test-vision`, `test-prelevement`, `test-urine`, `test-echo-reins`, `test-checkin` via `getTest(id)` (ajout). `whyText` ne renvoie jamais null : phrase de repli + `hasWhy(rule)`.
 - @Ahmed : **ids de la bibliothèque** (`src/content/library.ts`) à utiliser dans tes mocks de to-do et par Mouad dans `planDay` :
   - exercices : `ared-squat`, `ared-souleve-de-terre`, `ared-mollets`, `velo-intervalles`, `velo-continu`, `tapis-intervalles`, `tapis-continu`, `mobilite-dos`, `respiration` ;
