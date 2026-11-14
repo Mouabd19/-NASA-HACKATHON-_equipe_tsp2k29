@@ -49,10 +49,10 @@ describe('J94 — statuts attendus (mocks roadmap §7)', () => {
     ['poumons', 'grey'], ['foie', 'grey'], ['cerveau', 'grey'],
   ])('%s → %s', (id, color) => expect(organ(94, id).status).toBe(color));
 
-  it('hanche : densité estimée 98,01 % (perte 1,99 %), écart d\'âge +2,0 ans', () => {
+  it('hanche : densité estimée 98,01 % (perte 1,99 %), écart d\'âge +4,0 ans (0,5 %/an)', () => {
     const h = organ(94, 'hanche');
     expect(h.metrics[0].value).toBeCloseTo(98.01, 2);
-    expect(h.bioAge - h.chronoAge).toBeCloseTo(1.99, 1);
+    expect(h.bioAge - h.chronoAge).toBeCloseTo(3.98, 1);
   });
   it('check-in J94 : humeur 3, fatigue 3, douleur 1 (bas du dos)', () => {
     expect(getCheckIn(94)).toMatchObject({ mood: 3, fatigue: 3, pain: 1, painZone: 'paravertebraux' });
@@ -75,6 +75,7 @@ describe('load.ts', () => {
     const h = b.organs.find(o => o.id === 'hanche')!;
     expect(h.metrics[0].value).toBeCloseTo(91.3, 1);
     expect(h.status).toBe('red');
+    expect(h.bioAge - h.chronoAge).toBeCloseTo(17.4, 0); // 8,70 % / 0,5 %/an
     expect(b.organs.find(o => o.id === 'yeux')!.status).toBe('grey'); // pas de modèle → gris
   });
   it('jour inconnu → organes gris, jamais vert', () => {
