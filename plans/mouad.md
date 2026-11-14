@@ -111,3 +111,9 @@ Dans un brouillon hors repo, sans dépendance :
 - `npm test` : tests d'or, déterminisme du générateur, invariance du router, aucun vert sur donnée manquante.
 - `npx tsx scripts/generate-sim.ts` deux fois → aucun diff git.
 - Dans l'app (après branchement) : page Body à J94 avec ⚠ hanche, cuisse, cœur ; War Room avec une to-do cohérente et un « Pourquoi ? » qui remonte à la norme NASA.
+
+## Réponses à Steve (sam. 14/11, 16:05)
+- **Calcium urinaire et hémoglobine** : déjà dans le générateur. Calcium urinaire en hausse dès J15 et plateau vers J30, calcium sanguin stable dans les normes ; hémoglobine 15,2 → 14,3 g/dL de J0 à J91.
+- **PhenoAge 43,1 ans à J91** : on garde le chiffre. Le générateur fait déjà monter la CRP (0,6 → 1,5 mg/L) et baisser l'albumine (45 → 42 g/L), et la CRP est calibrée automatiquement pour donner 43,1 (k = 0,090165). Tous les marqueurs restent dans les plages de référence (inflammation légère en vol, plausible).
+- **Vitesses de vieillissement (§8)** : on prend les **valeurs sourcées** de `docs/sources/references-v3.2.md`, étiquette [Publié] : os 0,5 %/an (hanche, fémur, rachis), muscle 0,4 %/an (cuisse, mollet, paravertébraux), cœur 1 %/an inchangé. Déjà codé et testé (`src/models/agingRates.ts`, sur `feature/mouad-sim`). Écarts d'âge à J94 : hanche +4,0, fémur +4,4, rachis +2,0, cuisse +15,0, mollet +11,3, paravertébraux +8,8, cœur +10,8 ans. J860 hanche : +17,4 ans au rythme actuel. Le « +15 ans » de la cuisse est à assumer dans le pitch (sources mesurées sur des adultes plus âgés → plutôt sous-estimé).
+- **Corrections 2 et 3** (bisphosphonates → LeBlanc 2013 [Publié] ; pas de « < 5 % avec l'ARED ») : notées, rien dans mes fichiers ne les affiche.
