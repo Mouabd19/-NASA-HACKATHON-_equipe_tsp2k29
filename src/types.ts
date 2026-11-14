@@ -43,6 +43,7 @@ export interface PhenoAgeResult { // v3.2 (ajout) : âge biologique global [Publ
   chronoAge: number;
   inputs: Record<string, number>; // marqueurs utilisés, visibles dans Raisonnement
   tag: 'Publié';
+  mock?: boolean;               // (ajout) true tant que la valeur vient d'un stub : la FORMULE est publiée, la VALEUR est factice
 }
 
 export interface BioAgePoint {

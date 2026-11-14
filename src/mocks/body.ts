@@ -167,7 +167,7 @@ function build(day: number, a: number): DayBody {
       metric(id, 'densite_osseuse', 'Densité osseuse estimée vs pré-vol', '%', day, a, st, 'H', 'H', {
         ref: { low: BONE_THRESHOLD[id], standardId: 'V1 4027' },
       }),
-      metric(id, 'perte_osseuse', 'Perte cumulée estimée', '%', day, a, st, 'H', 'H'),
+      metric(id, 'perte_osseuse', 'Perte cumulée estimée', '%', day, a, st, 'H', 'H', { trend: false }), // la pente est portée par la densité
     ];
     if (extra) {
       const proj = lossPct(id, DAY_END, a) as number;
@@ -230,7 +230,8 @@ function build(day: number, a: number): DayBody {
     metric('sang', 'hemoglobine', 'Hémoglobine', 'g/dL', day, a, hbColor, 'Persona', scan, { digits: 1, ref: { low: 13.5, high: 17.5 } }),
     metric('sang', 'volume_jambes', 'Volume des jambes vs J0 (fluides)', '%', day, a, 'green', 'Persona', scan, { digits: 1, noise: 0.4 }),
   ];
-  organs.push(organ('sang', 'cardio', 'Sang / cardiovasculaire', worst(blood.map((x) => x.color)), blood, day, a));
+  // le VO₂max est rappelé ici mais son statut est porté par le cœur : il ne compte pas deux fois
+  organs.push(organ('sang', 'cardio', 'Sang / cardiovasculaire', worst(blood.filter((x) => x.key !== 'vo2max').map((x) => x.color)), blood, day, a));
 
   // Nerveux + yeux
   const sheath = level(mean7('yeux', 'gaine_nerf_optique', day, a), 5.5, 6.0);

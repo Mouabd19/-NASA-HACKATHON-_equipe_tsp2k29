@@ -8,3 +8,9 @@ import { mockSummary } from '../mocks';
 export function getSummary(organId: OrganId, day: number): OrganSummary | null {
   return mockSummary(organId, day);
 }
+
+/**
+ * (ajout hors contrat §7) Origine du texte : 'gabarit' = texte à trous calculé dans le navigateur (mock),
+ * 'ia-sol' = vraie synthèse IA hors ligne lue dans public/data/summaries/. À passer à 'ia-sol' avec le vrai module.
+ */
+export const SUMMARY_SOURCE: 'gabarit' | 'ia-sol' = 'gabarit';

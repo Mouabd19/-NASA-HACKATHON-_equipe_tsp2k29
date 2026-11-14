@@ -66,6 +66,11 @@ export function mockLightTimeMin(date: string): number {
   return Number.isFinite(v) ? round(v, 2) : NaN;
 }
 
+/** 'table' si la date est tabulée, sinon 'approx' (orbite circulaire recalée — hypothèse d'équipe). */
+export function mockLightTimeSource(date: string): 'table' | 'approx' {
+  return LIGHT_TABLE[date.slice(0, 10)] !== undefined ? 'table' : 'approx';
+}
+
 // --- Synthèses par organe (texte gabarit, hors ligne, à partir des chiffres du corps du jour) -
 export const SUMMARY_KEY_DAYS = [0, 30, 60, DAY_TODAY, DAY_SOL0, DAY_END].sort((a, b) => a - b);
 

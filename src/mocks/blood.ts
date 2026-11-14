@@ -102,5 +102,6 @@ export function mockPhenoAge(day: number): PhenoAgeResult | null {
     chronoAge: round(chronoAge(d), 1),
     inputs,
     tag: 'Publié',
+    mock: true, // la formule de Levine n'est pas encore calculée : interpolation factice
   };
 }
