@@ -10,7 +10,7 @@
 // Un seul menu par jour (le plus prioritaire). Toujours renvoyer une copie : cocher n'altère pas le plan.
 import type { Alert, CheckIn, TodoItem } from '../types.ts';
 import { getExercise, getMeal, getTest } from '../content/library.ts';
-import { getCheckIn } from '../sim/load.ts';
+import { getCheckIn, getDayBody } from '../sim/load.ts';
 import { DAY_END, DAY_TODAY } from '../sim/persona.ts';
 import { alertsForDay } from './alerts.ts';
 import { BLOOD_MAX_AGE_DAYS, bloodAgeDays, checkInLevel, triage } from './triage.ts';
@@ -65,6 +65,18 @@ function drafts(day: number, alerts: Alert[], ci: CheckIn | null, psy: boolean):
   const bone = has('hanche', 'rachis', 'femur');
   if (bone || has('reins')) out.push(test('test-urine', '07:05', 'r-urine', 2));
   if (has('yeux')) out.push(test('test-vision', '10:30', 'r-nerf-optique', 2));
+  // PVT (vigilance) : donnée manquante ou expirée (§8), temps de réaction hors repère, ou fatigue / sommeil dégradés
+  if (measured) {
+    const pvtOf = (d: number) => getDayBody(d).organs.find(o => o.id === 'yeux')?.metrics.find(m => m.key === 'pvt');
+    const pvt = pvtOf(day);
+    const missing = !pvt && !(day > 0 && pvtOf(day - 1));
+    const off = pvt?.color === 'amber' || pvt?.color === 'red';
+    const tired = !!ci && (ci.fatigue >= 4 || ci.sleepFelt <= 2);
+    if (missing || off || tired) {
+      out.push(test('test-pvt', '09:30', 'r-pvt', missing || off ? 1 : 2,
+        missing ? ' Pas de mesure depuis plus d\'un jour : donnée expirée.' : off ? ' Temps de réaction au-dessus du repère sur 7 jours.' : ' Fatigue ou sommeil dégradés au check-in.'));
+    }
+  }
   if (has('reins')) out.push(test('test-echo-reins', '10:45', 'r-calcium-urinaire', 2));
 
   // --- exercices ---

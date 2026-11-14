@@ -1,0 +1,243 @@
+/* Page Santé mentale — styles propres à la page (préfixe mt-). Couleurs et tailles : variables --sz-* uniquement. */
+
+.mt-back {
+  display: inline-block;
+  margin-bottom: 12px;
+  font-size: var(--sz-fs-data);
+}
+.mt-head { align-items: flex-start; margin-bottom: 16px; }
+.mt-head__right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  padding-top: 6px;
+}
+/* Mention neutre (même rendu que « Données simulées » de la barre haute). */
+.mt-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: var(--sz-radius-xs);
+  background: var(--sz-panel-hover);
+  color: var(--sz-text-dim);
+  font-size: var(--sz-fs-small);
+  font-weight: 500;
+}
+
+.mt-grid { display: grid; gap: var(--sz-gap); }
+/* Pas de bouton × sur cette page : le contenu de droite s'aligne sur la marge des panneaux. */
+.mt-page .sz-panel__head { padding-right: var(--sz-pad); }
+
+.mt-empty {
+  font-size: var(--sz-fs-data);
+  color: var(--sz-text-dim);
+}
+
+/* ── Résultat ── */
+
+.mt-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px 24px;
+}
+.mt-stat { min-width: 0; }
+.mt-stat dt { display: block; }
+.mt-stat dd {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 8px;
+  margin-top: 4px;
+}
+.mt-stat__note {
+  font-size: var(--sz-fs-small);
+  color: var(--sz-text-dim);
+}
+
+/* ── Frise ── */
+
+.mt-chart {
+  padding: 12px;
+  border-radius: var(--sz-radius-sm);
+  background: var(--sz-inset);
+  overflow: hidden;
+}
+/* Le SVG est dessiné à la largeur mesurée de ce conteneur (échelle 1). */
+.mt-chart__in { min-width: 0; }
+.mt-frise { max-width: none; overflow: visible; }
+.mt-frise text {
+  font-size: var(--sz-fs-label);
+  font-variant-numeric: tabular-nums;
+  fill: var(--sz-text-muted);
+}
+.mt-frise .mt-frise__name { fill: var(--sz-text-dim); }
+.mt-frise__zone { fill: var(--sz-text); opacity: 0.04; }
+.mt-frise__grid { stroke: var(--sz-border); opacity: 0.6; }
+.mt-frise__axis { stroke: var(--sz-border); }
+.mt-frise__mark { stroke: var(--sz-border-strong); }
+.mt-frise__mark--dash { stroke: var(--sz-text-muted); stroke-dasharray: 3 3; }
+.mt-frise__line {
+  fill: none;
+  stroke: var(--sz-text);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+.mt-frise__line--ctrl { stroke: var(--sz-text-muted); stroke-dasharray: 4 3; }
+
+.mt-verdict { cursor: pointer; }
+.mt-verdict__hit { fill: transparent; }
+.mt-verdict__ring {
+  fill: var(--sz-inset);
+  stroke: transparent;
+  stroke-width: 1.5;
+  transition: stroke 120ms;
+}
+.mt-verdict:hover .mt-verdict__ring { stroke: var(--sz-border-strong); }
+.mt-verdict[aria-pressed='true'] .mt-verdict__ring { stroke: var(--sz-text); }
+.mt-verdict__dot { stroke-width: 0; }
+/* Inconnu : pastille creuse, comme .sz-dot. */
+.mt-verdict__dot[data-color='grey'] { fill: transparent; stroke-width: 1.5; }
+.mt-verdict:focus-visible { outline: none; }
+.mt-verdict:focus-visible .mt-verdict__ring { stroke: var(--sz-accent); stroke-width: 2; }
+
+.mt-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin-top: 8px;
+  font-size: var(--sz-fs-label);
+  color: var(--sz-text-dim);
+}
+.mt-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.mt-legend__note { margin-left: auto; color: var(--sz-text-muted); }
+
+/* ── Dossier du jour ── */
+
+.mt-dossier__meta {
+  font-size: var(--sz-fs-small);
+  color: var(--sz-text-dim);
+}
+.mt-psys {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 12px;
+  padding: 12px 0;
+  border-top: 1px solid var(--sz-border);
+  border-bottom: 1px solid var(--sz-border);
+}
+.mt-psy {
+  min-width: 0;
+  padding: 0 16px;
+  border-left: 1px solid var(--sz-border);
+}
+.mt-psy:first-child { padding-left: 0; border-left: 0; }
+.mt-psy:last-child { padding-right: 0; }
+.mt-psy__level {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 6px;
+  margin-top: 4px;
+  font-size: var(--sz-fs-small);
+  font-weight: 500;
+  color: var(--sz-text);
+}
+.mt-psy__conf { font-weight: 400; color: var(--sz-text-dim); }
+.mt-psy__hyp {
+  margin-top: 8px;
+  font-size: var(--sz-fs-data);
+  line-height: 1.5;
+  color: var(--sz-text);
+}
+.mt-psy__note {
+  margin-top: 4px;
+  font-size: var(--sz-fs-small);
+  line-height: 1.5;
+  color: var(--sz-text-dim);
+}
+
+/* Faits relevés : repliés par défaut (même repli que « Méthode et limites » de la page Raisonnement). */
+.mt-more { margin-top: 8px; }
+.mt-more > summary { margin-left: -8px; list-style: none; }
+.mt-more > summary::-webkit-details-marker { display: none; }
+.mt-more__chev {
+  width: 8px;
+  height: 8px;
+  color: var(--sz-text-dim);
+}
+.mt-more[open] .mt-more__chev { transform: rotate(90deg); }
+.mt-facts {
+  margin-top: 8px;
+  border-top: 1px solid var(--sz-border);
+}
+.mt-facts li {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  column-gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--sz-border);
+  font-size: var(--sz-fs-data);
+  line-height: 1.5;
+  color: var(--sz-text);
+}
+.mt-facts__time { color: var(--sz-text-dim); font-variant-numeric: tabular-nums; }
+.mt-facts__quote { color: var(--sz-text-dim); }
+.mt-dossier__foot {
+  margin-top: 12px;
+  font-size: var(--sz-fs-small);
+  color: var(--sz-text-dim);
+}
+
+/* ── Fonctionnement ── */
+
+.mt-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px 24px;
+}
+.mt-step { min-width: 0; }
+.mt-step .sz-section-title { margin-top: 2px; }
+.mt-step__text {
+  margin-top: 4px;
+  font-size: var(--sz-fs-small);
+  line-height: 1.5;
+  color: var(--sz-text-dim);
+}
+.mt-sim {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--sz-border);
+}
+.mt-list {
+  display: grid;
+  gap: 4px;
+  margin-top: 8px;
+  padding-left: 16px;
+  list-style: disc;
+  font-size: var(--sz-fs-data);
+  line-height: 1.5;
+  color: var(--sz-text-dim);
+}
+.mt-list li::marker { color: var(--sz-text-muted); }
+.mt-list strong { font-weight: 500; color: var(--sz-text); }
+
+.mt-honest {
+  margin-top: 16px;
+  font-size: var(--sz-fs-small);
+  color: var(--sz-text-dim);
+}
+
+@media (max-width: 820px) {
+  .mt-stats,
+  .mt-psys { grid-template-columns: minmax(0, 1fr); }
+  .mt-psy { padding: 12px 0 0; margin-top: 12px; border-left: 0; border-top: 1px solid var(--sz-border); }
+  .mt-psy:first-child { padding-top: 0; margin-top: 0; border-top: 0; }
+  .mt-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mt-chart { overflow-x: auto; }
+}

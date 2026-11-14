@@ -333,9 +333,9 @@ export function HoverCard(): JSX.Element | null {
                 type="button"
                 className="sz-btn sz-btn--sm"
                 onClick={open}
-                title="Ouvrir la fenêtre de détail (ou double-clic sur l’organe)"
+                title={organId === 'cerveau' ? 'Ouvrir la page Santé mentale (ou double-clic sur l’organe)' : 'Ouvrir la fenêtre de détail (ou double-clic sur l’organe)'}
               >
-                Ouvrir le détail
+                {organId === 'cerveau' ? 'Suivi santé mentale' : 'Ouvrir le détail'}
               </button>
             </footer>
           ) : null}
