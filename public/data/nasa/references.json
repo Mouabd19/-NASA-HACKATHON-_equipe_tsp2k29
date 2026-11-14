@@ -190,6 +190,17 @@
         ],
         "note": "0,4 %/an en moyenne adulte ; 1 %/an après 70 ans"
       }
+    },
+    {
+      "id": "ochmo-exercise",
+      "topic": "Exercice en vol",
+      "tag": "NASA",
+      "title": "NASA OCHMO Technical Brief — Exercise (déc. 2023)",
+      "url": "https://www.nasa.gov/wp-content/uploads/2023/12/ochmo-tb-031-exercise-overview.pdf",
+      "claim": "Sur l'ISS : ~600 min d'exercice par semaine ; prescription ≈ 30 min d'aérobie (T2, CEVIS, 70–100 % FCmax ou VO₂pic) + 30–60 min de musculation sur l'ARED (squat, mollets, soulevé de terre). Recommandation : au moins 3 séances par semaine > 70 % FCmax, > 20 min.",
+      "usedFor": "Bibliothèque d'exercices (src/content/library.ts)",
+      "verified": true,
+      "status": "Document lu"
     }
   ]
 }

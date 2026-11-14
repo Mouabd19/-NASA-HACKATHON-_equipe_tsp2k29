@@ -1,5 +1,5 @@
 # Status — Steve (D)
-_Mis à jour : sam. 16:22_
+_Mis à jour : sam. 16:35_
 
 ## Livré (poussé sur `feature/steve-models` ; PR vers `develop` dès que Walid aura créé la branche)
 - **Modèles 3D** (jalon 17:00, en avance) : `public/models/{squelette,muscles,organes,cardio,nerveux}.glb` (170–260 k triangles chacun, 1,2–2,9 Mo, ~1 M triangles si tout est affiché) + `manifest.json` (ancres des ⚠) + `CREDITS.md`.
@@ -7,11 +7,12 @@ _Mis à jour : sam. 16:22_
 - **Normes NASA Rev C** : `public/data/nasa/standards.json` (13 entrées : V1 4001/4002/4003/4027/4030/3006/5003/4011/6001/6004/6010/7001 + glossaire bisphosphonates), citations relues dans le PDF, `verified` + `partialQuote`. `src/content/standards.ts` → `getStandard(id)` (signature §7 ; id inconnu → `verified: false`).
 - **Délai radio** : `scripts/fetch-horizons.ts` (vraie API JPL Horizons) + `src/content/horizons.ts` → `lightTimeMin(date)` (test : **11,016 min le 2026-11-14** ✓) + ajouts non cassants `isConjunction(date)` (conjonction 2028-03-08 → 2028-04-03) et `horizonsTag`. Mission J0 = 2026-08-12 → J860.
 - **Sources v3.2** : `public/data/nasa/references.json` (15 sources vérifiées) + synthèse `docs/sources/references-v3.2.md` (anémie, calcium urinaire, bisphosphonates, nerf optique, échographie/os, centrifugeuse AGBRESA, Oh 2023, vitesses de vieillissement terrestre).
+- **Bibliothèque de contenus** (jalon dim. 02:00, en avance) : `src/content/library.ts` → `getExercise(id)`, `getMeal(id)`, `whyText(rule)` (signatures §7) + ajouts `listExercises()`, `listMeals()`, `listWhyRules()`. 9 exercices sourcés NASA (OCHMO), 6 menus [H], 16 textes « Pourquoi ? ».
 - **PhenoAge** : coefficients vérifiés + vecteurs de test → `docs/sources/phenoage.md`.
 
 ## En cours
-- **Prototype santé mentale (§11)**, dossiers `proto/mental/` + `public/data/mental/` : générateur de journées simulées (glissement à J75 + témoin) ✅, 3 observateurs + 3 psychologues + dossier pour le psy humain ✅ (testé à blanc). Moteur : **API Claude** (`claude-sonnet-5-5` par défaut, moins cher qu'Opus prévu au §11) si `ANTHROPIC_API_KEY` est défini, sinon Ollama local (testé : J78 → « à surveiller » 3/3, mais trop lent et le Mac chauffe). Passage complet à relancer avec l'API. Page de visualisation pour la capture : `node proto/mental/build-viewer.mjs` → `proto/mental/viewer.html` (autonome, hors ligne). Biomarqueurs provisoires dans le proto : à brancher sur ceux de Mouad quand `public/data/sim/` existe.
-- Jalon 23:00 **livré**. Suite : contenus (exercices, menus, textes « Pourquoi ? ») pour dim. 02:00.
+- **Prototype santé mentale (§11)**, dossiers `proto/mental/` + `public/data/mental/` : générateur de journées simulées (glissement à J75 + témoin) ✅, 3 observateurs + 3 psychologues + dossier pour le psy humain ✅ (testé à blanc). Moteur : **API Claude** (Haiku 5.5 utilisé, Sonnet 5.5 par défaut) si `ANTHROPIC_API_KEY` est défini, sinon Ollama local (testé, trop lent). **Passage complet en cours** sur le Mac de Steve (5 jours clés × drift + témoin). Page de visualisation pour la capture : `node proto/mental/build-viewer.mjs` → `proto/mental/viewer.html` (autonome, hors ligne). Biomarqueurs provisoires dans le proto : à brancher sur ceux de Mouad quand `public/data/sim/` existe.
+- Jalons 23:00 et 02:00 **livrés**. Suite : script des synthèses IA par organe (06:00), dès que `public/data/sim/` de Mouad est poussé.
 
 ## Bloqué / risques
 - `horizons.json` est **PROVISOIRE** (calcul local, `provisional: true`, étiquette [H]) : mon environnement ne joint pas ssd.jpl.nasa.gov. **Quelqu'un doit lancer `npx tsx scripts/fetch-horizons.ts` sur son portable** (30 s) avant le gel pour avoir la vraie donnée [NASA]. Écart attendu < 0,01 min.
@@ -20,6 +21,12 @@ _Mis à jour : sam. 16:22_
 - Constante finale de PhenoAge : 0.090165 (Aging 2018) vs 0.09165 (correction PLOS Med 2019). Recommandation : 0.090165.
 
 ## Demandes aux autres
+- @Ahmed : **ids de la bibliothèque** (`src/content/library.ts`) à utiliser dans tes mocks de to-do et par Mouad dans `planDay` :
+  - exercices : `ared-squat`, `ared-souleve-de-terre`, `ared-mollets`, `velo-intervalles`, `velo-continu`, `tapis-intervalles`, `tapis-continu`, `mobilite-dos`, `respiration` ;
+  - repas : `menu-calcium-vitd`, `menu-proteines`, `menu-anti-calculs`, `menu-standard`, `menu-recuperation`, `menu-diner-leger` ;
+  - « Pourquoi ? » : `whyText(rule)` avec `rule` = id de norme (`'V1 4027'`, `'V1 4003'`, `'V1 4002'`, `'V1 4030'`…) ou règle (`'R13'`, `'sol-routine'`, `'calcium-urinaire'`, `'nerf-optique'`, `'point-psy'`, `'anemie'`, `'donnees-manquantes'`, `'exercice-quotidien'`).
+  Id inconnu → `null` (ou texte générique pour `whyText`), jamais d'exception. Besoin d'un autre id ? Dis-le dans ton status.
+- @Mouad : mêmes ids pour `planDay` (hanche AMBRE → `ared-squat` + `ared-souleve-de-terre` + `menu-calcium-vitd` ; VO₂ AMBRE → `velo-intervalles` / `tapis-intervalles` ; calcium urinaire → `menu-anti-calculs`).
 - @Mouad : ✅ réponses lues (vieillissement sourcé, PhenoAge 43,1, urine). Pitch : présenter la cuisse « +15 ans » comme un **équivalent** en années de vieillissement normal, en partie réversible.
 - @Mouad : ✅ fiche dans le repo → `docs/sol-zero-fiche-v3.md`. ✅ **Sol 0 = J180** (2027-02-08 ; 180 j d'aller), confirmé par Steve. Vitesses de vieillissement : voir ligne ci-dessous.
 - @Mouad **(décision à prendre)** : vitesses de vieillissement terrestre sourcées = hanche **0,5 %/an**, muscle **0,4 %/an**, VO₂ 1 %/an (au lieu de 1 %/an partout). Avec la formule §8 : hanche J94 → **+4,0 ans**, J860 → +17,4 (rythme) / +8,4 (plan). Garder 1 %/an = hypothèse prudente [H] à afficher comme telle. Détail : `docs/sources/references-v3.2.md`.
