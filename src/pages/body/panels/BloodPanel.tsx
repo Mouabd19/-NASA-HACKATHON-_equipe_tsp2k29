@@ -1,22 +1,22 @@
 // Panneau gauche — analyses biologiques du jour affiché (ROADMAP §1 « Panneau gauche »).
 // Capillaire hebdomadaire + calcium urinaire quotidien. Aucune valeur n'est inventée :
 // au-delà du dernier prélèvement on affiche le dernier résultat réel, daté.
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import type { CSSProperties, JSX } from 'react';
 import { Line, LineChart, ReferenceArea, ReferenceLine, ResponsiveContainer, XAxis, YAxis } from 'recharts';
-import type { BloodTest, Color } from '../../../types';
+import type { BloodTest, Color, Tag } from '../../../types';
 import { DAY_TODAY } from '../../../mocks/mission';
 import { getAnalyteMeta, getBloodTests } from '../../../sim/load';
-import { Panel, Sparkline, TagBadge, fmt, fmtDay, statusColor, tokens } from '../../../ui';
-import { useBody } from '../store';
+import { Panel, Sparkline, TagBadge, fmt, fmtDay, statusColor, statusVar, tokens } from '../../../ui';
+import { useBody, useRowClip } from '../store';
 import './BloodPanel.css';
 
 /** Recueil urinaire quotidien : cadence lue dans les données de Mouad (`getAnalyteMeta`), calcium urinaire par défaut. */
 const isUrine = (analyte: string): boolean => (getAnalyteMeta(analyte)?.cadence ?? (analyte === 'calcium_urinaire' ? 'quotidien' : 'hebdo')) === 'quotidien';
 /** Analytes mis en avant : anémie spatiale et fuite calcique (os). */
 const WATCHED: Record<string, string> = {
-  hemoglobine: 'ANÉMIE SPATIALE — À SURVEILLER',
-  calcium_urinaire: 'FUITE CALCIQUE (OS) — À SURVEILLER',
+  hemoglobine: 'À surveiller : anémie spatiale',
+  calcium_urinaire: 'À surveiller : fuite calcique (os)',
 };
 
 const LABELS: Record<string, { short: string; digits: number }> = {
@@ -52,7 +52,7 @@ function excess(t: BloodTest): number {
   if (t.value > t.refHigh) return (t.value - t.refHigh) / span;
   return 0;
 }
-/** null = dans l'intervalle (blanc atténué) ; ambre = légèrement hors ; rouge = nettement hors. */
+/** null = dans l'intervalle (aucune décoration) ; ambre = légèrement hors ; rouge = nettement hors. */
 function outOfRange(t: BloodTest): Color | null {
   const e = excess(t);
   return e === 0 ? null : e <= 0.15 ? 'amber' : 'red';
@@ -85,19 +85,22 @@ interface Row {
   daily: boolean;
 }
 
+/** Étiquette de provenance commune à tout un groupe (sinon null : elle reste lisible dans la ligne dépliée). */
+function tagOf(rows: Row[]): Tag | null {
+  const tags = new Set(rows.flatMap((r) => (r.last ? [r.last.tag] : [])));
+  return tags.size === 1 ? [...tags][0] : null;
+}
+
+const refText = (t: BloodTest): string => `${fmt(t.refLow)} – ${fmt(t.refHigh)} ${t.unit}`;
+
+/** Position de la valeur dans l'intervalle de référence (zone centrale de la piste). */
 function RangeBar({ t }: { t: BloodTest }): JSX.Element {
-  // L'intervalle de référence occupe la zone centrale (25 %..75 %) de la piste.
   const span = Math.max(t.refHigh - t.refLow, 1e-9);
   const pos = Math.max(0, Math.min(1, 0.25 + ((t.value - t.refLow) / span) * 0.5));
   const out = outOfRange(t);
-  const style = { '--bp-pos': `${(pos * 100).toFixed(1)}%`, '--bp-mark': out ? statusColor[out] : 'var(--sz-text-dim)' } as CSSProperties;
+  const style = { '--bp-pos': `${(pos * 100).toFixed(1)}%`, '--bp-mark': out ? statusVar[out] : 'var(--sz-text)' } as CSSProperties;
   return (
-    <span
-      className="bp-range"
-      style={style}
-      title={`Référence ${fmt(t.refLow)} – ${fmt(t.refHigh)} ${t.unit}`}
-      data-out={out ?? 'in'}
-    >
+    <span className="bp-range" style={style} title={`Référence ${refText(t)}`}>
       <span className="bp-range__ref" />
       <span className="bp-range__mark" />
     </span>
@@ -106,68 +109,72 @@ function RangeBar({ t }: { t: BloodTest }): JSX.Element {
 
 function Detail({ row, day }: { row: Row; day: number }): JSX.Element {
   const last = row.last as BloodTest;
-  const digits = digitsOf(row.analyte, last.value);
   const data = row.history.map((h) => ({ day: h.day, value: h.value }));
   const values = data.map((d) => d.value);
+  // Domaine : l'intervalle de référence (étendu aux valeurs qui en sortent) plus 30 % de marge de chaque
+  // côté, pour que la bande de référence se lise comme une bande et non comme le fond du tracé.
   const lo = Math.min(last.refLow, ...values);
   const hi = Math.max(last.refHigh, ...values);
-  const pad = (hi - lo) * 0.12 || 1;
+  const pad = (hi - lo) * 0.3 || 1;
   const xMax = Math.max(Math.min(day, DAY_TODAY), last.day, 7);
-  const mono = { fontFamily: tokens.font.mono, fontSize: 10, fill: tokens.color.textDim } as const;
+  const tick = { fontFamily: tokens.font.text, fontSize: tokens.size.xs, fill: tokens.color.textMuted } as const;
   const out = outOfRange(last);
+  const sample = row.daily ? 'recueil' : 'prélèvement';
   return (
-    <div className="bp-detail">
-      <div className="bp-detail__meta">
-        <span>RÉF. {fmt(last.refLow)} – {fmt(last.refHigh)} {last.unit}</span>
-        <span className="bp-detail__n">N = {data.length}</span>
+    <div className="bp-detail" data-row>
+      <div className="bp-detail__line">
+        <span className="bp-detail__key">Référence</span>
+        <span className="bp-detail__val">{refText(last)}</span>
       </div>
       <div className="bp-detail__chart">
-        <ResponsiveContainer width="100%" height={120}>
-          <LineChart data={data} margin={{ top: 6, right: 8, bottom: 0, left: 0 }}>
+        <ResponsiveContainer width="100%" height={112}>
+          <LineChart data={data} margin={{ top: 4, right: 4, bottom: 2, left: 0 }}>
             <XAxis
               dataKey="day"
               type="number"
               domain={[0, xMax]}
-              tick={mono}
+              tick={tick}
               tickFormatter={(d: number) => fmtDay(d)}
               tickCount={5}
               stroke={tokens.color.border}
               tickLine={false}
-              height={16}
+              height={18}
             />
             <YAxis
               type="number"
               domain={[lo - pad, hi + pad]}
-              ticks={[last.refLow, last.refHigh]}
-              tick={mono}
-              tickFormatter={(v: number) => fmt(v)}
+              // Recharts cale le domaine sur les graduations : les deux bornes y figurent, sans libellé.
+              ticks={[lo - pad, last.refLow, last.refHigh, hi + pad]}
+              interval={0}
+              tick={tick}
+              tickFormatter={(v: number) => (v === last.refLow || v === last.refHigh ? fmt(v) : '')}
               stroke={tokens.color.border}
               tickLine={false}
-              width={34}
+              width={36}
             />
-            <ReferenceArea y1={last.refLow} y2={last.refHigh} fill={tokens.color.text} fillOpacity={0.05} stroke="none" />
-            <ReferenceLine y={last.refLow} stroke={tokens.color.borderStrong} strokeDasharray="2 3" />
-            <ReferenceLine y={last.refHigh} stroke={tokens.color.borderStrong} strokeDasharray="2 3" />
-            <ReferenceLine x={Math.min(day, xMax)} stroke={tokens.color.holo} strokeWidth={1} />
+            <ReferenceArea y1={last.refLow} y2={last.refHigh} fill={tokens.color.text} fillOpacity={0.06} stroke="none" />
+            <ReferenceLine y={last.refLow} stroke={tokens.color.border} />
+            <ReferenceLine y={last.refHigh} stroke={tokens.color.border} />
+            {day < xMax ? <ReferenceLine x={day} stroke={tokens.color.borderStrong} strokeWidth={1} /> : null}
             <Line
               dataKey="value"
               type="linear"
               stroke={out ? statusColor[out] : tokens.color.text}
-              strokeWidth={1.25}
-              dot={row.daily ? false : { r: 1.5, fill: tokens.color.bg, strokeWidth: 1 }}
+              strokeWidth={1.5}
+              dot={false}
               activeDot={false}
               isAnimationActive={false}
             />
           </LineChart>
         </ResponsiveContainer>
       </div>
-      <div className="bp-detail__foot">
-        <span>
-          {day > last.day ? 'DERNIER ' : ''}{row.daily ? 'RECUEIL' : 'PRÉLÈV.'} {fmtDay(last.day)} · {fmt(last.value, digits)} {last.unit}
-        </span>
-        <TagBadge tag={last.tag} />
+      {WATCHED[row.analyte] ? (
+        <p className="bp-detail__note">{WATCHED[row.analyte]} <TagBadge tag="H" /></p>
+      ) : null}
+      <div className="bp-detail__line sz-detail">
+        <span className="bp-detail__key">{day > last.day ? `Dernier ${sample}` : sample.charAt(0).toUpperCase() + sample.slice(1)}</span>
+        <span className="bp-detail__val">{fmtDay(last.day)} · {data.length} {data.length > 1 ? 'résultats' : 'résultat'} · <TagBadge tag={last.tag} /></span>
       </div>
-      {WATCHED[row.analyte] ? <div className="bp-detail__note">{WATCHED[row.analyte]} <TagBadge tag="H" /></div> : null}
     </div>
   );
 }
@@ -175,12 +182,17 @@ function Detail({ row, day }: { row: Row; day: number }): JSX.Element {
 function RowView({ row, day, open, onToggle }: { row: Row; day: number; open: boolean; onToggle: () => void }): JSX.Element {
   const { last } = row;
   const label = labelOf(row.analyte);
+  // Ligne ouverte (clic ou paramètre d'URL) : amenée dans la zone visible de la liste.
+  const ref = useRef<HTMLLIElement>(null);
+  useEffect(() => {
+    if (open) ref.current?.scrollIntoView({ block: 'nearest' });
+  }, [open]);
   if (!last) {
     return (
       <li className="bp-item">
-        <div className="bp-row bp-row--empty">
-          <span className="bp-row__name"><span className="bp-row__label">{label}</span></span>
-          <span className="bp-row__empty">DONNÉES INSUFFISANTES</span>
+        <div className="bp-row bp-row--empty" data-row>
+          <span className="bp-row__label">{label}</span>
+          <span className="bp-row__empty">Aucun résultat</span>
         </div>
       </li>
     );
@@ -188,41 +200,35 @@ function RowView({ row, day, open, onToggle }: { row: Row; day: number; open: bo
   const out = outOfRange(last);
   const trend = trendOf(row.history, row.daily);
   const digits = digitsOf(row.analyte, last.value);
-  const watched = row.analyte in WATCHED;
   const spark = row.history.slice(row.daily ? -42 : -14).map((h) => h.value);
   const stale = day > last.day && (row.daily || day > DAY_TODAY);
+  const below = last.value < last.refLow;
+  const trendText = trend.dir > 0 ? 'en hausse' : trend.dir < 0 ? 'en baisse' : 'stable';
+  // Trait coloré seulement si la valeur est hors intervalle ou si la tendance la rapproche d'une borne.
+  const sparkStatus = out ?? trend.color;
   return (
-    <li className="bp-item" data-open={open} data-watched={watched}>
+    <li className="bp-item" data-open={open} ref={ref}>
       <button
         type="button"
         className="bp-row"
+        data-row
         aria-expanded={open}
         onClick={onToggle}
-        title={`${label} — ${fmtDay(last.day)}${stale ? ' (dernier résultat)' : ''}`}
+        title={`${getAnalyteMeta(row.analyte)?.label ?? label} · ${fmtDay(last.day)}${stale ? ' (dernier résultat)' : ''} · référence ${refText(last)}`}
       >
-        <span className="bp-row__name">
-          <span className="bp-row__label">{label}</span>
-          <span className="bp-row__sub sz-detail">
-            <span className="bp-row__unit">{last.unit}</span>
-            <TagBadge tag={last.tag} />
-          </span>
-        </span>
-        <span className="bp-row__value" style={out ? { color: statusColor[out] } : undefined}>
+        <span className="bp-row__label">{label}</span>
+        <span className="bp-row__value" style={out ? { color: statusVar[out] } : undefined}>
+          {out ? <span className="bp-row__flag" role="img" aria-label={below ? 'sous l’intervalle' : 'au-dessus de l’intervalle'}>{below ? '↓' : '↑'}</span> : null}
           {fmt(last.value, digits)}
         </span>
-        <span
-          className="bp-row__trend"
-          style={{ color: trend.color ? statusColor[trend.color] : 'var(--sz-text-dim)' }}
-          aria-label={trend.dir > 0 ? 'en hausse' : trend.dir < 0 ? 'en baisse' : 'stable'}
-        >
-          {trend.dir > 0 ? '▲' : trend.dir < 0 ? '▼' : '·'}
-        </span>
+        <span className="bp-row__unit">{last.unit}</span>
         <RangeBar t={last} />
         <Sparkline
           values={spark}
-          width={46}
-          height={18}
-          color={out ? statusColor[out] : trend.color ? statusColor[trend.color] : 'var(--sz-text-dim)'}
+          width={56}
+          height={16}
+          color={sparkStatus ? statusVar[sparkStatus] : undefined}
+          label={`Tendance : ${trendText}`}
         />
       </button>
       {open ? <Detail row={row} day={day} /> : null}
@@ -257,45 +263,47 @@ export function BloodPanel(): JSX.Element {
   const projected = day > DAY_TODAY;
   const lastAny = Math.max(drawDay ?? -1, urineDay ?? -1);
   const toggle = (a: string): void => setBloodAnalyte(openAnalyte === a ? null : a);
+  // Jamais de demi-ligne en bas de liste ; un bloc déplié (plus haut qu'une ligne) reste visible.
+  const scrollRef = useRef<HTMLDivElement>(null);
+  useRowClip(scrollRef, 40);
 
-  const group = (title: string, rows: Row[]): JSX.Element | null => (rows.length === 0 ? null : (
-    <>
-      <div className="bp-group">
-        <span>{title}</span>
-        <span className="bp-group__n">{rows.length}</span>
-      </div>
+  const group = (name: string, when: number | null, rows: Row[]): JSX.Element | null => (rows.length === 0 ? null : (
+    <section className="bp-group" aria-label={name}>
+      <h3 className="bp-group__head sz-section-title">
+        {name}
+        {when !== null ? <span className="bp-group__day"> · {fmtDay(when)}</span> : null}
+        {tagOf(rows) ? <span className="bp-group__tag"><TagBadge tag={tagOf(rows) as Tag} /></span> : null}
+      </h3>
       <ul className="bp-list">
         {rows.map((r) => (
           <RowView key={r.analyte} row={r} day={day} open={openAnalyte === r.analyte} onToggle={() => toggle(r.analyte)} />
         ))}
       </ul>
-    </>
+    </section>
   ));
 
   return (
-    <Panel
-      sys="BIO-01"
-      title="Analyses"
-      provenance="SIMULÉ"
-      className="bp"
-      right={<span className="bp-day sz-detail">{fmtDay(day)}</span>}
-    >
-      {projected && lastAny >= 0 ? (
-        <div className="bp-banner">
-          DERNIER PRÉLÈVEMENT {fmtDay(drawDay ?? lastAny)} — PAS DE DONNÉE PROJETÉE
-        </div>
-      ) : null}
+    <Panel title="Analyses" provenance="SIMULÉ" className="bp">
       {all.length === 0 || lastAny < 0 ? (
-        <div className="bp-none">DONNÉES INSUFFISANTES</div>
+        <p className="bp-none">Aucun résultat à cette date.</p>
       ) : (
-        <div className="bp-scroll sz-scroll">
-          {group(`Sang · ${drawDay === null ? '—' : fmtDay(drawDay)}`, capillary)}
-          {group(`Urine${urineDay !== null && urineDay !== day ? ` · ${fmtDay(urineDay)}` : ''}`, urine)}
-          <div className="bp-legend sz-detail">
-            <span className="bp-legend__key"><i className="bp-legend__ref" /> INTERVALLE DE RÉF. <TagBadge tag="Publié" /></span>
-            <span className="bp-legend__key">▲▼ TENDANCE 4 SEM.</span>
+        <>
+          {projected ? <p className="bp-banner">Derniers résultats mesurés : {fmtDay(drawDay ?? lastAny)}</p> : null}
+          <div className="bp-cols" aria-hidden="true">
+            <span>Analyte</span>
+            <span className="bp-cols__num">Valeur</span>
+            <span />
+            <span>Réf.</span>
+            <span>Tendance</span>
           </div>
-        </div>
+          <div className="bp-scroll sz-scroll" ref={scrollRef}>
+            {group('Sang', drawDay, capillary)}
+            {group('Urine', urineDay, urine)}
+            <p className="bp-legend sz-detail">
+              Réf. : position dans l’intervalle de référence (<TagBadge tag="Publié" />). Tendance : 14 derniers prélèvements, 42 derniers jours pour l’urine.
+            </p>
+          </div>
+        </>
       )}
     </Panel>
   );

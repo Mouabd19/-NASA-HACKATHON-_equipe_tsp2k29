@@ -1,7 +1,7 @@
-/* Carte de survol — préfixe .hvc. Couleurs : variables --sz-* uniquement. */
+/* Carte de survol / épinglée — préfixe .hvc. Popover standard ; couleurs : variables --sz-* uniquement. */
 
 .hvc {
-  --hvc-w: 280px;
+  --hvc-w: 304px;
   --hvc-status: var(--sz-unknown);
   position: absolute;
   inset: 0;
@@ -10,6 +10,7 @@
   z-index: 6;
 }
 
+/* ── trait carte → organe ── */
 .hvc__wire {
   position: absolute;
   inset: 0;
@@ -17,289 +18,143 @@
   height: 100%;
   max-width: none;
   overflow: visible;
-  animation: hvc-fade 120ms ease-out both;
 }
 .hvc__line {
-  stroke: var(--sz-text);
-  stroke-width: 1;
-  opacity: 0.6;
-  shape-rendering: crispEdges;
-}
-.hvc__tick {
-  stroke: var(--sz-text);
-  stroke-width: 1;
-  shape-rendering: crispEdges;
-}
-.hvc__node {
-  fill: var(--sz-bg);
-  stroke: var(--hvc-status);
+  stroke: var(--sz-border-strong);
   stroke-width: 1;
   shape-rendering: crispEdges;
 }
 .hvc[data-projected='true'] .hvc__line { stroke-dasharray: 3 3; }
+.hvc__node {
+  fill: var(--hvc-status);
+  stroke: var(--sz-bg);
+  stroke-width: 1.5;
+  paint-order: stroke;
+}
 
+/* ── carte ── */
 .hvc__card {
   position: absolute;
   top: 0;
   left: 0;
   width: var(--hvc-w);
 }
-
 .hvc__in {
-  position: relative;
   border: 1px solid var(--sz-border-strong);
-  border-radius: 10px;
+  border-radius: var(--sz-radius);
   /* IMPORTANT : ni fond 100 % opaque, ni animation de transform sur ce bloc. Un calque opaque animé au-dessus du
      canevas WebGL est pris pour un « occulteur » par le compositeur de Chromium : la colonne du canevas qu'il a
-     traversée restait noire (moitié du corps effacée au survol). Reproduit puis vérifié corrigé en rendu logiciel. */
-  background: color-mix(in srgb, var(--sz-bg) 96%, transparent);
+     traversée restait noire (moitié du corps effacée au survol). */
+  background: color-mix(in srgb, var(--sz-panel) 98%, transparent);
+  box-shadow: var(--sz-shadow-pop);
+  font-size: var(--sz-fs-data);
+  line-height: 20px;
+  color: var(--sz-text);
   animation: hvc-fade 120ms ease-out both;
 }
-/* liseré de statut, côté ancre */
-.hvc__in::before {
-  content: '';
-  position: absolute;
-  top: -1px;
-  bottom: -1px;
-  left: -1px;
-  width: 2px;
-  background: var(--hvc-status);
-}
-.hvc__card[data-side='left'] .hvc__in::before { left: auto; right: -1px; }
-.hvc[data-projected='true'] .hvc__in { border-style: dashed; }
-
 @keyframes hvc-fade {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .hvc__in, .hvc__wire { animation: none; }
+  .hvc__in { animation: none; }
 }
 
 /* ── en-tête ── */
-.hvc__head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  height: 24px;
-  padding: 0 10px 0 12px;
-  border-bottom: 1px solid var(--sz-border);
-  font-family: var(--sz-font-text);
-  font-size: 11px;
-  letter-spacing: var(--sz-tracking);
-  text-transform: uppercase;
-  font-weight: 500;
-  color: var(--sz-text-dim);
-  white-space: nowrap;
-}
-.hvc__pin {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  color: var(--sz-text);
-}
-.hvc__pin i {
-  width: 5px;
-  height: 5px;
-  background: var(--sz-text);
-}
-
+.hvc__head { padding: 12px 12px 8px; }
 .hvc__title {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 8px;
-  padding: 9px 10px 8px 12px;
 }
 .hvc__name {
   min-width: 0;
-  font-family: var(--sz-font-text);
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 1.25;
-  letter-spacing: 0.08em;
-  text-transform: none;
-  color: var(--sz-text);
-}
-
-.hvc__recap {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0 10px 0 12px;
-  height: 20px;
-  border-top: 1px solid var(--sz-border);
-  border-bottom: 1px solid var(--sz-border);
-  background: var(--sz-panel);
-}
-.hvc__recap-k,
-.hvc__k {
-  font-family: var(--sz-font-text);
-  font-size: 11px;
-  letter-spacing: var(--sz-tracking);
-  text-transform: uppercase;
-  font-weight: 500;
-  color: var(--sz-text-dim);
-  white-space: nowrap;
-}
-.hvc[data-projected='true'] .hvc__recap-k { color: var(--sz-holo); }
-
-/* ── métriques ── */
-.hvc__metrics { padding: 2px 0; }
-.hvc__m {
-  --hvc-m: var(--sz-unknown);
-  padding: 4px 10px 4px 12px;
-}
-.hvc__m + .hvc__m { border-top: 1px solid var(--sz-border); }
-.hvc__m-top {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 10px;
-}
-.hvc__m-label {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-family: var(--sz-font-text);
-  font-size: 12px;
-  color: var(--sz-text);
-}
-.hvc__m-val {
-  flex: none;
-  font-family: var(--sz-font-mono);
-  font-size: 14px;
-  font-variant-numeric: tabular-nums;
-  color: var(--hvc-m);
-  white-space: nowrap;
-}
-.hvc__m-unit {
-  margin-left: 4px;
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  color: var(--sz-text-dim);
-}
-.hvc__m-sub {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 3px;
-  min-height: 16px;
-  flex-wrap: wrap;
-  row-gap: 2px;
-}
-.hvc__m-sub .sz-prov { margin-left: auto; }
-.hvc__m-th {
-  font-family: var(--sz-font-text);
-  font-size: 11px;
-  letter-spacing: 0;
-  color: var(--sz-text-dim);
-  white-space: nowrap;
-}
-
-.hvc__none {
-  padding: 10px 10px 10px 12px;
-  font-family: var(--sz-font-text);
-  font-size: 11px;
-  line-height: 1.6;
-  letter-spacing: 0;
-  color: var(--sz-text-dim);
-}
-
-/* ── tendance ── */
-.hvc__trend {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 7px 10px 7px 12px;
-  border-top: 1px solid var(--sz-border);
-}
-.hvc__trend-txt {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 0;
-}
-.hvc__trend-v {
-  font-family: var(--sz-font-mono);
-  font-size: 13px;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.04em;
-  color: var(--sz-text);
-  white-space: nowrap;
-}
-.hvc__trend-v[data-none='true'] { font-size: 11px; color: var(--sz-unknown); letter-spacing: var(--sz-tracking); }
-.hvc__trend-of {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-family: var(--sz-font-text);
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  font-weight: 500;
-  color: var(--sz-text-dim);
-}
-
-/* ── écart d'âge ── */
-.hvc__age {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 7px 10px 7px 12px;
-  border-top: 1px solid var(--sz-border);
-}
-.hvc__age-v {
-  font-family: var(--sz-font-mono);
-  font-size: 14px;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.04em;
-  color: var(--sz-text);
-  white-space: nowrap;
-}
-.hvc__age-v--none { color: var(--sz-unknown); }
-.hvc__age-v--none small {
-  font-size: 11px;
-  letter-spacing: var(--sz-tracking);
-}
-
-.hvc__foot {
-  padding: 5px 10px 5px 12px;
-  border-top: 1px solid var(--sz-border);
-  font-family: var(--sz-font-text);
-  font-size: 11px;
-  letter-spacing: 0;
-  color: var(--sz-text-dim);
-  background: var(--sz-panel);
-}
-
-.hvc__trend-plot {
-  display: flex;
-  flex: none;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
-}
-.hvc__trend-noise {
-  font-family: var(--sz-font-text);
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  color: var(--sz-text-dim);
-  white-space: nowrap;
-}
-
-/* Os : la source n'est PAS le scanner */
-.hvc__src {
   margin: 0;
-  padding: 5px 10px 5px 12px;
-  border-bottom: 1px dashed var(--sz-border-strong);
-  font-family: var(--sz-font-text);
-  font-size: 11px;
-  line-height: 1.5;
-  letter-spacing: 0;
+  font-size: var(--sz-fs-body);
+  line-height: 20px;
+  font-weight: 600;
   color: var(--sz-text);
+}
+.hvc__sub {
+  margin: 2px 0 0;
+  font-size: var(--sz-fs-small);
+  line-height: 16px;
+  color: var(--sz-text-muted);
+}
+/* mode Détails : calque à gauche, puce de provenance (une seule pour la carte) à droite */
+.hvc__sub--row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+/* ── lignes « libellé + valeur » (métriques, tendance, écart d'âge) ── */
+.hvc__metrics,
+.hvc__extra {
+  margin: 0;
+  padding: 8px 12px;
+  list-style: none;
+  border-top: 1px solid var(--sz-border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.hvc__m { min-width: 0; }
+.hvc__row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.hvc__row--mid { align-items: center; }
+.hvc__k {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--sz-text-dim);
+}
+.hvc__v {
+  flex: none;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+  color: var(--sz-text);
+}
+/* couleur seulement hors seuil */
+.hvc__v[data-color='amber'] { color: var(--sz-amber); }
+.hvc__v[data-color='red'] { color: var(--sz-red); }
+.hvc__v--none {
+  font-weight: 400;
+  color: var(--sz-text-muted);
+}
+/* projection : sortie de modèle sur un jour futur, en retrait */
+.hvc__v--proj {
+  font-weight: 500;
+  color: var(--sz-text-dim);
+}
+.hvc__note {
+  font-size: var(--sz-fs-small);
+  line-height: 16px;
+  font-variant-numeric: tabular-nums;
+  color: var(--sz-text-muted);
+}
+.hvc__none {
+  margin: 0;
+  padding: 8px 12px;
+  border-top: 1px solid var(--sz-border);
+  color: var(--sz-text-dim);
+}
+
+/* ── action (carte épinglée) ── */
+.hvc__foot {
+  display: flex;
+  justify-content: flex-end;
+  padding: 4px 12px 12px;
+  pointer-events: auto;
 }
