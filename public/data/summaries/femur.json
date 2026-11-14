@@ -1,0 +1,50 @@
+{
+ "organId": "femur",
+ "generatedBy": "IA-sol",
+ "model": "Claude (Anthropic), rédigé hors ligne",
+ "generatedAt": "2026-11-14",
+ "reviewed": false,
+ "note": "Synthèse IA rédigée au sol à partir des seuls chiffres du simulateur (src/sim, données de Mouad). À valider par le CMO. N'est jamais utilisée pour décider d'une alerte.",
+ "days": [
+  {
+   "day": 0,
+   "adherence": 0,
+   "text": "Bilan de référence (J0) : densité du col du fémur à 100 % du pré-vol. Pour le col du fémur, le seuil NASA est de 90 % [V1 4027]. Statut nominal."
+  },
+  {
+   "day": 30,
+   "adherence": 0,
+   "text": "Col du fémur à 99,25 % du pré-vol, soit une perte de 0,75 %. La tendance est de −0,17 point par semaine. Loin du seuil de 90 % [V1 4027] : statut nominal."
+  },
+  {
+   "day": 60,
+   "adherence": 0,
+   "text": "Col du fémur à 98,55 % du pré-vol (perte de 1,45 %). La tendance est de −0,16 point par semaine. Marge confortable sur le seuil de 90 %."
+  },
+  {
+   "day": 94,
+   "adherence": 0,
+   "text": "Col du fémur à 97,81 % du pré-vol (perte de 2,19 %), statut nominal. La pente est régulière, un peu plus rapide qu'à la hanche. Les séances d'ARED en charge protègent aussi cette zone."
+  },
+  {
+   "day": 210,
+   "adherence": 0,
+   "text": "Projection à Sol 0 (J210) au rythme actuel : 95,70 % du pré-vol, soit une perte de 4,30 %. Statut nominal, au-dessus du seuil de 90 % [V1 4027]. Projection du modèle, pas une mesure."
+  },
+  {
+   "day": 210,
+   "adherence": 1,
+   "text": "Projection à Sol 0 (J210) avec le plan suivi : 97,11 % du pré-vol, soit une perte de 2,89 %. Statut nominal. Projection du modèle, pas une mesure."
+  },
+  {
+   "day": 860,
+   "adherence": 0,
+   "text": "Projection au retour (J860) au rythme actuel : 90,43 % du pré-vol, soit une perte de 9,57 %. C'est tout juste au-dessus du seuil NASA de 90 % pour le col [V1 4027] : statut à surveiller. Projection du modèle, pas une mesure."
+  },
+  {
+   "day": 860,
+   "adherence": 1,
+   "text": "Projection au retour (J860) avec le plan suivi : 95,36 % du pré-vol, soit une perte de 4,64 %. Statut nominal, avec plus de 5 points de marge sur le seuil. Projection du modèle, pas une mesure."
+  }
+ ]
+}

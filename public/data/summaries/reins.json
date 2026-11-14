@@ -1,0 +1,50 @@
+{
+ "organId": "reins",
+ "generatedBy": "IA-sol",
+ "model": "Claude (Anthropic), rédigé hors ligne",
+ "generatedAt": "2026-11-14",
+ "reviewed": false,
+ "note": "Synthèse IA rédigée au sol à partir des seuls chiffres du simulateur (src/sim, données de Mouad). À valider par le CMO. N'est jamais utilisée pour décider d'une alerte.",
+ "days": [
+  {
+   "day": 0,
+   "adherence": 0,
+   "text": "Bilan de référence (J0) : aucun calcul à l'échographie. Calcium urinaire de 164 mg/24 h (référence 100–300). Statut nominal."
+  },
+  {
+   "day": 30,
+   "adherence": 0,
+   "text": "Calcium urinaire à 247 mg/24 h, en nette hausse depuis J0 : le calcium libéré par les os passe dans l'urine. Aucun calcul détecté. Hydratation renforcée conseillée."
+  },
+  {
+   "day": 60,
+   "adherence": 0,
+   "text": "Calcium urinaire à 255 mg/24 h : la hausse se stabilise. Aucun calcul à l'échographie. Statut nominal."
+  },
+  {
+   "day": 94,
+   "adherence": 0,
+   "text": "Calcium urinaire à 269 mg/24 h, aucun calcul détecté : statut nominal. Le risque de calcul reste à surveiller tant que l'os perd du calcium. Conduite proposée : au moins 2,5 L d'eau par jour et sel réduit."
+  },
+  {
+   "day": 210,
+   "adherence": 0,
+   "text": "Projection à Sol 0 (J210) : calcium urinaire stable autour de 270 mg/24 h, sous la limite de 300. Statut nominal. Le nombre de calculs n'est pas projeté par le modèle."
+  },
+  {
+   "day": 210,
+   "adherence": 1,
+   "text": "Projection à Sol 0 (J210) avec le plan suivi : calcium urinaire stable autour de 270 mg/24 h, sous la limite de 300. Statut nominal. Le nombre de calculs n'est pas projeté par le modèle."
+  },
+  {
+   "day": 860,
+   "adherence": 0,
+   "text": "Projection au retour (J860) au rythme actuel : calcium urinaire stable autour de 270 mg/24 h. Statut nominal. Le nombre de calculs n'est pas projeté par le modèle."
+  },
+  {
+   "day": 860,
+   "adherence": 1,
+   "text": "Projection au retour (J860) avec le plan suivi : calcium urinaire stable autour de 270 mg/24 h. Statut nominal. Le nombre de calculs n'est pas projeté par le modèle."
+  }
+ ]
+}
