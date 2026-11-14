@@ -29,6 +29,25 @@ export interface Meal {
   tag: Tag;                      // valeurs nutritionnelles = ordres de grandeur [H]
 }
 
+export interface TestItem {
+  id: string;
+  title: string;
+  durationMin: number;
+  targets: OrganId[];
+  detail: string;
+  tag: Tag;
+  sourceId?: string;
+}
+
+const TESTS: TestItem[] = [
+  { id: 'test-pvt', title: 'Test de vigilance PVT (3 min)', durationMin: 3, targets: ['cerveau'], detail: 'Appuyer dès qu\'un signal apparaît à l\'écran : mesure les réflexes et la vigilance, sensibles au manque de sommeil.', tag: 'NASA' },
+  { id: 'test-vision', title: 'Vision + échographie du nerf optique', durationMin: 15, targets: ['yeux'], detail: 'Contrôle de l\'acuité visuelle et mesure échographique du diamètre de la gaine du nerf optique (risque SANS).', tag: 'Publié', sourceId: 'fall2022-onsd' },
+  { id: 'test-prelevement', title: 'Micro-prélèvement capillaire', durationMin: 5, targets: ['sang'], detail: 'Goutte de sang au doigt (hebdomadaire) : hémoglobine, inflammation, marqueurs du PhenoAge.', tag: 'H' },
+  { id: 'test-urine', title: 'Analyse d\'urine du matin', durationMin: 2, targets: ['reins', 'hanche'], detail: 'Calcium et marqueur de résorption osseuse : suivi quotidien de l\'os et du risque de calculs rénaux.', tag: 'Publié', sourceId: 'buckey-urine' },
+  { id: 'test-echo-reins', title: 'Échographie des reins', durationMin: 10, targets: ['reins'], detail: 'Recherche de calculs quand le calcium urinaire monte.', tag: 'Publié', sourceId: 'okada2022' },
+  { id: 'test-checkin', title: 'Check-in du matin', durationMin: 1, targets: ['cerveau'], detail: 'Humeur, fatigue, douleur, sommeil ressenti : deux taps par ligne.', tag: 'H' },
+];
+
 const EXERCISES: Exercise[] = [
   { id: 'ared-squat', title: 'ARED — squat lourd', device: 'ARED', durationMin: 20, intensity: 'charge lourde (force)', sets: '4 × 6', targets: ['hanche', 'femur', 'cuisse', 'rachis'], detail: 'Squat sur l\'appareil de résistance de l\'ISS. La charge mécanique sur la hanche est la contre-mesure principale contre la perte osseuse.', tag: 'NASA', sourceId: 'ochmo-exercise' },
   { id: 'ared-souleve-de-terre', title: 'ARED — soulevé de terre', device: 'ARED', durationMin: 15, intensity: 'charge lourde (force)', sets: '4 × 6', targets: ['hanche', 'rachis', 'paravertebraux', 'cuisse'], detail: 'Charge la colonne et la hanche, renforce les muscles du dos.', tag: 'NASA', sourceId: 'ochmo-exercise' },
@@ -71,6 +90,7 @@ const WHY: Record<string, string> = {
 };
 
 const exerciseById = new Map(EXERCISES.map((e) => [e.id, e]));
+const testById = new Map(TESTS.map((t) => [t.id, t]));
 const mealById = new Map(MEALS.map((m) => [m.id, m]));
 
 /** Exercice par id (« ared-squat »). Id inconnu → null. */
@@ -83,12 +103,24 @@ export function getMeal(id: string): Meal | null {
   return mealById.get(id) ?? null;
 }
 
-/** Phrase « Pourquoi ? » pour une règle (id de norme « V1 4027 » ou règle « calcium-urinaire »). */
+/** Ajout non cassant : test de la to-do par id (« test-pvt »). Id inconnu → null. */
+export function getTest(id: string): TestItem | null {
+  return testById.get(id) ?? null;
+}
+
+/** Phrase « Pourquoi ? » pour une règle (id de norme « V1 4027 » ou règle « calcium-urinaire »).
+ *  Contrat : renvoie TOUJOURS une chaîne (signature §7). Règle inconnue → phrase de repli ; utiliser hasWhy() pour le savoir. */
 export function whyText(rule: string): string {
   return WHY[rule] ?? 'Règle non documentée : voir la page Raisonnement pour la chaîne complète.';
 }
 
+/** Ajout non cassant : vrai si la règle a un texte « Pourquoi ? » documenté. */
+export function hasWhy(rule: string): boolean {
+  return rule in WHY;
+}
+
 /** Ajouts non cassants : listes complètes (pour les mocks et le planificateur). */
+export const listTests = (): TestItem[] => TESTS;
 export const listExercises = (): Exercise[] => EXERCISES;
 export const listMeals = (): Meal[] => MEALS;
 export const listWhyRules = (): string[] => Object.keys(WHY);

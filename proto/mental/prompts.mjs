@@ -88,7 +88,10 @@ Règles :
 2. Une seule mauvaise journée ne suffit pas : regarde l'historique des 7 derniers jours. Un incident ponctuel expliqué (panne, mauvaise nouvelle) est normal.
 3. Chaque hypothèse doit citer ses preuves (faits des observateurs ou chiffres).
 4. Tu ne poses JAMAIS de diagnostic. Tu signales un « schéma à regarder ».
-5. Niveau : "rien" | "a_surveiller" (signal faible ou récent) | "proposer_un_echange" (signal persistant sur plusieurs jours ET cohérent entre plusieurs sources).
+5. Niveau, selon ces seuils précis :
+   - "rien" : la journée reste dans la variation normale de Haddad (écarts de moins de 20 %), OU un seul indicateur s'écarte, OU l'écart est isolé sur une seule journée, OU il s'explique par un incident (panne, mauvaise nouvelle). Une journée normale est « rien » : ne choisis JAMAIS « a_surveiller » par simple précaution.
+   - "a_surveiller" : au moins DEUX indicateurs s'écartent de 20 % ou plus de la référence, sur au moins 2 des 3 derniers jours, sans explication ponctuelle.
+   - "proposer_un_echange" : le signal dure depuis au moins 4 jours ET il est cohérent entre plusieurs sources (comportement observé + humeur déclarée ou biomarqueurs).
 6. Cite aussi les points rassurants.
 7. Sois CONCIS : 3 hypothèses maximum, 3 preuves maximum par hypothèse, 3 écarts et 3 points rassurants maximum, phrases courtes.
 8. N'utilise pas de guillemets droits (") à l'intérieur des textes : utilise « » pour citer.

@@ -1,5 +1,5 @@
 # Status — Steve (D)
-_Mis à jour : sam. 16:35_
+_Mis à jour : sam. 16:42_
 
 ## Livré (poussé sur `feature/steve-models` ; PR vers `develop` dès que Walid aura créé la branche)
 - **Modèles 3D** (jalon 17:00, en avance) : `public/models/{squelette,muscles,organes,cardio,nerveux}.glb` (170–260 k triangles chacun, 1,2–2,9 Mo, ~1 M triangles si tout est affiché) + `manifest.json` (ancres des ⚠) + `CREDITS.md`.
@@ -7,11 +7,11 @@ _Mis à jour : sam. 16:35_
 - **Normes NASA Rev C** : `public/data/nasa/standards.json` (13 entrées : V1 4001/4002/4003/4027/4030/3006/5003/4011/6001/6004/6010/7001 + glossaire bisphosphonates), citations relues dans le PDF, `verified` + `partialQuote`. `src/content/standards.ts` → `getStandard(id)` (signature §7 ; id inconnu → `verified: false`).
 - **Délai radio** : `scripts/fetch-horizons.ts` (vraie API JPL Horizons) + `src/content/horizons.ts` → `lightTimeMin(date)` (test : **11,016 min le 2026-11-14** ✓) + ajouts non cassants `isConjunction(date)` (conjonction 2028-03-08 → 2028-04-03) et `horizonsTag`. Mission J0 = 2026-08-12 → J860.
 - **Sources v3.2** : `public/data/nasa/references.json` (15 sources vérifiées) + synthèse `docs/sources/references-v3.2.md` (anémie, calcium urinaire, bisphosphonates, nerf optique, échographie/os, centrifugeuse AGBRESA, Oh 2023, vitesses de vieillissement terrestre).
-- **Bibliothèque de contenus** (jalon dim. 02:00, en avance) : `src/content/library.ts` → `getExercise(id)`, `getMeal(id)`, `whyText(rule)` (signatures §7) + ajouts `listExercises()`, `listMeals()`, `listWhyRules()`. 9 exercices sourcés NASA (OCHMO), 6 menus [H], 16 textes « Pourquoi ? ».
+- **Bibliothèque de contenus** (jalon dim. 02:00, en avance) : `src/content/library.ts` → `getExercise(id)`, `getMeal(id)`, `whyText(rule)` (signatures §7) + ajouts `listExercises()`, `listMeals()`, `listWhyRules()`. 9 exercices sourcés NASA (OCHMO), 6 menus [H], 6 tests (`getTest`, ajout), 16 textes « Pourquoi ? ». Contrat `whyText` : renvoie TOUJOURS une chaîne (repli si règle inconnue) ; `hasWhy(rule)` (ajout) pour savoir si elle est documentée.
 - **PhenoAge** : coefficients vérifiés + vecteurs de test → `docs/sources/phenoage.md`.
 
 ## En cours
-- **Prototype santé mentale (§11)**, dossiers `proto/mental/` + `public/data/mental/` : générateur de journées simulées (glissement à J75 + témoin) ✅, 3 observateurs + 3 psychologues + dossier pour le psy humain ✅ (testé à blanc). Moteur : **API Claude** (Haiku 5.5 utilisé, Sonnet 5.5 par défaut) si `ANTHROPIC_API_KEY` est défini, sinon Ollama local (testé, trop lent). **Passage complet en cours** sur le Mac de Steve (5 jours clés × drift + témoin). Page de visualisation pour la capture : `node proto/mental/build-viewer.mjs` → `proto/mental/viewer.html` (autonome, hors ligne). Biomarqueurs provisoires dans le proto : à brancher sur ceux de Mouad quand `public/data/sim/` existe.
+- **Prototype santé mentale (§11)**, dossiers `proto/mental/` + `public/data/mental/` : générateur de journées simulées (glissement à J75 + témoin) ✅, 3 observateurs + 3 psychologues + dossier pour le psy humain ✅ (testé à blanc). Moteur : **API Claude** (Haiku 5.5 utilisé, Sonnet 5.5 par défaut) si `ANTHROPIC_API_KEY` est défini, sinon Ollama local (testé, trop lent). 1er passage complet fait (Haiku 5.5) : le trouble monte à « proposer un échange » à J85 et J94, le témoin n'a aucune alerte forte, mais « à surveiller » partout (seuils trop prudents). Seuils précisés → 2e passage en cours. Page de visualisation pour la capture : `node proto/mental/build-viewer.mjs` → `proto/mental/viewer.html` (autonome, hors ligne). Biomarqueurs provisoires dans le proto : à brancher sur ceux de Mouad quand `public/data/sim/` existe.
 - Jalons 23:00 et 02:00 **livrés**. Suite : script des synthèses IA par organe (06:00), dès que `public/data/sim/` de Mouad est poussé.
 
 ## Bloqué / risques
@@ -21,6 +21,7 @@ _Mis à jour : sam. 16:35_
 - Constante finale de PhenoAge : 0.090165 (Aging 2018) vs 0.09165 (correction PLOS Med 2019). Recommandation : 0.090165.
 
 ## Demandes aux autres
+- @Ahmed : ✅ tests ajoutés : `test-pvt`, `test-vision`, `test-prelevement`, `test-urine`, `test-echo-reins`, `test-checkin` via `getTest(id)` (ajout). `whyText` ne renvoie jamais null : phrase de repli + `hasWhy(rule)`.
 - @Ahmed : **ids de la bibliothèque** (`src/content/library.ts`) à utiliser dans tes mocks de to-do et par Mouad dans `planDay` :
   - exercices : `ared-squat`, `ared-souleve-de-terre`, `ared-mollets`, `velo-intervalles`, `velo-continu`, `tapis-intervalles`, `tapis-continu`, `mobilite-dos`, `respiration` ;
   - repas : `menu-calcium-vitd`, `menu-proteines`, `menu-anti-calculs`, `menu-standard`, `menu-recuperation`, `menu-diner-leger` ;

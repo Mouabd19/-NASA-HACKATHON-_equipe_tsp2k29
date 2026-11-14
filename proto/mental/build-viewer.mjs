@@ -80,13 +80,13 @@ const lvl=n=>['rien','a_surveiller','proposer_un_echange'].indexOf(n);
 
 // Chiffres clés
 const drift=DATA.drift||[], ctrl=DATA.control||[];
-const det=drift.find(d=>d.day>=ONSET&&lvl(d.niveau)>=1);
-const ctrlEsc=ctrl.filter(d=>d.day>=ONSET&&lvl(d.niveau)>=2).length;
-const ctrlCalm=ctrl.filter(d=>d.day>=ONSET&&lvl(d.niveau)===0).length, ctrlAfter=ctrl.filter(d=>d.day>=ONSET).length;
+const det=drift.find(d=>d.day>=ONSET&&lvl(d.niveau)>=2);
+const ctrlEsc=ctrl.filter(d=>lvl(d.niveau)>=2).length;
+const ctrlCalm=ctrl.filter(d=>lvl(d.niveau)===0).length;
 document.getElementById('hero').innerHTML=
- '<div class="kpi"><b>'+(det?'+'+(det.day-ONSET)+' j':'—')+'</b><span>délai de repérage après le début du trouble (J'+ONSET+')</span></div>'+
- '<div class="kpi"><b>'+ctrlEsc+'</b><span>alerte forte chez l\\'astronaute témoin, en bonne santé</span></div>'+
- '<div class="kpi"><b>'+ctrlCalm+'/'+ctrlAfter+'</b><span>jours calmes chez le témoin après J'+ONSET+'</span></div>';
+ '<div class="kpi"><b>'+(det?'+'+(det.day-ONSET)+' j':'—')+'</b><span>avant de proposer un échange, après le début du trouble (J'+ONSET+')</span></div>'+
+ '<div class="kpi"><b>'+ctrlEsc+'</b><span>proposition d\'échange chez l\'astronaute témoin, en bonne santé</span></div>'+
+ '<div class="kpi"><b>'+ctrlCalm+'/'+ctrl.length+'</b><span>jours « rien à signaler » chez le témoin</span></div>';
 
 // Frise
 const N={drift:'Trouble débutant à J'+ONSET,control:'Témoin en bonne santé'};
