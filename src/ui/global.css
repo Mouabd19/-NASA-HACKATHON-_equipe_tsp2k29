@@ -433,10 +433,20 @@ html[data-details='on'] .sz-essential-only { display: none !important; }
 /* Pages qui ne gèrent pas encore leur défilement (War Room, Raisonnement) */
 .sz-main__scroll { height: 100%; }
 
-@media (max-width: 1180px) {
-  .sz-topbar__opt { display: none; }
+/* Bandeau trop étroit pour tout tenir sur une ligne : il passe sur deux lignes (rien n'est masqué). */
+@media (max-width: 1320px) {
+  .sz-topbar {
+    display: flex;
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 44px;
+  }
+  .sz-topbar__left, .sz-nav, .sz-topbar__right { height: 44px; }
+  .sz-nav { margin: 0 auto; }
+  .sz-topbar__right { margin-left: auto; }
 }
 @media (max-width: 760px) {
+  .sz-topbar__opt { display: none; }
   .sz-nav__tab { padding: 0 8px; }
 }
 
