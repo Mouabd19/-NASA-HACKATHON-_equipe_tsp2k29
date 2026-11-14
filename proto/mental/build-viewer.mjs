@@ -1,78 +1,112 @@
-// SOL ZÉRO — Prototype santé mentale : page de visualisation autonome (pour la capture de la slide Vision).
-//   node proto/mental/build-viewer.mjs   →   proto/mental/viewer.html (ouvrir dans un navigateur, aucun serveur)
-// Les données sont embarquées dans la page : aucun appel réseau.
+// SOL ZÉRO — Prototype santé mentale : page de visualisation autonome (capture pour la slide Vision).
+//   node proto/mental/build-viewer.mjs   →   proto/mental/viewer.html (s'ouvre dans un navigateur, sans serveur ni réseau)
+// DA sobre (Apple / SpaceX) : un chiffre clé, une frise, le détail au clic.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const SRC = path.join(HERE, '..', '..', 'public', 'data', 'mental');
+const SRC = process.env.MENTAL_DATA ?? path.join(HERE, '..', '..', 'public', 'data', 'mental');
+const ONSET = 75;
 const data = {};
 for (const sc of ['drift', 'control']) {
   const dir = path.join(SRC, sc);
   if (!fs.existsSync(dir)) continue;
-  data[sc] = fs.readdirSync(dir).filter((f) => /^J\d+\.json$/.test(f)).map((f) => JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'))).sort((a, b) => a.day - b.day);
+  data[sc] = fs.readdirSync(dir).filter((f) => /^J\d+\.json$/.test(f)).map((f) => JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'))).sort((a, b) => a.day - b.day)
+    .map((x) => ({ // on n'embarque que l'essentiel
+      day: x.day,
+      niveau: x.dossierPourLePsyHumain.niveau,
+      psy: x.psychologists.map((p) => ({ label: (l => l[0].toUpperCase() + l.slice(1))(p.label.replace('Psychologue — ', '')), niveau: p.output?.niveau, schema: p.output?.hypotheses?.[0]?.schema ?? null, note: p.output?.noteAuPsy ?? '' })),
+      faits: x.observers.flatMap((o) => (o.output?.faits ?? []).slice(0, 3).map((f) => ({ h: f.heure, t: f.fait, q: f.citation }))).slice(0, 6),
+    }));
 }
 
 const html = `<!DOCTYPE html>
-<html lang="fr"><head><meta charset="utf-8"><title>SOL ZÉRO — Suivi psychologique (prototype)</title>
+<html lang="fr"><head><meta charset="utf-8"><title>SOL ZÉRO — Suivi psychologique</title>
 <style>
-:root{--bg:#050607;--panel:rgba(255,255,255,0.03);--line:rgba(255,255,255,0.12);--txt:#E8E8E6;--mut:#8A8F98;--ok:#30D158;--amb:#FF9F0A;--red:#FF453A;--unk:#636366;--mono:"JetBrains Mono",ui-monospace,Menlo,monospace}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font:14px/1.5 Inter,system-ui,sans-serif;padding:28px}
-.lbl{font-family:var(--mono);text-transform:uppercase;letter-spacing:.12em;font-size:11px;color:var(--mut)}
-h1{font-family:var(--mono);font-size:18px;letter-spacing:.14em;text-transform:uppercase;margin:0 0 4px}
-.warn{display:inline-block;border:1px solid var(--amb);color:var(--amb);font-family:var(--mono);font-size:11px;letter-spacing:.1em;padding:3px 8px;margin:8px 0 22px;text-transform:uppercase}
-.panel{background:var(--panel);border:1px solid var(--line);padding:16px;margin-bottom:16px}
-.chain{display:flex;gap:10px;align-items:stretch;margin-bottom:18px;flex-wrap:wrap}
-.chain .step{flex:1;min-width:150px;border:1px solid var(--line);background:var(--panel);padding:10px}
-.chain .arrow{align-self:center;color:var(--mut);font-family:var(--mono)}
-.step b{display:block;font-size:13px;margin-top:4px}.step.human{border-color:var(--txt)}
-table{border-collapse:collapse;width:100%}td,th{border-bottom:1px solid var(--line);padding:8px 6px;text-align:center}
-th{font-family:var(--mono);font-weight:400;font-size:11px;letter-spacing:.1em;color:var(--mut)}td:first-child,th:first-child{text-align:left}
-.cell{display:inline-block;min-width:150px;padding:6px 8px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;border:1px solid;cursor:pointer}
-.l0{color:var(--ok);border-color:var(--ok)}.l1{color:var(--amb);border-color:var(--amb)}.l2{color:var(--red);border-color:var(--red);background:repeating-linear-gradient(135deg,rgba(255,69,58,.15) 0 6px,transparent 6px 12px)}.lx{color:var(--unk);border-color:var(--unk)}
-.votes{display:block;font-size:10px;color:var(--mut);margin-top:3px;letter-spacing:.04em}
-.onset{color:var(--amb);font-family:var(--mono);font-size:11px}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.grid .panel{margin:0}
-.panel h3{margin:0 0 8px;font-size:13px}.panel ul{margin:6px 0 0;padding-left:18px}.panel li{margin:3px 0}
-.quote{color:var(--mut);font-style:italic}.note{border-left:2px solid var(--txt);padding-left:10px;margin-top:8px}
-.foot{color:var(--mut);font-size:12px;margin-top:18px}
+:root{--bg:#000;--txt:#F5F5F7;--mut:#86868B;--line:rgba(255,255,255,.1);--ok:#30D158;--amb:#FF9F0A;--red:#FF453A}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--txt);font:15px/1.5 -apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;padding:72px 96px;max-width:1280px;margin:auto}
+.eyebrow{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--mut)}
+h1{font:600 44px/1.1 -apple-system,"SF Pro Display",Inter,sans-serif;letter-spacing:-.02em;margin:14px 0 10px}
+.sub{color:var(--mut);font-size:17px;max-width:640px}
+.hero{display:flex;gap:80px;margin:64px 0 56px}
+.kpi b{display:block;font:600 64px/1 -apple-system,"SF Pro Display",Inter,sans-serif;letter-spacing:-.03em}
+.kpi span{color:var(--mut);font-size:14px}
+.tl{border-top:1px solid var(--line);padding:28px 0}
+.row{display:grid;grid-template-columns:200px 1fr;align-items:center;padding:14px 0}
+.row .name{color:var(--mut);font-size:14px}
+.dots{position:relative;display:flex;justify-content:space-between}
+.d{width:44px;text-align:center;cursor:pointer}
+.d i{display:block;width:16px;height:16px;border-radius:50%;margin:0 auto 8px;background:var(--c);box-shadow:0 0 0 0 transparent;transition:.2s}
+.d.sel i{box-shadow:0 0 0 6px rgba(255,255,255,.12)}
+.d small{color:var(--mut);font-size:12px}
+.onset{position:absolute;top:-10px;bottom:-34px;border-left:1px dashed rgba(255,255,255,.25)}
+.onset em{position:absolute;top:-22px;left:6px;font-style:normal;font-size:12px;color:var(--mut);white-space:nowrap}
+.legend{display:flex;gap:24px;color:var(--mut);font-size:13px;margin-top:22px}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px;background:var(--c)}
+.detail{border-top:1px solid var(--line);padding-top:36px;margin-top:8px}
+.detail h2{font:600 24px/1.2 -apple-system,"SF Pro Display",Inter,sans-serif;letter-spacing:-.01em;margin-bottom:28px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:40px}
+.card .lv{font-size:13px;color:var(--c);margin:6px 0 12px}
+.card h3{font-size:15px;font-weight:600}
+.card p{color:var(--mut);font-size:14px}
+.card .sch{color:var(--txt);font-size:17px;margin-bottom:6px}
+details{margin-top:32px;color:var(--mut);font-size:14px}summary{cursor:pointer;color:var(--txt)}
+details li{margin:6px 0 6px 18px}
+.human{margin-top:40px;display:flex;align-items:center;gap:14px;color:var(--mut);font-size:14px}
+.human b{color:var(--txt);font-weight:600}
+.foot{margin-top:72px;color:var(--mut);font-size:12px}
 </style></head><body>
-<div class="lbl">SOL ZÉRO · SYS-07 / SANTÉ MENTALE · VISION</div>
-<h1>Suivi psychologique assisté — Cdt Haddad</h1>
-<span class="warn">Prototype — données SIMULÉES — signal IA, pas un diagnostic</span>
+<div class="eyebrow">SOL ZÉRO · Vision · Prototype · <span style="color:var(--amb)">Simulé</span></div>
+<h1>Repérer tôt.<br>Laisser l'humain décider.</h1>
+<p class="sub">Trois observateurs, trois psychologues IA, un psychologue humain. Un modèle qui tourne à bord, sans Internet.</p>
 
-<div class="chain">
- <div class="step"><span class="lbl">Entrée</span><b>Lunettes (journée simulée)</b>scènes, paroles, capteurs</div><div class="arrow">→</div>
- <div class="step"><span class="lbl">3 observateurs</span><b>Actions · Paroles · Corps</b>faits, sans interprétation</div><div class="arrow">→</div>
- <div class="step"><span class="lbl">3 psychologues IA</span><b>Physico-psychique · Anxiété · Lien social</b>vs référence personnelle</div><div class="arrow">→</div>
- <div class="step"><span class="lbl">Dossier</span><b>Niveau = 2 psychologues sur 3</b>règle fixe, auditable</div><div class="arrow">→</div>
- <div class="step human"><span class="lbl">Décision</span><b>Psychologue HUMAIN au sol</b>l'IA ne décide pas</div>
-</div>
+<div class="hero" id="hero"></div>
 
-<div class="panel"><div class="lbl" style="margin-bottom:8px">Niveau du dossier par jour — glissement injecté à partir de J75 (scénario « avec glissement »), témoin sans glissement · cliquer une case</div>
-<table id="tbl"></table></div>
-<div id="detail"></div>
-<div class="foot">Modèle local (Ollama) : traitement à bord, aucune donnée brute envoyée vers la Terre. Données 100 % simulées, aucune personne réelle. Garde-fous : consentement de tout l'équipage avant le départ, mode privé, jamais utilisé pour la sélection ni pour un retrait de mission.</div>
+<div class="tl" id="tl"></div>
+<div class="legend"><span style="--c:var(--ok)"><i></i>Rien à signaler</span><span style="--c:var(--amb)"><i></i>À surveiller</span><span style="--c:var(--red)"><i></i>Proposer un échange</span></div>
+
+<div class="detail" id="detail"></div>
+
+<div class="foot">Données entièrement simulées · aucune personne réelle · signal à regarder, jamais un diagnostic</div>
 <script>
-const DATA=${JSON.stringify(data)};
-const LV={rien:['l0','Rien à signaler'],a_surveiller:['l1','À surveiller'],proposer_un_echange:['l2','Proposer un échange']};
-const lv=n=>LV[n]||['lx',n||'—'];
-const days=[...new Set(Object.values(DATA).flat().map(d=>d.day))].sort((a,b)=>a-b);
-const NAMES={drift:'Avec glissement (dès J75)',control:'Témoin (sans glissement)'};
-let h='<tr><th>Scénario</th>'+days.map(d=>'<th>J'+d+(d>=75?' <span class="onset">●</span>':'')+'</th>').join('')+'</tr>';
-for(const sc of Object.keys(DATA)){h+='<tr><td>'+NAMES[sc]+'</td>'+days.map(d=>{const x=DATA[sc].find(y=>y.day===d);if(!x)return'<td>—</td>';const [c,t]=lv(x.dossierPourLePsyHumain.niveau);return '<td><span class="cell '+c+'" onclick="show(\\''+sc+'\\','+d+')">'+t+'<span class="votes">'+x.dossierPourLePsyHumain.votes.map(v=>lv(v.niveau)[1]).join(' · ')+'</span></span></td>'}).join('')+'</tr>'}
-document.getElementById('tbl').innerHTML=h;
+const DATA=${JSON.stringify(data)}, ONSET=${ONSET};
+const C={rien:'var(--ok)',a_surveiller:'var(--amb)',proposer_un_echange:'var(--red)'};
+const T={rien:'Rien à signaler',a_surveiller:'À surveiller',proposer_un_echange:'Proposer un échange'};
 const esc=s=>String(s??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
-function show(sc,d){const x=DATA[sc].find(y=>y.day===d);let o='<div class="lbl" style="margin:6px 0 10px">Dossier transmis au psychologue humain — '+NAMES[sc]+' — J'+d+' ('+x.date+')</div><div class="grid">';
-for(const p of x.psychologists){const r=p.output||{};const [c,t]=lv(r.niveau);o+='<div class="panel"><h3>'+esc(p.label)+'</h3><span class="cell '+c+'">'+t+' · confiance '+esc(r.confiance)+'</span>';
- o+='<ul>'+(r.hypotheses||[]).map(hy=>'<li><b>'+esc(hy.schema)+'</b><ul>'+(hy.preuves||[]).slice(0,3).map(pr=>'<li>'+esc(pr)+'</li>').join('')+'</ul></li>').join('')+'</ul>';
- if((r.pointsRassurants||[]).length)o+='<div class="lbl" style="margin-top:8px">Points rassurants</div><ul>'+r.pointsRassurants.slice(0,3).map(pr=>'<li>'+esc(pr)+'</li>').join('')+'</ul>';
- o+='<div class="note">'+esc(r.noteAuPsy)+'</div></div>'}
-o+='</div><div class="grid" style="margin-top:12px">';
-for(const ob of x.observers){const r=ob.output||{};o+='<div class="panel"><h3>'+esc(ob.label)+'</h3><ul>'+(r.faits||[]).slice(0,6).map(f=>'<li>'+esc(f.heure)+' — '+esc(f.fait)+(f.citation?' <span class="quote">« '+esc(f.citation)+' »</span>':'')+'</li>').join('')+'</ul></div>'}
-document.getElementById('detail').innerHTML=o+'</div>'}
-const last=(DATA.drift||[]).at(-1);if(last)show('drift',last.day);
+const days=[...new Set(Object.values(DATA).flat().map(d=>d.day))].sort((a,b)=>a-b);
+const lvl=n=>['rien','a_surveiller','proposer_un_echange'].indexOf(n);
+
+// Chiffres clés
+const drift=DATA.drift||[], ctrl=DATA.control||[];
+const det=drift.find(d=>d.day>=ONSET&&lvl(d.niveau)>=1);
+const ctrlEsc=ctrl.filter(d=>d.day>=ONSET&&lvl(d.niveau)>=2).length;
+const ctrlCalm=ctrl.filter(d=>d.day>=ONSET&&lvl(d.niveau)===0).length, ctrlAfter=ctrl.filter(d=>d.day>=ONSET).length;
+document.getElementById('hero').innerHTML=
+ '<div class="kpi"><b>'+(det?'+'+(det.day-ONSET)+' j':'—')+'</b><span>délai de repérage après le début du trouble (J'+ONSET+')</span></div>'+
+ '<div class="kpi"><b>'+ctrlEsc+'</b><span>alerte forte chez l\\'astronaute témoin, en bonne santé</span></div>'+
+ '<div class="kpi"><b>'+ctrlCalm+'/'+ctrlAfter+'</b><span>jours calmes chez le témoin après J'+ONSET+'</span></div>';
+
+// Frise
+const N={drift:'Trouble débutant à J'+ONSET,control:'Témoin en bonne santé'};
+let h='';
+for(const sc of Object.keys(DATA)){
+ h+='<div class="row"><div class="name">'+N[sc]+'</div><div class="dots">';
+ if(sc==='drift'){const i=days.findIndex(d=>d>=ONSET);if(i>0)h+='<div class="onset" style="left:calc('+((i-.5)/(days.length-1)*100)+'% )"><em>début J'+ONSET+'</em></div>'}
+ for(const d of days){const x=DATA[sc].find(y=>y.day===d);h+='<div class="d" data-k="'+sc+d+'" onclick="show(\\''+sc+'\\','+d+')" style="--c:'+(x?C[x.niveau]:'#333')+'"><i></i><small>J'+d+'</small></div>'}
+ h+='</div></div>'}
+document.getElementById('tl').innerHTML=h;
+
+function show(sc,d){
+ document.querySelectorAll('.d').forEach(e=>e.classList.toggle('sel',e.dataset.k===sc+d));
+ const x=DATA[sc].find(y=>y.day===d); if(!x)return;
+ let o='<div class="eyebrow">Dossier du jour · '+N[sc]+'</div><h2>J'+d+' — <span style="color:'+C[x.niveau]+'">'+T[x.niveau]+'</span></h2><div class="cards">';
+ for(const p of x.psy){o+='<div class="card" style="--c:'+(C[p.niveau]||'var(--mut)')+'"><h3>'+esc(p.label)+'</h3><div class="lv">● '+(T[p.niveau]||'—')+'</div>'+(p.schema?'<div class="sch">'+esc(p.schema)+'</div>':'')+'<p>'+esc(p.note.length>170?p.note.slice(0,167)+'…':p.note)+'</p></div>'}
+ o+='</div><details><summary>Faits relevés par les observateurs</summary><ul>'+x.faits.map(f=>'<li>'+esc(f.h)+' · '+esc(f.t)+(f.q?' — « '+esc(f.q)+' »':'')+'</li>').join('')+'</ul></details>';
+ o+='<div class="human"><b>Psychologue humain au sol</b> reçoit ce dossier et décide. L\\'IA ne décide pas.</div>';
+ document.getElementById('detail').innerHTML=o}
+const last=drift.at(-1); if(last)show('drift',last.day);
 </script></body></html>`;
 fs.writeFileSync(path.join(HERE, 'viewer.html'), html);
 console.log('viewer.html écrit —', Object.entries(data).map(([k, v]) => `${k}: ${v.length} jours`).join(', '));
