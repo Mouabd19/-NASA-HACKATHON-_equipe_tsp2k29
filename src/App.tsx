@@ -11,7 +11,7 @@ import { WarRoom } from './pages/warroom/WarRoom';
 import { TagBadge, dayToDate, fmtDay } from './ui';
 import { syncDetailsAttr, usePrefs } from './ui/prefs';
 
-// da_dragon : navigation en barre d'onglets façon iPhone (en bas), icônes dessinées façon SF Symbols.
+// da_dragon : navigation dans une colonne latérale de bureau (façon macOS), icônes au trait.
 const ICON: Record<string, JSX.Element> = {
   body: (
     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="4.6" r="2.3" /><path d="M5 8.6c2.3.7 4.6 1 7 1s4.7-.3 7-1M12 9.6v5.2M12 14.8l-3 6.4M12 14.8l3 6.4" /></svg>
@@ -92,18 +92,16 @@ function TopBar(): JSX.Element {
   );
 }
 
-/** Barre d'onglets du bas (façon iPhone) : mêmes pages, mêmes liens. */
-function TabBar(): JSX.Element {
+/** Colonne latérale (façon macOS) : mêmes pages, mêmes liens. */
+function SideNav(): JSX.Element {
   return (
-    <nav className="dr-tabbar" aria-label="Pages">
-      <div className="dr-tabbar__glass">
-        {TABS.map((t) => (
-          <NavLink key={t.to} to={t.to} className="dr-tab">
-            <span className="dr-tab__icon">{ICON[t.icon]}</span>
-            <span className="dr-tab__label">{t.label}</span>
-          </NavLink>
-        ))}
-      </div>
+    <nav className="dr-side" aria-label="Pages">
+      {TABS.map((t) => (
+        <NavLink key={t.to} to={t.to} className="dr-side__item">
+          <span className="dr-side__icon">{ICON[t.icon]}</span>
+          <span className="dr-side__label">{t.label}</span>
+        </NavLink>
+      ))}
     </nav>
   );
 }
@@ -160,7 +158,7 @@ export function App(): JSX.Element {
             <Route path="*" element={<Navigate to="/body" replace />} />
           </Routes>
         </main>
-        <TabBar />
+        <SideNav />
       </div>
     </BrowserRouter>
   );

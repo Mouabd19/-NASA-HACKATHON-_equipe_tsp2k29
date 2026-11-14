@@ -42,12 +42,12 @@ class SceneBoundary extends Component<{ children: ReactNode }, { error: string |
     return (
       <div className="body-noscene" role="status">
         <div className="body-noscene__box">
-          <Label>3D INDISPONIBLE</Label>
+          <Label>3D indisponible</Label>
           <p className="body-noscene__text">
             Le rendu WebGL n'a pas pu démarrer. Les panneaux, les alertes et la timeline restent exacts.
           </p>
           <Label dim className="body-noscene__err">{this.state.error.slice(0, 160)}</Label>
-          <button type="button" className="sz-btn" onClick={() => this.setState({ error: null })}>RÉESSAYER</button>
+          <button type="button" className="sz-btn" onClick={() => this.setState({ error: null })}>Réessayer</button>
         </div>
       </div>
     );
@@ -92,43 +92,43 @@ function SceneChrome(): JSX.Element {
     <div className="body-chrome" data-projected={projected}>
       <div className="body-tag sz-detail">
         <div className="body-tag__row">
-          <Label>{projected ? 'CORPS PROJETÉ' : 'SCAN DU JOUR'}</Label>
+          <Label>{projected ? 'Corps projeté' : 'Scan du jour'}</Label>
           <Label dim>{fmtDay(day)}</Label>
           <ProvenanceBadge value={projected ? 'H' : 'SIMULÉ'} />
         </div>
         <div className="body-tag__row">
-          <Label dim>{projected ? 'MODÈLES OS / MUSCLE / VO₂' : 'ÉCHO / CENTRIFUGEUSE 0,1 g'}</Label>
+          <Label dim>{projected ? 'Modèles os / muscle / VO₂' : 'Écho / centrifugeuse 0,1 g'}</Label>
           <TagBadge tag="H" />
         </div>
         {/* ROADMAP §1 : aucune métrique osseuse n'est attribuée au scanner — dit dans le cadre même de la scène */}
         {bones ? (
           <div className="body-tag__row body-tag__row--note">
-            <Label>OS : ESTIMÉ PAR MODÈLE</Label>
+            <Label>Os : estimé par modèle</Label>
             <TagBadge tag="H" />
-            <Label dim>— PAS PAR LE SCANNER</Label>
+            <Label dim>, pas par le scanner</Label>
           </div>
         ) : null}
         {exposition ? (
           <div className="body-tag__row body-tag__row--note">
-            <Label>EXPOSITION</Label>
+            <Label>Exposition</Label>
             <span className="body-heat" aria-hidden="true">
               {steps.map((i) => <i key={i} style={{ opacity: 0.1 + (0.9 * i) / Math.max(1, steps.length - 1) }} />)}
             </span>
-            <Label dim>− → + · CARTE ILLUSTRATIVE</Label>
+            <Label dim>− → + · carte illustrative</Label>
             <TagBadge tag="H" />
           </div>
         ) : null}
         {exposition && doseDay && doseCum ? (
           <div className="body-tag__row body-tag__row--note">
-            <Label dim>DOSE DU JOUR</Label>
+            <Label dim>Dose du jour</Label>
             <Label>{fmt(doseDay.value, 2)} <span className="body-unit">mSv/j</span></Label>
-            <Label dim>PRÉVU {fmt(doseDay.ref?.high ?? NaN, 2)}</Label>
+            <Label dim>prévu {fmt(doseDay.ref?.high ?? NaN, 2)}</Label>
             <TagBadge tag="Publié" />
           </div>
         ) : null}
         {exposition && doseDay && doseCum ? (
           <div className="body-tag__row body-tag__row--note">
-            <Label dim>DOSE CUMULÉE</Label>
+            <Label dim>Dose cumulée</Label>
             <Label>{fmt(doseCum.value, 0)} <span className="body-unit">mSv</span></Label>
             <TagBadge tag={doseCum.tag} />
           </div>
@@ -146,15 +146,15 @@ function SceneChrome(): JSX.Element {
 
       <ScanLabel />
       <div className="body-help sz-detail" title="Glisser : orbite · Molette : zoom · Clic : épingler · Double-clic : fenêtre organe · Espace : lecture · ← → : jour">
-        <Label dim>GLISSER : ORBITE · MOLETTE : ZOOM · CLIC : ÉPINGLER · 2× CLIC : FENÊTRE · ESPACE : LECTURE</Label>
+        <Label dim>Glisser : orbite · molette : zoom · clic : épingler · double-clic : fenêtre · espace : lecture</Label>
       </div>
       {anatomySource() === 'z-anatomy' ? (
         <div className="body-credit sz-detail" title="Z-Anatomy — CC BY-SA 4.0 · BodyParts3D — CC BY-SA 2.1 JP · rein et oreille interne CC BY-NC · usage hackathon non commercial (public/models/CREDITS.md)">
-          <Label dim>MODÈLES Z-ANATOMY — CC BY-SA 4.0</Label>
+          <Label dim>Modèles Z-Anatomy — CC BY-SA 4.0</Label>
         </div>
       ) : (
         <div className="body-credit sz-detail" title="Corps de secours procédural de l'équipe (stylisé, pas un atlas). Les modèles Z-Anatomy (CC BY-SA 4.0) le remplaceront.">
-          <Label dim>CORPS PROCÉDURAL DE SECOURS</Label>
+          <Label dim>Corps procédural de secours</Label>
         </div>
       )}
     </div>

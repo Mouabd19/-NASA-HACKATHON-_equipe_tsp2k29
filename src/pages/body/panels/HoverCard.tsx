@@ -225,7 +225,7 @@ export function HoverCard(): JSX.Element | null {
             <span className="hvc__sys">
               {meta ? `${meta.sys} / ${meta.label}` : String(organ.layer).toUpperCase()}
             </span>
-            {pinned ? <span className="hvc__pin"><i aria-hidden="true" />ÉPINGLÉ</span> : null}
+            {pinned ? <span className="hvc__pin"><i aria-hidden="true" />Épinglé</span> : null}
           </header>
 
           <div className="hvc__title">
@@ -235,7 +235,7 @@ export function HoverCard(): JSX.Element | null {
 
           <div className="hvc__recap sz-detail">
             <span className="hvc__recap-k">
-              {projected ? 'PROJECTION' : 'RÉCAP DU JOUR'} — {fmtDay(day)}
+              {projected ? 'Projection' : 'Récap du jour'} — {fmtDay(day)}
             </span>
             {projected ? <TagBadge tag="H" /> : null}
           </div>
@@ -275,9 +275,9 @@ export function HoverCard(): JSX.Element | null {
           {trend ? (
             <div className="hvc__trend">
               <div className="hvc__trend-txt">
-                <span className="hvc__k">TENDANCE 7 J</span>
+                <span className="hvc__k">Tendance 7 j</span>
                 <span className="hvc__trend-v" data-none={trend.value === null}>
-                  {trend.value === null ? 'INDISPONIBLE' : `${signed(trend.value, 2)} %/SEM`}
+                  {trend.value === null ? 'Indisponible' : `${signed(trend.value, 2)} %/sem`}
                 </span>
                 <span className="hvc__trend-of" title={trend.metric.label}>
                   {trend.metric.label}
@@ -293,18 +293,18 @@ export function HoverCard(): JSX.Element | null {
                 dashedFrom={trend.dashedFrom}
               />
                 <span className="hvc__trend-noise sz-detail">
-                  {trend.band ? `BANDE = BRUIT ±${fmt(trend.metric.noise ?? 0)} ${trend.metric.unit}` : 'BRUIT NON RENSEIGNÉ'}
+                  {trend.band ? `Bande = bruit ±${fmt(trend.metric.noise ?? 0)} ${trend.metric.unit}` : 'Bruit non renseigné'}
                 </span>
               </div>
             </div>
           ) : null}
 
           <div className="hvc__age">
-            <span className="hvc__k">ÉCART D’ÂGE ESTIMÉ <TagBadge tag="H" /></span>
+            <span className="hvc__k">Écart d’âge estimé <TagBadge tag="H" /></span>
             {gapKnown ? (
               <span className="hvc__age-v">{signed(gap, 1)} ANS</span>
             ) : (
-              <span className="hvc__age-v hvc__age-v--none">— <small>NON MODÉLISÉ</small></span>
+              <span className="hvc__age-v hvc__age-v--none">— <small>Non modélisé</small></span>
             )}
           </div>
 

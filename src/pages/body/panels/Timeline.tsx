@@ -359,7 +359,7 @@ export function Timeline(): JSX.Element {
       <div className="tl__left">
         <div className="tl__cap sz-detail">
           <span className="sz-label sz-dim">SYS-T</span>
-          <span className="sz-label">CHRONOLOGIE</span>
+          <span className="sz-label">Chronologie</span>
           <span className="tl__fill" />
           <ProvenanceBadge value="SIMULÉ" />
         </div>
@@ -431,7 +431,7 @@ export function Timeline(): JSX.Element {
       {/* ── Commandes de droite : adhérence + métrique d'impact ── */}
       <div className="tl__right">
         <div className="tl__cap">
-          <span className="sz-label sz-dim">PROJECTION</span>
+          <span className="sz-label sz-dim">Projection</span>
           <span className="tl__fill" />
           <ProvenanceBadge value="H" />
           <PanelClose className="tl__close" />

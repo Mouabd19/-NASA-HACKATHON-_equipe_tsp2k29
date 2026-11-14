@@ -94,7 +94,7 @@ export function Spo2Widget(): JSX.Element {
   return (
     <Panel sys="WATCH-01" title="SpO₂" provenance={provenance} className="sw">
       {!cur ? (
-        <div className="sw-none">DONNÉES INSUFFISANTES</div>
+        <div className="sw-none">Données insuffisantes</div>
       ) : (
         <>
           <div className="sw-head">
@@ -105,15 +105,15 @@ export function Spo2Widget(): JSX.Element {
             <div className="sw-side">
               <div className="sw-side__line">
                 <span className="sw-status" style={{ background: statusColor[color] }} />
-                <span>{stale ? `DERNIÈRE MESURE ${fmtDay(cur.day)}` : `MESURE ${fmtDay(cur.day)}`}</span>
+                <span>{stale ? `Dernière mesure ${fmtDay(cur.day)}` : `Mesure ${fmtDay(cur.day)}`}</span>
               </div>
               <div className="sw-side__line sw-side__line--dim">
                 <span>7 J</span>
                 <span className="sw-side__val">{fmt(wMin, 0)} – {fmt(wMax, 0)} %</span>
               </div>
               <div className="sw-side__line sw-side__line--dim sz-detail">
-                <span>O₂ SANG</span>
-                {spo2.real ? <span className="sw-side__val">MONTRE</span> : <TagBadge tag="Persona" />}
+                <span>O₂ sang</span>
+                {spo2.real ? <span className="sw-side__val">Montre</span> : <TagBadge tag="Persona" />}
               </div>
             </div>
           </div>
@@ -162,17 +162,17 @@ export function Spo2Widget(): JSX.Element {
             <span>- - REPÈRE {SPO2_REF} % <TagBadge tag="H" /></span>
           </div>
           <div className="sw-caption sw-caption--base sz-detail">
-            <span>RÉF. PERSO 30 J</span>
+            <span>Réf. perso 30 j</span>
             <span>
               {base.n > 0 && Number.isFinite(base.mean)
                 ? <>{fmt(base.mean, 1)} ± {fmt(base.sd, 1)} % </>
-                : <>INDISPONIBLE </>}
+                : <>Indisponible </>}
               {spo2.real ? null : <TagBadge tag="Persona" />}
             </span>
           </div>
           <div className="sw-caption sw-caption--vit sz-detail">
-            <span>CONSTANTES MONTRE</span>
-            <span>{spo2.real ? 'EXPORT RÉEL' : <TagBadge tag="Persona" />}</span>
+            <span>Constantes montre</span>
+            <span>{spo2.real ? 'Export réel' : <TagBadge tag="Persona" />}</span>
           </div>
 
           <div className="sw-vitals">

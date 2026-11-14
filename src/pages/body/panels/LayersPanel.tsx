@@ -39,9 +39,9 @@ function headline(o: OrganState): Metric | undefined {
 
 /** Ce que chaque calque dit de sa source ou de ses limites (honnêteté : rien n'est sous-entendu). */
 const LAYER_NOTE: Partial<Record<LayerId, JSX.Element>> = {
-  squelette: <><b>ESTIMÉ</b> : MODÈLE + BILAN AU SOL + MARQUEURS URINAIRES [H] — PAS LE SCANNER</>,
-  nerveux: <>BÊTA : NERF OPTIQUE + VIGILANCE (PVT). SOMMEIL ET HUMEUR : VOIR MONTRE ET CHECK-IN</>,
-  exposition: <>BÊTA : DOSE GLOBALE SEULEMENT. CARTE DU CORPS = RÉPARTITION ILLUSTRATIVE [H]</>,
+  squelette: <><b>Estimé</b> par le modèle, le bilan au sol et les marqueurs urinaires [H], pas par le scanner</>,
+  nerveux: <>Bêta : nerf optique et vigilance (PVT). Sommeil et humeur : voir la montre et le check-in.</>,
+  exposition: <>Bêta : dose globale seulement. La carte du corps est une répartition illustrative [H].</>,
 };
 
 /** Libellé court des bascules (2 rangées de 3). */
@@ -126,7 +126,7 @@ export function LayersPanel(): JSX.Element {
         })}
       </div>
       <ul className="lyr__list sz-scroll">
-        {activeCount === 0 ? <li className="lyr__empty lyr__empty--all">AUCUN CALQUE ACTIF — ENVELOPPE DU CORPS SEULE</li> : null}
+        {activeCount === 0 ? <li className="lyr__empty lyr__empty--all">Aucun calque actif — enveloppe du corps seule</li> : null}
         {LAYER_ORDER.filter((l) => layers[l]).map((l) => {
           const meta = LAYER_META[l];
           const organs = byLayer.get(l) ?? [];
@@ -182,7 +182,7 @@ export function LayersPanel(): JSX.Element {
                           <StatusDot color={o.status} />
                           <span className="lyr__oname">{shortName(o.name)}</span>
                           {unmodeled || !m ? (
-                            <span className="lyr__none">NON MODÉLISÉ</span>
+                            <span className="lyr__none">Non modélisé</span>
                           ) : (
                             <>
                               <span className="lyr__val">
@@ -202,13 +202,13 @@ export function LayersPanel(): JSX.Element {
                       <div className="lyr__organ lyr__organ--static" data-status="grey" title="Aucune mesure ni modèle : statut inconnu, jamais vert par défaut">
                         <StatusDot color="grey" />
                         <span className="lyr__oname">{organs.filter((o) => o.metrics.length === 0).map((o) => shortName(o.name)).join(' · ')}</span>
-                        <span className="lyr__none">NON MODÉLISÉ</span>
+                        <span className="lyr__none">Non modélisé</span>
                       </div>
                     </li>
                   ) : null}
                 </ul>
               ) : null}
-              {active && organs.length === 0 ? <div className="lyr__empty">AUCUNE DONNÉE CE JOUR</div> : null}
+              {active && organs.length === 0 ? <div className="lyr__empty">Aucune donnée ce jour</div> : null}
             </li>
           );
         })}

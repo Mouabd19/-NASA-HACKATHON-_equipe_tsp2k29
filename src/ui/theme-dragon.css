@@ -1,9 +1,12 @@
-/* da_dragon — DA alternative façon iPhone / apple.com, teintée bleu nuit. Chargée APRÈS global.css.
+/* da_dragon — DA alternative : écran de bord d'astronaute (codes Orion / Dragon) modernisé à la façon d'Apple.
+   Repères familiers : cadres de panneaux nets, couleurs d'alerte standard (vert nominal, ambre « caution »,
+   rouge « warning »), titres courts en capitales, données en colonnes, navigation fixe sur le côté.
+   Modernité : typographie, coins adoucis, sobriété. Lisibilité d'abord : aucun effet de flou décoratif.
    Habillage seulement : chaque bouton, panneau, raccourci et double-clic garde son comportement. */
 
 :root {
-  --sz-radius: 20px;
-  --sz-radius-sm: 12px;
+  --sz-radius: 10px;
+  --sz-radius-sm: 7px;
   --dr-on-status: #08101E;
   --dr-glass: rgba(22, 32, 52, 0.72);
   --dr-glass-border: rgba(190, 210, 255, 0.14);
@@ -16,7 +19,7 @@
 body { font-size: 13px; letter-spacing: -0.005em; }
 .sz-shell { background: var(--sz-bg); }
 
-/* Plus de capitales espacées : casse de phrase, comme sur iOS */
+/* Phrases en casse normale (lecture rapide) ; seuls les titres de panneaux restent en capitales courtes (codes cockpit) */
 .sz-label, .sz-panel__head, .sz-panel__title, .sz-wordmark, .sz-prov, .sz-tag, .sz-chip, .sz-btn {
   text-transform: none !important;
   letter-spacing: 0 !important;
@@ -30,26 +33,26 @@ body { font-size: 13px; letter-spacing: -0.005em; }
   flex-wrap: wrap;
   justify-content: space-between;
   height: auto !important;
-  min-height: 52px;
+  min-height: 48px;
   padding: 0 20px;
-  border-bottom: 0;
+  border-bottom: 1px solid var(--dr-sep);
   background: transparent;
 }
-.sz-topbar__left, .sz-topbar__right { min-height: 52px; gap: 12px; }
+.sz-topbar__left, .sz-topbar__right { min-height: 48px; gap: 12px; }
 .sz-topbar__right { margin-left: auto; flex-wrap: wrap; }
 .sz-topbar__rule { display: inline-block; width: 4px; height: 4px; border-radius: 50%; background: var(--sz-text-dim); opacity: 0.5; }
-.sz-wordmark { font-size: 17px; font-weight: 600; letter-spacing: -0.02em !important; gap: 10px; }
-.sz-wordmark__glyph { width: 22px; height: 22px; padding: 5px; border-radius: 7px; background: var(--sz-holo); color: #fff; }
+.sz-wordmark { font-size: 15px; font-weight: 600; letter-spacing: -0.02em !important; gap: 10px; }
+.sz-wordmark__glyph { width: 22px; height: 22px; padding: 5px; border-radius: 6px; background: var(--sz-holo); color: #fff; }
 .sz-topbar__day { font-family: var(--sz-font-mono); font-weight: 600; }
 .sz-topbar__sim {
   border: 0;
   background: var(--dr-fill);
-  border-radius: 999px;
-  padding: 0 10px;
-  height: 24px;
+  border-radius: 6px;
+  padding: 0 8px;
+  height: 22px;
 }
 
-/* Bouton « Détails » = interrupteur iOS */
+/* Bouton « Détails » = interrupteur (état visible d'un coup d'œil) */
 .sz-topbar__details {
   display: inline-flex;
   align-items: center;
@@ -63,8 +66,8 @@ body { font-size: 13px; letter-spacing: -0.005em; }
 }
 .dr-switch {
   position: relative;
-  width: 38px;
-  height: 23px;
+  width: 30px;
+  height: 18px;
   border-radius: 999px;
   background: var(--dr-fill-strong);
   transition: background-color 250ms var(--dr-ease);
@@ -73,65 +76,66 @@ body { font-size: 13px; letter-spacing: -0.005em; }
   position: absolute;
   top: 2px;
   left: 2px;
-  width: 19px;
-  height: 19px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   background: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   transition: transform 250ms var(--dr-ease);
 }
-.sz-topbar__details[aria-pressed='true'] .dr-switch { background: var(--sz-ok); }
-.sz-topbar__details[aria-pressed='true'] .dr-switch__knob { transform: translateX(15px); }
+.sz-topbar__details[aria-pressed='true'] .dr-switch { background: var(--sz-holo); }
+.sz-topbar__details[aria-pressed='true'] .dr-switch__knob { transform: translateX(12px); }
 
-/* ── Barre d'onglets du bas, verre dépoli flottant (iPhone) ── */
-.dr-tabbar {
-  flex: none;
-  display: flex;
-  justify-content: center;
-  padding: 8px 16px 12px;
+/* ── Navigation fixe sur le côté, comme les touches latérales d'un écran de bord ── */
+.sz-shell {
+  display: grid !important;
+  grid-template-columns: 76px minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
 }
-.dr-tabbar__glass {
+.sz-topbar { grid-column: 2; grid-row: 1; }
+.sz-main { grid-column: 2; grid-row: 2; }
+.dr-side {
+  grid-column: 1;
+  grid-row: 1 / span 2;
   display: flex;
+  flex-direction: column;
+  align-items: stretch;
   gap: 4px;
-  padding: 5px;
-  border-radius: 999px;
-  background: var(--dr-glass);
-  border: 1px solid var(--dr-glass-border);
-  backdrop-filter: blur(24px) saturate(160%);
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+  padding: 64px 8px 12px;
+  border-right: 1px solid var(--dr-sep);
+  background: rgba(14, 22, 38, 0.6);
 }
-.dr-tab {
+.dr-side__item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 2px;
-  min-width: 92px;
-  height: 50px;
-  padding: 0 16px;
-  border-radius: 999px;
+  gap: 4px;
+  padding: 10px 4px 8px;
+  border-radius: 8px;
   color: var(--sz-text-dim);
   font-size: 11px;
   font-weight: 500;
-  transition: color 200ms var(--dr-ease), background-color 200ms var(--dr-ease);
+  text-align: center;
+  transition: color 150ms var(--dr-ease), background-color 150ms var(--dr-ease);
 }
-.dr-tab:hover { color: var(--sz-text); }
-.dr-tab.active { color: var(--sz-holo); background: var(--dr-fill); }
-.dr-tab__icon svg {
-  width: 24px;
-  height: 24px;
+.dr-side__item:hover { color: var(--sz-text); background: var(--dr-fill); }
+.dr-side__item.active { color: var(--sz-text); background: var(--dr-fill-strong); }
+.dr-side__item.active .dr-side__icon { color: var(--sz-holo); }
+.dr-side__icon svg {
+  width: 22px;
+  height: 22px;
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.7;
+  stroke-width: 1.6;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.dr-tab:focus-visible { outline: 2px solid var(--sz-holo); outline-offset: 0; }
+.dr-side__item:focus-visible { outline: 2px solid var(--sz-holo); outline-offset: -2px; }
 
-/* ── Panneaux : cartes iOS pleines, grands coins, aucun bord dur ── */
+/* ── Panneaux : cadres nets (repère cockpit), fond plein, coins adoucis ── */
 .sz-panel {
   background: var(--sz-panel);
-  border: 0;
+  border: 1px solid var(--sz-border);
   box-shadow: none;
 }
 .sz-panel__head {
@@ -140,28 +144,28 @@ body { font-size: 13px; letter-spacing: -0.005em; }
   font-size: 15px;
   font-weight: 600;
 }
-.sz-panel__title { color: var(--sz-text); font-weight: 600; }
+.sz-panel__title { color: var(--sz-text); font-weight: 600; font-size: 12px; text-transform: uppercase !important; letter-spacing: 0.06em !important; }
 .sz-panel__sys, .sz-panel__sep { font-weight: 400; color: var(--sz-text-dim); }
 .sz-panel__body { padding: 2px 16px 14px; }
 
-/* Bouton fermer = rond gris avec croix (iOS) */
+/* Bouton fermer : croix discrète */
 .sz-close {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: var(--dr-fill);
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: transparent;
   opacity: 1;
   color: var(--sz-text-dim);
 }
 .sz-close:hover, .sz-close:focus-visible { background: var(--dr-fill-strong); color: var(--sz-text); }
 .sz-close svg { width: 9px; height: 9px; stroke-width: 2; }
 
-/* ── Boutons : remplissage teinté, pilules ── */
+/* ── Boutons : remplissage teinté, coins adoucis ── */
 .sz-btn {
-  height: 30px;
-  padding: 0 14px;
+  height: 28px;
+  padding: 0 12px;
   border: 0 !important;
-  border-radius: 999px;
+  border-radius: 7px;
   background: var(--dr-fill);
   color: var(--sz-text);
   font-size: 13px;
@@ -169,13 +173,13 @@ body { font-size: 13px; letter-spacing: -0.005em; }
   transition: background-color 150ms var(--dr-ease), transform 120ms var(--dr-ease);
 }
 .sz-btn:hover { background: var(--dr-fill-strong); }
-.sz-btn:active { transform: scale(0.97); }
+.sz-btn:active { background: var(--dr-fill-strong); }
 .sz-btn[aria-pressed='true'], .sz-btn.is-active, .sz-btn[data-active='true'] {
   background: var(--sz-holo);
   color: #fff;
 }
 
-/* Puces : texte simple + symbole SF, sans cadre */
+/* Puces : symbole géométrique + texte, sans cadre */
 .sz-chip {
   height: auto;
   padding: 0;
@@ -198,20 +202,19 @@ body { font-size: 13px; letter-spacing: -0.005em; }
   font-weight: 500;
 }
 
-/* ── Plaques d'organes : bulles iOS (même clic, même double-clic) ── */
+/* ── Plaques d'organes : étiquettes pleines et lisibles (même clic, même double-clic) ── */
 .w3d-plate__hex, .w3d-glyph { display: none !important; }
 .w3d-plate__inner {
   gap: 10px;
-  padding: 0 14px 0 8px;
-  border-radius: 999px;
-  background: var(--dr-glass);
-  border: 1px solid var(--dr-glass-border);
-  backdrop-filter: blur(18px) saturate(160%);
-  box-shadow: 0 8px 24px -10px rgba(0, 0, 0, 0.7);
+  padding: 0 12px 0 10px;
+  border-radius: 9px;
+  background: rgba(13, 21, 36, 0.94);
+  border: 1px solid color-mix(in srgb, var(--w3d-c) 60%, transparent);
+  box-shadow: 0 6px 18px -10px rgba(0, 0, 0, 0.7);
   transition: transform 200ms var(--dr-ease), background-color 200ms var(--dr-ease);
 }
 .w3d-plate.is-hot .w3d-plate__inner,
-.w3d-plate:focus-visible .w3d-plate__inner { background: rgba(34, 50, 80, 0.9); transform: scale(1.04); }
+.w3d-plate:focus-visible .w3d-plate__inner { background: rgba(34, 50, 80, 0.9); }
 .w3d-plate.is-projected .w3d-plate__inner { border-style: dashed; }
 .w3d-plate__label { font-size: 14px; font-weight: 600; letter-spacing: -0.01em; }
 .w3d-plate__sub { font-size: 12px; letter-spacing: 0; }
@@ -219,23 +222,40 @@ body { font-size: 13px; letter-spacing: -0.005em; }
 .dr-plate-glyph { position: relative; display: inline-flex; flex: none; }
 .w3d-line { stroke-width: 1.5; stroke-linecap: round; }
 
-/* ── Chronologie : curseur iOS (pastille blanche) ── */
-.tl { background: var(--sz-panel); border: 0; border-radius: var(--sz-radius); }
+/* ── Chronologie : curseur net, date lisible ── */
+.tl { background: var(--sz-panel); border: 1px solid var(--sz-border); border-radius: var(--sz-radius); }
 .tl__head-svg line { stroke: var(--sz-holo); stroke-width: 2; }
 .tl__head-svg path { fill: #fff; filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.45)); }
 .tl__readout {
   border: 0 !important;
-  border-radius: 999px;
+  border-radius: 6px;
   background: var(--sz-holo);
   color: #fff;
   font-weight: 600;
 }
 .tl__readout * { color: inherit !important; }
-.tl__play.sz-btn { width: 30px; border-radius: 50%; background: var(--sz-holo); color: #fff; }
-.hdr__state { border: 0; border-radius: 999px; background: var(--dr-fill); padding: 3px 10px; }
+.tl__play.sz-btn { width: 30px; background: var(--sz-holo); color: #fff; }
+.hdr__state { border: 0; border-radius: 6px; background: var(--dr-fill); padding: 3px 10px; }
 .hdr__state-mark { border-radius: 50%; }
 .body-corner, .ow__corner { opacity: 0; }
 
 /* Focus et sélection */
 :focus-visible { outline: 2px solid var(--sz-holo); outline-offset: 2px; }
 ::selection { background: color-mix(in srgb, var(--sz-holo) 40%, transparent); }
+
+/* ── Textes explicatifs : en texte courant, plus d'encadré en pointillés ── */
+.ow__source, .lyr__src, .hvc__src {
+  border: 0 !important;
+  padding: 0 !important;
+  font-size: 12px !important;
+  line-height: 1.45;
+  color: var(--sz-text-dim);
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  font-weight: 400;
+  white-space: normal;
+}
+[class*='alr__'], [class*='sw-'], [class*='bp-'], [class*='hdr__'], [class*='ow__'], [class*='lyr__'], [class*='hvc__'], [class*='tl__'], [class*='body-'] {
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}

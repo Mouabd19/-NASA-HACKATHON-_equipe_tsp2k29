@@ -26,11 +26,11 @@ export interface WarnItem {
 }
 
 const LEVEL_LABEL: Record<Level, string> = {
-  VERT: 'NOMINAL',
+  VERT: 'Nominal',
   AMBRE: 'AMBRE',
   ORANGE: 'ORANGE',
   ROUGE: 'ROUGE',
-  DONNEES_INSUFFISANTES: 'DONNÉES INSUFF.',
+  DONNEES_INSUFFISANTES: 'Données insuff.',
 };
 
 function ruleLabel(rule: string): string {

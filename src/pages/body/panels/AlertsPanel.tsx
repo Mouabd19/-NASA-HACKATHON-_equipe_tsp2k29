@@ -72,7 +72,7 @@ export function AlertsPanel(): JSX.Element {
       }
     >
       {body.projected ? (
-        <div className="alr__proj">PROJECTION {adherence === 1 ? 'AVEC LE PLAN' : 'AU RYTHME ACTUEL'} — CORPS PROJETÉ <TagBadge tag="H" /></div>
+        <div className="alr__proj">Projection {adherence === 1 ? 'avec le plan' : 'au rythme actuel'} — corps projeté <TagBadge tag="H" /></div>
       ) : null}
 
       {cards.length === 0 ? (
@@ -123,13 +123,13 @@ export function AlertsPanel(): JSX.Element {
                       {trend ? (
                         <span className="alr__trend sz-detail" title={`Pente sur 7 jours — ${trend.label}`}>
                           {/* os : pente du MODÈLE (rien n'est mesuré par le scanner), pas une tendance mesurée */}
-                          <span className="alr__k">{trend.model ? 'PENTE MODÈLE 7 J' : 'TENDANCE 7 J'}</span>
+                          <span className="alr__k">{trend.model ? 'Pente modèle 7 j' : 'Tendance 7 j'}</span>
                           <span className="alr__v">{signed(trend.value, 2)} %/SEM</span>
                         </span>
                       ) : (
                         <span className="alr__trend sz-detail">
-                          <span className="alr__k">TENDANCE 7 J</span>
-                          <span className="alr__v alr__v--none">INDISPONIBLE</span>
+                          <span className="alr__k">Tendance 7 j</span>
+                          <span className="alr__v alr__v--none">Indisponible</span>
                         </span>
                       )}
                       <span className="alr__fill" />

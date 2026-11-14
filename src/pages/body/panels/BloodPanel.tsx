@@ -15,8 +15,8 @@ import './BloodPanel.css';
 const isUrine = (analyte: string): boolean => (getAnalyteMeta(analyte)?.cadence ?? (analyte === 'calcium_urinaire' ? 'quotidien' : 'hebdo')) === 'quotidien';
 /** Analytes mis en avant : anémie spatiale et fuite calcique (os). */
 const WATCHED: Record<string, string> = {
-  hemoglobine: 'ANÉMIE SPATIALE — À SURVEILLER',
-  calcium_urinaire: 'FUITE CALCIQUE (OS) — À SURVEILLER',
+  hemoglobine: 'Anémie spatiale — à surveiller',
+  calcium_urinaire: 'Fuite calcique (os) — à surveiller',
 };
 
 const LABELS: Record<string, { short: string; digits: number }> = {
@@ -118,7 +118,7 @@ function Detail({ row, day }: { row: Row; day: number }): JSX.Element {
   return (
     <div className="bp-detail">
       <div className="bp-detail__meta">
-        <span>RÉF. {fmt(last.refLow)} – {fmt(last.refHigh)} {last.unit}</span>
+        <span>Réf. {fmt(last.refLow)} – {fmt(last.refHigh)} {last.unit}</span>
         <span className="bp-detail__n">N = {data.length}</span>
       </div>
       <div className="bp-detail__chart">
@@ -163,7 +163,7 @@ function Detail({ row, day }: { row: Row; day: number }): JSX.Element {
       </div>
       <div className="bp-detail__foot">
         <span>
-          {day > last.day ? 'DERNIER ' : ''}{row.daily ? 'RECUEIL' : 'PRÉLÈV.'} {fmtDay(last.day)} · {fmt(last.value, digits)} {last.unit}
+          {day > last.day ? 'Dernier ' : ''}{row.daily ? 'Recueil' : 'Prélèv.'} {fmtDay(last.day)} · {fmt(last.value, digits)} {last.unit}
         </span>
         <TagBadge tag={last.tag} />
       </div>
@@ -180,7 +180,7 @@ function RowView({ row, day, open, onToggle }: { row: Row; day: number; open: bo
       <li className="bp-item">
         <div className="bp-row bp-row--empty">
           <span className="bp-row__name"><span className="bp-row__label">{label}</span></span>
-          <span className="bp-row__empty">DONNÉES INSUFFISANTES</span>
+          <span className="bp-row__empty">Données insuffisantes</span>
         </div>
       </li>
     );
@@ -282,18 +282,18 @@ export function BloodPanel(): JSX.Element {
     >
       {projected && lastAny >= 0 ? (
         <div className="bp-banner">
-          DERNIER PRÉLÈVEMENT {fmtDay(drawDay ?? lastAny)} — PAS DE DONNÉE PROJETÉE
+          Dernier prélèvement {fmtDay(drawDay ?? lastAny)} — pas de donnée projetée
         </div>
       ) : null}
       {all.length === 0 || lastAny < 0 ? (
-        <div className="bp-none">DONNÉES INSUFFISANTES</div>
+        <div className="bp-none">Données insuffisantes</div>
       ) : (
         <div className="bp-scroll sz-scroll">
           {group(`Sang · ${drawDay === null ? '—' : fmtDay(drawDay)}`, capillary)}
           {group(`Urine${urineDay !== null && urineDay !== day ? ` · ${fmtDay(urineDay)}` : ''}`, urine)}
           <div className="bp-legend sz-detail">
             <span className="bp-legend__key"><i className="bp-legend__ref" /> INTERVALLE DE RÉF. <TagBadge tag="Publié" /></span>
-            <span className="bp-legend__key">▲▼ TENDANCE 4 SEM.</span>
+            <span className="bp-legend__key">▲▼ tendance 4 sem.</span>
           </div>
         </div>
       )}

@@ -69,8 +69,8 @@ export function Plate({ item, register }: { item: WarnItem; register: (el: HTMLD
           <polygon className="w3d-plate__fill" points={hex} />
           <polygon className="w3d-plate__stroke" points={hex} />
         </svg>
-        {/* da_dragon : symbole SF à la place du triangle (WarnGlyph conservé dans le fichier) */}
-        <span className="dr-plate-glyph"><StatusGlyph color={item.color} size={20} /></span>
+        {/* da_dragon : symbole géométrique à la place du triangle « ! » (WarnGlyph conservé dans le fichier) */}
+        <span className="dr-plate-glyph"><StatusGlyph color={item.color} size={13} /></span>
         <div className="w3d-plate__text">
           <span className="w3d-plate__label">{item.label}</span>
           <span className="w3d-plate__sub">
@@ -79,7 +79,7 @@ export function Plate({ item, register }: { item: WarnItem; register: (el: HTMLD
           </span>
         </div>
         {item.color === 'red' && <span className="w3d-plate__hatch" aria-hidden="true" />}
-        {item.projected && <span className="w3d-plate__proj">PROJ.</span>}
+        {item.projected && <span className="w3d-plate__proj">Proj.</span>}
       </div>
     </div>
   );

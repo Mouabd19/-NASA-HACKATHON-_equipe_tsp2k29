@@ -64,19 +64,17 @@ export function ProvenanceBadge({ value }: ProvenanceBadgeProps): JSX.Element {
 export interface StatusDotProps { color: Color; pulse?: boolean; size?: number }
 
 /**
- * da_dragon : symbole de statut façon SF Symbols, lisible sans la couleur.
- * Nominal = coche, ambre = point d'exclamation, rouge = double exclamation, inconnu = point d'interrogation (creux).
+ * da_dragon : symbole de statut géométrique, lisible sans la couleur.
+ * Nominal = rond plein, ambre = triangle, rouge = losange, inconnu = cercle creux.
  */
-export function StatusGlyph({ color, size = 14 }: { color: Color; size?: number }): JSX.Element {
-  const fill = color === 'grey' ? 'none' : statusVar[color];
-  const ink = color === 'grey' ? 'var(--sz-unknown)' : 'var(--dr-on-status, #0A1424)';
+export function StatusGlyph({ color, size = 12 }: { color: Color; size?: number }): JSX.Element {
+  const c = statusVar[color];
   return (
-    <svg className="dr-glyph" data-color={color} width={size} height={size} viewBox="0 0 16 16" aria-hidden="true">
-      <circle cx="8" cy="8" r={color === 'grey' ? 7.2 : 8} fill={fill} stroke={color === 'grey' ? 'var(--sz-unknown)' : 'none'} strokeWidth="1.3" />
-      {color === 'green' && <path d="M4.8 8.3l2.2 2.2 4.3-4.6" fill="none" stroke={ink} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />}
-      {color === 'amber' && <path d="M8 4.2v4.6M8 11.4v.2" fill="none" stroke={ink} strokeWidth="1.9" strokeLinecap="round" />}
-      {color === 'red' && <path d="M6.2 4.2v4.6M6.2 11.4v.2M9.8 4.2v4.6M9.8 11.4v.2" fill="none" stroke={ink} strokeWidth="1.8" strokeLinecap="round" />}
-      {color === 'grey' && <path d="M6.3 6.4a1.8 1.8 0 1 1 2.4 1.7c-.5.2-.7.6-.7 1.1v.3M8 11.6v.1" fill="none" stroke={ink} strokeWidth="1.5" strokeLinecap="round" />}
+    <svg className="dr-glyph" data-color={color} width={size} height={size} viewBox="0 0 12 12" aria-hidden="true">
+      {color === 'green' && <circle cx="6" cy="6" r="4" fill={c} />}
+      {color === 'amber' && <path d="M6 1.4 L10.8 10 H1.2 Z" fill={c} strokeLinejoin="round" stroke={c} strokeWidth="0.8" />}
+      {color === 'red' && <path d="M6 0.9 L11.1 6 L6 11.1 L0.9 6 Z" fill={c} />}
+      {color === 'grey' && <circle cx="6" cy="6" r="3.9" fill="none" stroke={c} strokeWidth="1.3" />}
     </svg>
   );
 }
@@ -85,7 +83,7 @@ export function StatusGlyph({ color, size = 14 }: { color: Color; size?: number 
 export function StatusDot({ color, pulse, size = 6 }: StatusDotProps): JSX.Element {
   return (
     <span className={cx('sz-dot', 'dr-dot', pulse && 'sz-dot--pulse')} data-color={color} role="img" aria-label={statusLabel[color]}>
-      <StatusGlyph color={color} size={Math.max(12, size + 6)} />
+      <StatusGlyph color={color} size={Math.max(10, size + 4)} />
     </span>
   );
 }
@@ -97,7 +95,7 @@ export function StatusChip({ color, label }: StatusChipProps): JSX.Element {
   const style = { '--sz-status': statusVar[color] } as CSSProperties;
   return (
     <span className="sz-chip" data-color={color} style={style}>
-      <StatusGlyph color={color} size={14} />
+      <StatusGlyph color={color} size={11} />
       {label ?? statusLabel[color]}
     </span>
   );

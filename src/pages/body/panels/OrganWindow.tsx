@@ -197,7 +197,7 @@ function MetricsTable({ organ }: { organ: OrganState }): JSX.Element {
   if (organ.metrics.length === 0) {
     return (
       <div className="ow__empty">
-        <span className="sz-label">NON MODÉLISÉ — AUCUNE MÉTRIQUE</span>
+        <span className="sz-label">Non modélisé — aucune métrique</span>
         <p>Aucune mesure ni modèle pour cet organe. Statut inconnu : il n’est jamais affiché en vert par défaut.</p>
       </div>
     );
@@ -206,11 +206,11 @@ function MetricsTable({ organ }: { organ: OrganState }): JSX.Element {
     <table className="ow__table">
       <thead>
         <tr>
-          <th>MÉTRIQUE</th>
-          <th className="ow__num">VALEUR</th>
-          <th>SEUIL</th>
-          <th>PROV.</th>
-          <th className="ow__num" title={modelOnly ? 'Pente du modèle sur 7 jours — pas une tendance mesurée' : 'Pente mesurée sur 7 jours'}>{modelOnly ? 'PENTE MODÈLE' : 'TEND. 7 J'}</th>
+          <th>Métrique</th>
+          <th className="ow__num">Valeur</th>
+          <th>Seuil</th>
+          <th>Prov.</th>
+          <th className="ow__num" title={modelOnly ? 'Pente du modèle sur 7 jours — pas une tendance mesurée' : 'Pente mesurée sur 7 jours'}>{modelOnly ? 'Pente modèle' : 'Tend. 7 j'}</th>
         </tr>
       </thead>
       <tbody>
@@ -224,7 +224,7 @@ function MetricsTable({ organ }: { organ: OrganState }): JSX.Element {
                 <span className="ow__metric">
                   <StatusDot color={proj ? 'grey' : m.color} />
                   <span>{m.label}</span>
-                  {proj ? <span className="ow__projtag sz-label">PROJ.</span> : null}
+                  {proj ? <span className="ow__projtag sz-label">Proj.</span> : null}
                 </span>
               </td>
               <td className="ow__num">
@@ -265,10 +265,10 @@ function Synthesis({ organId, day }: { organId: OrganId; day: number }): JSX.Ele
   return (
     <Sect
       className="ow__synth"
-      title={mock ? 'SYNTHÈSE — À VALIDER PAR LE CMO' : 'SYNTHÈSE IA — À VALIDER PAR LE CMO'}
+      title={mock ? 'Synthèse — à valider par le CMO' : 'Synthèse IA — à valider par le CMO'}
       right={summary ? (
         <>
-          <span className="ow__unreviewed sz-label">NON VALIDÉE</span>
+          <span className="ow__unreviewed sz-label">Non validée</span>
           <ProvenanceBadge value={future ? 'H' : 'SIMULÉ'} />
         </>
       ) : null}
@@ -278,28 +278,28 @@ function Synthesis({ organId, day }: { organId: OrganId; day: number }): JSX.Ele
           <p className="ow__synth-text">{summary.text}</p>
           {mock ? (
             <p className="ow__synth-meta ow__synth-mock sz-label">
-              TEXTE GABARIT (MOCK), CALCULÉ ICI — PAS ENCORE UNE SYNTHÈSE IA. LES SYNTHÈSES IA HORS LIGNE ARRIVERONT DANS public/data/summaries/
+              Texte gabarit calculé ici, pas encore une synthèse IA. Les synthèses IA hors ligne arriveront dans public/data/summaries/.
             </p>
           ) : null}
           {future ? (
             <p className="ow__synth-meta sz-label">
-              SYNTHÈSE DE PROJECTION {fmtDay(summary.day)} — PRÉ-CALCULÉE, PAS UN MESSAGE REÇU <TagBadge tag="H" /> — JAMAIS UTILISÉE POUR UN SEUIL
+              Synthèse de projection {fmtDay(summary.day)}, pré-calculée, pas un message reçu <TagBadge tag="H" />. Jamais utilisée pour un seuil.
             </p>
           ) : (
             <>
               <p className="ow__synth-meta sz-label">
-                {mock ? 'SCÉNARIO : ' : ''}REÇUE DE LA TERRE À {hhmm(CHART.groundEmitMin + delay)} <TagBadge tag="Persona" /> — DÉLAI{' '}
+                {mock ? 'Scénario : ' : ''}reçue de la Terre à {hhmm(CHART.groundEmitMin + delay)} <TagBadge tag="Persona" /> — délai{' '}
                 {delayExact ? <>{fmt(delay, 1)} MIN <TagBadge tag="Publié" /></> : <>≈ {fmt(delay, 1)} MIN <TagBadge tag="H" /> APPROX.</>}
               </p>
               <p className="ow__synth-meta sz-label sz-dim">
-                SYNTHÈSE DU {fmtDay(summary.day)} · GÉNÉRÉE AU SOL, JAMAIS UTILISÉE POUR UN SEUIL
+                Synthèse du {fmtDay(summary.day)}, générée au sol. Jamais utilisée pour un seuil.
               </p>
             </>
           )}
         </>
       ) : (
         <div className="ow__empty ow__empty--flat">
-          <span className="sz-label">PAS DE SYNTHÈSE POUR CET ORGANE</span>
+          <span className="sz-label">Pas de synthèse pour cet organe</span>
         </div>
       )}
     </Sect>
@@ -346,11 +346,11 @@ function GapTip({ active, payload }: TipProps): JSX.Element | null {
   ));
   return (
     <div className="ow__tip sz-label">
-      <div className="ow__tip-head">{fmtDay(r.day)} · {predicted ? 'PRÉDIT' : 'MESURÉ'}</div>
-      {line('MESURÉ', r.meas, r.bandMeas)}
-      {predicted ? line('RYTHME ACTUEL', r.p0, r.band0) : null}
-      {predicted ? line('AVEC LE PLAN', r.p1, r.band1) : null}
-      <div className="ow__tip-row"><span className="sz-dim">ÂGE RÉEL</span><span>{fmt(r.chrono, 1)} ANS</span></div>
+      <div className="ow__tip-head">{fmtDay(r.day)} · {predicted ? 'Prédit' : 'Mesuré'}</div>
+      {line('Mesuré', r.meas, r.bandMeas)}
+      {predicted ? line('Rythme actuel', r.p0, r.band0) : null}
+      {predicted ? line('Avec le plan', r.p1, r.band1) : null}
+      <div className="ow__tip-row"><span className="sz-dim">Âge réel</span><span>{fmt(r.chrono, 1)} ans</span></div>
     </div>
   );
 }
@@ -361,8 +361,8 @@ function PhenoTip({ active, payload }: TipProps): JSX.Element | null {
   return (
     <div className="ow__tip sz-label">
       <div className="ow__tip-head">{fmtDay(r.day)} · PRÉLÈVEMENT</div>
-      <div className="ow__tip-row"><span className="sz-dim">PHENOAGE</span><span>{fmt(r.pheno, 1)} ANS <span className="sz-dim">({signed(r.pheno - r.chrono)})</span></span></div>
-      <div className="ow__tip-row"><span className="sz-dim">ÂGE RÉEL</span><span>{fmt(r.chrono, 1)} ANS</span></div>
+      <div className="ow__tip-row"><span className="sz-dim">PhenoAge</span><span>{fmt(r.pheno, 1)} ans <span className="sz-dim">({signed(r.pheno - r.chrono)})</span></span></div>
+      <div className="ow__tip-row"><span className="sz-dim">Âge réel</span><span>{fmt(r.chrono, 1)} ans</span></div>
     </div>
   );
 }
@@ -398,7 +398,7 @@ function GapChartView({ chart, day, adherence }: { chart: GapChart; day: number;
         <Line dataKey="chrono" stroke={CHART.chrono.stroke} strokeWidth={CHART.chrono.width} strokeOpacity={CHART.chrono.opacity} dot={false} activeDot={false} isAnimationActive={false} />
 
         {/* repères verticaux */}
-        <ReferenceLine x={DAY_TODAY} stroke={C.text} strokeOpacity={0.55} strokeWidth={1} label={vLabel('AUJOURD’HUI', C.text)} />
+        <ReferenceLine x={DAY_TODAY} stroke={C.text} strokeOpacity={0.55} strokeWidth={1} label={vLabel('Aujourd’hui', C.text)} />
         <ReferenceLine x={DAY_SOL0} stroke={C.textDim} strokeOpacity={0.8} strokeWidth={1} strokeDasharray="1 3" label={vLabel('SOL 0', C.textDim)} />
         {showDay ? (
           /* en fin d'axe, le libellé vertical recouvrirait les étiquettes de fin de courbe : le jour est déjà dans l'en-tête */
@@ -411,10 +411,10 @@ function GapChartView({ chart, day, adherence }: { chart: GapChart; day: number;
         <Line dataKey="meas" stroke={CHART.measured.stroke} strokeWidth={CHART.measured.width} dot={false} activeDot={false} isAnimationActive={false} />
 
         {chart.hasPrediction && chart.modeled && e0 ? (
-          <ReferenceDot x={e0.day} y={e0.band?.[1] ?? e0.bioAge} r={0} fill="none" stroke="none" label={endLabel('RYTHME ACTUEL', s[0].stroke, -6)} />
+          <ReferenceDot x={e0.day} y={e0.band?.[1] ?? e0.bioAge} r={0} fill="none" stroke="none" label={endLabel('Rythme actuel', s[0].stroke, -6)} />
         ) : null}
         {chart.hasPrediction && chart.modeled && e1 ? (
-          <ReferenceDot x={e1.day} y={e1.band?.[0] ?? e1.bioAge} r={0} fill="none" stroke="none" label={endLabel('AVEC LE PLAN', s[1].stroke, 13)} />
+          <ReferenceDot x={e1.day} y={e1.band?.[0] ?? e1.bioAge} r={0} fill="none" stroke="none" label={endLabel('Avec le plan', s[1].stroke, 13)} />
         ) : null}
 
         {chart.modeled && chart.splitDay >= 0 && split ? (
@@ -479,11 +479,11 @@ function PhenoChartView({ rows, usedDay }: { rows: PhenoRow[]; usedDay: number |
 function Legend({ pheno, mock, ml }: { pheno?: boolean; mock?: boolean; ml?: boolean }): JSX.Element {
   return (
     <ul className="ow__legend sz-label">
-      <li><i className="ow__key ow__key--solid" />{pheno ? (mock ? 'PHENOAGE (VALEUR FACTICE)' : 'PHENOAGE CALCULÉ') : 'MESURÉ'}</li>
+      <li><i className="ow__key ow__key--solid" />{pheno ? (mock ? 'PhenoAge (valeur factice)' : 'PhenoAge calculé') : 'Mesuré'}</li>
       {pheno ? null : <li><i className="ow__key ow__key--dash" />PRÉDIT (MODÈLE)</li>}
-      {pheno ? null : <li><i className="ow__key ow__key--band" />INCERTITUDE</li>}
+      {pheno ? null : <li><i className="ow__key ow__key--band" />Incertitude</li>}
       {ml ? <li><i className="ow__key ow__key--ml" />MODÈLE D’IA B (P10–P90)</li> : null}
-      <li><i className="ow__key ow__key--thin" />ÂGE RÉEL</li>
+      <li><i className="ow__key ow__key--thin" />Âge réel</li>
     </ul>
   );
 }
@@ -506,7 +506,7 @@ function OrganRight({ organ, day }: { organ: OrganState; day: number }): JSX.Ele
         </span>
         <span className="ow__scn-num">
           {v === null ? '—' : signed(v)}
-          <small>ANS</small>
+          <small>ans</small>
         </span>
         <span className="sz-label sz-dim">FIN DE MISSION · {fmtDay(DAY_END)}</span>
       </button>
@@ -514,10 +514,10 @@ function OrganRight({ organ, day }: { organ: OrganState; day: number }): JSX.Ele
   };
   return (
     <div className="ow__right">
-      <Sect title={<>ÉCART D’ÂGE ESTIMÉ <TagBadge tag="H" /></>} right={<ProvenanceBadge value="H" />}>
+      <Sect title={<>Écart d’âge estimé <TagBadge tag="H" /></>} right={<ProvenanceBadge value="H" />}>
         <div className="ow__scns">
-          {btn(0, 'RYTHME ACTUEL')}
-          {btn(1, 'AVEC LE PLAN')}
+          {btn(0, 'Rythme actuel')}
+          {btn(1, 'Avec le plan')}
         </div>
         <div className="ow__axis-title sz-label sz-dim">
           <span>ÂGE ÉQUIVALENT (ANS)</span>
@@ -527,7 +527,7 @@ function OrganRight({ organ, day }: { organ: OrganState; day: number }): JSX.Ele
           <GapChartView chart={chart} day={day} adherence={adherence} />
           {chart.modeled ? null : (
             <div className="ow__chart-veil">
-              <span className="sz-label">NON MODÉLISÉ — ÉCART D’ÂGE INCONNU</span>
+              <span className="sz-label">Non modélisé — écart d’âge inconnu</span>
               <span className="sz-label sz-dim">AUCUN MODÈLE : ÂGE ÉQUIVALENT = ÂGE RÉEL</span>
             </div>
           )}
@@ -537,7 +537,7 @@ function OrganRight({ organ, day }: { organ: OrganState; day: number }): JSX.Ele
       <div className="ow__notes">
         {chart.modeled && chart.ml[adherence].length > 0 ? (
           <p className="ow__ml sz-mono">
-            <span className="ow__ml-name">MODÈLE D’IA B</span>{' '}
+            <span className="ow__ml-name">Modèle d’IA B</span>{' '}
             {chart.ml[adherence].map((m, i) => (
               <span key={m.day}>
                 {i > 0 ? ' · ' : ''}{m.day === DAY_SOL0 ? 'SOL 0' : fmtDay(m.day)} : {fmt(m.f.p50, 1)} [{fmt(m.f.p10, 1)}–{fmt(m.f.p90, 1)}]
@@ -562,24 +562,24 @@ function GlobalRight({ result }: { result: PhenoAgeResult | null }): JSX.Element
   return (
     <div className="ow__right">
       <Sect
-        title={<>PHENOAGE DANS LE TEMPS <TagBadge tag="Publié" /></>}
-        right={<>{result?.mock ? <span className="ow__mock sz-label">FACTICE</span> : null}<ProvenanceBadge value="SIMULÉ" /></>}
+        title={<>PhenoAge dans le temps <TagBadge tag="Publié" /></>}
+        right={<>{result?.mock ? <span className="ow__mock sz-label">Factice</span> : null}<ProvenanceBadge value="SIMULÉ" /></>}
       >
         <div className="ow__scns">
           <div className="ow__scn" data-on="true" data-static="true">
-            <span className="ow__scn-top sz-label"><i className="ow__key ow__key--solid" />PHENOAGE</span>
-            <span className="ow__scn-num">{result ? fmt(result.phenoAge, 1) : '—'}<small>ANS</small></span>
-            <span className="sz-label sz-dim">{result ? `PRÉLÈVEMENT ${fmtDay(result.day)}` : 'AUCUN PRÉLÈVEMENT'}</span>
+            <span className="ow__scn-top sz-label"><i className="ow__key ow__key--solid" />PhenoAge</span>
+            <span className="ow__scn-num">{result ? fmt(result.phenoAge, 1) : '—'}<small>ans</small></span>
+            <span className="sz-label sz-dim">{result ? `Prélèvement ${fmtDay(result.day)}` : 'Aucun prélèvement'}</span>
           </div>
           <div className="ow__scn" data-static="true">
-            <span className="ow__scn-top sz-label"><i className="ow__key ow__key--thin" />ÂGE RÉEL</span>
-            <span className="ow__scn-num">{result ? fmt(result.chronoAge, 1) : '—'}<small>ANS</small></span>
+            <span className="ow__scn-top sz-label"><i className="ow__key ow__key--thin" />Âge réel</span>
+            <span className="ow__scn-num">{result ? fmt(result.chronoAge, 1) : '—'}<small>ans</small></span>
             <span className="sz-label sz-dim">HADDAD <TagBadge tag="Persona" /></span>
           </div>
         </div>
         <div className="ow__axis-title sz-label sz-dim">
           <span>ÂGE (ANS)</span>
-          <span>UN POINT PAR PRÉLÈVEMENT HEBDOMADAIRE</span>
+          <span>Un point par prélèvement hebdomadaire</span>
         </div>
         <div className="ow__chart">
           <PhenoChartView rows={rows} usedDay={result?.day ?? null} />
@@ -587,7 +587,7 @@ function GlobalRight({ result }: { result: PhenoAgeResult | null }): JSX.Element
         <Legend pheno mock={result?.mock} />
       </Sect>
       <div className="ow__notes">
-        <p className="ow__formula sz-mono">PAS DE PROJECTION POUR PHENOAGE</p>
+        <p className="ow__formula sz-mono">Pas de projection pour PhenoAge</p>
         <p className="ow__limit">
           PhenoAge (Levine et al., Aging, 2018) se calcule sur une prise de sang : il n’existe que les jours de prélèvement. Aucun modèle ne le prolonge ; valeurs sanguines simulées.
           {result?.mock ? ' La formule n’est pas encore branchée : la courbe est une interpolation factice, pas un calcul.' : ''}
@@ -603,12 +603,12 @@ function OrganCentre({ organ, day }: { organ: OrganState; day: number }): JSX.El
   return (
     <div className="ow__centre sz-scroll">
       <Sect
-        title={bone ? 'ESTIMATIONS DU JOUR' : 'MÉTRIQUES DU JOUR'}
-        right={<span className="sz-label sz-dim">{n} {bone ? 'ESTIMATION' : 'MESURE'}{n > 1 ? 'S' : ''}</span>}
+        title={bone ? 'Estimations du jour' : 'Métriques du jour'}
+        right={<span className="sz-label sz-dim">{n} {bone ? 'Estimation' : 'Mesure'}{n > 1 ? 's' : ''}</span>}
       >
         {bone ? (
           <p className="ow__source sz-label">
-            SOURCE : MODÈLE + BILAN AU SOL + MARQUEURS URINAIRES <TagBadge tag="H" /> — L’OS N’EST PAS MESURÉ PAR LE SCANNER
+            Estimé par le modèle, le bilan au sol et les marqueurs urinaires <TagBadge tag="H" /> : l’os n’est pas mesuré par le scanner.
           </p>
         ) : null}
         <MetricsTable organ={organ} />
@@ -625,36 +625,36 @@ function GlobalCentre({ result, organs, day }: { result: PhenoAgeResult | null; 
   return (
     <div className="ow__centre sz-scroll">
       <Sect
-        title={<>ÂGE BIOLOGIQUE GLOBAL — PHENOAGE <TagBadge tag="Publié" /></>}
-        right={result?.mock ? <span className="ow__mock sz-label">VALEUR FACTICE</span> : <span className="sz-label sz-dim">LEVINE ET AL., 2018</span>}
+        title={<>Âge biologique global — PhenoAge <TagBadge tag="Publié" /></>}
+        right={result?.mock ? <span className="ow__mock sz-label">Valeur factice</span> : <span className="sz-label sz-dim">Levine et al., 2018</span>}
       >
         {result ? (
           <div className="ow__pheno">
             <div>
-              <span className="sz-label sz-dim">PHENOAGE</span>
-              <span className="ow__pheno-num">{fmt(result.phenoAge, 1)}<small>ANS</small></span>
+              <span className="sz-label sz-dim">PhenoAge</span>
+              <span className="ow__pheno-num">{fmt(result.phenoAge, 1)}<small>ans</small></span>
             </div>
             <div>
-              <span className="sz-label sz-dim">ÂGE RÉEL</span>
-              <span className="ow__pheno-num ow__pheno-num--dim">{fmt(result.chronoAge, 1)}<small>ANS</small></span>
+              <span className="sz-label sz-dim">Âge réel</span>
+              <span className="ow__pheno-num ow__pheno-num--dim">{fmt(result.chronoAge, 1)}<small>ans</small></span>
             </div>
             <div>
-              <span className="sz-label sz-dim">ÉCART</span>
-              <span className="ow__pheno-num">{signed(result.phenoAge - result.chronoAge)}<small>ANS</small></span>
+              <span className="sz-label sz-dim">Écart</span>
+              <span className="ow__pheno-num">{signed(result.phenoAge - result.chronoAge)}<small>ans</small></span>
             </div>
             <p className="sz-label sz-dim">
-              {result.mock ? 'VALEUR FACTICE (STUB) — FORMULE DE LEVINE 2018 PAS ENCORE CALCULÉE · PRÉLÈVEMENT' : 'CALCULÉ SUR LE PRÉLÈVEMENT DU'} {fmtDay(result.day)}{day !== result.day ? ` (DERNIER DISPONIBLE À ${fmtDay(day)})` : ''}
+              {result.mock ? 'Valeur factice : formule de Levine 2018 pas encore calculée · prélèvement' : 'Calculé sur le prélèvement du'} {fmtDay(result.day)}{day !== result.day ? ` (dernier disponible à ${fmtDay(day)})` : ''}
             </p>
           </div>
         ) : (
-          <div className="ow__empty"><span className="sz-label">DONNÉES INSUFFISANTES — AUCUN PRÉLÈVEMENT</span></div>
+          <div className="ow__empty"><span className="sz-label">Données insuffisantes — aucun prélèvement</span></div>
         )}
       </Sect>
       {result ? (
-        <Sect title={result.mock ? 'ENTRÉES DE LA FORMULE (NON ENCORE CALCULÉE)' : 'MARQUEURS UTILISÉS'} right={<ProvenanceBadge value="SIMULÉ" />}>
+        <Sect title={result.mock ? 'Entrées de la formule (non encore calculée)' : 'Marqueurs utilisés'} right={<ProvenanceBadge value="SIMULÉ" />}>
           <table className="ow__table">
             <thead>
-              <tr><th>MARQUEUR</th><th className="ow__num">VALEUR</th><th>RÉFÉRENCE</th><th>ÉTIQUETTE</th></tr>
+              <tr><th>Marqueur</th><th className="ow__num">Valeur</th><th>Référence</th><th>Étiquette</th></tr>
             </thead>
             <tbody>
               {inputs.map(([key, value]) => {
@@ -684,7 +684,7 @@ function GlobalCentre({ result, organs, day }: { result: PhenoAgeResult | null; 
           </table>
         </Sect>
       ) : null}
-      <Sect title="ÉCART D’ÂGE PAR ORGANE" right={<TagBadge tag="H" />}>
+      <Sect title="Écart d’âge par organe" right={<TagBadge tag="H" />}>
         <div className="ow__chips">
           {organs.map((o) => (
             <button key={o.id} type="button" className="ow__chip sz-label" onClick={() => openOrganWindow(o.id)}>
@@ -692,7 +692,7 @@ function GlobalCentre({ result, organs, day }: { result: PhenoAgeResult | null; 
               <span>{o.name.replace(/\s*\(non modélisé\)\s*$/i, '')}</span>
               {/* « a un modèle d'écart d'âge » vient du modèle, pas de la couleur : sans modèle, jamais « +0,0 » */}
               <span className="sz-dim">
-                {hasBioAgeModel(o.id) ? signed(o.bioAge - o.chronoAge) : o.metrics.length === 0 ? 'NON MODÉLISÉ' : 'ÉCART NON MODÉLISÉ'}
+                {hasBioAgeModel(o.id) ? signed(o.bioAge - o.chronoAge) : o.metrics.length === 0 ? 'Non modélisé' : 'Écart non modélisé'}
               </span>
             </button>
           ))}
@@ -743,16 +743,16 @@ export function OrganWindow(): JSX.Element | null {
         <i className="ow__corner ow__corner--bl" /><i className="ow__corner ow__corner--br" />
 
         <header className="ow__head">
-          <span className="sz-label sz-dim">{sys} / {isGlobal ? 'GLOBAL' : 'ORGANE'}</span>
+          <span className="sz-label sz-dim">{sys} / {isGlobal ? 'Global' : 'Organe'}</span>
           <h2 className="ow__name">{name}</h2>
           {organ ? <StatusChip color={organ.status} label={organ.status === 'grey' ? 'Non modélisé' : undefined} /> : null}
           <span className="ow__fill" />
           <span className="sz-label">
             {fmtDay(day)} <span className="sz-dim">· {body.date || dayToDate(day)} ·</span>{' '}
-            {body.projected ? <span className="ow__proj">PROJETÉ</span> : 'MESURÉ'}
+            {body.projected ? <span className="ow__proj">Projeté</span> : 'Mesuré'}
           </span>
           <button type="button" className="sz-btn ow__close" onClick={() => openOrganWindow(null)} aria-label="Fermer la fenêtre">
-            FERMER <span className="sz-dim">ÉCHAP</span> ✕
+            Fermer <span className="sz-dim">Échap</span> ✕
           </button>
         </header>
 
@@ -761,25 +761,25 @@ export function OrganWindow(): JSX.Element | null {
             <div className="ow__view">
               <OrganViewer organId={target} />
             </div>
-            <span className="ow__view-tl sz-label sz-dim">{isGlobal ? 'SILHOUETTE' : 'ORGANE ISOLÉ'}</span>
-            <span className="ow__view-tr sz-label sz-dim">GLISSER POUR TOURNER</span>
+            <span className="ow__view-tl sz-label sz-dim">{isGlobal ? 'Silhouette' : 'Organe isolé'}</span>
+            <span className="ow__view-tr sz-label sz-dim">Glisser pour tourner</span>
             <div className="ow__view-foot">
               {organ ? (
                 <div className="ow__gap">
-                  <span className="sz-label sz-dim">ÉCART D’ÂGE ESTIMÉ <TagBadge tag="H" /> · {fmtDay(day)}</span>
+                  <span className="sz-label sz-dim">Écart d’âge estimé <TagBadge tag="H" /> · {fmtDay(day)}</span>
                   <span className="ow__gap-num" data-unknown={gap === null}>
-                    {gap === null ? <>—<small>ÉCART NON MODÉLISÉ</small></> : <>{signed(gap)}<small>ANS</small></>}
+                    {gap === null ? <>—<small>Écart non modélisé</small></> : <>{signed(gap)}<small>ans</small></>}
                   </span>
                 </div>
               ) : null}
-              <span className="sz-label sz-dim">{anatomySource() === 'z-anatomy' ? 'Z-ANATOMY — CC BY-SA 4.0' : 'MODÈLE DE SECOURS — PROCÉDURAL'}</span>
+              <span className="sz-label sz-dim">{anatomySource() === 'z-anatomy' ? 'Z-Anatomy — CC BY-SA 4.0' : 'Modèle de secours — procédural'}</span>
             </div>
           </div>
 
           {isGlobal ? <GlobalCentre result={pheno} organs={body.organs} day={day} /> : null}
           {!isGlobal && organ ? <OrganCentre organ={organ} day={day} /> : null}
           {!isGlobal && !organ ? (
-            <div className="ow__centre"><div className="ow__empty"><span className="sz-label">ORGANE INCONNU — AUCUNE DONNÉE</span></div></div>
+            <div className="ow__centre"><div className="ow__empty"><span className="sz-label">Organe inconnu — aucune donnée</span></div></div>
           ) : null}
 
           {isGlobal ? <GlobalRight result={pheno} /> : null}
