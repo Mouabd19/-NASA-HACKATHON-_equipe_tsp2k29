@@ -10,7 +10,7 @@ _Mis à jour : sam. 16:05_
 - **PhenoAge** : coefficients vérifiés + vecteurs de test → `docs/sources/phenoage.md`.
 
 ## En cours
-- **Prototype santé mentale (§11)**, dossiers `proto/mental/` + `public/data/mental/` : générateur de journées simulées (glissement à J75 + témoin) ✅, 3 observateurs + 3 psychologues + dossier pour le psy humain ✅ (testé à blanc). Modèle local Ollama (qwen2.5:7b), lancement sur le Mac de Steve en cours. Biomarqueurs provisoires dans le proto : à brancher sur ceux de Mouad quand `public/data/sim/` existe.
+- **Prototype santé mentale (§11)**, dossiers `proto/mental/` + `public/data/mental/` : générateur de journées simulées (glissement à J75 + témoin) ✅, 3 observateurs + 3 psychologues + dossier pour le psy humain ✅ (testé à blanc). Modèle local Ollama (qwen2.5:7b) ✅ testé sur le Mac de Steve (J78 → « à surveiller » 3/3, ~35 s par appel). Passage complet (5 jours clés × drift + témoin) en cours. Biomarqueurs provisoires dans le proto : à brancher sur ceux de Mouad quand `public/data/sim/` existe.
 - Jalon 23:00 **livré**. Suite : contenus (exercices, menus, textes « Pourquoi ? ») pour dim. 02:00.
 
 ## Bloqué / risques

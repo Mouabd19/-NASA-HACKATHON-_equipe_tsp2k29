@@ -30,8 +30,12 @@ export function observerPrompt(obs, day) {
     { role: 'system', content: `${COMMON}
 Tu es un OBSERVATEUR. Tu lis le compte rendu complet d'une journée et tu relèves des FAITS, sans les interpréter,
 sans diagnostic, sans adjectif psychologique (pas de « triste », « déprimé », « anxieux »).
-Tu couvres toute la journée, mais tu te concentres surtout sur ${obs.focus}
-Format : {"faits":[{"heure":"HH:MM","fait":"…","citation":"mot pour mot ou null"}],"chiffres":{"…":"…"},"resume":"2 phrases factuelles maximum"}` },
+Ton angle : ${obs.focus}
+Règles :
+1. Ne relève QUE les faits qui relèvent de ton angle. Ignore le reste (d'autres observateurs s'en chargent).
+2. 6 faits maximum, les plus significatifs. Ne recopie PAS les lignes du compte rendu : reformule en une courte phrase factuelle.
+3. Cite mot pour mot les paroles de Haddad uniquement si elles relèvent de ton angle.
+Format : {"faits":[{"heure":"HH:MM","fait":"…","citation":"mot pour mot ou null"}],"resume":"2 phrases factuelles maximum, sur ton angle seulement"}` },
     { role: 'user', content: `Journée J${day.day} (${day.date}).
 Compte rendu des lunettes :
 ${day.transcript.join('\n')}
@@ -61,12 +65,25 @@ export const PSYCHOLOGISTS = [
 
 export const LEVELS = ['rien', 'a_surveiller', 'proposer_un_echange'];
 
+// Écarts à la référence calculés dans le code : le modèle n'a pas à faire d'arithmétique.
+const KEYS = [['tempsDeParoleMin', 'temps de parole (min)', (d) => d.sensors.tempsDeParoleMin], ['tempsAvecEquipageMin', 'temps avec l\'équipage (min)', (d) => d.sensors.tempsAvecEquipageMin], ['repasSautesParJour', 'repas sautés', (d) => d.sensors.repasSautes], ['pas', 'pas', (d) => d.sensors.pas], ['sommeilH', 'sommeil (h)', (d) => d.sensors.sommeilH], ['checkinHumeur', 'humeur déclarée (1–5)', (d) => d.biomarkers.checkinHumeur], ['vfcMs', 'VFC (ms)', (d) => d.biomarkers.vfcMs]];
+export function deviations(reference, days) {
+  return KEYS.map(([k, label, get]) => {
+    const ref = reference[k];
+    const today = get(days.at(-1));
+    const mean7 = +(days.reduce((a, d) => a + get(d), 0) / days.length).toFixed(1);
+    const pct = (v) => (ref ? Math.round(((v - ref) / ref) * 100) : 0);
+    const sign = (n) => (n > 0 ? `+${n}` : `${n}`);
+    return `- ${label} : aujourd'hui ${today} (${sign(pct(today))} % vs référence ${ref}) ; moyenne 7 j ${mean7} (${sign(pct(mean7))} %)`;
+  }).join('\n');
+}
+
 export function psychologistPrompt(psy, day, reports, reference, history) {
   return [
     { role: 'system', content: `${COMMON}
 Tu es un PSYCHOLOGUE. Ta grille de lecture : ${psy.lens}
 Règles :
-1. Compare Haddad à SA PROPRE référence (fournie), jamais à une norme générale.
+1. Compare Haddad à SA PROPRE référence. Les écarts sont DÉJÀ CALCULÉS : recopie ces chiffres, n'en invente aucun et ne refais aucun calcul. Un pourcentage positif = au-dessus de la référence.
 2. Une seule mauvaise journée ne suffit pas : regarde l'historique des 7 derniers jours. Un incident ponctuel expliqué (panne, mauvaise nouvelle) est normal.
 3. Chaque hypothèse doit citer ses preuves (faits des observateurs ou chiffres).
 4. Tu ne poses JAMAIS de diagnostic. Tu signales un « schéma à regarder ».
@@ -75,10 +92,11 @@ Règles :
 Format : {"niveau":"…","confiance":"faible|moyenne|elevee","hypotheses":[{"schema":"…","preuves":["…"]}],"ecartsReference":["…"],"pointsRassurants":["…"],"noteAuPsy":"3 phrases maximum, factuelles, pour le psychologue humain au sol"}` },
     { role: 'user', content: `Journée analysée : J${day.day}.
 
-Référence personnelle de Haddad (${reference.periode}) : ${JSON.stringify(reference)}
+Écarts à la référence personnelle de Haddad (${reference.periode}), calculés par le système :
+${deviations(reference, history)}
 
-Historique des 7 derniers jours (capteurs + check-in) :
-${history.map((h) => `J${h.day} ${JSON.stringify({ ...h.sensors, humeur: h.biomarkers.checkinHumeur, fatigue: h.biomarkers.checkinFatigue, vfc: h.biomarkers.vfcMs, cortisol: h.biomarkers.cortisolNmolL })}`).join('\n')}
+Historique des 7 derniers jours (pour juger la persistance) :
+${history.map((h) => `J${h.day} : parole ${h.sensors.tempsDeParoleMin} min, équipage ${h.sensors.tempsAvecEquipageMin} min, repas sautés ${h.sensors.repasSautes}, sommeil ${h.sensors.sommeilH} h, humeur ${h.biomarkers.checkinHumeur}/5, fatigue ${h.biomarkers.checkinFatigue}/5${h.biomarkers.cortisolNmolL ? `, cortisol ${h.biomarkers.cortisolNmolL} nmol/L` : ''}`).join('\n')}
 
 Biomarqueurs du jour : ${JSON.stringify(day.biomarkers)}
 
