@@ -1,0 +1,192 @@
+{
+ "engine": "claude",
+ "model": "claude-haiku-5-5",
+ "generatedAt": "2026-11-14T15:42:38.876Z",
+ "label": "Prototype — données SIMULÉES — signal IA, pas un diagnostic",
+ "scenarios": {
+  "drift": [
+   {
+    "day": 65,
+    "niveau": "a_surveiller",
+    "votes": [
+     {
+      "psy": "psy-physique",
+      "niveau": "a_surveiller"
+     },
+     {
+      "psy": "psy-anxiete",
+      "niveau": "a_surveiller"
+     },
+     {
+      "psy": "psy-social",
+      "niveau": "a_surveiller"
+     }
+    ]
+   },
+   {
+    "day": 74,
+    "niveau": "rien",
+    "votes": [
+     {
+      "psy": "psy-physique",
+      "niveau": "rien"
+     },
+     {
+      "psy": "psy-anxiete",
+      "niveau": "rien"
+     },
+     {
+      "psy": "psy-social",
+      "niveau": "rien"
+     }
+    ]
+   },
+   {
+    "day": 78,
+    "niveau": "rien",
+    "votes": [
+     {
+      "psy": "psy-physique",
+      "niveau": "rien"
+     },
+     {
+      "psy": "psy-anxiete",
+      "niveau": "rien"
+     },
+     {
+      "psy": "psy-social",
+      "niveau": "rien"
+     }
+    ]
+   },
+   {
+    "day": 85,
+    "niveau": "a_surveiller",
+    "votes": [
+     {
+      "psy": "psy-physique",
+      "niveau": "a_surveiller"
+     },
+     {
+      "psy": "psy-anxiete",
+      "niveau": "a_surveiller"
+     },
+     {
+      "psy": "psy-social",
+      "niveau": "a_surveiller"
+     }
+    ]
+   },
+   {
+    "day": 94,
+    "niveau": "proposer_un_echange",
+    "votes": [
+     {
+      "psy": "psy-physique",
+      "niveau": "proposer_un_echange"
+     },
+     {
+      "psy": "psy-anxiete",
+      "niveau": "proposer_un_echange"
+     },
+     {
+      "psy": "psy-social",
+      "niveau": "proposer_un_echange"
+     }
+    ]
+   }
+  ],
+  "control": [
+   {
+    "day": 65,
+    "niveau": "a_surveiller",
+    "votes": [
+     {
+      "psy": "psy-physique",
+      "niveau": "a_surveiller"
+     },
+     {
+      "psy": "psy-anxiete",
+      "niveau": "a_surveiller"
+     },
+     {
+      "psy": "psy-social",
+      "niveau": "a_surveiller"
+     }
+    ]
+   },
+   {
+    "day": 74,
+    "niveau": "rien",
+    "votes": [
+     {
+      "psy": "psy-physique",
+      "niveau": "rien"
+     },
+     {
+      "psy": "psy-anxiete",
+      "niveau": "rien"
+     },
+     {
+      "psy": "psy-social",
+      "niveau": "rien"
+     }
+    ]
+   },
+   {
+    "day": 78,
+    "niveau": "rien",
+    "votes": [
+     {
+      "psy": "psy-physique",
+      "niveau": "rien"
+     },
+     {
+      "psy": "psy-anxiete",
+      "niveau": "rien"
+     },
+     {
+      "psy": "psy-social",
+      "niveau": "rien"
+     }
+    ]
+   },
+   {
+    "day": 85,
+    "niveau": "rien",
+    "votes": [
+     {
+      "psy": "psy-physique",
+      "niveau": "rien"
+     },
+     {
+      "psy": "psy-anxiete",
+      "niveau": "rien"
+     },
+     {
+      "psy": "psy-social",
+      "niveau": "a_surveiller"
+     }
+    ]
+   },
+   {
+    "day": 94,
+    "niveau": "rien",
+    "votes": [
+     {
+      "psy": "psy-physique",
+      "niveau": "rien"
+     },
+     {
+      "psy": "psy-anxiete",
+      "niveau": "rien"
+     },
+     {
+      "psy": "psy-social",
+      "niveau": "rien"
+     }
+    ]
+   }
+  ]
+ }
+}

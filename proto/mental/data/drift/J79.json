@@ -1,0 +1,31 @@
+{
+ "day": 79,
+ "date": "2026-10-30",
+ "scenario": "drift",
+ "transcript": [
+  "06:51 — Réveil. Se lève directement.",
+  "07:30 — Petit-déjeuner avec l'équipage. Haddad : « Ito, tu me montres ta modif sur la pompe ? » Échange suivi avec Okafor (3 répliques). Rit à une blague d'Okafor.",
+  "08:30 — Briefing avec la Terre (message différé). Haddad pose deux questions sur le planning et propose une modification.",
+  "10:00 — Maintenance du système de filtration d'air : terminée dans les temps.",
+  "12:40 — Mange seul dans sa cabine, ration à moitié entamée.",
+  "14:00 — Séance d'exercice : écourtée à 25 min sur 60.",
+  "16:00 — Expérience de biologie avec Okafor. Haddad exécute les étapes demandées, peu d'échanges.",
+  "17:30 — Appel vidéo différé avec sa famille (messages enregistrés). Message enregistré de 9 min, sourit.",
+  "19:30 — Dîner commun. Haddad : « C'est bon, j'ai pas besoin d'aide. » Se frotte les yeux, regard vers le sol.",
+  "21:00 — Soirée film avec l'équipage, commente le film.",
+  "23:20 — Coucher."
+ ],
+ "sensors": {
+  "tempsDeParoleMin": 40,
+  "tempsAvecEquipageMin": 174,
+  "repasSautes": 1,
+  "pas": 3548,
+  "sommeilH": 6.2
+ },
+ "biomarkers": {
+  "checkinHumeur": 4,
+  "checkinFatigue": 3,
+  "vfcMs": 48,
+  "cortisolNmolL": null
+ }
+}

@@ -6,16 +6,20 @@ import type { ModelManifest } from '../src/types';
 
 const manifest = JSON.parse(readFileSync(new URL('../public/models/manifest.json', import.meta.url), 'utf8')) as ModelManifest;
 
-const ANCHORS: Record<string, [number, number, number]> = {
-  hanche: [0.14, 0.93, 0.02], rachis: [0, 1.15, -0.06], femur: [0.13, 0.82, 0.02], cuisse: [-0.13, 0.68, 0.04],
-  mollet: [-0.11, 0.3, -0.03], paravertebraux: [0.05, 1.1, -0.09], coeur: [0.04, 1.3, 0.05], poumons: [-0.09, 1.32, 0.03],
-  foie: [-0.07, 1.15, 0.06], reins: [0.07, 1.08, -0.04], cerveau: [0, 1.66, 0], yeux: [0.035, 1.63, 0.09],
-  sang: [0.0, 1.2, 0.07], dose: [0, 1.0, 0.1],
-};
+// Ancres calculées sur la géométrie Z-Anatomy (Steve) : on vérifie leur présence et leur plausibilité
+// (dans le volume du corps : pieds y ≈ 0, sommet ≈ 1,72 m, largeur ±0,4 m, profondeur ±0,25 m).
+const ORGANS = ['hanche', 'rachis', 'femur', 'cuisse', 'mollet', 'paravertebraux', 'coeur', 'poumons', 'foie', 'reins', 'cerveau', 'yeux', 'sang', 'dose'];
 
 describe('manifest.json', () => {
   it('ancres conformes au contrat', () => {
-    expect(Object.fromEntries(manifest.organs.map((o) => [o.id, o.anchor]))).toEqual(ANCHORS);
+    expect(manifest.organs.map((o) => o.id).sort()).toEqual([...ORGANS].sort());
+    for (const o of manifest.organs) {
+      const [x, y, z] = o.anchor;
+      expect(Math.abs(x)).toBeLessThan(0.4);
+      expect(y).toBeGreaterThan(0);
+      expect(y).toBeLessThan(1.8);
+      expect(Math.abs(z)).toBeLessThan(0.25);
+    }
   });
   it('calques et organes cohérents avec le corps du jour', () => {
     const body = getDayBody(94);

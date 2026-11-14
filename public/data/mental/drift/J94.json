@@ -1,0 +1,316 @@
+{
+ "day": 94,
+ "date": "2026-11-14",
+ "scenario": "drift",
+ "model": "claude-haiku-5-5",
+ "label": "Prototype — données SIMULÉES — signal IA, pas un diagnostic",
+ "input": {
+  "transcript": [
+   "07:09 — Réveil. Reste allongé plusieurs minutes avant de se lever.",
+   "07:30 — Petit-déjeuner avec l'équipage. Haddad : « J'ai l'impression de tourner en rond ici. » Voix basse et monocorde.",
+   "08:30 — Briefing avec la Terre (message différé). Haddad pose deux questions sur le planning et propose une modification.",
+   "10:00 — Maintenance du système de filtration d'air : abandonnée en cours, reportée à demain. Haddad : « De toute façon on verra bien. »",
+   "12:40 — Mange seul dans sa cabine, ration à moitié entamée.",
+   "14:00 — Séance d'exercice : écourtée à 25 min sur 60. Dit avoir mal à la tête.",
+   "16:00 — Expérience de biologie avec Okafor. Haddad oublie une étape ; Okafor la refait sans commentaire.",
+   "17:30 — Temps libre seul dans sa cabine, porte fermée. Regarde des photos de la Terre pendant 40 min sans bouger.",
+   "19:30 — Dîner commun. Haddad : « Je suis fatigué, c'est tout. » Reste en retrait au fond du module.",
+   "21:00 — Soirée film avec l'équipage, commente le film.",
+   "00:30 — Coucher."
+  ],
+  "sensors": {
+   "tempsDeParoleMin": 26,
+   "tempsAvecEquipageMin": 147,
+   "repasSautes": 1,
+   "pas": 2423,
+   "sommeilH": 5.4
+  },
+  "biomarkers": {
+   "checkinHumeur": 2,
+   "checkinFatigue": 4,
+   "vfcMs": 41,
+   "cortisolNmolL": null
+  }
+ },
+ "observers": [
+  {
+   "id": "obs-actions",
+   "label": "Observateur — actions et comportements",
+   "output": {
+    "faits": [
+     {
+      "heure": "07:09",
+      "fait": "Lever à 07:09 ; reste allongé plusieurs minutes avant de se lever.",
+      "citation": null
+     },
+     {
+      "heure": "10:00",
+      "fait": "Maintenance du système de filtration d'air interrompue en cours de tâche et reportée au lendemain.",
+      "citation": "De toute façon on verra bien."
+     },
+     {
+      "heure": "12:40",
+      "fait": "Repas pris seul dans la cabine ; ration à moitié entamée.",
+      "citation": null
+     },
+     {
+      "heure": "14:00",
+      "fait": "Séance d'exercice écourtée à 25 min sur 60 prévues.",
+      "citation": null
+     },
+     {
+      "heure": "17:30",
+      "fait": "Temps libre seul dans la cabine, porte fermée ; reste immobile 40 min à regarder des photos de la Terre.",
+      "citation": null
+     },
+     {
+      "heure": "19:30",
+      "fait": "Dîner commun ; reste en retrait au fond du module.",
+      "citation": null
+     }
+    ],
+    "resume": "Haddad s'est levé à 07:09 et s'est couché à 00:30, avec 5,4 h de sommeil mesurées et 147 min passées avec l'équipage. Il a interrompu une tâche de maintenance, pris un repas seul, écourté sa séance d'exercice à 25 min sur 60 et passé 40 min seul dans sa cabine."
+   },
+   "seconds": 8.6
+  },
+  {
+   "id": "obs-paroles",
+   "label": "Observateur — paroles et interactions",
+   "output": {
+    "faits": [
+     {
+      "heure": "07:30",
+      "fait": "Au petit-déjeuner avec l'équipage, prend la parole pour faire part d'un sentiment sur le lieu de vie.",
+      "citation": "J'ai l'impression de tourner en rond ici."
+     },
+     {
+      "heure": "08:30",
+      "fait": "Lors du briefing avec la Terre, pose deux questions sur le planning et propose une modification.",
+      "citation": null
+     },
+     {
+      "heure": "10:00",
+      "fait": "Interrompt la maintenance du système de filtration d'air, reportée à demain, et répond à la question de la tâche par une phrase sans suite concrète.",
+      "citation": "De toute façon on verra bien."
+     },
+     {
+      "heure": "12:40",
+      "fait": "Prend son repas seul dans sa cabine, sans participer au repas de l'équipage.",
+      "citation": null
+     },
+     {
+      "heure": "16:00",
+      "fait": "Lors de l'expérience de biologie avec Okafor, oublie une étape ; Okafor la refait sans faire de remarque.",
+      "citation": null
+     },
+     {
+      "heure": "19:30",
+      "fait": "Au dîner commun, répond à la question sur son état sans développer, puis reste au fond du module.",
+      "citation": "Je suis fatigué, c'est tout."
+     }
+    ],
+    "resume": "Haddad prend peu d'initiatives verbales dans la journée et ses réponses sont brèves, notamment lors des échanges sur son état. Il prend ses repas et son temps libre à l'écart de l'équipage, à l'exception de la soirée film où il commente le programme."
+   },
+   "seconds": 6.6
+  },
+  {
+   "id": "obs-corps",
+   "label": "Observateur — corps et ressentis",
+   "output": {
+    "faits": [
+     {
+      "heure": "07:09",
+      "fait": "Reste allongé plusieurs minutes après le réveil, avant de se lever.",
+      "citation": null
+     },
+     {
+      "heure": "07:30",
+      "fait": "Parle à voix basse et d'un ton monocorde lors du petit-déjeuner.",
+      "citation": "J'ai l'impression de tourner en rond ici."
+     },
+     {
+      "heure": "12:40",
+      "fait": "Mange seul dans sa cabine et laisse la moitié de sa ration.",
+      "citation": null
+     },
+     {
+      "heure": "14:00",
+      "fait": "Interrompt sa séance d'exercice à 25 min sur 60 et signale une douleur à la tête.",
+      "citation": null
+     },
+     {
+      "heure": "17:30",
+      "fait": "Reste immobile pendant 40 min devant des photos de la Terre, dans sa cabine.",
+      "citation": null
+     },
+     {
+      "heure": "19:30",
+      "fait": "Se dit fatigué pendant le dîner et reste en retrait au fond du module.",
+      "citation": "Je suis fatigué, c'est tout."
+     }
+    ],
+    "resume": "Haddad se lève après plusieurs minutes allongé et signale fatigue et douleur à la tête, avec une séance d'exercice écourtée de 35 min. Les capteurs indiquent 5,4 h de sommeil et 2 423 pas sur la journée."
+   },
+   "seconds": 6.8
+  }
+ ],
+ "psychologists": [
+  {
+   "id": "psy-physique",
+   "label": "Psychologue — état physico-psychique",
+   "output": {
+    "niveau": "proposer_un_echange",
+    "confiance": "moyenne",
+    "hypotheses": [
+     {
+      "schema": "Retrait social et baisse des échanges verbaux qui s'installent depuis plusieurs jours",
+      "preuves": [
+       "Temps de parole à 26 min, soit -46 % par rapport à sa référence, avec une tendance basse depuis J91 (17, 10, 40, 26 min)",
+       "Repas pris seul en cabine à J94 et repas sautés en hausse : 1 aujourd'hui, 2 en J91 et J93",
+       "Réponses brèves au dîner : « Je suis fatigué, c'est tout », et retrait au fond du module"
+      ]
+     },
+     {
+      "schema": "Fatigue physique et récupération insuffisante",
+      "preuves": [
+       "Sommeil à 5,4 h, soit -18 % par rapport à sa référence, et 5,2 h de moyenne sur 7 jours, avec un creux à 4,7 h en J93",
+       "Fatigue déclarée à 4/5 depuis J92, et douleur à la tête signalée pendant l'exercice",
+       "Séance d'exercice écourtée à 25 min sur 60 et 2 423 pas, soit -34 % par rapport à sa référence, avec un lever tardif après plusieurs minutes allongé"
+      ]
+     },
+     {
+      "schema": "Démotivation et désinvestissement vis-à-vis de la mission, à regarder",
+      "preuves": [
+       "Humeur déclarée à 2/5, soit -44 % par rapport à sa référence, stable depuis J90",
+       "Phrase « De toute façon on verra bien » lors d'une maintenance interrompue et reportée au lendemain",
+       "Sentiment exprimé au petit-déjeuner : « J'ai l'impression de tourner en rond ici », dit d'un ton monocorde"
+      ]
+     }
+    ],
+    "ecartsReference": [
+     "Temps de parole à 26 min, soit -46 % (référence 48,4 min)",
+     "Repas sautés à 1, soit +100 % (référence 0,5)",
+     "Humeur déclarée à 2/5, soit -44 % (référence 3,6)"
+    ],
+    "pointsRassurants": [
+     "Temps passé avec l'équipage à 147 min, soit -18 %, sous le seuil de 20 %, et encore présent dans les échanges collectifs",
+     "Questions posées au briefing avec la Terre et proposition de modification du planning, signe d'implication",
+     "Participation au dîner commun et commentaires lors de la soirée film",
+     "VFC à 41 ms, soit -15 %, et sommeil proche de sa moyenne habituelle de 5,2 h"
+    ],
+    "noteAuPsy": "Le signal dure depuis J91 avec au moins deux indicateurs écartés de 20 % ou plus chaque jour, et il est cohérent entre comportements observés et humeur déclarée. Les biomarqueurs (VFC, sommeil) restent modérément écartés et le cortisol n'est pas disponible aujourd'hui. Un échange individuel au sol, centré sur l'état général et la fatigue, paraît pertinent sans conclure à une cause."
+   },
+   "seconds": 11.5
+  },
+  {
+   "id": "psy-anxiete",
+   "label": "Psychologue — rapport à l'anxiété",
+   "output": {
+    "niveau": "proposer_un_echange",
+    "confiance": "elevee",
+    "hypotheses": [
+     {
+      "schema": "Schéma à regarder : retrait social progressif depuis J89, avec repas et temps de parole en baisse, observé en parallèle d'une humeur déclarée basse.",
+      "preuves": [
+       "Temps de parole à -46 % vs référence aujourd'hui, et à -79 % à J93 ; signal présent sur 6 jours consécutifs (J89 à J94).",
+       "Repas pris seul dans la cabine à 12:40 et repas sautés à +100 % vs référence ; observateur : « reste en retrait au fond du module » au dîner.",
+       "Humeur déclarée à 2/5 (-44 % vs référence) depuis J90, soit 5 jours consécutifs."
+      ]
+     },
+     {
+      "schema": "Schéma à regarder : fatigue et énergie basses, avec sommeil court et activité physique écourtée.",
+      "preuves": [
+       "Fatigue déclarée à 4/5 à J89, J92, J93 et J94 ; « Je suis fatigué, c'est tout » au dîner.",
+       "Séance d'exercice interrompue à 25 min sur 60 avec douleur à la tête signalée par l'observateur corps et ressentis.",
+       "Pas à -34 % vs référence aujourd'hui ; sommeil à 5,4 h, soit -18 % vs référence, et moyenne 7 jours à -21 %."
+      ]
+     },
+     {
+      "schema": "Schéma à regarder : désengagement face aux tâches et aux incidents, avec faible investissement dans le travail en cours.",
+      "preuves": [
+       "Maintenance du système de filtration d'air interrompue à 10:00 et reportée au lendemain, avec la phrase « De toute façon on verra bien. » (aucune panne signalée).",
+       "Oubli d'une étape lors de l'expérience de biologie à 16:00, refaite par Okafor.",
+       "Temps libre de 40 min immobile devant des photos de la Terre, porte fermée à 17:30."
+      ]
+     }
+    ],
+    "ecartsReference": [
+     "Temps de parole : 26 min aujourd'hui, soit -46 % vs référence 48,4 min ; moyenne 7 jours à -46 %.",
+     "Repas sautés : 1 aujourd'hui, soit +100 % vs référence 0,5 ; moyenne 7 jours à +120 %.",
+     "Humeur déclarée : 2/5 aujourd'hui, soit -44 % vs référence 3,6 ; moyenne 7 jours à -36 %."
+    ],
+    "pointsRassurants": [
+     "Temps avec l'équipage à 147 min, soit -18 % vs référence : dans la variation normale de Haddad.",
+     "Sommeil à 5,4 h, soit -18 % vs référence : dans la variation normale, sans dette qui s'aggrave ce jour.",
+     "Haddad participe au petit-déjeuner, pose des questions sur le planning et propose une modification ; il exprime son ressenti à voix haute, et il prend part au dîner et à la soirée film."
+    ],
+    "noteAuPsy": "Le temps de parole, les repas pris seul et l'humeur déclarée sont en baisse depuis 5 à 6 jours, avec des signes concordants chez les observateurs. Les biomarqueurs restent modérés : VFC à -15 % et cortisol non mesuré aujourd'hui (523 nmol/L à J91). Un échange informel avec Haddad est proposé pour explorer le ressenti sur le lieu de vie et la charge de travail, sans supposer de cause."
+   },
+   "seconds": 12.3
+  },
+  {
+   "id": "psy-social",
+   "label": "Psychologue — lien social et isolement",
+   "output": {
+    "niveau": "proposer_un_echange",
+    "confiance": "moyenne",
+    "hypotheses": [
+     {
+      "schema": "Retrait social progressif depuis J89 : le temps de parole reste nettement sous la référence et les repas sont pris à l'écart de l'équipage.",
+      "preuves": [
+       "Temps de parole sous la référence de plus de 20 % sur J89, J90, J91, J93 et J94 (J93 : 10 min contre 48,4 de référence).",
+       "Repas pris seul dans la cabine à 12:40, moitié de ration laissée, puis retrait au fond du module au dîner.",
+       "Initiative verbale du matin (« J'ai l'impression de tourner en rond ici ») suivie de réponses brèves le soir."
+      ]
+     },
+     {
+      "schema": "Humeur basse et fatigue persistantes, sur une durée supérieure à quatre jours.",
+      "preuves": [
+       "Humeur déclarée à 2/5 de J90 à J94, soit 5 jours consécutifs, contre une référence de 3,6.",
+       "Fatigue déclarée à 4/5 sur J92, J93 et J94.",
+       "Phrase du dîner : « Je suis fatigué, c'est tout », avec signalement d'une douleur à la tête à 14:00."
+      ]
+     },
+     {
+      "schema": "Possible baisse d'engagement dans les tâches et l'activité physique.",
+      "preuves": [
+       "Maintenance du filtre à air interrompue à 10:00 et reportée, avec la réponse « De toute façon on verra bien ».",
+       "Séance d'exercice écourtée à 25 min sur 60 prévues.",
+       "Pas à 2 423 (-34 % vs référence), moyenne sur 7 jours à -26 %."
+      ]
+     }
+    ],
+    "ecartsReference": [
+     "Temps de parole à 26 min, soit -46 % vs référence, et -46 % en moyenne sur 7 jours.",
+     "Humeur déclarée à 2/5, soit -44 % vs référence, avec 5 jours consécutifs à 2/5.",
+     "Repas sautés à 1, soit +100 % vs référence, et +120 % en moyenne sur 7 jours."
+    ],
+    "pointsRassurants": [
+     "Temps avec l'équipage à 147 min, soit -18 %, sous le seuil de 20 %.",
+     "Sommeil à 5,4 h, stable par rapport à J88 et J89 ; pas de rupture nette.",
+     "Participe au dîner commun et commente le programme pendant la soirée film ; reprend sans conflit l'étape oubliée avec Okafor."
+    ],
+    "noteAuPsy": "Le signal est présent depuis J89-J90 : temps de parole et humeur restent sous la référence, avec des repas pris seul et un retrait au fond du module. Le temps passé avec l'équipage reste proche de la référence, et il n'y a pas de rupture du sommeil ni de la VFC au-delà de 20 %. Un échange individuel, pris comme un point d'attention et non comme une évaluation, paraît pertinent ; la maintenance reportée peut aussi être abordée sur le plan pratique."
+   },
+   "seconds": 13.8
+  }
+ ],
+ "dossierPourLePsyHumain": {
+  "niveau": "proposer_un_echange",
+  "regle": "niveau atteint par au moins 2 psychologues sur 3",
+  "votes": [
+   {
+    "psy": "psy-physique",
+    "niveau": "proposer_un_echange"
+   },
+   {
+    "psy": "psy-anxiete",
+    "niveau": "proposer_un_echange"
+   },
+   {
+    "psy": "psy-social",
+    "niveau": "proposer_un_echange"
+   }
+  ]
+ }
+}

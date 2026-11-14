@@ -554,6 +554,20 @@ function buildNervous(): PartDef[] {
 // ───────────────────────────── assemblage ─────────────────────────────
 
 let cache: PartDef[] | null = null;
+let source: 'procedural' | 'z-anatomy' = 'procedural';
+let manifestAnchors: Record<string, V3> | null = null;
+
+/** Ajout (Steve) : remplace le corps procédural par les pièces Z-Anatomy chargées (src/three/zanatomy.ts). À appeler AVANT le premier rendu. */
+export function setLoadedAnatomy(parts: PartDef[], manifest: ModelManifest): void {
+  cache = parts;
+  source = 'z-anatomy';
+  manifestAnchors = Object.fromEntries(manifest.organs.map((o) => [o.id, o.anchor as V3]));
+}
+
+/** Ajout (Steve) : 'z-anatomy' si les vrais modèles sont chargés, sinon 'procedural' (corps de secours). */
+export function anatomySource(): 'procedural' | 'z-anatomy' {
+  return source;
+}
 
 /** Construit (une seule fois) toutes les pièces du corps procédural. */
 export function buildAnatomy(): PartDef[] {
@@ -623,7 +637,12 @@ export const FALLBACK_MANIFEST: ModelManifest = {
 
 /** Position monde de l'ancre du warning d'un organe. */
 export function getAnchor(organId: OrganId): [number, number, number] | null {
-  return ANCHORS[organId] ?? null;
+  return manifestAnchors?.[organId] ?? ANCHORS[organId] ?? null;
+}
+
+/** Ajout (Steve) : ancres actives (manifeste Z-Anatomy si chargé, sinon corps procédural). */
+export function activeAnchors(): { id: OrganId; anchor: [number, number, number] }[] {
+  return FALLBACK_MANIFEST.organs.map((o) => ({ id: o.id, anchor: (manifestAnchors?.[o.id] ?? o.anchor) as [number, number, number] }));
 }
 
 /** Calques dans lesquels un organe est visible. */

@@ -19,6 +19,7 @@ import { LeaderLines } from './panels/LeaderLines';
 import { Timeline } from './panels/Timeline';
 import { OrganWindow } from './panels/OrganWindow';
 import './Body.css';
+import { anatomySource } from '../../three/anatomy';
 
 /** Si la 3D tombe (pas de WebGL, erreur de shader), la page reste utilisable : panneau gris, pas d'écran blanc. */
 class SceneBoundary extends Component<{ children: ReactNode }, { error: string | null }> {
@@ -148,9 +149,15 @@ function SceneChrome(): JSX.Element {
       <div className="body-help" title="Glisser : orbite · Molette : zoom · Clic : épingler · Double-clic : fenêtre organe · Espace : lecture · ← → : jour">
         <Label dim>GLISSER : ORBITE · MOLETTE : ZOOM · CLIC : ÉPINGLER · 2× CLIC : FENÊTRE · ESPACE : LECTURE</Label>
       </div>
-      <div className="body-credit" title="Corps de secours procédural de l'équipe (stylisé, pas un atlas). Les modèles Z-Anatomy (CC BY-SA 4.0) le remplaceront.">
-        <Label dim>CORPS PROCÉDURAL DE SECOURS</Label>
-      </div>
+      {anatomySource() === 'z-anatomy' ? (
+        <div className="body-credit" title="Z-Anatomy — CC BY-SA 4.0 · BodyParts3D — CC BY-SA 2.1 JP · rein et oreille interne CC BY-NC · usage hackathon non commercial (public/models/CREDITS.md)">
+          <Label dim>MODÈLES Z-ANATOMY — CC BY-SA 4.0</Label>
+        </div>
+      ) : (
+        <div className="body-credit" title="Corps de secours procédural de l'équipe (stylisé, pas un atlas). Les modèles Z-Anatomy (CC BY-SA 4.0) le remplaceront.">
+          <Label dim>CORPS PROCÉDURAL DE SECOURS</Label>
+        </div>
+      )}
     </div>
   );
 }

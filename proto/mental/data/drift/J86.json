@@ -1,0 +1,31 @@
+{
+ "day": 86,
+ "date": "2026-11-06",
+ "scenario": "drift",
+ "transcript": [
+  "06:57 — Réveil. Se lève directement.",
+  "07:30 — Ne vient pas au petit-déjeuner commun. Kovacs frappe à sa cabine ; Haddad : « Faites sans moi ce soir. »",
+  "08:30 — Briefing avec la Terre (message différé). Haddad écoute, intervient une fois.",
+  "10:00 — Maintenance du système de filtration d'air : terminée dans les temps.",
+  "12:40 — Mange seul dans sa cabine, ration à moitié entamée.",
+  "14:00 — Séance d'exercice : annulée (« pas la force aujourd'hui »). Dit ne pas avoir faim.",
+  "16:00 — Expérience de biologie avec Okafor. Haddad oublie une étape ; Okafor la refait sans commentaire.",
+  "17:30 — Temps libre seul dans sa cabine, porte fermée. Regarde des photos de la Terre pendant 40 min sans bouger.",
+  "19:30 — Dîner commun. Haddad : « Ce soir film, c'est moi qui choisis. »",
+  "21:00 — Décline la soirée film proposée par Ito : « De toute façon on verra bien. »",
+  "00:50 — Coucher."
+ ],
+ "sensors": {
+  "tempsDeParoleMin": 21,
+  "tempsAvecEquipageMin": 65,
+  "repasSautes": 2,
+  "pas": 2806,
+  "sommeilH": 6
+ },
+ "biomarkers": {
+  "checkinHumeur": 3,
+  "checkinFatigue": 3,
+  "vfcMs": 46,
+  "cortisolNmolL": null
+ }
+}
