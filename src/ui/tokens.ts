@@ -1,37 +1,31 @@
-// Design tokens — SEULE source des couleurs et des typos (règle 8).
-// Les variables CSS (--sz-*) sont injectées depuis ce fichier par applyTokens() ; aucun hex ailleurs.
-// Direction : logiciel clinique sobre. Surfaces neutres opaques, une seule couleur d'accent pour
-// l'interaction, couleurs vives réservées aux statuts, une seule police (Inter).
+// Design tokens — ROADMAP §1 « Direction artistique ».
+// SEULE source des couleurs et des typos (règle 8). Les variables CSS (--sz-*) sont
+// injectées depuis ce fichier par applyTokens() ; aucun hex ne doit apparaître ailleurs.
 import type { Color, Level } from '../types';
 
 export const tokens = {
   color: {
-    bg: '#0B0D10',            // fond de l'application
-    panel: '#12151A',         // surface d'un panneau
-    panelHover: '#1A1E25',    // surface surélevée : survol, champ, ligne sélectionnée
-    inset: '#0E1115',         // zone en creux dans un panneau (graphique, tableau)
-    border: '#252A32',        // séparateurs et contours
-    borderStrong: '#39404B',  // contours de contrôles
-    text: '#E6E8EB',
-    textDim: '#959CA6',       // texte secondaire
-    textMuted: '#69707B',     // texte tertiaire, graduations
-    accent: '#6EA8E0',        // interaction : lien, focus, sélection
-    holo: '#A9B8C6',          // corps 3D uniquement
-    ok: '#3DB46D',
-    amber: '#E3A22E',
-    red: '#E5544B',
-    unknown: '#69707B',
+    bg: '#050607',
+    panel: 'rgba(255,255,255,0.03)',
+    panelHover: 'rgba(255,255,255,0.06)',
+    border: 'rgba(255,255,255,0.12)',
+    borderStrong: 'rgba(255,255,255,0.28)',
+    text: '#E8E8E6',
+    textDim: '#8A8F98',
+    holo: '#9FB4C7',
+    ok: '#30D158',
+    amber: '#FF9F0A',
+    red: '#FF453A',
+    unknown: '#636366',
   },
   font: {
-    text: "'Inter Variable', Inter, system-ui, -apple-system, 'Segoe UI', sans-serif",
-    /** Conservé pour compatibilité : les chiffres utilisent Inter en chiffres tabulaires (plus de chasse fixe). */
-    mono: "'Inter Variable', Inter, system-ui, -apple-system, 'Segoe UI', sans-serif",
+    text: "'Inter Variable', Inter, system-ui, sans-serif",
+    mono: "'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, monospace",
   },
-  // = --sz-fs-* (global.css) : label 11 · small 12 · data 13 · body 14 · title 16 · num 20 · display 24
-  size: { xs: 11, sm: 12, data: 13, md: 14, lg: 16, xl: 20, xxl: 24 },
+  // = --sz-fs-* (global.css) : label 11 · small 12 · data 13 · body 14 · title 16 · num 22 · display 34
+  size: { xs: 11, sm: 12, data: 13, md: 14, lg: 16, xl: 22, xxl: 34 },
   space: { 1: 4, 2: 8, 3: 12, 4: 16, 5: 24, 6: 32 },
-  /** Les libellés ne sont plus en capitales espacées. */
-  labelTracking: '0',
+  labelTracking: '0.08em',
 } as const;
 
 /** Couleur d'un statut. Gris = inconnu, jamais vert par défaut. */
@@ -43,10 +37,10 @@ export const statusColor: Record<Color, string> = {
 };
 
 export const statusLabel: Record<Color, string> = {
-  green: 'Nominal',
-  amber: 'Ambre',
-  red: 'Rouge',
-  grey: 'Inconnu',
+  green: 'NOMINAL',
+  amber: 'AMBRE',
+  red: 'ROUGE',
+  grey: 'INCONNU',
 };
 
 export const levelColor: Record<Level, Color> = {
@@ -61,10 +55,9 @@ export const levelColor: Record<Level, Color> = {
 export function applyTokens(root: HTMLElement = document.documentElement): void {
   const c = tokens.color;
   const vars: Record<string, string> = {
-    '--sz-bg': c.bg, '--sz-panel': c.panel, '--sz-panel-hover': c.panelHover, '--sz-inset': c.inset,
+    '--sz-bg': c.bg, '--sz-panel': c.panel, '--sz-panel-hover': c.panelHover,
     '--sz-border': c.border, '--sz-border-strong': c.borderStrong,
-    '--sz-text': c.text, '--sz-text-dim': c.textDim, '--sz-text-muted': c.textMuted,
-    '--sz-accent': c.accent, '--sz-holo': c.holo,
+    '--sz-text': c.text, '--sz-text-dim': c.textDim, '--sz-holo': c.holo,
     '--sz-ok': c.ok, '--sz-amber': c.amber, '--sz-red': c.red, '--sz-unknown': c.unknown,
     '--sz-font-text': tokens.font.text, '--sz-font-mono': tokens.font.mono,
     '--sz-tracking': tokens.labelTracking,

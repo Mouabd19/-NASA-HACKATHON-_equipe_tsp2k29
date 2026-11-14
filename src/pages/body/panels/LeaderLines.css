@@ -1,10 +1,10 @@
-/* Trait de liaison ligne de panneau → organe — préfixe .ldl. Neutre, 1 px. */
+/* Traits de liaison — préfixe .ldl. Couleur du trait = currentColor (posée par le composant). */
 
 .ldl {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 3; /* sous les étiquettes d'alerte (.w3d-layer) : le trait passe derrière elles */
+  z-index: 4;
 }
 .ldl__svg {
   position: absolute;
@@ -14,8 +14,26 @@
   max-width: none;
   overflow: visible;
 }
+
+.ldl__wire {
+  color: var(--sz-holo);
+  opacity: 0.38;
+  transition: opacity 120ms ease-out;
+}
+.ldl__wire[data-state='pin'] { opacity: 0.7; }
+.ldl__wire[data-state='hot'] { opacity: 1; }
+.ldl__wire[data-state='dim'] { opacity: 0.2; }
+
 .ldl__line {
-  stroke: var(--sz-border-strong);
+  stroke: currentColor;
   stroke-width: 1;
   shape-rendering: crispEdges;
 }
+.ldl__node {
+  fill: var(--sz-bg);
+  stroke: currentColor;
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+.ldl__wire[data-state='hot'] .ldl__node { fill: currentColor; }
+.ldl__stub { fill: currentColor; }

@@ -1,29 +1,21 @@
-/* SOL ZÉRO — styles globaux et composants partagés.
-   Couleurs et typos : uniquement les variables --sz-* injectées par tokens.ts.
-   Règles de la maison : une seule police (Inter), casse de phrase partout (aucune capitale espacée),
-   chiffres tabulaires, surfaces opaques, couleur vive réservée aux statuts, aucun effet décoratif. */
+/* SOL ZÉRO — styles globaux. Couleurs et typos : uniquement les variables --sz-* injectées par tokens.ts. */
 
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
-/* Échelle unique, partagée par toutes les pages. */
+/* Échelle typographique unique, partagée par toutes les pages (Body, War Room, Raisonnement).
+   Texte : Inter. Chasse fixe : uniquement les chiffres et les données. */
 :root {
-  --sz-fs-label: 11px;   /* graduations, légendes de graphique */
-  --sz-fs-small: 12px;   /* libellés, métadonnées */
-  --sz-fs-data: 13px;    /* texte et données des panneaux (taille par défaut) */
-  --sz-fs-body: 14px;    /* texte courant long */
-  --sz-fs-title: 16px;   /* titre d'élément, de fenêtre */
-  --sz-fs-num: 20px;     /* chiffre clé */
-  --sz-fs-display: 24px; /* chiffre principal, titre de page */
-  --sz-radius: 8px;      /* panneaux, fenêtres */
-  --sz-radius-sm: 6px;   /* boutons, champs */
-  --sz-radius-xs: 4px;   /* puces, badges */
-  --sz-control-h: 28px;  /* hauteur des boutons et champs */
-  --sz-row-h: 32px;      /* hauteur d'une ligne de liste ou de tableau */
-  --sz-gap: 12px;        /* gouttière entre panneaux */
-  --sz-pad: 16px;        /* marge intérieure d'un panneau */
-  --sz-shadow-pop: 0 8px 28px rgba(0, 0, 0, 0.45); /* cartes flottantes et fenêtres uniquement */
+  --sz-fs-label: 11px;   /* étiquettes de section, capitales */
+  --sz-fs-small: 12px;   /* métadonnées, légendes */
+  --sz-fs-data: 13px;    /* lignes de données des panneaux denses */
+  --sz-fs-body: 14px;    /* texte courant */
+  --sz-fs-title: 16px;   /* titres d'éléments */
+  --sz-fs-num: 22px;     /* chiffres clés */
+  --sz-fs-display: 34px; /* chiffre ou titre principal de page */
+  --sz-radius: 12px;     /* panneaux */
+  --sz-radius-sm: 6px;   /* boutons, puces */
 }
 
 html, body, #root {
@@ -51,7 +43,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd { margin: 0; }
-h1, h2, h3, h4, h5, h6 { font-size: inherit; font-weight: 600; }
+h1, h2, h3, h4, h5, h6 { font-size: inherit; font-weight: 500; }
 ul, ol { margin: 0; padding: 0; list-style: none; }
 img, svg, canvas, video { display: block; max-width: 100%; }
 a { color: inherit; text-decoration: none; }
@@ -61,24 +53,25 @@ button { background: none; border: 0; padding: 0; cursor: pointer; }
 button:disabled { cursor: default; }
 
 ::selection {
-  background: color-mix(in srgb, var(--sz-accent) 35%, transparent);
+  background: color-mix(in srgb, var(--sz-holo) 35%, transparent);
   color: var(--sz-text);
 }
 
 :focus { outline: none; }
 :focus-visible {
-  outline: 2px solid var(--sz-accent);
-  outline-offset: 1px;
+  outline: 1px solid var(--sz-text);
+  outline-offset: 2px;
 }
 
+/* Barres de défilement fines (partout ; .sz-scroll rend le conteneur défilant) */
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--sz-border-strong) transparent;
 }
-::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--sz-border-strong); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: var(--sz-text-muted); }
+::-webkit-scrollbar-thumb { background: var(--sz-border-strong); }
+::-webkit-scrollbar-thumb:hover { background: var(--sz-text-dim); }
 ::-webkit-scrollbar-corner { background: transparent; }
 
 .sz-scroll {
@@ -86,54 +79,25 @@ button:disabled { cursor: default; }
   overscroll-behavior: contain;
 }
 
-/* ── Texte ───────────────────────────────────────────────────────────── */
+/* ── Typo utilitaire ─────────────────────────────────────────────────── */
 
-/* Chiffres : Inter en chiffres tabulaires. */
-.sz-num {
-  font-family: var(--sz-font-text);
+.sz-mono {
+  font-family: var(--sz-font-mono);
   font-variant-numeric: tabular-nums;
+  font-feature-settings: 'zero' 1;
 }
 
-/* Libellé de champ ou de section : petit, secondaire, casse de phrase. */
 .sz-label {
-  font-size: var(--sz-fs-small);
+  font-family: var(--sz-font-text);
+  font-size: 11px;
   line-height: 1.4;
-  font-weight: 500;
-  color: var(--sz-text-dim);
+  font-weight: 400;
+  letter-spacing: var(--sz-tracking);
+  text-transform: uppercase;
   font-variant-numeric: tabular-nums;
 }
 
 .sz-dim { color: var(--sz-text-dim); }
-.sz-muted { color: var(--sz-text-muted); }
-
-/* Titre de section à l'intérieur d'un panneau ou d'une fenêtre. */
-.sz-section-title {
-  font-size: var(--sz-fs-data);
-  line-height: 1.4;
-  font-weight: 600;
-  color: var(--sz-text);
-}
-
-/* Chiffre clé et son unité. */
-.sz-value {
-  font-size: var(--sz-fs-num);
-  line-height: 1.2;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  color: var(--sz-text);
-}
-.sz-value--lg { font-size: var(--sz-fs-display); }
-.sz-unit {
-  font-size: var(--sz-fs-small);
-  font-weight: 400;
-  color: var(--sz-text-dim);
-}
-
-.sz-link {
-  color: var(--sz-accent);
-  cursor: pointer;
-}
-.sz-link:hover { text-decoration: underline; }
 
 /* ── Panneau ─────────────────────────────────────────────────────────── */
 
@@ -153,16 +117,21 @@ button:disabled { cursor: default; }
   align-items: center;
   gap: 8px;
   flex: none;
-  min-height: 40px;
-  padding: 0 8px 0 var(--sz-pad);
-  border-bottom: 1px solid var(--sz-border);
-  font-size: var(--sz-fs-data);
+  min-height: 36px;
+  padding: 0 8px 0 14px;
+  font-family: var(--sz-font-text);
+  font-size: 11px;
+  letter-spacing: var(--sz-tracking);
+  text-transform: uppercase;
+  font-weight: 500;
   white-space: nowrap;
 }
+.sz-panel__sys,
+.sz-panel__sep { color: var(--sz-text-dim); flex: none; }
 .sz-panel__title {
-  font-size: var(--sz-fs-data);
-  font-weight: 600;
-  color: var(--sz-text);
+  font: inherit;
+  letter-spacing: inherit;
+  color: var(--sz-text-dim);
   overflow: hidden;
   text-overflow: ellipsis;
   min-width: 0;
@@ -173,60 +142,84 @@ button:disabled { cursor: default; }
   align-items: center;
   gap: 8px;
   flex: none;
-  color: var(--sz-text-dim);
-  font-size: var(--sz-fs-small);
 }
 .sz-panel__body {
   flex: 1;
   min-height: 0;
-  padding: 12px var(--sz-pad) var(--sz-pad);
+  padding: 4px 14px 12px;
 }
 
-/* Bouton de fermeture (panneau, fenêtre) */
+/* Bouton de fermeture d'un panneau */
 .sz-close {
   display: inline-grid;
   place-items: center;
   flex: none;
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   border-radius: var(--sz-radius-sm);
-  color: var(--sz-text-muted);
-  transition: background-color 120ms, color 120ms;
+  color: var(--sz-text-dim);
+  opacity: 0.55;
+  transition: opacity 120ms, background-color 120ms, color 120ms;
 }
 .sz-close:hover,
-.sz-close:focus-visible { color: var(--sz-text); background: var(--sz-panel-hover); }
+.sz-close:focus-visible { opacity: 1; color: var(--sz-text); background: var(--sz-panel-hover); }
 .sz-close svg { width: 10px; height: 10px; }
 
 /* ── Mode « détails » ────────────────────────────────────────────────── */
-/* Par défaut l'écran ne garde que l'essentiel. Étiquettes de provenance et textes secondaires
-   (.sz-detail) réapparaissent avec le bouton « Détails » de la barre haute. */
+/* Par défaut l'écran ne garde que l'essentiel. Étiquettes de provenance, codes de panneau et
+   textes secondaires (.sz-detail) réapparaissent avec le bouton « Détails » de la barre haute. */
 html[data-details='off'] .sz-tag,
 html[data-details='off'] .sz-prov,
+html[data-details='off'] .sz-prov-wr,
+html[data-details='off'] .sz-panel__sys,
+html[data-details='off'] .sz-panel__sep,
 html[data-details='off'] .sz-detail { display: none !important; }
+html[data-details='on'] .sz-essential-only { display: none !important; }
 
-/* ── Étiquettes de provenance (mode détails) ─────────────────────────── */
+/* ── Étiquettes d'honnêteté ──────────────────────────────────────────── */
 
-/* Source d'un chiffre (.sz-tag : « NASA V1 4027 », « Publié », « Hypothèse », « Persona ») et provenance d'un panneau
-   (.sz-prov : « Réel », « Simulé », « Hypothèse ») : même rendu, texte discret sans cadre. */
-.sz-tag,
-.sz-prov {
-  flex: none;
+.sz-tag {
   display: inline-block;
-  font-size: var(--sz-fs-label);
+  font-family: var(--sz-font-mono);
+  font-size: 11px;
   line-height: 1.4;
-  color: var(--sz-text-muted);
+  letter-spacing: 0.06em;
+  color: var(--sz-text-dim);
   white-space: nowrap;
   vertical-align: baseline;
 }
+.sz-tag[data-tag='NASA'] { color: var(--sz-text); }
+
+.sz-prov {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  height: 16px;
+  padding: 0 6px;
+  border-radius: 4px;
+  border: 1px solid var(--sz-border-strong);
+  font-family: var(--sz-font-text);
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: var(--sz-tracking);
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--sz-text-dim);
+  white-space: nowrap;
+}
+.sz-prov[data-prov='RÉEL'] {
+  color: var(--sz-text);
+  border-color: var(--sz-text-dim);
+}
+.sz-prov[data-prov='H'] { border-style: dashed; }
 
 /* ── Statuts (seules couleurs vives) ─────────────────────────────────── */
 
 .sz-dot {
   display: inline-block;
   flex: none;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+  width: 6px;
+  height: 6px;
   background: var(--sz-status, var(--sz-unknown));
   vertical-align: middle;
 }
@@ -234,8 +227,9 @@ html[data-details='off'] .sz-detail { display: none !important; }
 .sz-dot[data-color='grey'],
 .sz-chip[data-color='grey'] .sz-dot {
   background: transparent;
-  border: 1.5px solid var(--sz-unknown);
+  border: 1px solid var(--sz-unknown);
 }
+.sz-dot--pulse { animation: sz-pulse 1.6s ease-in-out infinite; }
 
 .sz-chip {
   display: inline-flex;
@@ -244,178 +238,85 @@ html[data-details='off'] .sz-detail { display: none !important; }
   flex: none;
   height: 20px;
   padding: 0 8px;
-  border-radius: var(--sz-radius-xs);
-  background: color-mix(in srgb, var(--sz-status, var(--sz-unknown)) 14%, transparent);
+  border-radius: var(--sz-radius-sm);
+  border: 1px solid color-mix(in srgb, var(--sz-status, var(--sz-unknown)) 55%, transparent);
+  background: color-mix(in srgb, var(--sz-status, var(--sz-unknown)) 10%, transparent);
   color: var(--sz-status, var(--sz-unknown));
-  font-size: var(--sz-fs-small);
+  font-family: var(--sz-font-text);
+  font-size: 11px;
   line-height: 1;
+  letter-spacing: var(--sz-tracking);
+  text-transform: uppercase;
   font-weight: 500;
   white-space: nowrap;
 }
-.sz-chip .sz-dot { width: 6px; height: 6px; }
 .sz-chip[data-color='grey'] {
   color: var(--sz-text-dim);
-  background: var(--sz-panel-hover);
+  background: transparent;
+  border-style: dashed;
 }
 
-/* ── Boutons ─────────────────────────────────────────────────────────── */
-/* .sz-btn = secondaire. Variantes : --primary (action principale, une par écran), --ghost (sans contour),
-   --sm (24 px). État actif : aria-pressed="true" ou data-active="true". */
+@keyframes sz-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+/* ── Hachures d'alerte ───────────────────────────────────────────────── */
+
+.sz-hatch-red,
+.sz-hatch-amber {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--sz-hatch) 0,
+    var(--sz-hatch) 3px,
+    transparent 3px,
+    transparent 8px
+  );
+  background-color: color-mix(in srgb, var(--sz-hatch) 8%, transparent);
+}
+.sz-hatch-red { --sz-hatch: var(--sz-red); }
+.sz-hatch-amber { --sz-hatch: var(--sz-amber); }
+
+/* ── Bouton fantôme ──────────────────────────────────────────────────── */
 
 .sz-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  height: var(--sz-control-h);
-  padding: 0 12px;
+  height: 26px;
+  padding: 0 10px;
   border-radius: var(--sz-radius-sm);
-  border: 1px solid var(--sz-border-strong);
-  background: var(--sz-panel);
+  border: 1px solid var(--sz-border);
+  background: transparent;
   color: var(--sz-text);
-  font-size: var(--sz-fs-small);
+  font-family: var(--sz-font-text);
+  font-size: 11px;
   line-height: 1;
+  letter-spacing: 0;
+  text-transform: none;
   font-weight: 500;
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
   transition: background-color 120ms, border-color 120ms, color 120ms;
 }
-.sz-btn:hover { background: var(--sz-panel-hover); }
+.sz-btn:hover {
+  background: var(--sz-panel-hover);
+  border-color: var(--sz-border-strong);
+}
 .sz-btn:active { background: var(--sz-border); }
 .sz-btn[aria-pressed='true'],
 .sz-btn[data-active='true'] {
-  background: var(--sz-panel-hover);
-  border-color: var(--sz-text-dim);
-}
-.sz-btn--primary {
-  background: var(--sz-text);
   border-color: var(--sz-text);
-  color: var(--sz-bg);
+  background: var(--sz-panel-hover);
 }
-.sz-btn--primary:hover { background: color-mix(in srgb, var(--sz-text) 88%, var(--sz-bg)); }
-.sz-btn--primary:active { background: color-mix(in srgb, var(--sz-text) 76%, var(--sz-bg)); }
-.sz-btn--ghost {
-  border-color: transparent;
-  background: transparent;
-  color: var(--sz-text-dim);
-}
-.sz-btn--ghost:hover { color: var(--sz-text); }
-.sz-btn--sm { height: 24px; padding: 0 8px; }
 .sz-btn:disabled,
 .sz-btn[aria-disabled='true'] {
-  color: var(--sz-text-muted);
+  color: var(--sz-unknown);
   border-color: var(--sz-border);
   background: transparent;
   cursor: default;
-}
-
-/* Action principale indisponible : reste identifiable comme l'action à venir. */
-.sz-btn--primary:disabled {
-  background: var(--sz-panel-hover);
-  border-color: var(--sz-border-strong);
-  color: var(--sz-text-dim);
-}
-
-/* Contrôle segmenté : un conteneur .sz-seg, des boutons .sz-seg__opt ;
-   option choisie = aria-checked="true" ou aria-pressed="true". */
-.sz-seg {
-  display: inline-flex;
-  align-items: stretch;
-  gap: 2px;
-  padding: 2px;
-  border-radius: var(--sz-radius-sm);
-  border: 1px solid var(--sz-border);
-  background: var(--sz-inset);
-}
-.sz-seg__opt {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 1 1 0;
-  min-width: 32px;
-  height: 24px;
-  padding: 0 10px;
-  border-radius: var(--sz-radius-xs);
-  color: var(--sz-text-dim);
-  font-size: var(--sz-fs-small);
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: background-color 120ms, color 120ms;
-}
-.sz-seg__opt:hover { color: var(--sz-text); }
-.sz-seg__opt[aria-checked='true'],
-.sz-seg__opt[aria-pressed='true'] {
-  background: var(--sz-panel-hover);
-  color: var(--sz-text);
-  box-shadow: inset 0 0 0 1px var(--sz-border-strong);
-}
-.sz-seg--lg .sz-seg__opt { height: 32px; font-size: var(--sz-fs-data); }
-
-/* Champ de saisie */
-.sz-input {
-  height: var(--sz-control-h);
-  padding: 0 8px;
-  border-radius: var(--sz-radius-sm);
-  border: 1px solid var(--sz-border-strong);
-  background: var(--sz-inset);
-  color: var(--sz-text);
-  font-size: var(--sz-fs-data);
-}
-.sz-input::placeholder { color: var(--sz-text-muted); }
-
-/* ── Tableau et listes ───────────────────────────────────────────────── */
-
-.sz-table { width: 100%; font-size: var(--sz-fs-data); }
-.sz-table th {
-  height: 28px;
-  padding: 0 8px;
-  text-align: left;
-  font-size: var(--sz-fs-small);
-  font-weight: 500;
-  color: var(--sz-text-dim);
-  border-bottom: 1px solid var(--sz-border);
-  white-space: nowrap;
-}
-.sz-table td {
-  height: var(--sz-row-h);
-  padding: 0 8px;
-  border-bottom: 1px solid var(--sz-border);
-}
-.sz-table tr:last-child td { border-bottom: 0; }
-.sz-table th:first-child, .sz-table td:first-child { padding-left: 0; }
-.sz-table th:last-child, .sz-table td:last-child { padding-right: 0; }
-.sz-table .sz-num, .sz-table [data-num] { text-align: right; font-variant-numeric: tabular-nums; }
-
-/* ── Page défilante (Plan du jour, Raisonnement) ─────────────────────── */
-
-.sz-page {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 24px 24px 48px;
-}
-/* Page de lecture : même bord gauche que .sz-page, contenu limité à une largeur de lecture. */
-.sz-page--narrow > * { max-width: 820px; }
-.sz-page__head {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 20px;
-}
-.sz-page__title {
-  font-size: var(--sz-fs-display);
-  line-height: 1.25;
-  font-weight: 600;
-  color: var(--sz-text);
-}
-.sz-page__sub {
-  margin-top: 2px;
-  font-size: var(--sz-fs-data);
-  color: var(--sz-text-dim);
 }
 
 /* ── Coquille de l'application (App.tsx) ─────────────────────────────── */
@@ -428,46 +329,62 @@ html[data-details='off'] .sz-detail { display: none !important; }
 }
 
 .sz-topbar {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: stretch;
-  justify-content: space-between;
-  gap: 24px;
   flex: none;
-  height: 48px;
+  height: 44px;
   padding: 0 16px;
-  background: var(--sz-panel);
   border-bottom: 1px solid var(--sz-border);
-  font-size: var(--sz-fs-data);
+  font-family: var(--sz-font-text);
+  font-size: var(--sz-fs-body);
   white-space: nowrap;
 }
 .sz-topbar__left,
 .sz-topbar__right {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   min-width: 0;
 }
-.sz-topbar__left { align-items: stretch; gap: 24px; }
-.sz-topbar__right { justify-content: flex-end; color: var(--sz-text-dim); }
-.sz-topbar__right strong { font-weight: 500; color: var(--sz-text); }
+.sz-topbar__right { justify-content: flex-end; }
 
 .sz-wordmark {
   display: inline-flex;
   align-items: center;
-  font-size: var(--sz-fs-body);
+  gap: 8px;
+  font-size: var(--sz-fs-label);
   font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
   color: var(--sz-text);
+}
+.sz-wordmark__glyph { width: 12px; height: 12px; flex: none; }
+.sz-topbar__rule {
+  width: 1px;
+  height: 12px;
+  background: var(--sz-border-strong);
+  flex: none;
 }
 .sz-topbar__sim {
   display: inline-flex;
   align-items: center;
   height: 20px;
   padding: 0 8px;
-  border-radius: var(--sz-radius-xs);
-  background: var(--sz-panel-hover);
+  border: 1px dashed var(--sz-border-strong);
+  border-radius: var(--sz-radius-sm);
   color: var(--sz-text-dim);
+  text-transform: none;
+  letter-spacing: 0;
   font-size: var(--sz-fs-small);
-  font-weight: 500;
+}
+.sz-topbar__details { height: 22px; text-transform: none; letter-spacing: 0; font-size: var(--sz-fs-small); }
+.sz-topbar__clock { color: var(--sz-text); font-variant-numeric: tabular-nums; }
+.sz-topbar__day {
+  display: inline-flex;
+  align-items: center;
+  color: var(--sz-text);
+  font-family: var(--sz-font-mono);
 }
 
 .sz-nav {
@@ -479,21 +396,24 @@ html[data-details='off'] .sz-detail { display: none !important; }
   position: relative;
   display: inline-flex;
   align-items: center;
-  padding: 0 12px;
-  font-weight: 500;
+  gap: 6px;
+  padding: 0 14px;
   color: var(--sz-text-dim);
-  transition: color 120ms;
+  transition: color 120ms, background-color 120ms;
 }
-.sz-nav__tab:hover { color: var(--sz-text); }
+.sz-nav__tab:hover { color: var(--sz-text); background: var(--sz-panel); }
 .sz-nav__tab:focus-visible { outline-offset: -3px; }
+.sz-nav__num { color: var(--sz-unknown); }
 .sz-nav__tab.active { color: var(--sz-text); }
+.sz-nav__tab.active .sz-nav__num { color: var(--sz-text-dim); }
+/* Onglet actif : filet de 1 px posé sur la bordure basse de la barre */
 .sz-nav__tab.active::after {
   content: '';
   position: absolute;
-  left: 12px;
-  right: 12px;
+  left: 0;
+  right: 0;
   bottom: -1px;
-  height: 2px;
+  height: 1px;
   background: var(--sz-text);
 }
 
@@ -507,11 +427,11 @@ html[data-details='off'] .sz-detail { display: none !important; }
   overflow: hidden;
 }
 .sz-main > * { flex: 1 1 auto; min-height: 0; }
+/* Pages qui ne gèrent pas encore leur défilement (War Room, Raisonnement) */
 .sz-main__scroll { height: 100%; }
 
 @media (max-width: 760px) {
   .sz-topbar__opt { display: none; }
-  .sz-topbar__left { gap: 12px; }
   .sz-nav__tab { padding: 0 8px; }
 }
 

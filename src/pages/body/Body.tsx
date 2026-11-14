@@ -1,15 +1,16 @@
-// Page « Corps » : bandeau de synthèse · [analyses + SpO₂] | corps 3D | [calques + alertes] · chronologie.
-// La fenêtre organe est montée à la racine. Aucun composant ne dépend d'un autre : tout passe par le store useBody.
-import { Component, useEffect } from 'react';
+// Page 1 — BODY (ROADMAP §1) : composition « Cyberware ».
+// En-tête · [sang + SpO₂] | corps 3D | [calques + alertes] · timeline. La fenêtre organe est
+// montée à la racine. Aucun composant ne dépend d'un autre : tout passe par le store useBody.
+import { Component, useEffect, useRef } from 'react';
 import type { ErrorInfo, JSX, ReactNode } from 'react';
 import { DAY_TODAY } from '../../mocks/mission';
 import { useNavigate } from 'react-router-dom';
 import { BodyScene } from '../../three/BodyScene';
 import { look } from '../../three/look';
-import { PanelCloseContext, ProvenanceBadge, TagBadge, fmt } from '../../ui';
+import { Label, PanelCloseContext, ProvenanceBadge, TagBadge, fmt, fmtDay } from '../../ui';
 import { usePrefs } from '../../ui/prefs';
 import type { BodyPanelId } from '../../ui/prefs';
-import { scenarioBody, useBody } from './store';
+import { scanState, scenarioBody, useBody } from './store';
 import { useUrlState } from './urlState';
 import { Header } from './panels/Header';
 import { LayersPanel } from './panels/LayersPanel';
@@ -21,9 +22,10 @@ import { LeaderLines } from './panels/LeaderLines';
 import { Timeline } from './panels/Timeline';
 import { OrganWindow } from './panels/OrganWindow';
 import './Body.css';
+import { anatomySource } from '../../three/anatomy';
 import { ViewMenu, useCleanScreen } from './Windows';
 
-/** Si la 3D tombe (pas de WebGL, erreur de shader), la page reste utilisable : message sobre, pas d'écran blanc. */
+/** Si la 3D tombe (pas de WebGL, erreur de shader), la page reste utilisable : panneau gris, pas d'écran blanc. */
 class SceneBoundary extends Component<{ children: ReactNode }, { error: string | null }> {
   state: { error: string | null } = { error: null };
 
@@ -40,17 +42,42 @@ class SceneBoundary extends Component<{ children: ReactNode }, { error: string |
     return (
       <div className="body-noscene" role="status">
         <div className="body-noscene__box">
-          <h2 className="sz-section-title">Vue 3D indisponible</h2>
-          <p className="body-noscene__text">Les panneaux, les alertes et la chronologie restent exacts.</p>
-          <p className="body-noscene__err sz-detail">{this.state.error.slice(0, 160)}</p>
-          <button type="button" className="sz-btn" onClick={() => this.setState({ error: null })}>Réessayer</button>
+          <Label>3D INDISPONIBLE</Label>
+          <p className="body-noscene__text">
+            Le rendu WebGL n'a pas pu démarrer. Les panneaux, les alertes et la timeline restent exacts.
+          </p>
+          <Label dim className="body-noscene__err">{this.state.error.slice(0, 160)}</Label>
+          <button type="button" className="sz-btn" onClick={() => this.setState({ error: null })}>RÉESSAYER</button>
         </div>
       </div>
     );
   }
 }
 
-/** Informations posées sur la scène : mention « Projection » (toujours visible) et provenance (mode Détails). */
+/** Libellé « SCAN 042 % » qui suit l'anneau pendant le balayage (position par ref : aucun état React à 60 Hz). */
+function ScanLabel(): JSX.Element {
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    let raf = 0;
+    let shown = false;
+    const frame = (): void => {
+      raf = requestAnimationFrame(frame);
+      const el = ref.current;
+      if (!el) return;
+      const on = scanState.t >= 0;
+      if (on) {
+        el.textContent = `SCAN ${String(Math.round(scanState.t * 100)).padStart(3, '0')} %`;
+        el.style.transform = `translate(${Math.round(scanState.x + 10)}px, ${Math.round(scanState.y - 6)}px)`;
+      }
+      if (on !== shown) { shown = on; el.style.opacity = on ? '1' : '0'; }
+    };
+    raf = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+  return <span ref={ref} className="body-scanlabel sz-label" style={{ opacity: 0 }} aria-hidden="true" />;
+}
+
+/** Habillage du cadre de la scène : équerres, étiquettes de provenance, ruban de projection, aide. */
 function SceneChrome(): JSX.Element {
   const day = useBody((s) => s.day);
   const adherence = useBody((s) => s.adherence);
@@ -63,60 +90,73 @@ function SceneChrome(): JSX.Element {
   const steps = Array.from({ length: look.heat.levels }, (_, i) => i);
   return (
     <div className="body-chrome" data-projected={projected}>
+      <div className="body-tag sz-detail">
+        <div className="body-tag__row">
+          <Label>{projected ? 'CORPS PROJETÉ' : 'SCAN DU JOUR'}</Label>
+          <Label dim>{fmtDay(day)}</Label>
+          <ProvenanceBadge value={projected ? 'H' : 'SIMULÉ'} />
+        </div>
+        <div className="body-tag__row">
+          <Label dim>{projected ? 'MODÈLES OS / MUSCLE / VO₂' : 'ÉCHO / CENTRIFUGEUSE 0,1 g'}</Label>
+          <TagBadge tag="H" />
+        </div>
+        {/* ROADMAP §1 : aucune métrique osseuse n'est attribuée au scanner — dit dans le cadre même de la scène */}
+        {bones ? (
+          <div className="body-tag__row body-tag__row--note">
+            <Label>OS : ESTIMÉ PAR MODÈLE</Label>
+            <TagBadge tag="H" />
+            <Label dim>— PAS PAR LE SCANNER</Label>
+          </div>
+        ) : null}
+        {exposition ? (
+          <div className="body-tag__row body-tag__row--note">
+            <Label>EXPOSITION</Label>
+            <span className="body-heat" aria-hidden="true">
+              {steps.map((i) => <i key={i} style={{ opacity: 0.1 + (0.9 * i) / Math.max(1, steps.length - 1) }} />)}
+            </span>
+            <Label dim>− → + · CARTE ILLUSTRATIVE</Label>
+            <TagBadge tag="H" />
+          </div>
+        ) : null}
+        {exposition && doseDay && doseCum ? (
+          <div className="body-tag__row body-tag__row--note">
+            <Label dim>DOSE DU JOUR</Label>
+            <Label>{fmt(doseDay.value, 2)} <span className="body-unit">mSv/j</span></Label>
+            <Label dim>PRÉVU {fmt(doseDay.ref?.high ?? NaN, 2)}</Label>
+            <TagBadge tag="Publié" />
+          </div>
+        ) : null}
+        {exposition && doseDay && doseCum ? (
+          <div className="body-tag__row body-tag__row--note">
+            <Label dim>DOSE CUMULÉE</Label>
+            <Label>{fmt(doseCum.value, 0)} <span className="body-unit">mSv</span></Label>
+            <TagBadge tag={doseCum.tag} />
+          </div>
+        ) : null}
+      </div>
+
       {projected && (
-        <div className="body-ribbon" role="status" title="Jour futur : corps projeté par le modèle, pas une mesure">
-          <span className="body-ribbon__text">Projection</span>
+        <div className="body-ribbon" role="status">
+          <span className="body-ribbon__text">Projection · non mesuré</span>
           <span className="body-ribbon__sub">
-            {adherence === 1 ? 'Avec le plan' : 'Au rythme actuel'}
+            {fmtDay(day)} · {adherence === 1 ? 'avec le plan' : 'au rythme actuel'}<span className="sz-detail"> · corps fantôme · modèle [H]</span>
           </span>
         </div>
       )}
 
-      <dl className="body-tag sz-detail">
-        <div className="body-tag__row">
-          <dt>{projected ? 'Corps projeté' : 'Scan du jour'}</dt>
-          <dd>
-            {projected ? 'Modèles os, muscle, VO₂' : 'Échographie, centrifugeuse 0,1 g'} <TagBadge tag="H" />
-          </dd>
-          <ProvenanceBadge value={projected ? 'H' : 'SIMULÉ'} />
+      <ScanLabel />
+      <div className="body-help sz-detail" title="Glisser : orbite · Molette : zoom · Clic : épingler · Double-clic : fenêtre organe · Espace : lecture · ← → : jour">
+        <Label dim>GLISSER : ORBITE · MOLETTE : ZOOM · CLIC : ÉPINGLER · 2× CLIC : FENÊTRE · ESPACE : LECTURE</Label>
+      </div>
+      {anatomySource() === 'z-anatomy' ? (
+        <div className="body-credit sz-detail" title="Z-Anatomy — CC BY-SA 4.0 · BodyParts3D — CC BY-SA 2.1 JP · rein et oreille interne CC BY-NC · usage hackathon non commercial (public/models/CREDITS.md)">
+          <Label dim>MODÈLES Z-ANATOMY — CC BY-SA 4.0</Label>
         </div>
-        {/* Aucune métrique osseuse n'est attribuée au scanner : dit dans le cadre même de la scène. */}
-        {bones ? (
-          <div className="body-tag__row">
-            <dt>Os</dt>
-            <dd>Estimé par modèle, non mesuré par le scanner <TagBadge tag="H" /></dd>
-          </div>
-        ) : null}
-        {exposition ? (
-          <div className="body-tag__row">
-            <dt>Exposition</dt>
-            <dd>
-              <span className="body-heat" aria-hidden="true">
-                {steps.map((i) => <i key={i} style={{ opacity: 0.1 + (0.9 * i) / Math.max(1, steps.length - 1) }} />)}
-              </span>
-              Faible à forte, carte illustrative <TagBadge tag="H" />
-            </dd>
-          </div>
-        ) : null}
-        {exposition && doseDay && doseCum ? (
-          <div className="body-tag__row">
-            <dt>Dose du jour</dt>
-            <dd>
-              <span className="body-tag__num">{fmt(doseDay.value, 2)}</span> <span className="sz-unit">mSv/j</span>
-              {' · '}prévu {fmt(doseDay.ref?.high ?? NaN, 2)} <TagBadge tag="Publié" />
-            </dd>
-          </div>
-        ) : null}
-        {exposition && doseDay && doseCum ? (
-          <div className="body-tag__row">
-            <dt>Dose cumulée</dt>
-            <dd>
-              <span className="body-tag__num">{fmt(doseCum.value, 0)}</span> <span className="sz-unit">mSv</span>{' '}
-              <TagBadge tag={doseCum.tag} />
-            </dd>
-          </div>
-        ) : null}
-      </dl>
+      ) : (
+        <div className="body-credit sz-detail" title="Corps de secours procédural de l'équipe (stylisé, pas un atlas). Les modèles Z-Anatomy (CC BY-SA 4.0) le remplaceront.">
+          <Label dim>CORPS PROCÉDURAL DE SECOURS</Label>
+        </div>
+      )}
     </div>
   );
 }
@@ -151,21 +191,17 @@ export function Body(): JSX.Element {
   const right = isOpen('layers') || isOpen('alerts');
   const clean = useCleanScreen();
   return (
-    <div className={`body-page${clean ? ' body-page--clean' : ''}`} data-left={left} data-right={right} data-top={isOpen('header')} data-bottom={isOpen('timeline')}>
+    <div className={`body-page${clean ? ' body-page--clean' : ''}`} data-left={left} data-right={right}>
       {isOpen('header') ? <div className="body-top"><Closable id="header"><Header /></Closable></div> : null}
 
       {left ? (
-        <aside className="body-col body-col--left" aria-label="Analyses et constantes">
+        <aside className="body-col body-col--left" aria-label="Analyses et montre">
           {isOpen('blood') ? <div className="body-slot body-slot--grow"><Closable id="blood"><BloodPanel /></Closable></div> : null}
           {isOpen('spo2') ? <div className="body-slot"><Closable id="spo2"><Spo2Widget /></Closable></div> : null}
         </aside>
       ) : null}
 
-      <section
-        className="body-scene"
-        aria-label="Corps 3D"
-        aria-description="Glisser : tourner. Molette : zoom. Clic : épingler un organe. Double-clic : ouvrir sa fenêtre. Espace : lecture. Flèches gauche et droite : changer de jour."
-      >
+      <section className="body-scene" aria-label="Corps 3D">
         <SceneBoundary><BodyScene /></SceneBoundary>
         <LeaderLines />
         <SceneChrome />

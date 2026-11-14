@@ -1,8 +1,8 @@
-// Annotations d'alerte ancrées au corps.
+// Warnings ancrés en 3D sur le corps (ROADMAP §1 « Warnings sur le corps »).
 // Rendu DANS le <Canvas> par BodyScene, à l'intérieur du groupe du corps (les ancres suivent sa rotation).
-// Tout l'affichage est un calque DOM frère du canvas : point d'ancrage rond sur l'organe, étiquette déportée
-// sur le côté, trait de liaison coudé de 1 px.
-// Aucune mise à jour d'état React par frame : positions et fondus passent par des refs dans useFrame.
+//   · marqueur en scène : losange additif posé sur l'organe (lit à travers le bloom), taille écran constante ;
+//   · plaque hexagonale DOM déportée sur le côté, reliée par un trait coudé de 1 px.
+// Aucune mise à jour d'état React par frame : positions, fondus et pouls passent par des refs dans useFrame.
 // Tous les réglages visuels : ./warnings/knobs.ts
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { JSX } from 'react';
@@ -10,6 +10,8 @@ import { createRoot } from 'react-dom/client';
 import type { Root } from 'react-dom/client';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
+import type { Color } from '../types';
+import { statusColor } from '../ui/tokens';
 import { hoverCardRect, plateSides, useBody } from '../pages/body/store';
 import { warnKnobs as K } from './warnings/knobs';
 import { deOverlap, elbowPoints } from './warnings/layout';
@@ -19,20 +21,43 @@ import type { WarnItem } from './warnings/model';
 import { Plate } from './warnings/Plate';
 import './Warnings3D.css';
 
-/** État mutable d'une annotation (hors React). */
+/** État mutable d'un warning (hors React). */
 interface Rec extends Slot {
   vis: number;        // 0..1, fondu d'apparition
-  cover: number;      // 0..1, étiquette masquée parce que la carte de survol la recouvre
-  x: number;          // bord intérieur de l'étiquette (px), lissé
-  w: number;          // largeur mesurée de l'étiquette (px)
+  cover: number;      // 0..1, plaque masquée parce que la carte de survol la recouvre
+  x: number;          // bord intérieur de la plaque (px), lissé
   placed: boolean;    // première position déjà posée (sinon on « saute » sans lisser)
   live: boolean;
+  phase: number;      // phase du pouls 0..1
   plate: HTMLDivElement | null;
   line: SVGPolylineElement | null;
-  dot: SVGCircleElement | null;
+  marker: THREE.Group | null;
 }
 
-const newRec = (): Rec => ({ want: 0, y: 0, vis: 0, cover: 0, x: 0, w: K.plateW, placed: false, live: false, plate: null, line: null, dot: null });
+const newRec = (): Rec => ({ want: 0, y: 0, vis: 0, cover: 0, x: 0, placed: false, live: false, phase: Math.random(), plate: null, line: null, marker: null });
+
+// Géométries partagées : losanges (anneau / disque à 4 segments), rayon 1.
+const GEO_RING = new THREE.RingGeometry(0.74, 1, 4, 1);
+const GEO_CORE = new THREE.CircleGeometry(0.3, 4);
+const GEO_WAVE = new THREE.RingGeometry(0.9, 1, 4, 1);
+
+const materials = new Map<string, THREE.MeshBasicMaterial>();
+function baseMaterial(color: Color): THREE.MeshBasicMaterial {
+  let m = materials.get(color);
+  if (!m) {
+    m = new THREE.MeshBasicMaterial({
+      color: new THREE.Color(statusColor[color]).multiplyScalar(K.markerBoost),
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthTest: false,
+      depthWrite: false,
+      toneMapped: false,
+      side: THREE.DoubleSide,
+    });
+    materials.set(color, m);
+  }
+  return m;
+}
 
 /**
  * Garde les warnings sortants montés le temps de leur fondu.
@@ -64,7 +89,22 @@ function useLingering(target: WarnItem[]): WarnItem[] {
   }, [target, leaving]);
 }
 
-/** Calque DOM : traits de liaison et points d'ancrage (un seul SVG) + étiquettes. */
+/** Marqueur en scène : losange + cœur + onde de pouls. Animé par le parent via la ref du groupe. */
+function Marker({ item, register }: { item: WarnItem; register: (g: THREE.Group | null) => void }): JSX.Element {
+  // un matériau par maille (opacités indépendantes), cloné du matériau de statut
+  const mats = useMemo(() => [0, 1, 2].map(() => baseMaterial(item.color).clone()), [item.color]);
+  useEffect(() => () => mats.forEach((m) => m.dispose()), [mats]);
+  return (
+    <group ref={register} position={item.anchor} visible={false} renderOrder={50}>
+      <mesh geometry={GEO_RING} material={mats[0]} renderOrder={50} raycast={noRaycast} />
+      <mesh geometry={GEO_CORE} material={mats[1]} renderOrder={50} raycast={noRaycast} />
+      <mesh geometry={GEO_WAVE} material={mats[2]} renderOrder={50} raycast={noRaycast} />
+    </group>
+  );
+}
+const noRaycast = (): void => {};
+
+/** Calque DOM : traits coudés (un seul SVG) + plaques. */
 function Overlay({ items, recs }: { items: WarnItem[]; recs: Map<string, Rec> }): JSX.Element {
   const rec = (key: string): Rec => {
     let r = recs.get(key);
@@ -78,15 +118,7 @@ function Overlay({ items, recs }: { items: WarnItem[]; recs: Map<string, Rec> })
           <polyline
             key={it.key}
             ref={(el) => { if (el) rec(it.key).line = el; else { const r = recs.get(it.key); if (r) r.line = null; } }}
-            className={`w3d-line${it.projected ? ' is-projected' : ''}`}
-          />
-        ))}
-        {items.map((it) => (
-          <circle
-            key={it.key}
-            ref={(el) => { if (el) rec(it.key).dot = el; else { const r = recs.get(it.key); if (r) r.dot = null; } }}
-            className={`w3d-dot w3d-dot--${it.color}`}
-            r={K.dotR}
+            className={`w3d-line w3d-line--${it.color}${it.projected ? ' is-projected' : ''}`}
           />
         ))}
       </svg>
@@ -99,13 +131,14 @@ function Overlay({ items, recs }: { items: WarnItem[]; recs: Map<string, Rec> })
 
 const tmp = {
   v: new THREE.Vector3(),
+  q: new THREE.Quaternion(),
   axis: new THREE.Vector3(),
 };
 const columns: Record<1 | -1, Rec[]> = { 1: [], [-1]: [] };
 
 const sameItem = (a: WarnItem, b: WarnItem): boolean =>
   a.key === b.key && a.color === b.color && a.side === b.side && a.projected === b.projected
-  && a.label === b.label && a.levelLabel === b.levelLabel && a.alert.message === b.alert.message;
+  && a.levelLabel === b.levelLabel && a.alert.message === b.alert.message;
 
 export function Warnings3D(): JSX.Element | null {
   const lastTarget = useRef<WarnItem[]>([]);
@@ -150,12 +183,9 @@ export function Warnings3D(): JSX.Element | null {
     for (const k of recs.keys()) if (!keys.has(k)) recs.delete(k);
   });
 
-  const tick = useRef(0);
   useFrame((state, delta) => {
     const g = group.current;
     if (!g) return;
-    // largeur réelle des étiquettes : relue de temps en temps (texte, mode Détails, police chargée), pas à chaque frame
-    const measure = tick.current++ % 20 === 0;
     const dt = Math.min(delta, 0.1);
     const cam = state.camera as THREE.PerspectiveCamera;
     const W = state.size.width, H = state.size.height;
@@ -163,21 +193,28 @@ export function Warnings3D(): JSX.Element | null {
     const kFade = 1 - Math.exp(-K.fadeSpeed * dt);
     const kFollow = 1 - Math.exp(-K.followSpeed * dt);
 
-    // axe du corps à l'écran → position des deux colonnes d'étiquettes
+    // orientation « face caméra » dans le repère du groupe (le corps peut tourner)
+    g.getWorldQuaternion(tmp.q).invert().multiply(cam.quaternion);
+
+    // axe du corps à l'écran → position des deux colonnes de plaques
     tmp.axis.set(0, 1, 0).applyMatrix4(g.matrixWorld);
     const axisDist = Math.max(0.1, tmp.axis.distanceTo(cam.position));
     const cx = (tmp.axis.project(cam).x * 0.5 + 0.5) * W;
     const offsetPx = K.columnOffsetM / (fovScale * axisDist);
-    const colX: Record<1 | -1, number> = { 1: cx + offsetPx, [-1]: cx - offsetPx };
+    const colX: Record<1 | -1, number> = {
+      1: Math.min(cx + offsetPx, W - K.plateW - K.edgeMargin),
+      [-1]: Math.max(cx - offsetPx, K.plateW + K.edgeMargin),
+    };
 
     columns[1].length = 0;
     columns[-1].length = 0;
 
-    // 1) projection des ancres + points d'ancrage
+    // 1) marqueurs + projection des ancres
     for (const it of items) {
       const r = recs.get(it.key);
       if (!r) continue;
       tmp.v.set(it.anchor[0], it.anchor[1], it.anchor[2]).applyMatrix4(g.matrixWorld);
+      const dist = tmp.v.distanceTo(cam.position);
       tmp.v.project(cam);
       const ax = (tmp.v.x * 0.5 + 0.5) * W, ay = (-tmp.v.y * 0.5 + 0.5) * H;
       const on = tmp.v.z > -1 && tmp.v.z < 1 && ax > 0 && ax < W && ay > 0 && ay < H;
@@ -188,12 +225,23 @@ export function Warnings3D(): JSX.Element | null {
       r.vis += ((it.leaving || !on ? 0 : 1) - r.vis) * kFade;
       if (r.vis < 0.002) r.vis = 0;
       else if (r.vis > 0.998) r.vis = 1;
-      if (measure && r.plate) { const w = r.plate.offsetWidth; if (w > 0) r.w = w; }
+      r.phase = (r.phase + dt / K.pulse[it.color]) % 1;
 
-      const dot = r.dot;
-      if (dot) {
-        dot.style.opacity = r.vis.toFixed(3);
-        if (r.vis > 0) { dot.setAttribute('cx', ax.toFixed(1)); dot.setAttribute('cy', ay.toFixed(1)); }
+      const m = r.marker;
+      if (m) {
+        m.visible = r.vis > 0;
+        if (m.visible) {
+          const px = K.markerPx * fovScale * dist;
+          const dim = it.projected ? K.markerProjectedOpacity : 1;
+          const beat = 0.5 + 0.5 * Math.cos(r.phase * Math.PI * 2);
+          m.quaternion.copy(tmp.q);
+          m.scale.setScalar(px * (0.5 + 0.5 * r.vis));
+          const [ring, core, wave] = m.children as THREE.Mesh[];
+          (ring.material as THREE.MeshBasicMaterial).opacity = r.vis * dim * (0.7 + 0.3 * beat);
+          (core.material as THREE.MeshBasicMaterial).opacity = r.vis * dim * (0.35 + 0.65 * beat);
+          wave.scale.setScalar(1 + r.phase * (K.pulseSpread - 1));
+          (wave.material as THREE.MeshBasicMaterial).opacity = r.vis * dim * (1 - r.phase) * 0.8;
+        }
       }
 
       r.want = ay;
@@ -211,7 +259,7 @@ export function Warnings3D(): JSX.Element | null {
       col.forEach((r, i) => { slotY.set(r, r.y); r.y = saved[i]; });
     }
 
-    // 3) étiquettes + traits
+    // 3) plaques + traits
     const pinned = useBody.getState().selected;
     const focus = useBody.getState().hovered ?? pinned;
     plateSides.clear();
@@ -222,20 +270,17 @@ export function Warnings3D(): JSX.Element | null {
       if (!r || !a) continue;
       const wantY = slotY.get(r);
       if (wantY !== undefined) {
-        const maxR = W - r.w - K.edgeMargin, minL = r.w + K.edgeMargin;
-        const wantX = it.side > 0
-          ? Math.min(maxR, Math.max(colX[1], a.ax + K.minReach))
-          : Math.max(minL, Math.min(colX[-1], a.ax - K.minReach));
+        const wantX = it.side > 0 ? Math.max(colX[1], Math.min(a.ax + K.minReach, W - K.plateW - K.edgeMargin)) : Math.min(colX[-1], Math.max(a.ax - K.minReach, K.plateW + K.edgeMargin));
         if (!r.placed) { r.x = wantX; r.y = wantY; r.placed = true; }
         else { r.x += (wantX - r.x) * kFollow; r.y += (wantY - r.y) * kFollow; }
       }
-      // la carte de survol passe devant : une étiquette qu'elle recouvre s'efface (avec son trait),
-      // sauf celle de l'organe survolé — la carte se pose toujours du côté opposé à cette étiquette.
-      const pl = it.side > 0 ? r.x : r.x - r.w, pt = r.y - K.plateH / 2;
+      // la carte de survol passe devant : une plaque qu'elle recouvre s'efface (avec son trait),
+      // sauf celle de l'organe survolé — la carte se pose toujours du côté opposé à cette plaque.
+      const pl = it.side > 0 ? r.x : r.x - K.plateW, pt = r.y - K.plateH / 2;
       const hc = hoverCardRect;
-      // Organe épinglé : sa carte porte déjà nom + statut → sa propre étiquette s'efface (le point reste sur l'organe).
+      // Organe épinglé : sa carte porte déjà nom + statut → sa propre plaque s'efface (le marqueur reste sur l'organe).
       const covered = it.organId === pinned || (hc.on && it.organId !== focus
-        && pl < hc.x + hc.w + 6 && pl + r.w > hc.x - 6 && pt < hc.y + hc.h + 4 && pt + K.plateH > hc.y - 4);
+        && pl < hc.x + hc.w + 6 && pl + K.plateW > hc.x - 6 && pt < hc.y + hc.h + 4 && pt + K.plateH > hc.y - 4);
       r.cover += ((covered ? 1 : 0) - r.cover) * kFade;
       if (r.cover < 0.002) r.cover = 0;
       const shown = r.vis * (1 - r.cover);
@@ -244,19 +289,34 @@ export function Warnings3D(): JSX.Element | null {
         const live = r.vis > 0.5 && r.cover < 0.5 && !it.leaving;
         // style en ligne (pas une classe : React réécrit className quand le niveau change)
         if (live !== r.live || !el.style.pointerEvents) { r.live = live; el.style.pointerEvents = live ? 'auto' : 'none'; }
-        const left = Math.round(pl);
+        const left = Math.round(it.side > 0 ? r.x : r.x - K.plateW);
         const topPx = Math.round(r.y - K.plateH / 2);
         el.style.opacity = shown.toFixed(3);
-        el.style.transform = `translate3d(${left}px,${topPx}px,0)`;
+        el.style.transform = `translate3d(${left}px,${topPx}px,0) scale(${(0.86 + 0.14 * r.vis).toFixed(3)})`;
       }
       const line = r.line;
       if (line) {
-        line.style.opacity = shown.toFixed(3);
+        line.style.opacity = (shown * K.lineOpacity * (it.projected ? 0.7 : 1)).toFixed(3);
         if (r.vis > 0 && r.placed) line.setAttribute('points', elbowPoints(a.ax, a.ay, Math.round(r.x), Math.round(r.y), it.side, K.lineTrim));
       }
     }
     for (const k of anchors.keys()) if (!recs.has(k)) anchors.delete(k);
   });
 
-  return <group ref={group} />;
+  if (!items.length) return <group ref={group} />;
+  return (
+    <group ref={group}>
+      {items.map((it) => (
+        <Marker
+          key={it.key}
+          item={it}
+          register={(m) => {
+            let r = recs.get(it.key);
+            if (!r && m) { r = newRec(); recs.set(it.key, r); }
+            if (r) r.marker = m;
+          }}
+        />
+      ))}
+    </group>
+  );
 }

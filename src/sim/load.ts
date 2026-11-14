@@ -34,15 +34,6 @@ export function getCheckIn(day: number): CheckIn | null {
   return getCheckInSim(day);
 }
 
-/**
- * Check-in réellement SAISI ce jour-là (sinon null) : aujourd'hui, la to-do attend le check-in du présentateur
- * au lieu d'utiliser la valeur simulée. Les jours passés gardent le check-in simulé de l'historique.
- */
-export function getEnteredCheckIn(day: number): CheckIn | null {
-  const manual = todayCheckIn();
-  return manual && manual.day === day ? manual : null;
-}
-
 // --- Ajouts hors contrat §7 utilisés par les pages -----------------------------------------------
 
 /** Corps du jour selon l'adhérence au plan (0 = rythme actuel, 1 = avec le plan ; ne diffère qu'après J94). */

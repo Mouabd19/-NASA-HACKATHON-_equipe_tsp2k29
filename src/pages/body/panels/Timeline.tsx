@@ -1,43 +1,37 @@
-// Chronologie de la page Corps : frise J0 → J860 façon curseur de dates.
-// J0 → J94 = jours mesurés (aplat clair) ; au-delà = projection (aplat sombre).
-// Le filet « Alertes » sous la piste reprend le pire niveau d'alerte par tranche de 5 jours, en tirets
-// sur la partie projetée (rien n'est tracé quand il n'y a pas d'alerte : l'absence de donnée n'est jamais du vert).
+// Timeline de la page Body (ROADMAP §1 « Timeline en bas ») : règle graduée J0 → J860.
+// J0 → J94 = corps MESURÉS (plein) ; au-delà = corps PROJETÉ (hachuré, [H]).
+// Le ruban au-dessus de la règle montre le pire niveau d'alerte par tranche de 5 jours
+// (rien n'est tracé quand il n'y a pas d'alerte : l'absence de donnée n'est jamais du vert).
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { JSX, PointerEvent as ReactPointerEvent } from 'react';
 import type { Color, Level } from '../../../types';
-import { DAY_END, DAY_SOL0, DAY_TODAY } from '../../../mocks/mission';
+import { CHRONO_AGE_J0, DAY_END, DAY_SOL0, DAY_TODAY } from '../../../mocks/mission';
 import { alertsForDayPlan } from '../../../models/alerts';
-import { boneLossPct } from '../../../models/bone';
-import { PanelClose, ProvenanceBadge, dayToDate, fmt, fmtDay, levelColor, statusLabel, statusVar } from '../../../ui';
+import { bioAgeSeries } from '../../../models/bioAge';
+import { PanelClose, ProvenanceBadge, TagBadge, dayToDate, fmt, levelColor, statusColor, statusLabel } from '../../../ui';
 import { useBody } from '../store';
 import './Timeline.css';
 
 // ── Réglages (tout ce qui s'ajuste à l'œil est ici) ─────────────────────────
-const H = 72;                 // hauteur de la bande (px) — = .tl { height }
-const PAD = 16;               // marge gauche/droite de la frise dans la piste (px)
+const H = 84;                 // hauteur de la bande (px)
+const PAD = 16;               // marge gauche/droite de la règle dans la piste (px)
 const PLAY_SECONDS = 20;      // durée d'une lecture J0 → J860
-const RIBBON_STEP = 5;        // échantillonnage du filet d'alertes (jours)
+const RIBBON_STEP = 5;        // échantillonnage du ruban d'alertes (jours)
+const READOUT_W = 228;        // largeur de l'afficheur flottant (px)
+/** Vitesse de vieillissement terrestre de la hanche, ROADMAP §« Écart d'âge » : ≈ 1 %/an [H]. */
+const HIP_AGING_PCT_PER_YEAR = 1;
 
-// Géométrie verticale de la piste (px depuis le haut) — reprise dans Timeline.css pour le curseur
+// Géométrie verticale de la piste (px depuis le haut)
 const Y = {
-  markText: 18,    // ligne de base des jalons (même rangée que l'étiquette du curseur)
-  markTop: 9,      // haut des traits de jalon
-  trackTop: 32,
-  trackBottom: 38,
-  ribbon: 45.5,    // axe du filet d'alertes
-  tickTop: 51,
-  tickLabel: 66,
+  markText: 29,   // ligne de base des repères (J0 DÉPART, J94 AUJOURD'HUI…)
+  markTop: 21,    // haut des mâts de repère
+  ribbon: 35,     // axe du ruban d'alertes
+  bandTop: 41,
+  bandBottom: 53, // = ligne de base de la règle
+  tickLabel: 74,
 } as const;
-const RIBBON_H = 3;
-const RIBBON_LABEL = 'Alertes';
-const MARK_CHAR = 5.9;   // largeur approx. d'un caractère de jalon (Inter 11 px)
-const DAY_CHAR = 7.6;    // largeur approx. (majorée) d'un caractère du jour de l'étiquette (Inter 12 px, 600)
-const DATE_CHAR = 6.4;   // idem pour la date (Inter 12 px)
-const EDGE = 8;          // marge minimale entre l'étiquette du curseur et le bord de la piste
-
-const DATE_FMT = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
-/** Date lisible d'un jour de mission : 94 → « 14 nov. 2026 ». */
-const dayLabelDate = (day: number): string => DATE_FMT.format(new Date(`${dayToDate(day)}T00:00:00Z`));
+const RIBBON_H = 4;
+const MARK_CHAR = 6.3; // largeur approx. d'un caractère de repère (mono 9 px + interlettrage)
 
 const clampDay = (d: number): number => Math.max(0, Math.min(DAY_END, Math.round(d)));
 
@@ -80,27 +74,24 @@ function splitAtToday(runs: Run[]): (Run & { projected: boolean })[] {
 }
 
 // ── Repères ─────────────────────────────────────────────────────────────────
-interface Landmark { day: number; key: string; labels: string[]; alignEnd?: boolean }
+interface Landmark { day: number; key: string; labels: string[]; strong?: boolean; alignEnd?: boolean }
 
-// Libellés courts : le numéro du jour est déjà sur la graduation et sur les boutons d'accès direct.
 const LANDMARKS: Landmark[] = [
-  { day: 0, key: 'depart', labels: ['Départ', ''] },
-  { day: DAY_TODAY, key: 'today', labels: ["Aujourd'hui", ''] },
-  { day: DAY_SOL0, key: 'sol0', labels: ['Sol 0', ''] },   // date provisoire (mocks/mission.ts)
-  { day: DAY_END, key: 'fin', labels: ['Fin de mission', ''], alignEnd: true },
+  { day: 0, key: 'depart', labels: ['J0 · départ', 'J0'] },
+  { day: DAY_TODAY, key: 'today', labels: [`J${DAY_TODAY} · aujourd'hui`, `J${DAY_TODAY}`], strong: true },
+  { day: DAY_SOL0, key: 'sol0', labels: ['Sol 0 · arrivée sur Mars', 'Sol 0 · arrivée', 'Sol 0'] },   // date provisoire (mocks/mission.ts)
+  { day: DAY_END, key: 'fin', labels: [`J${DAY_END} · fin de mission`, `J${DAY_END} · fin`, `J${DAY_END}`], alignEnd: true },
 ];
 
-interface FittedMark { lm: Landmark; x: number; text: string }
-
 /** Choisit, pour chaque repère, le libellé le plus long qui tient avant le repère suivant. */
-function fitLandmarks(x: (d: number) => number): FittedMark[] {
-  const res: FittedMark[] = [];
+function fitLandmarks(x: (d: number) => number): { lm: Landmark; x: number; text: string }[] {
+  const res: { lm: Landmark; x: number; text: string }[] = [];
   const endLm = LANDMARKS[LANDMARKS.length - 1];
   let endText = endLm.labels[0];
   // Le repère de fin (aligné à droite) partage l'espace avec l'avant-dernier.
   const prevX = x(LANDMARKS[LANDMARKS.length - 2].day);
   const span = x(endLm.day) - prevX - 12;
-  const need = (s: string): number => (s ? s.length * MARK_CHAR + 10 : 0);
+  const need = (s: string): number => s.length * MARK_CHAR + 8;
   const prevLabels = LANDMARKS[LANDMARKS.length - 2].labels;
   let prevPick = prevLabels[prevLabels.length - 1];
   search: for (const p of prevLabels) {
@@ -113,86 +104,104 @@ function fitLandmarks(x: (d: number) => number): FittedMark[] {
     const px = x(lm.day);
     if (i === LANDMARKS.length - 1) { res.push({ lm, x: px, text: endText }); continue; }
     if (i === LANDMARKS.length - 2) { res.push({ lm, x: px, text: prevPick }); continue; }
-    const room = x(LANDMARKS[i + 1].day) - px;
+    const room = x(LANDMARKS[i + 1].day) - px - 4;
     const text = lm.labels.find((s) => need(s) <= room) ?? lm.labels[lm.labels.length - 1];
     res.push({ lm, x: px, text });
   }
   return res;
 }
 
-// ── Frise statique (ne se redessine que si la largeur ou le scénario change) ──
-/** `hidden` : clés des jalons dont le libellé est masqué (l'étiquette du curseur occupe leur place). */
-const Ruler = memo(function Ruler({ width, runs, marks, hidden }: { width: number; runs: Run[]; marks: FittedMark[]; hidden: string }): JSX.Element {
+// ── Règle statique (ne se redessine que si la largeur change) ───────────────
+const Ruler = memo(function Ruler({ width, runs }: { width: number; runs: Run[] }): JSX.Element {
   const inner = Math.max(1, width - 2 * PAD);
   const x = (d: number): number => PAD + (d / DAY_END) * inner;
   const px = (v: number): number => Math.round(v) + 0.5; // traits nets de 1 px
-  const labelStep = (inner / DAY_END) * 100 >= 40 ? 100 : 200;
+  const pxPerDay = inner / DAY_END;
+  const minorStep = pxPerDay * 10 >= 4 ? 10 : 50;
+  const labelStep = pxPerDay * 100 >= 38 ? 100 : 200;
 
   const ticks: JSX.Element[] = [];
   const labels: JSX.Element[] = [];
-  for (let d = 0; d <= DAY_END; d += 50) {
+  for (let d = 0; d <= DAY_END; d += minorStep) {
     const major = d % 100 === 0;
+    const mid = !major && d % 50 === 0;
+    const len = major ? 10 : mid ? 7 : 4;
     ticks.push(
       <line
         key={d}
-        className={major ? 'tl__tick tl__tick--major' : 'tl__tick'}
-        x1={px(x(d))} x2={px(x(d))} y1={Y.tickTop} y2={Y.tickTop + (major ? 4 : 2)}
+        className={major ? 'tl__tick tl__tick--major' : mid ? 'tl__tick tl__tick--mid' : 'tl__tick'}
+        data-proj={d > DAY_TODAY}
+        x1={px(x(d))} x2={px(x(d))} y1={Y.bandBottom} y2={Y.bandBottom + len}
       />,
     );
     if (d % labelStep === 0) {
       labels.push(
-        <text key={d} className="tl__ticklabel" x={x(d)} y={Y.tickLabel} textAnchor="middle">
+        <text key={d} className="tl__ticklabel" data-proj={d > DAY_TODAY} x={x(d)} y={Y.tickLabel} textAnchor="middle">
           {d === 0 ? 'J0' : d}
         </text>,
       );
     }
   }
 
-  const x0 = x(0);
   const xToday = x(DAY_TODAY);
   const xEnd = x(DAY_END);
+  const marks = fitLandmarks(x);
   const segs = splitAtToday(runs);
-  const trackH = Y.trackBottom - Y.trackTop;
-  const hide = hidden.split(',');
-  // Libellé du filet, posé juste avant son premier segment (omis s'il n'y a pas la place).
-  const ribbonStart = segs.length > 0 ? x(segs[0].from) : 0;
-  const ribbonLabel = segs.length > 0 && ribbonStart - 6 - RIBBON_LABEL.length * MARK_CHAR >= PAD + 12;
+  const bandH = Y.bandBottom - Y.bandTop;
+  const measuredW = xToday - x(0);
+  const projectedW = xEnd - xToday;
 
   return (
     <svg className="tl__svg" width={width} height={H} viewBox={`0 0 ${width} ${H}`} aria-hidden="true">
-      {/* Piste : projection (aplat sombre) puis jours mesurés (aplat clair) */}
-      <rect className="tl__bar tl__bar--projected" x={x0} y={Y.trackTop} width={xEnd - x0} height={trackH} rx={trackH / 2} />
-      <rect className="tl__bar tl__bar--measured" x={x0} y={Y.trackTop} width={xToday - x0} height={trackH} rx={trackH / 2} />
+      <defs>
+        <pattern id="tl-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">
+          <line className="tl__hatchline" x1="0" y1="0.5" x2="6" y2="0.5" />
+        </pattern>
+      </defs>
 
-      {/* Filet d'alertes (pire niveau par tranche de 5 j) : trait plein = mesuré, tirets = projeté */}
-      {ribbonLabel ? (
-        <text className="tl__ribbon-label" x={ribbonStart - 6} y={Y.ribbon + 4} textAnchor="end">{RIBBON_LABEL}</text>
-      ) : null}
+      {/* Zones : mesuré (plein) / projeté (hachuré) */}
+      <rect className="tl__zone tl__zone--measured" x={x(0)} y={Y.bandTop} width={measuredW} height={bandH} />
+      <rect className="tl__zone tl__zone--projected" x={xToday} y={Y.bandTop} width={projectedW} height={bandH} fill="url(#tl-hatch)" />
+      <line className="tl__edge" x1={x(0)} x2={xToday} y1={Y.bandTop + 0.5} y2={Y.bandTop + 0.5} />
+      <line className="tl__edge tl__edge--proj" x1={xToday} x2={xEnd} y1={Y.bandTop + 0.5} y2={Y.bandTop + 0.5} />
+      {measuredW > 46 && (
+        <text className="tl__zonelabel" x={x(0) + 5} y={Y.bandBottom - 3.5}>Mesuré</text>
+      )}
+      {projectedW > 120 && (
+        <g>
+          <rect className="tl__zonelabel-bg" x={xToday + 6} y={Y.bandTop + 1} width={88} height={bandH - 2} />
+          <text className="tl__zonelabel tl__zonelabel--proj" x={xToday + 10} y={Y.bandBottom - 3.5}>Projeté</text>
+        </g>
+      )}
+
+      {/* Ligne de base + graduations */}
+      <line className="tl__base" x1={x(0)} x2={xToday} y1={Y.bandBottom + 0.5} y2={Y.bandBottom + 0.5} />
+      <line className="tl__base tl__base--proj" x1={xToday} x2={xEnd} y1={Y.bandBottom + 0.5} y2={Y.bandBottom + 0.5} />
+      {ticks}
+      {labels}
+
+      {/* Ruban d'alertes (pire niveau par tranche de 5 j) */}
+      <line className="tl__ribbon-rail" x1={x(0)} x2={xEnd} y1={Y.ribbon + 0.5} y2={Y.ribbon + 0.5} />
       {segs.map((s) => (
         <line
           key={`${s.from}-${s.projected ? 'p' : 'm'}`}
           className="tl__ribbon"
           data-proj={s.projected}
-          x1={x(s.from)} x2={Math.max(x(s.from) + 1, x(s.to))} y1={Y.ribbon} y2={Y.ribbon}
-          strokeWidth={RIBBON_H}
-          style={{ stroke: statusVar[s.color] }}
+          x1={x(s.from)} x2={x(s.to)} y1={Y.ribbon} y2={Y.ribbon}
+          stroke={statusColor[s.color]} strokeWidth={RIBBON_H}
         >
-          <title>{`Alertes J${Math.ceil(s.from)}–J${Math.floor(s.to)} : ${statusLabel[s.color]}${s.projected ? ' (projeté)' : ''}`}</title>
+          <title>{`ALERTES J${Math.ceil(s.from)}–J${Math.floor(s.to)} : ${statusLabel[s.color]}${s.projected ? ' (projeté)' : ''}`}</title>
         </line>
       ))}
 
-      {/* Graduations */}
-      {ticks}
-      {labels}
-
-      {/* Jalons de mission */}
+      {/* Repères de mission */}
       {marks.map(({ lm, x: mx, text }) => (
-        <g key={lm.key} className="tl__mark">
-          {/* libellé masqué : le trait s'arrête sous l'étiquette du curseur */}
-          <line x1={px(mx)} x2={px(mx)} y1={hide.includes(lm.key) ? Y.trackTop - 8 : Y.markTop} y2={Y.trackTop - 2} />
-          {text && !hide.includes(lm.key) ? (
-            <text x={lm.alignEnd ? mx - 5 : mx + 6} y={Y.markText} textAnchor={lm.alignEnd ? 'end' : 'start'}>{text}</text>
-          ) : null}
+        <g key={lm.key} className={lm.strong ? 'tl__mark tl__mark--strong' : 'tl__mark'}>
+          <line x1={px(mx)} x2={px(mx)} y1={Y.markTop} y2={Y.bandBottom + (lm.strong ? 14 : 10)} />
+          {lm.strong && (
+            <path d={`M${px(mx) - 4} ${Y.markTop} h8 l-4 5 z`} />
+          )}
+          <text x={lm.alignEnd ? mx - 5 : mx + 6} y={Y.markText} textAnchor={lm.alignEnd ? 'end' : 'start'}>{text}</text>
         </g>
       ))}
     </svg>
@@ -208,9 +217,13 @@ function PlayGlyph({ playing }: { playing: boolean }): JSX.Element {
   );
 }
 
-/** Perte de densité de la hanche projetée à J860 (%) : même sortie du modèle osseux que la fiche de la hanche. */
-function hipLossAtEnd(adherence: 0 | 1): number {
-  return boneLossPct('hanche', DAY_END, adherence);
+/** Écart hanche à J860 (bioAge − âge réel, en années [H]) converti en perte (%) au taux de 1 %/an [H]. */
+function hipLossAtEnd(adherence: 0 | 1): number | null {
+  const series = bioAgeSeries('hanche', adherence);
+  const last = series[series.length - 1];
+  if (!last) return null;
+  const chrono = CHRONO_AGE_J0 + last.day / 365.25;
+  return (last.bioAge - chrono) * HIP_AGING_PCT_PER_YEAR;
 }
 
 function isTypingTarget(t: EventTarget | null): boolean {
@@ -331,24 +344,9 @@ export function Timeline(): JSX.Element {
 
   const projected = day > DAY_TODAY;
   const headX = PAD + (day / DAY_END) * inner;
-  const dayText = fmtDay(day);
-  const date = dayLabelDate(day);
-  // Étiquette du curseur : le jour seul ; la date s'ajoute pendant le geste ou la lecture. Aujourd'hui, le
-  // jalon « Aujourd'hui » et le bandeau suffisent : pas d'étiquette.
-  const showReadout = dragging || playing || day !== DAY_TODAY;
-  const showDate = dragging || playing;
-  // Centrée sur le curseur, retenue aux bords de la piste (largeur estimée, majorée).
-  const labelHalf = (dayText.length * DAY_CHAR + (showDate ? (date.length + 3) * DATE_CHAR : 0)) / 2;
-  const labelX = Math.max(labelHalf + EDGE, Math.min(width - labelHalf - EDGE, headX));
-
-  // Jalons : calculés ici pour masquer le libellé de ceux que l'étiquette du curseur recouvrirait.
-  const marks = useMemo(() => fitLandmarks((d) => PAD + (d / DAY_END) * inner), [inner]);
-  const hidden = !showReadout ? '' : marks.filter(({ lm, x: mx, text }) => {
-    const w = text.length * MARK_CHAR;
-    const from = lm.alignEnd ? mx - 5 - w : mx;
-    const to = lm.alignEnd ? mx : mx + 6 + w;
-    return text !== '' && from < labelX + labelHalf + EDGE && to > labelX - labelHalf - EDGE;
-  }).map(({ lm }) => lm.key).join(',');
+  const readoutX = Math.max(0, Math.min(Math.max(0, width - READOUT_W), headX - READOUT_W / 2));
+  const dayText = `J${String(day).padStart(3, '0')}`;
+  const date = dayToDate(day);
 
   const jump = (d: number): void => {
     if (playing) setPlaying(false);
@@ -357,33 +355,41 @@ export function Timeline(): JSX.Element {
 
   return (
     <div className="tl" data-projected={projected} data-playing={playing} role="group" aria-label="Chronologie de la mission">
-      {/* ── Lecture et accès directs ── */}
-      <div className="tl__side tl__side--left">
-        <div className="tl__row">
+      {/* ── Commandes de gauche ── */}
+      <div className="tl__left">
+        <div className="tl__cap sz-detail">
+          <span className="sz-label sz-dim">SYS-T</span>
+          <span className="sz-label">CHRONOLOGIE</span>
+          <span className="tl__fill" />
+          <ProvenanceBadge value="SIMULÉ" />
+        </div>
+        <div className="tl__buttons">
           <button
             type="button"
-            className="sz-btn sz-btn--sm tl__play"
+            className="sz-btn tl__play"
             aria-pressed={playing}
             aria-label={playing ? 'Pause' : 'Lecture'}
-            title={playing ? 'Pause (Espace)' : `Lecture (Espace) : J0 à J${DAY_END} en ${PLAY_SECONDS} s`}
+            title={playing ? 'Pause (Espace)' : `Lecture (Espace) — J0 → J${DAY_END} en ${PLAY_SECONDS} s`}
             onClick={() => setPlaying(!playing)}
           >
             <PlayGlyph playing={playing} />
           </button>
-          <button type="button" className="sz-btn sz-btn--sm" aria-pressed={day === DAY_TODAY} onClick={() => jump(DAY_TODAY)} title="Dernier jour mesuré (T)">
+          <button type="button" className="sz-btn" data-active={day === DAY_TODAY} onClick={() => jump(DAY_TODAY)} title="Revenir au dernier corps mesuré (T)">
             Aujourd'hui
           </button>
-          <button type="button" className="sz-btn sz-btn--sm" aria-pressed={day === DAY_SOL0} onClick={() => jump(DAY_SOL0)} title={`Arrivée sur Mars, J${DAY_SOL0}`}>
+          <button type="button" className="sz-btn" data-active={day === DAY_SOL0} onClick={() => jump(DAY_SOL0)} title={`Arrivée sur Mars — J${DAY_SOL0} [Persona]`}>
             Sol 0
           </button>
-          <button type="button" className="sz-btn sz-btn--sm" aria-pressed={day === DAY_END} onClick={() => jump(DAY_END)} title="Fin de mission (Fin)">
+          <button type="button" className="sz-btn" data-active={day === DAY_END} onClick={() => jump(DAY_END)} title="Fin de mission [Persona]">
             J{DAY_END}
           </button>
-          <span className="sz-detail"><ProvenanceBadge value="SIMULÉ" /></span>
+        </div>
+        <div className="tl__hint sz-label sz-dim sz-detail" aria-hidden="true">
+          <Key>←</Key><Key>→</Key> ±1 J <span className="tl__sep" /> <Key>MAJ</Key> ±10 J <span className="tl__sep" /> <Key>T</Key> AUJ.
         </div>
       </div>
 
-      {/* ── Frise ── */}
+      {/* ── Piste ── */}
       <div
         ref={trackRef}
         className="tl__track"
@@ -396,53 +402,70 @@ export function Timeline(): JSX.Element {
         aria-valuemax={DAY_END}
         aria-valuenow={day}
         aria-valuetext={`${dayText}, ${date}, ${projected ? 'projeté' : 'mesuré'}`}
-        title="Glisser pour changer de jour. Flèches : ±1 jour · Maj+flèches : ±10 jours · Début, Fin · T : aujourd'hui · Espace : lecture"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={endDrag}
         onPointerCancel={endDrag}
       >
+        {width > 0 && <Ruler width={width} runs={runs} />}
         {width > 0 && (
           <>
-            <Ruler width={width} runs={runs} marks={marks} hidden={hidden} />
-            <div className="tl__cursor-knob" style={{ transform: `translate3d(${headX}px,0,0)` }} />
-            {showReadout ? (
-              <div className="tl__readout" style={{ transform: `translate3d(${labelX}px,0,0) translateX(-50%)` }}>
-                <span className="tl__readout-day">{dayText}</span>
-                {showDate ? <span className="tl__readout-date"> · {date}</span> : null}
-              </div>
-            ) : null}
+            <div className="tl__head" style={{ transform: `translate3d(${headX}px,0,0)` }}>
+              <svg className="tl__head-svg" width="11" height={H} viewBox={`0 0 11 ${H}`} aria-hidden="true">
+                <line x1="5.5" x2="5.5" y1="17" y2={Y.bandBottom + 13} />
+                <path d={`M1 ${Y.bandTop - 5} h9 l-4.5 5 z`} />
+                <path d={`M1 ${Y.bandBottom + 14} h9 l-4.5 -5 z`} />
+              </svg>
+            </div>
+            <div className="tl__readout sz-mono" style={{ transform: `translate3d(${readoutX}px,0,0)`, width: READOUT_W }}>
+              <span className="tl__readout-day">{dayText}</span>
+              <span className="tl__readout-dash">—</span>
+              <span>{date}</span>
+              <span className="tl__readout-dash">—</span>
+              <span className="tl__readout-mode">{projected ? 'projeté' : 'mesuré'}</span>
+            </div>
           </>
         )}
       </div>
 
-      {/* ── Scénario de projection ── */}
-      <div className="tl__side tl__side--right">
-        <div className="tl__row">
-          <span className="sz-label" id="tl-projection-label">Projection</span>
-          <div className="sz-seg" role="radiogroup" aria-labelledby="tl-projection-label">
-            <button type="button" role="radio" aria-checked={adherence === 0} className="sz-seg__opt" onClick={() => setAdherence(0)}>
-              Rythme actuel
-            </button>
-            <button type="button" role="radio" aria-checked={adherence === 1} className="sz-seg__opt" onClick={() => setAdherence(1)}>
-              Avec le plan
-            </button>
-          </div>
+      {/* ── Commandes de droite : adhérence + métrique d'impact ── */}
+      <div className="tl__right">
+        <div className="tl__cap">
+          <span className="sz-label sz-dim">PROJECTION</span>
+          <span className="tl__fill" />
+          <ProvenanceBadge value="H" />
           <PanelClose className="tl__close" />
         </div>
-        <p
-          className="tl__note tl__impact sz-detail"
-          title={`Perte de densité de la hanche projetée à J${DAY_END} par le modèle osseux (hypothèse) : ${lossText(impact.rythme)} au rythme actuel, ${lossText(impact.plan)} avec le plan`}
+        <div className="tl__toggle" role="radiogroup" aria-label="Scénario de projection">
+          <button type="button" role="radio" aria-checked={adherence === 0} className="sz-btn" data-active={adherence === 0} onClick={() => setAdherence(0)}>
+            Rythme actuel
+          </button>
+          <button type="button" role="radio" aria-checked={adherence === 1} className="sz-btn" data-active={adherence === 1} onClick={() => setAdherence(1)}>
+            Avec le plan
+          </button>
+        </div>
+        <div
+          className="tl__impact sz-label sz-detail"
+          title={`Perte osseuse estimée de la hanche à J${DAY_END} : écart d'âge biologique × ${fmt(HIP_AGING_PCT_PER_YEAR)} %/an [H]`}
         >
-          <span className="tl__impact-label">Perte hanche estimée J{DAY_END}</span>
-          <span className="tl__impact-val" data-on={adherence === 0}>rythme {lossText(impact.rythme)}</span>
-          <span className="tl__impact-val" data-on={adherence === 1}>plan {lossText(impact.plan)}</span>
-        </p>
+          <span className="sz-dim">HANCHE J{DAY_END} :</span>
+          <span className="tl__impact-val" data-on={adherence === 0}>{lossText(impact.rythme)}</span>
+          <span className="tl__impact-bar" />
+          <span className="tl__impact-val" data-on={adherence === 1}>{lossText(impact.plan)}</span>
+          <TagBadge tag="H" />
+        </div>
       </div>
     </div>
   );
 }
 
-function lossText(v: number): string {
-  return Number.isFinite(v) ? `${fmt(v, 1)} %` : '— %';
+function Key({ children }: { children: string }): JSX.Element {
+  return <kbd className="tl__key">{children}</kbd>;
+}
+
+function lossText(v: number | null): string {
+  if (v === null || !Number.isFinite(v)) return '— %';
+  const mag = fmt(Math.abs(v), 2);
+  const sign = Math.abs(v) < 0.005 ? '' : v > 0 ? '-' : '+'; // écart positif = perte
+  return `${sign}${mag} %`;
 }

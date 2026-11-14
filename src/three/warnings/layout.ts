@@ -1,9 +1,9 @@
-// Mise en page écran des étiquettes d'alerte (pur, sans React ni three) : colonnes gauche/droite + dé-chevauchement vertical.
+// Mise en page écran des plaques (pur, sans React ni three) : colonnes gauche/droite + dé-chevauchement vertical.
 
 export interface Slot {
-  /** y écran souhaité (centre de l'étiquette) = y de l'ancre. */
+  /** y écran souhaité (centre de la plaque) = y de l'ancre. */
   want: number;
-  /** y écran attribué (centre de l'étiquette), écrit par deOverlap. */
+  /** y écran attribué (centre de la plaque), écrit par deOverlap. */
   y: number;
 }
 
