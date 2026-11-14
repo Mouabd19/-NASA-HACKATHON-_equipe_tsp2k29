@@ -308,7 +308,7 @@ export function HoverCard(): JSX.Element | null {
             )}
           </div>
 
-          <footer className="hvc__foot">Double-clic pour ouvrir</footer>
+          <footer className="hvc__foot">{organId === 'cerveau' ? 'Double-clic : suivi santé mentale (prototype)' : 'Double-clic pour ouvrir'}</footer>
         </div>
       </div>
     </div>
