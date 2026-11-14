@@ -68,12 +68,7 @@ export function WarRoom() {
   const delayTag: Tag = lightTimeSource(DATE) === 'table' ? 'Publié' : 'H';
   const out = useMemo(() => router(t, POS, delay), [t, delay]);
   const plan = useMemo(() => planDay(DAY), [version, dataVersion]);
-  // le check-in validé coche tout seul la tâche « Check-in du matin »
-  const checkinDone = useCallback((id: string) => id === 'test-checkin' && !!checkin, [checkin]);
-  const items: TodoItem[] = useMemo(
-    () => plan.map((i) => ({ ...i, done: i.done || done.has(i.id) || checkinDone(i.id) })),
-    [plan, done, checkinDone],
-  );
+  const items: TodoItem[] = useMemo(() => plan.map((i) => ({ ...i, done: i.done || done.has(i.id) })), [plan, done]);
   const summary = useMemo(() => getSummary('hanche', DAY), []);
   const summaryAt = useMemo(() => new Date(new Date(DATE + 'T06:00:00').getTime() + delay * 60_000), [delay]);
 
@@ -83,7 +78,7 @@ export function WarRoom() {
   doneRef.current = done;
   const pending = useRef(new Map<string, number>());
   useEffect(() => saveDone(done), [done]);
-  useEffect(() => { pushTodo(plan.map((i) => ({ ...i, done: doneRef.current.has(i.id) || checkinDone(i.id) }))); }, [plan, checkinDone]);
+  useEffect(() => { pushTodo(plan.map((i) => ({ ...i, done: doneRef.current.has(i.id) }))); }, [plan]);
   useEffect(() => {
     let stop = false;
     let busy = false;
