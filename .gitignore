@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Ahmed — données santé personnelles et état local de l'API montre (jamais dans git)
+export.zip
+export.xml
+public/data/watch/
+server/.data/
