@@ -1,0 +1,32 @@
+{
+ "day": 93,
+ "date": "2026-11-13",
+ "scenario": "control",
+ "transcript": [
+  "06:57 — Réveil. Se lève directement.",
+  "06:50 — Message reçu ou incident signalé la veille : un désaccord technique avec Ito pendant le briefing.",
+  "07:30 — Ne vient pas au petit-déjeuner commun. Kovacs frappe à sa cabine ; Haddad : « Faites sans moi ce soir. »",
+  "08:30 — Briefing avec la Terre (message différé). Haddad ne prend pas la parole.",
+  "10:00 — Maintenance du système de filtration d'air : terminée dans les temps.",
+  "12:40 — Déjeuner commun. Haddad : « Ito, tu me montres ta modif sur la pompe ? »",
+  "14:00 — Séance d'exercice : annulée (« pas la force aujourd'hui »). Dit avoir « la tête lourde ».",
+  "16:00 — Expérience de biologie avec Okafor. Haddad exécute les étapes demandées, peu d'échanges.",
+  "17:30 — Appel vidéo différé avec sa famille (messages enregistrés). Message enregistré court (2 min), ton neutre.",
+  "19:30 — Dîner commun. Haddad : « On attaque le module 3 après le café ? »",
+  "21:00 — Soirée film avec l'équipage, commente le film.",
+  "00:50 — Coucher."
+ ],
+ "sensors": {
+  "tempsDeParoleMin": 36,
+  "tempsAvecEquipageMin": 167,
+  "repasSautes": 1,
+  "pas": 3099,
+  "sommeilH": 7
+ },
+ "biomarkers": {
+  "checkinHumeur": 3,
+  "checkinFatigue": 3,
+  "vfcMs": 58.8,
+  "cortisolNmolL": null
+ }
+}

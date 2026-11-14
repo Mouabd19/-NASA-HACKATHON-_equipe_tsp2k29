@@ -1,0 +1,32 @@
+{
+ "day": 46,
+ "date": "2026-09-27",
+ "scenario": "control",
+ "transcript": [
+  "06:57 — Réveil. Se lève directement.",
+  "06:50 — Message reçu ou incident signalé la veille : une panne du recycleur d'eau qui a demandé 3 h de travail.",
+  "07:30 — Ne vient pas au petit-déjeuner commun. Kovacs frappe à sa cabine ; Haddad : « Je préfère être seul un moment. »",
+  "08:30 — Briefing avec la Terre (message différé). Haddad pose deux questions sur le planning et propose une modification.",
+  "10:00 — Maintenance du système de filtration d'air : terminée dans les temps.",
+  "12:40 — Déjeuner commun. Haddad : « Okafor, tes plants de laitue ont pris deux centimètres ! »",
+  "14:00 — Séance d'exercice : complète (60 min ARED + vélo). Dit ne pas avoir faim.",
+  "16:00 — Expérience de biologie avec Okafor. Haddad oublie une étape ; Okafor la refait sans commentaire.",
+  "17:30 — Appel vidéo différé avec sa famille (messages enregistrés). Message enregistré court (2 min), ton neutre.",
+  "19:30 — Dîner commun. Haddad : « Ce soir film, c'est moi qui choisis. »",
+  "21:00 — Soirée film avec l'équipage, commente le film.",
+  "00:10 — Coucher."
+ ],
+ "sensors": {
+  "tempsDeParoleMin": 40,
+  "tempsAvecEquipageMin": 162,
+  "repasSautes": 1,
+  "pas": 2962,
+  "sommeilH": 7.3
+ },
+ "biomarkers": {
+  "checkinHumeur": 4,
+  "checkinFatigue": 3,
+  "vfcMs": 57.7,
+  "cortisolNmolL": null
+ }
+}

@@ -8,7 +8,7 @@ import type { Color, Level } from '../../../types';
 import { CHRONO_AGE_J0, DAY_END, DAY_SOL0, DAY_TODAY } from '../../../mocks/mission';
 import { alertsForDayPlan } from '../../../models/alerts';
 import { bioAgeSeries } from '../../../models/bioAge';
-import { ProvenanceBadge, TagBadge, dayToDate, fmt, levelColor, statusColor, statusLabel } from '../../../ui';
+import { PanelClose, ProvenanceBadge, TagBadge, dayToDate, fmt, levelColor, statusColor, statusLabel } from '../../../ui';
 import { useBody } from '../store';
 import './Timeline.css';
 
@@ -77,10 +77,10 @@ function splitAtToday(runs: Run[]): (Run & { projected: boolean })[] {
 interface Landmark { day: number; key: string; labels: string[]; strong?: boolean; alignEnd?: boolean }
 
 const LANDMARKS: Landmark[] = [
-  { day: 0, key: 'depart', labels: ['J0 DÉPART', 'J0'] },
-  { day: DAY_TODAY, key: 'today', labels: [`J${DAY_TODAY} AUJOURD'HUI`, `J${DAY_TODAY} AUJ.`, `J${DAY_TODAY}`], strong: true },
-  { day: DAY_SOL0, key: 'sol0', labels: ['SOL 0 · ARRIVÉE MARS [Persona]', 'SOL 0 · ARRIVÉE [Persona]', 'SOL 0 [Persona]', 'SOL 0'] },   // date provisoire (mocks/mission.ts)
-  { day: DAY_END, key: 'fin', labels: [`J${DAY_END} FIN DE MISSION [Persona]`, `J${DAY_END} FIN [Persona]`, `J${DAY_END} FIN`, `J${DAY_END}`], alignEnd: true },
+  { day: 0, key: 'depart', labels: ['J0 · départ', 'J0'] },
+  { day: DAY_TODAY, key: 'today', labels: [`J${DAY_TODAY} · aujourd'hui`, `J${DAY_TODAY}`], strong: true },
+  { day: DAY_SOL0, key: 'sol0', labels: ['Sol 0 · arrivée sur Mars', 'Sol 0 · arrivée', 'Sol 0'] },   // date provisoire (mocks/mission.ts)
+  { day: DAY_END, key: 'fin', labels: [`J${DAY_END} · fin de mission`, `J${DAY_END} · fin`, `J${DAY_END}`], alignEnd: true },
 ];
 
 /** Choisit, pour chaque repère, le libellé le plus long qui tient avant le repère suivant. */
@@ -165,12 +165,12 @@ const Ruler = memo(function Ruler({ width, runs }: { width: number; runs: Run[] 
       <line className="tl__edge" x1={x(0)} x2={xToday} y1={Y.bandTop + 0.5} y2={Y.bandTop + 0.5} />
       <line className="tl__edge tl__edge--proj" x1={xToday} x2={xEnd} y1={Y.bandTop + 0.5} y2={Y.bandTop + 0.5} />
       {measuredW > 46 && (
-        <text className="tl__zonelabel" x={x(0) + 5} y={Y.bandBottom - 3.5}>MESURÉ</text>
+        <text className="tl__zonelabel" x={x(0) + 5} y={Y.bandBottom - 3.5}>Mesuré</text>
       )}
       {projectedW > 120 && (
         <g>
           <rect className="tl__zonelabel-bg" x={xToday + 6} y={Y.bandTop + 1} width={88} height={bandH - 2} />
-          <text className="tl__zonelabel tl__zonelabel--proj" x={xToday + 10} y={Y.bandBottom - 3.5}>PROJETÉ [H]</text>
+          <text className="tl__zonelabel tl__zonelabel--proj" x={xToday + 10} y={Y.bandBottom - 3.5}>Projeté</text>
         </g>
       )}
 
@@ -357,7 +357,7 @@ export function Timeline(): JSX.Element {
     <div className="tl" data-projected={projected} data-playing={playing} role="group" aria-label="Chronologie de la mission">
       {/* ── Commandes de gauche ── */}
       <div className="tl__left">
-        <div className="tl__cap">
+        <div className="tl__cap sz-detail">
           <span className="sz-label sz-dim">SYS-T</span>
           <span className="sz-label">CHRONOLOGIE</span>
           <span className="tl__fill" />
@@ -375,16 +375,16 @@ export function Timeline(): JSX.Element {
             <PlayGlyph playing={playing} />
           </button>
           <button type="button" className="sz-btn" data-active={day === DAY_TODAY} onClick={() => jump(DAY_TODAY)} title="Revenir au dernier corps mesuré (T)">
-            AUJOURD'HUI
+            Aujourd'hui
           </button>
           <button type="button" className="sz-btn" data-active={day === DAY_SOL0} onClick={() => jump(DAY_SOL0)} title={`Arrivée sur Mars — J${DAY_SOL0} [Persona]`}>
-            SOL 0
+            Sol 0
           </button>
           <button type="button" className="sz-btn" data-active={day === DAY_END} onClick={() => jump(DAY_END)} title="Fin de mission [Persona]">
             J{DAY_END}
           </button>
         </div>
-        <div className="tl__hint sz-label sz-dim" aria-hidden="true">
+        <div className="tl__hint sz-label sz-dim sz-detail" aria-hidden="true">
           <Key>←</Key><Key>→</Key> ±1 J <span className="tl__sep" /> <Key>MAJ</Key> ±10 J <span className="tl__sep" /> <Key>T</Key> AUJ.
         </div>
       </div>
@@ -422,7 +422,7 @@ export function Timeline(): JSX.Element {
               <span className="tl__readout-dash">—</span>
               <span>{date}</span>
               <span className="tl__readout-dash">—</span>
-              <span className="tl__readout-mode">{projected ? 'PROJETÉ' : 'MESURÉ'}</span>
+              <span className="tl__readout-mode">{projected ? 'projeté' : 'mesuré'}</span>
             </div>
           </>
         )}
@@ -434,17 +434,18 @@ export function Timeline(): JSX.Element {
           <span className="sz-label sz-dim">PROJECTION</span>
           <span className="tl__fill" />
           <ProvenanceBadge value="H" />
+          <PanelClose className="tl__close" />
         </div>
         <div className="tl__toggle" role="radiogroup" aria-label="Scénario de projection">
           <button type="button" role="radio" aria-checked={adherence === 0} className="sz-btn" data-active={adherence === 0} onClick={() => setAdherence(0)}>
-            RYTHME ACTUEL
+            Rythme actuel
           </button>
           <button type="button" role="radio" aria-checked={adherence === 1} className="sz-btn" data-active={adherence === 1} onClick={() => setAdherence(1)}>
-            AVEC LE PLAN
+            Avec le plan
           </button>
         </div>
         <div
-          className="tl__impact sz-label"
+          className="tl__impact sz-label sz-detail"
           title={`Perte osseuse estimée de la hanche à J${DAY_END} : écart d'âge biologique × ${fmt(HIP_AGING_PCT_PER_YEAR)} %/an [H]`}
         >
           <span className="sz-dim">HANCHE J{DAY_END} :</span>

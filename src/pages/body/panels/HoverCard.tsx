@@ -221,7 +221,7 @@ export function HoverCard(): JSX.Element | null {
       <div className="hvc__card" ref={cardRef} style={{ visibility: 'hidden' }}>
         {/* key : rejoue le fondu/glissé de 120 ms à chaque changement d'organe */}
         <div className="hvc__in" key={organId}>
-          <header className="hvc__head">
+          <header className="hvc__head sz-detail">
             <span className="hvc__sys">
               {meta ? `${meta.sys} / ${meta.label}` : String(organ.layer).toUpperCase()}
             </span>
@@ -233,7 +233,7 @@ export function HoverCard(): JSX.Element | null {
             <StatusChip color={organ.status} />
           </div>
 
-          <div className="hvc__recap">
+          <div className="hvc__recap sz-detail">
             <span className="hvc__recap-k">
               {projected ? 'PROJECTION' : 'RÉCAP DU JOUR'} — {fmtDay(day)}
             </span>
@@ -241,11 +241,11 @@ export function HoverCard(): JSX.Element | null {
           </div>
 
           {organ.layer === 'squelette' ? (
-            <p className="hvc__src">SOURCE : MODÈLE + BILAN AU SOL + MARQUEURS URINAIRES — PAS LE SCANNER</p>
+            <p className="hvc__src sz-detail">Source : modèle + bilan au sol + marqueurs urinaires — pas le scanner</p>
           ) : null}
           {unmodeled ? (
             <p className="hvc__none">
-              NON MODÉLISÉ — AUCUNE MESURE POUR CET ORGANE. STATUT INCONNU (GRIS), PAS « NOMINAL ».
+              Non modélisé<span className="sz-detail"> — aucune mesure pour cet organe. Statut inconnu (gris), pas « nominal ».</span>
             </p>
           ) : (
             <ul className="hvc__metrics">
@@ -261,7 +261,7 @@ export function HoverCard(): JSX.Element | null {
                     </div>
                     <div className="hvc__m-sub">
                       {m.tag === 'NASA' ? <TagBadge tag="NASA" id={m.ref?.standardId} /> : <TagBadge tag={m.tag} />}
-                      <span className="hvc__m-th">{th ? `SEUIL ${th}` : 'SANS SEUIL'}</span>
+                      <span className="hvc__m-th">{th ? `Seuil ${th}` : <span className="sz-detail">Sans seuil</span>}</span>
                       {/* étiquette DU SEUIL : norme NASA avec identifiant, sinon hypothèse d'équipe */}
                       {th && m.tag !== 'NASA' ? (m.ref?.standardId ? <TagBadge tag="NASA" id={m.ref.standardId} /> : <TagBadge tag="H" />) : null}
                       <ProvenanceBadge value={m.provenance} />
@@ -292,7 +292,7 @@ export function HoverCard(): JSX.Element | null {
                 band={trend.band}
                 dashedFrom={trend.dashedFrom}
               />
-                <span className="hvc__trend-noise">
+                <span className="hvc__trend-noise sz-detail">
                   {trend.band ? `BANDE = BRUIT ±${fmt(trend.metric.noise ?? 0)} ${trend.metric.unit}` : 'BRUIT NON RENSEIGNÉ'}
                 </span>
               </div>
@@ -308,7 +308,7 @@ export function HoverCard(): JSX.Element | null {
             )}
           </div>
 
-          <footer className="hvc__foot">DOUBLE-CLIC → FENÊTRE ORGANE</footer>
+          <footer className="hvc__foot">{organId === 'cerveau' ? 'Double-clic : suivi santé mentale (prototype)' : 'Double-clic pour ouvrir'}</footer>
         </div>
       </div>
     </div>

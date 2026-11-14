@@ -46,5 +46,8 @@ gris = inconnu, jamais vert par défaut. Les seuils rouges viennent de NASA-STD-
 
 ## Crédits
 
-- Modèles anatomiques 3D : **Z-Anatomy — CC BY-SA 4.0** _(placeholder : à confirmer quand les `.glb` seront intégrés ; lien et mention de modification à ajouter)_.
+- Modèles anatomiques 3D (`public/models/*.glb`, **modifiés** : découpe par organe, simplification, compression meshopt) — dérivés de l'export glTF de [nqwrc/3d-anatomy](https://github.com/nqwrc/3d-anatomy), distribués sous **CC BY-NC-SA 4.0**, usage **non commercial réservé au hackathon** :
+  « Z-Anatomy — The open source atlas of anatomy — CC BY-SA 4.0 » · « BodyParts3D — The Database Center for Life Science — CC BY-SA 2.1 Japan » ·
+  « Cranial Nerves and Foramina — University of Dundee, CAHID — CC BY 4.0 » · « Anatomy of the Inner Ear — University of Dundee School of Medicine — CC BY-NC-SA 4.0 » ·
+  « Kidney — lissiecowley — CC BY-NC 4.0 » · « Brainder » et « White matter » — University of Washington. Détail : [`public/models/CREDITS.md`](public/models/CREDITS.md).
 - Normes : NASA-STD-3001 Vol. 1 Rév. C. Éphémérides : NASA JPL Horizons.

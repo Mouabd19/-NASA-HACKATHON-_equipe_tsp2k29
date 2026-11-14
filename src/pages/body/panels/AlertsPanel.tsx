@@ -5,7 +5,7 @@ import type { JSX, KeyboardEvent } from 'react';
 import type { Alert, Color, DayBody, Level } from '../../../types';
 import { trend7d } from '../../../models/trend';
 import { getStandard } from '../../../content/standards';
-import { HatchBand, Panel, StatusChip, TagBadge, fmt, levelColor } from '../../../ui';
+import { HatchBand, Panel, StatusChip, TagBadge, fmt, levelColor, sentenceCase } from '../../../ui';
 import { useBody, useDayAlerts, useDayBody } from '../store';
 import './AlertsPanel.css';
 
@@ -62,7 +62,7 @@ export function AlertsPanel(): JSX.Element {
   return (
     <Panel
       sys="ALR"
-      title="ALERTES DU JOUR"
+      title="Alertes"
       provenance="SIMULÉ"
       className="alr"
       right={
@@ -78,7 +78,7 @@ export function AlertsPanel(): JSX.Element {
       {cards.length === 0 ? (
         <div className="alr__empty">
           <span className="alr__empty-mark" aria-hidden="true" />
-          <span>AUCUNE ALERTE — TENDANCES 7 J DANS LA BANDE DE BRUIT</span>
+          <span>Aucune alerte<span className="sz-detail"> — tendances 7 j dans la bande de bruit</span></span>
         </div>
       ) : (
         <ul className="alr__list">
@@ -117,17 +117,17 @@ export function AlertsPanel(): JSX.Element {
                         {isNasaRule(a.rule) ? <TagBadge tag="NASA" id={a.rule} /> : <TagBadge tag="H" id={a.rule} />}
                       </span>
                     </div>
-                    <h3 className="alr__title">{a.title}</h3>
-                    <p className="alr__msg" title={a.message}>{a.message}</p>
+                    <h3 className="alr__title">{sentenceCase(a.title)}</h3>
+                    <p className="alr__msg sz-detail" title={a.message}>{a.message}</p>
                     <div className="alr__foot">
                       {trend ? (
-                        <span className="alr__trend" title={`Pente sur 7 jours — ${trend.label}`}>
+                        <span className="alr__trend sz-detail" title={`Pente sur 7 jours — ${trend.label}`}>
                           {/* os : pente du MODÈLE (rien n'est mesuré par le scanner), pas une tendance mesurée */}
                           <span className="alr__k">{trend.model ? 'PENTE MODÈLE 7 J' : 'TENDANCE 7 J'}</span>
                           <span className="alr__v">{signed(trend.value, 2)} %/SEM</span>
                         </span>
                       ) : (
-                        <span className="alr__trend">
+                        <span className="alr__trend sz-detail">
                           <span className="alr__k">TENDANCE 7 J</span>
                           <span className="alr__v alr__v--none">INDISPONIBLE</span>
                         </span>
@@ -143,7 +143,7 @@ export function AlertsPanel(): JSX.Element {
                         }}
                         title="Ouvrir la fenêtre organe"
                       >
-                        DÉTAIL →
+                        Ouvrir →
                       </button>
                     </div>
                   </div>

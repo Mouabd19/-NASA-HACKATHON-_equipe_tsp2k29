@@ -1,0 +1,50 @@
+{
+ "organId": "mollet",
+ "generatedBy": "IA-sol",
+ "model": "Claude (Anthropic), rédigé hors ligne",
+ "generatedAt": "2026-11-14",
+ "reviewed": false,
+ "note": "Synthèse IA rédigée au sol à partir des seuls chiffres du simulateur (src/sim, données de Mouad). À valider par le CMO. N'est jamais utilisée pour décider d'une alerte.",
+ "days": [
+  {
+   "day": 0,
+   "adherence": 0,
+   "text": "Bilan de référence (J0) : volume du mollet de 890 cm³ au scan. C'est la base de comparaison de la mission. Statut nominal."
+  },
+  {
+   "day": 30,
+   "adherence": 0,
+   "text": "Mollet à 98,4 % du volume de J0 (876 cm³). La tendance est de −0,38 % par semaine. Statut nominal."
+  },
+  {
+   "day": 60,
+   "adherence": 0,
+   "text": "Mollet à 96,97 % du volume de J0 (863 cm³). La tendance reste stable autour de −0,36 % par semaine. Statut nominal."
+  },
+  {
+   "day": 94,
+   "adherence": 0,
+   "text": "Mollet à 95,51 % du volume de J0 (850 cm³), statut nominal. Très sollicité au sol, le mollet travaille peu en apesanteur. Les extensions de mollets sur l'ARED le protègent."
+  },
+  {
+   "day": 210,
+   "adherence": 0,
+   "text": "Projection à Sol 0 (J210) au rythme actuel : 91,58 % du volume de J0. Statut à surveiller. Projection du modèle, pas une mesure."
+  },
+  {
+   "day": 210,
+   "adherence": 1,
+   "text": "Projection à Sol 0 (J210) avec le plan suivi : 94,13 % du volume de J0. Statut à surveiller. Projection du modèle, pas une mesure."
+  },
+  {
+   "day": 860,
+   "adherence": 0,
+   "text": "Projection au retour (J860) au rythme actuel : 84,22 % du volume de J0. Statut hors seuil. Projection du modèle, pas une mesure."
+  },
+  {
+   "day": 860,
+   "adherence": 1,
+   "text": "Projection au retour (J860) avec le plan suivi : 91,55 % du volume de J0. Statut à surveiller. Projection du modèle, pas une mesure."
+  }
+ ]
+}

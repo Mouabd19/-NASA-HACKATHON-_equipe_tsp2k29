@@ -6,12 +6,13 @@ import type { CSSProperties, JSX } from 'react';
 import { Line, LineChart, ReferenceArea, ReferenceLine, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 import type { BloodTest, Color } from '../../../types';
 import { DAY_TODAY } from '../../../mocks/mission';
-import { getBloodTests } from '../../../sim/load';
+import { getAnalyteMeta, getBloodTests } from '../../../sim/load';
 import { Panel, Sparkline, TagBadge, fmt, fmtDay, statusColor, tokens } from '../../../ui';
 import { useBody } from '../store';
 import './BloodPanel.css';
 
-const URINE = new Set<string>(['calcium_urinaire']);
+/** Recueil urinaire quotidien : cadence lue dans les données de Mouad (`getAnalyteMeta`), calcium urinaire par défaut. */
+const isUrine = (analyte: string): boolean => (getAnalyteMeta(analyte)?.cadence ?? (analyte === 'calcium_urinaire' ? 'quotidien' : 'hebdo')) === 'quotidien';
 /** Analytes mis en avant : anémie spatiale et fuite calcique (os). */
 const WATCHED: Record<string, string> = {
   hemoglobine: 'ANÉMIE SPATIALE — À SURVEILLER',
@@ -34,13 +35,14 @@ const LABELS: Record<string, { short: string; digits: number }> = {
   glucose: { short: 'Glucose', digits: 1 },
   cortisol: { short: 'Cortisol', digits: 0 },
   calcium_urinaire: { short: 'Calcium urin.', digits: 0 },
+  urine_ctx: { short: 'CTX urin.', digits: 0 },
 };
 
 function labelOf(analyte: string): string {
-  return LABELS[analyte]?.short ?? analyte.replace(/_/g, ' ');
+  return LABELS[analyte]?.short ?? getAnalyteMeta(analyte)?.label ?? analyte.replace(/_/g, ' ');
 }
 function digitsOf(analyte: string, sample: number): number {
-  return LABELS[analyte]?.digits ?? (Math.abs(sample) >= 100 ? 0 : Math.abs(sample) >= 10 ? 1 : 2);
+  return LABELS[analyte]?.digits ?? getAnalyteMeta(analyte)?.digits ?? (Math.abs(sample) >= 100 ? 0 : Math.abs(sample) >= 10 ? 1 : 2);
 }
 
 /** Écart à l'intervalle de référence, en fraction de sa largeur (0 = dedans). */
@@ -200,7 +202,7 @@ function RowView({ row, day, open, onToggle }: { row: Row; day: number; open: bo
       >
         <span className="bp-row__name">
           <span className="bp-row__label">{label}</span>
-          <span className="bp-row__sub">
+          <span className="bp-row__sub sz-detail">
             <span className="bp-row__unit">{last.unit}</span>
             <TagBadge tag={last.tag} />
           </span>
@@ -244,7 +246,7 @@ export function BloodPanel(): JSX.Element {
     }
     const rows: Row[] = order.map((analyte) => {
       const history = (by.get(analyte) ?? []).slice().sort((a, b) => a.day - b.day);
-      return { analyte, history, last: history[history.length - 1] ?? null, daily: URINE.has(analyte) };
+      return { analyte, history, last: history[history.length - 1] ?? null, daily: isUrine(analyte) };
     });
     const cap = rows.filter((r) => !r.daily);
     const uri = rows.filter((r) => r.daily);
@@ -273,10 +275,10 @@ export function BloodPanel(): JSX.Element {
   return (
     <Panel
       sys="BIO-01"
-      title="ANALYSES"
+      title="Analyses"
       provenance="SIMULÉ"
       className="bp"
-      right={<span className="bp-day">{fmtDay(day)}</span>}
+      right={<span className="bp-day sz-detail">{fmtDay(day)}</span>}
     >
       {projected && lastAny >= 0 ? (
         <div className="bp-banner">
@@ -287,9 +289,9 @@ export function BloodPanel(): JSX.Element {
         <div className="bp-none">DONNÉES INSUFFISANTES</div>
       ) : (
         <div className="bp-scroll sz-scroll">
-          {group(`CAPILLAIRE — HEBDO (${drawDay === null ? '—' : fmtDay(drawDay)})`, capillary)}
-          {group(`URINE — QUOTIDIEN${urineDay !== null && urineDay !== day ? ` (${fmtDay(urineDay)})` : ''}`, urine)}
-          <div className="bp-legend">
+          {group(`Sang · ${drawDay === null ? '—' : fmtDay(drawDay)}`, capillary)}
+          {group(`Urine${urineDay !== null && urineDay !== day ? ` · ${fmtDay(urineDay)}` : ''}`, urine)}
+          <div className="bp-legend sz-detail">
             <span className="bp-legend__key"><i className="bp-legend__ref" /> INTERVALLE DE RÉF. <TagBadge tag="Publié" /></span>
             <span className="bp-legend__key">▲▼ TENDANCE 4 SEM.</span>
           </div>

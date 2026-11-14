@@ -1,0 +1,50 @@
+{
+ "organId": "coeur",
+ "generatedBy": "IA-sol",
+ "model": "Claude (Anthropic), rédigé hors ligne",
+ "generatedAt": "2026-11-14",
+ "reviewed": false,
+ "note": "Synthèse IA rédigée au sol à partir des seuls chiffres du simulateur (src/sim, données de Mouad). À valider par le CMO. N'est jamais utilisée pour décider d'une alerte.",
+ "days": [
+  {
+   "day": 0,
+   "adherence": 0,
+   "text": "Bilan de référence (J0) : VO₂max de 44,1 ml/kg/min, fraction d'éjection de 61,8 %. Bonne capacité d'endurance avant le départ. Statut nominal."
+  },
+  {
+   "day": 30,
+   "adherence": 0,
+   "text": "VO₂max à 42,2 ml/kg/min, soit 95,7 % du pré-vol. La baisse (environ −0,8 par semaine) est attendue en début de vol. Fraction d'éjection stable à 61,9 %."
+  },
+  {
+   "day": 60,
+   "adherence": 0,
+   "text": "VO₂max à 40,6 ml/kg/min, soit 92,2 % du pré-vol. Masse ventriculaire à 96,8 % de J0 : le cœur s'adapte à l'apesanteur. Toujours au-dessus des seuils NASA."
+  },
+  {
+   "day": 94,
+   "adherence": 0,
+   "text": "VO₂max à 39,3 ml/kg/min, soit 89,2 % du pré-vol : statut à surveiller. Au-dessus des deux seuils NASA (80 % du pré-vol [V1 4003] et 36,5 ml/kg/min [V1 4002]), mais la pente mène pile à la limite à l'arrivée sur Mars. Conduite proposée : intervalles sur vélo ou tapis un jour sur deux."
+  },
+  {
+   "day": 210,
+   "adherence": 0,
+   "text": "Projection à Sol 0 (J210) au rythme actuel : VO₂max de 36,5 ml/kg/min (83 % du pré-vol). C'est exactement le seuil NASA de 36,5 [V1 4002] : statut à surveiller. Projection du modèle, pas une mesure."
+  },
+  {
+   "day": 210,
+   "adherence": 1,
+   "text": "Projection à Sol 0 (J210) avec le plan suivi : VO₂max de 37,3 ml/kg/min (84,8 % du pré-vol). C'est au-dessus du seuil de 36,5 [V1 4002] : statut à surveiller. Projection du modèle, pas une mesure."
+  },
+  {
+   "day": 860,
+   "adherence": 0,
+   "text": "Projection au retour (J860) au rythme actuel : VO₂max de 34,5 ml/kg/min, soit 78,4 % du pré-vol. C'est sous les deux seuils NASA [V1 4002, V1 4003] : statut hors seuil. Projection du modèle, pas une mesure."
+  },
+  {
+   "day": 860,
+   "adherence": 1,
+   "text": "Projection au retour (J860) avec le plan suivi : VO₂max de 35,9 ml/kg/min, soit 81,6 % du pré-vol. C'est au-dessus de 80 % du pré-vol [V1 4003] mais sous 36,5 [V1 4002] : statut hors seuil. Le plan protège l'endurance sans suffire sur 860 jours."
+  }
+ ]
+}

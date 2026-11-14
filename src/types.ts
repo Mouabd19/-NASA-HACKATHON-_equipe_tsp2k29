@@ -33,6 +33,7 @@ export interface CheckIn {      // v3.2 (ajout) : auto-évaluation du matin, 2 t
   fatigue: 1 | 2 | 3 | 4 | 5;
   pain: 0 | 1 | 2 | 3;          // 0 = aucune
   painZone?: OrganId;
+  painZones?: OrganId[];        // (ajout, demande Ahmed) : plusieurs zones ; painZone = la première, gardée pour compatibilité
   sleepFelt: 1 | 2 | 3 | 4 | 5;
   source: 'manual' | 'simulated';
 }
@@ -135,4 +136,6 @@ export interface ModelManifest {
   layers: { id: LayerId; file: string; organs: OrganId[] }[];
   organs: { id: OrganId; file?: string; anchor: [number, number, number] }[];  // anchor = position du warning ⚠
   credits: string;              // 'Z-Anatomy — CC BY-SA 4.0'
+  avatar?: string;              // (ajout, demande Steve) : silhouette de Haddad (enveloppe hologramme + carte de dose)
+  extraNodes?: Record<string, string[] | string>; // (ajout, demande Steve) : fichier .glb → organId présents (y compris arteres, veines, aorte) ; clé `note` = texte libre
 }

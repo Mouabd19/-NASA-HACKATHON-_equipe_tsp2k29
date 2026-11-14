@@ -1,27 +1,202 @@
 {
   "layers": [
-    { "id": "squelette", "file": "layer-squelette.glb", "organs": ["hanche", "rachis", "femur"] },
-    { "id": "muscles", "file": "layer-muscles.glb", "organs": ["cuisse", "mollet", "paravertebraux"] },
-    { "id": "organes", "file": "layer-organes.glb", "organs": ["coeur", "reins", "poumons", "foie", "cerveau"] },
-    { "id": "cardio", "file": "layer-cardio.glb", "organs": ["sang"] },
-    { "id": "nerveux", "file": "layer-nerveux.glb", "organs": ["yeux"] },
-    { "id": "exposition", "file": "layer-exposition.glb", "organs": ["dose"] }
+    {
+      "id": "squelette",
+      "file": "squelette.glb",
+      "organs": [
+        "hanche",
+        "rachis",
+        "femur"
+      ]
+    },
+    {
+      "id": "muscles",
+      "file": "muscles.glb",
+      "organs": [
+        "cuisse",
+        "mollet",
+        "paravertebraux"
+      ]
+    },
+    {
+      "id": "organes",
+      "file": "organes.glb",
+      "organs": [
+        "coeur",
+        "reins",
+        "poumons",
+        "foie",
+        "cerveau"
+      ]
+    },
+    {
+      "id": "cardio",
+      "file": "cardio.glb",
+      "organs": [
+        "sang"
+      ]
+    },
+    {
+      "id": "nerveux",
+      "file": "nerveux.glb",
+      "organs": [
+        "yeux"
+      ]
+    },
+    {
+      "id": "exposition",
+      "file": "avatar.glb",
+      "organs": [
+        "dose"
+      ]
+    }
   ],
   "organs": [
-    { "id": "hanche", "file": "organ-hanche.glb", "anchor": [0.14, 0.93, 0.02] },
-    { "id": "rachis", "file": "organ-rachis.glb", "anchor": [0, 1.15, -0.06] },
-    { "id": "femur", "file": "organ-femur.glb", "anchor": [0.13, 0.82, 0.02] },
-    { "id": "cuisse", "file": "organ-cuisse.glb", "anchor": [-0.13, 0.68, 0.04] },
-    { "id": "mollet", "file": "organ-mollet.glb", "anchor": [-0.11, 0.3, -0.03] },
-    { "id": "paravertebraux", "file": "organ-paravertebraux.glb", "anchor": [0.05, 1.1, -0.09] },
-    { "id": "coeur", "file": "organ-coeur.glb", "anchor": [0.04, 1.3, 0.05] },
-    { "id": "poumons", "file": "organ-poumons.glb", "anchor": [-0.09, 1.32, 0.03] },
-    { "id": "foie", "file": "organ-foie.glb", "anchor": [-0.07, 1.15, 0.06] },
-    { "id": "reins", "file": "organ-reins.glb", "anchor": [0.07, 1.08, -0.04] },
-    { "id": "cerveau", "file": "organ-cerveau.glb", "anchor": [0, 1.66, 0] },
-    { "id": "yeux", "file": "organ-oeil.glb", "anchor": [0.035, 1.63, 0.09] },
-    { "id": "sang", "anchor": [0.0, 1.2, 0.07] },
-    { "id": "dose", "anchor": [0, 1.0, 0.1] }
+    {
+      "id": "hanche",
+      "file": "organs/hanche.glb",
+      "anchor": [
+        0.069,
+        0.905,
+        0.086
+      ]
+    },
+    {
+      "id": "rachis",
+      "file": "organs/rachis.glb",
+      "anchor": [
+        0,
+        1.192,
+        -0.131
+      ]
+    },
+    {
+      "id": "femur",
+      "file": "organs/femur.glb",
+      "anchor": [
+        0.09,
+        0.83,
+        0.049
+      ]
+    },
+    {
+      "id": "cuisse",
+      "file": "organs/cuisse.glb",
+      "anchor": [
+        0.084,
+        0.646,
+        0.09
+      ]
+    },
+    {
+      "id": "mollet",
+      "file": "organs/mollet.glb",
+      "anchor": [
+        0.085,
+        0.32,
+        0.012
+      ]
+    },
+    {
+      "id": "paravertebraux",
+      "file": "organs/paravertebraux.glb",
+      "anchor": [
+        0.051,
+        1.228,
+        -0.133
+      ]
+    },
+    {
+      "id": "coeur",
+      "file": "organs/coeur.glb",
+      "anchor": [
+        0.029,
+        1.287,
+        0.102
+      ]
+    },
+    {
+      "id": "poumons",
+      "file": "organs/poumons.glb",
+      "anchor": [
+        0.069,
+        1.299,
+        0.131
+      ]
+    },
+    {
+      "id": "foie",
+      "file": "organs/foie.glb",
+      "anchor": [
+        -0.012,
+        1.175,
+        0.129
+      ]
+    },
+    {
+      "id": "reins",
+      "file": "organs/reins.glb",
+      "anchor": [
+        0.062,
+        1.112,
+        0.032
+      ]
+    },
+    {
+      "id": "cerveau",
+      "file": "organs/cerveau.glb",
+      "anchor": [
+        0.034,
+        1.619,
+        0.112
+      ]
+    },
+    {
+      "id": "yeux",
+      "file": "organs/yeux.glb",
+      "anchor": [
+        0.021,
+        1.594,
+        0.104
+      ]
+    },
+    {
+      "id": "sang",
+      "anchor": [
+        0.011,
+        1.197,
+        0.074
+      ]
+    },
+    {
+      "id": "dose",
+      "anchor": [
+        -0.15,
+        1.44,
+        0.12
+      ]
+    }
   ],
-  "credits": "Z-Anatomy — CC BY-SA 4.0 (placeholder : les .glb ne sont pas encore livrés)"
+  "credits": "Z-Anatomy — CC BY-SA 4.0 · BodyParts3D — CC BY-SA 2.1 Japon · Kidney (lissiecowley) — CC BY-NC 4.0 · Inner Ear / Cranial Nerves (University of Dundee) · export glTF : nqwrc/3d-anatomy · ensemble distribué sous CC BY-NC-SA 4.0, usage hackathon non commercial",
+  "avatar": "avatar.glb",
+  "extraNodes": {
+    "cardio.glb": [
+      "coeur",
+      "aorte",
+      "arteres",
+      "veines"
+    ],
+    "organes.glb": [
+      "coeur",
+      "poumons",
+      "foie",
+      "reins",
+      "cerveau"
+    ],
+    "nerveux.glb": [
+      "cerveau",
+      "yeux"
+    ],
+    "note": "organId présents dans chaque .glb (userData.organId), y compris hors contrat"
+  }
 }

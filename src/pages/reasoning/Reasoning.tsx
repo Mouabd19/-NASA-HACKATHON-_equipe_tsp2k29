@@ -1,85 +1,111 @@
-// Propriétaire : Ahmed (ROADMAP §7).
-// STUB — remplace l'implémentation sans changer la signature (export function ReasoningPage(): JSX.Element, lit :id).
-// Page minimale mais fonctionnelle sur les mocks : la chaîne donnée → modèle → norme NASA → décision,
-// chaque maillon avec son étiquette et sa source ; les normes citées sont dépliées (texte + lien + « non vérifié »).
-import type { CSSProperties, JSX } from 'react';
+// Propriétaire : Ahmed (B). Page Raisonnement : DONNÉE → MODÈLE → NORME → DÉCISION — ROADMAP §1, §3.
+import type { ReactNode } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import type { ReasoningStep } from '../../types';
-import { Label, Panel, TagBadge } from '../../ui';
 import { explain } from '../../models/explain';
 import { getStandard } from '../../content/standards';
+import { Panel, Prov, T, TagBadge } from '../warroom/ui';
+import { ModelCards } from './ModelCards';
+import '../warroom/warroom.css';
 
-const KIND: Record<ReasoningStep['kind'], string> = { donnee: 'DONNÉE', modele: 'MODÈLE', norme: 'NORME', decision: 'DÉCISION' };
-
-const S: Record<string, CSSProperties> = {
-  page: { minHeight: '100vh', background: 'var(--sz-bg)', color: 'var(--sz-text)', fontFamily: 'var(--sz-font-text)', padding: 24, boxSizing: 'border-box' },
-  wrap: { maxWidth: 860, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 16 },
-  top: { display: 'flex', alignItems: 'baseline', gap: 16, flexWrap: 'wrap', borderBottom: '1px solid var(--sz-border)', paddingBottom: 12 },
-  h1: { fontSize: 22, fontWeight: 500, margin: 0 },
-  link: { color: 'var(--sz-text)', fontFamily: 'var(--sz-font-mono)', letterSpacing: 'var(--sz-tracking)', fontSize: 10, textTransform: 'uppercase', textDecoration: 'underline', textUnderlineOffset: 3 },
-  step: { display: 'grid', gridTemplateColumns: '44px 1fr', gap: 12 },
-  rail: { display: 'flex', flexDirection: 'column', alignItems: 'center' },
-  node: { width: 28, height: 28, border: '1px solid var(--sz-border-strong)', display: 'grid', placeItems: 'center', fontFamily: 'var(--sz-font-mono)', fontSize: 12 },
-  line: { flex: 1, width: 1, background: 'var(--sz-border-strong)', minHeight: 16 },
-  text: { fontSize: 15, lineHeight: 1.5, margin: '0 0 8px' },
-  quote: { borderLeft: '1px solid var(--sz-border-strong)', padding: '4px 0 4px 12px', margin: '8px 0', color: 'var(--sz-text-dim)', fontSize: 13, lineHeight: 1.45 },
-  row: { display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
+const KIND: Record<ReasoningStep['kind'], { label: string }> = {
+  donnee: { label: 'Donnée' },
+  modele: { label: 'Modèle' },
+  norme: { label: 'Norme' },
+  decision: { label: 'Décision' },
 };
 
-const standardIds = (text: string): string[] => [...new Set(text.match(/V1 \d{4}/g) ?? [])];
+/** « NASA-STD-3001 V1 4027 » → « V1 4027 ». */
+export function standardIdOf(step: ReasoningStep): string | null {
+  const s = `${step.source?.label ?? ''} ${step.text}`;
+  const m = /\bV\d\s?\d{4}\b/.exec(s);
+  return m ? m[0].replace(/^V(\d)\s?/, 'V$1 ') : null;
+}
 
-export function ReasoningPage(): JSX.Element {
+export function ReasoningPage() {
   const { id = '' } = useParams();
-  const r = explain(id);
+  const r = explain(id); // useParams décode déjà l'id
 
-  return (
-    <div style={S.page} className="sz-scroll">
-      <div style={S.wrap}>
-        <header style={S.top}>
-          <Label dim>RAISONNEMENT / {r.id || '—'}</Label>
-          <span style={{ flex: 1 }} />
-          <Link to="/warroom" style={S.link}>← War Room</Link>
-          <Link to="/body" style={S.link}>Body →</Link>
-        </header>
-        <h1 style={S.h1}>{r.title}</h1>
-        <Label dim>Donnée → modèle → norme NASA → décision · chaque maillon porte sa source et son étiquette</Label>
-
-        {r.steps.map((s, i) => (
-          <div key={`${s.kind}-${i}`} style={S.step}>
-            <div style={S.rail}>
-              <div style={S.node}>{String(i + 1).padStart(2, '0')}</div>
-              {i < r.steps.length - 1 ? <div style={S.line} /> : null}
-            </div>
-            <Panel sys={`R-${String(i + 1).padStart(2, '0')}`} title={KIND[s.kind]} right={<TagBadge tag={s.tag} />} style={{ marginBottom: 16 }}>
-              <p style={S.text}>{s.text}</p>
-              {s.kind === 'norme'
-                ? standardIds(s.text).map((sid) => {
-                  const std = getStandard(sid);
-                  return (
-                    <div key={sid} style={S.quote}>
-                      <div style={S.row}>
-                        <TagBadge tag="NASA" id={sid} />
-                        <Label dim>{std.verified ? 'VÉRIFIÉ' : 'NON VÉRIFIÉ — RÉSUMÉ, PAS UNE CITATION'}</Label>
-                      </div>
-                      <div style={{ margin: '6px 0' }}>{std.quote}</div>
-                      <a href={std.url} target="_blank" rel="noreferrer" style={S.link}>{std.title}</a>
-                    </div>
-                  );
-                })
-                : null}
-              {s.source ? (
-                <div style={S.row}>
-                  <Label dim>SOURCE</Label>
-                  {s.source.url
-                    ? <a href={s.source.url} target="_blank" rel="noreferrer" style={S.link}>{s.source.label}</a>
-                    : <Label>{s.source.label}</Label>}
-                </div>
-              ) : null}
-            </Panel>
-          </div>
-        ))}
-        <Label dim>STUB sur données factices · aucune synthèse IA n’intervient dans un seuil</Label>
+  const shell = (children: ReactNode) => (
+    <main style={{ background: T.bg, color: T.text, fontFamily: T.fontText, minHeight: '100vh', padding: '32px clamp(16px, 3vw, 32px) 48px', boxSizing: 'border-box', WebkitFontSmoothing: 'antialiased' }}>
+      <div style={{ maxWidth: 820, margin: '0 auto' }}>
+        <Link className="wr-link" to="/warroom" style={{ fontSize: T.fs.md, marginLeft: -2 }}>‹ War Room</Link>
+        <div style={{ marginTop: 24 }}>{children}</div>
       </div>
-    </div>
+    </main>
+  );
+
+  if (!r.steps.length) {
+    return shell(
+      <Panel title="Explication introuvable">
+        <p style={{ color: T.textDim, margin: 0 }}>Cette explication n'existe pas ou n'est plus disponible</p>
+      </Panel>,
+    );
+  }
+
+  const hasH = r.steps.some((s) => s.tag === 'H');
+
+  return shell(
+    <>
+      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 16, flexWrap: 'wrap', marginBottom: 32 }}>
+        <h1 style={{ fontFamily: T.fontDisplay, fontSize: 'clamp(24px, 2.4vw, 30px)', fontWeight: 600, letterSpacing: '-0.015em', lineHeight: 1.12, margin: 0 }}>
+          <span style={{ color: T.textMuted }}>Pourquoi · </span>{r.title}
+        </h1>
+        <span style={{ marginLeft: 'auto' }}><Prov p="SIMULÉ" /></span>
+      </div>
+      <ol style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+        {r.steps.map((s, i) => (
+          <li key={i} style={{ display: 'grid', gridTemplateColumns: '28px 1fr', gap: 12 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ width: 10, height: 10, borderRadius: '50%', marginTop: 28, border: `1px solid ${s.tag === 'H' ? T.holo : s.kind === 'norme' ? T.text : T.borderStrong}`, background: s.kind === 'decision' ? T.text : 'transparent' }} />
+              {i < r.steps.length - 1 && <div style={{ flex: 1, width: 1, background: T.border, marginTop: 4 }} />}
+            </div>
+            <div style={{ paddingBottom: 16 }}>
+              <Step step={s} />
+            </div>
+          </li>
+        ))}
+      </ol>
+      {hasH && (
+        <Panel title="Limite" style={{ marginTop: 8 }}>
+          <p style={{ margin: 0, color: T.textDim, fontSize: T.fs.md, lineHeight: 1.5 }}>
+            Les étapes [H] sont des hypothèses ou indicateurs de l'équipe. L'écart d'âge d'un organe est un équivalent en années de
+            vieillissement terrestre, pas un vieillissement réel : la perte osseuse ou musculaire spatiale est en partie réversible au retour.
+          </p>
+        </Panel>
+      )}
+      <ModelCards />
+    </>,
+  );
+}
+
+function Step({ step }: { step: ReasoningStep }) {
+  const k = KIND[step.kind];
+  const stdId = step.kind === 'norme' || step.tag === 'NASA' ? standardIdOf(step) : null;
+  const std = stdId ? getStandard(stdId) : null;
+  return (
+    <Panel
+      title={k.label}
+      prov={<TagBadge tag={step.tag} id={step.tag === 'NASA' && stdId ? stdId : undefined} />}
+          >
+      <p style={{ margin: 0, fontSize: T.fs.lg, lineHeight: 1.47 }}>{step.text}</p>
+      {std && (
+        <blockquote style={{ margin: '16px 0 0', padding: '12px 16px', borderRadius: T.radius.inset, background: T.panelRaised, border: `1px solid ${T.border}` }}>
+          <div style={{ fontSize: T.fs.sm, color: T.textMuted, marginBottom: 4 }}>
+            NASA-STD-3001 Vol. 1 Rev C · {std.id} — {std.title}
+            {!std.verified && <span style={{ color: T.textDim }}> · non vérifié</span>}
+          </div>
+          {std.quote ? <p style={{ margin: 0, fontSize: T.fs.md, lineHeight: 1.5, color: T.text }}>« {std.quote} »</p>
+            : <p style={{ margin: 0, fontSize: T.fs.sm, color: T.textDim }}>Citation indisponible hors ligne</p>}
+          {std.url && <a href={std.url} target="_blank" rel="noreferrer" className="wr-link" style={{ fontSize: T.fs.sm, display: 'inline-block', marginTop: 8 }}>Source en ligne ↗</a>}
+        </blockquote>
+      )}
+      {!std && step.source && (
+        <div style={{ marginTop: 12, fontSize: T.fs.sm, color: T.textMuted }}>
+          Source :{' '}
+          {step.source.url ? <a href={step.source.url} target="_blank" rel="noreferrer" className="wr-link">{step.source.label} ↗</a> : step.source.label}
+        </div>
+      )}
+    </Panel>
   );
 }

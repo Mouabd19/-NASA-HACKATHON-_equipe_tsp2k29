@@ -48,6 +48,7 @@
 .hvc__in {
   position: relative;
   border: 1px solid var(--sz-border-strong);
+  border-radius: 10px;
   /* IMPORTANT : ni fond 100 % opaque, ni animation de transform sur ce bloc. Un calque opaque animé au-dessus du
      canevas WebGL est pris pour un « occulteur » par le compositeur de Chromium : la colonne du canevas qu'il a
      traversée restait noire (moitié du corps effacée au survol). Reproduit puis vérifié corrigé en rendu logiciel. */
@@ -84,10 +85,11 @@
   height: 24px;
   padding: 0 10px 0 12px;
   border-bottom: 1px solid var(--sz-border);
-  font-family: var(--sz-font-mono);
-  font-size: 10px;
+  font-family: var(--sz-font-text);
+  font-size: 11px;
   letter-spacing: var(--sz-tracking);
   text-transform: uppercase;
+  font-weight: 500;
   color: var(--sz-text-dim);
   white-space: nowrap;
 }
@@ -112,12 +114,12 @@
 }
 .hvc__name {
   min-width: 0;
-  font-family: var(--sz-font-mono);
+  font-family: var(--sz-font-text);
   font-size: 13px;
   font-weight: 500;
   line-height: 1.25;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+  text-transform: none;
   color: var(--sz-text);
 }
 
@@ -133,10 +135,11 @@
 }
 .hvc__recap-k,
 .hvc__k {
-  font-family: var(--sz-font-mono);
-  font-size: 10px;
+  font-family: var(--sz-font-text);
+  font-size: 11px;
   letter-spacing: var(--sz-tracking);
   text-transform: uppercase;
+  font-weight: 500;
   color: var(--sz-text-dim);
   white-space: nowrap;
 }
@@ -174,7 +177,7 @@
 }
 .hvc__m-unit {
   margin-left: 4px;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.06em;
   color: var(--sz-text-dim);
 }
@@ -189,19 +192,19 @@
 }
 .hvc__m-sub .sz-prov { margin-left: auto; }
 .hvc__m-th {
-  font-family: var(--sz-font-mono);
-  font-size: 10px;
-  letter-spacing: 0.06em;
+  font-family: var(--sz-font-text);
+  font-size: 11px;
+  letter-spacing: 0;
   color: var(--sz-text-dim);
   white-space: nowrap;
 }
 
 .hvc__none {
   padding: 10px 10px 10px 12px;
-  font-family: var(--sz-font-mono);
-  font-size: 10px;
+  font-family: var(--sz-font-text);
+  font-size: 11px;
   line-height: 1.6;
-  letter-spacing: 0.08em;
+  letter-spacing: 0;
   color: var(--sz-text-dim);
 }
 
@@ -228,15 +231,16 @@
   color: var(--sz-text);
   white-space: nowrap;
 }
-.hvc__trend-v[data-none='true'] { font-size: 10px; color: var(--sz-unknown); letter-spacing: var(--sz-tracking); }
+.hvc__trend-v[data-none='true'] { font-size: 11px; color: var(--sz-unknown); letter-spacing: var(--sz-tracking); }
 .hvc__trend-of {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-family: var(--sz-font-mono);
-  font-size: 10px;
+  font-family: var(--sz-font-text);
+  font-size: 11px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+  font-weight: 500;
   color: var(--sz-text-dim);
 }
 
@@ -259,16 +263,16 @@
 }
 .hvc__age-v--none { color: var(--sz-unknown); }
 .hvc__age-v--none small {
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: var(--sz-tracking);
 }
 
 .hvc__foot {
   padding: 5px 10px 5px 12px;
   border-top: 1px solid var(--sz-border);
-  font-family: var(--sz-font-mono);
-  font-size: 10px;
-  letter-spacing: var(--sz-tracking);
+  font-family: var(--sz-font-text);
+  font-size: 11px;
+  letter-spacing: 0;
   color: var(--sz-text-dim);
   background: var(--sz-panel);
 }
@@ -281,8 +285,8 @@
   gap: 2px;
 }
 .hvc__trend-noise {
-  font-family: var(--sz-font-mono);
-  font-size: 10px;
+  font-family: var(--sz-font-text);
+  font-size: 11px;
   letter-spacing: 0.06em;
   color: var(--sz-text-dim);
   white-space: nowrap;
@@ -293,9 +297,9 @@
   margin: 0;
   padding: 5px 10px 5px 12px;
   border-bottom: 1px dashed var(--sz-border-strong);
-  font-family: var(--sz-font-mono);
-  font-size: 10px;
+  font-family: var(--sz-font-text);
+  font-size: 11px;
   line-height: 1.5;
-  letter-spacing: 0.06em;
+  letter-spacing: 0;
   color: var(--sz-text);
 }

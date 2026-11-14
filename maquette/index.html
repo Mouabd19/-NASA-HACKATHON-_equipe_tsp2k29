@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SOL ZÉRO War Room</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+/* Layout : bandeau mission, onglets, puis grille 3 colonnes (check-in + mesure | consigne + to-do) qui passe à 1 colonne sur téléphone.
+   Direction artistique SOL ZÉRO (ROADMAP §1) : un seul thème sombre, assumé. */
+:root {
+  color-scheme: dark;
+  --bg: #050607;
+  --panel: rgba(255,255,255,0.03);
+  --panel-2: rgba(255,255,255,0.06);
+  --line: rgba(255,255,255,0.12);
+  --fg: #E8E8E6;
+  --muted: #8A8F98;
+  --holo: #9FB4C7;
+  --ok: #30D158;
+  --amber: #FF9F0A;
+  --red: #FF453A;
+  --grey: #636366;
+  --sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 14px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 16px 40px;
+}
+.wrap { max-width: 1240px; margin: 0 auto; display: grid; gap: 16px; }
+.lbl { font-family: var(--mono); text-transform: uppercase; letter-spacing: .12em; font-size: 11px; color: var(--muted); }
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.tag { font-family: var(--mono); font-size: 10px; letter-spacing: .08em; border: 1px solid var(--line); padding: 1px 6px; color: var(--muted); white-space: nowrap; }
+.tag.real { color: var(--holo); border-color: var(--holo); }
+.tag.h { color: var(--amber); border-color: rgba(255,159,10,.5); }
+.tag.nasa { color: var(--fg); border-color: var(--fg); }
+
+/* bandeau */
+.mission { display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: baseline; justify-content: space-between; border-bottom: 1px solid var(--line); padding-bottom: 12px; }
+.brand { font-family: var(--mono); font-weight: 700; letter-spacing: .2em; font-size: 15px; }
+.brand span { color: var(--muted); font-weight: 400; }
+.mission .facts { display: flex; flex-wrap: wrap; gap: 6px 20px; }
+.fact b { font-family: var(--mono); font-weight: 500; color: var(--fg); margin-left: 6px; }
+.fictif { font-family: var(--mono); font-size: 10px; letter-spacing: .12em; color: var(--amber); }
+
+nav { display: flex; gap: 0; border: 1px solid var(--line); width: fit-content; max-width: 100%; overflow-x: auto; }
+nav a { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); text-decoration: none; padding: 8px 16px; border-right: 1px solid var(--line); white-space: nowrap; }
+nav a:last-child { border-right: 0; }
+nav a[aria-current="page"] { color: var(--bg); background: var(--fg); }
+nav a:focus-visible, button:focus-visible { outline: 1px solid var(--holo); outline-offset: 2px; }
+
+.panel { background: var(--panel); border: 1px solid var(--line); padding: 16px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.ph { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.grid { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 16px; align-items: start; }
+.col { display: grid; gap: 16px; min-width: 0; }
+@media (max-width: 860px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* check-in */
+.ci-row { display: grid; gap: 6px; }
+.ci-row .q { display: flex; justify-content: space-between; }
+.seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; border: 1px solid var(--line); }
+.seg button { background: transparent; color: var(--muted); border: 0; border-right: 1px solid var(--line); font-family: var(--mono); font-size: 13px; padding: 9px 0; cursor: pointer; }
+.seg button:last-child { border-right: 0; }
+.seg button:hover { background: var(--panel-2); color: var(--fg); }
+.seg button[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
+.btn { background: var(--fg); color: var(--bg); border: 0; font-family: var(--mono); letter-spacing: .12em; text-transform: uppercase; font-size: 12px; padding: 11px; cursor: pointer; }
+.btn:disabled { background: var(--panel-2); color: var(--grey); cursor: not-allowed; }
+.btn.ghost { background: transparent; color: var(--fg); border: 1px solid var(--line); }
+.ci-done { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.ci-done .mono { color: var(--fg); }
+
+/* consigne */
+.now-next { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 16px; }
+@media (max-width: 640px) { .now-next { grid-template-columns: minmax(0, 1fr); } }
+.status { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 12px; letter-spacing: .12em; }
+.dot { width: 9px; height: 9px; background: var(--grey); }
+.st-grey { color: var(--grey); } .st-grey .dot { background: var(--grey); }
+.st-amber { color: var(--amber); } .st-amber .dot { background: var(--amber); }
+.st-orange { color: #FF7A1A; } .st-orange .dot { background: #FF7A1A; }
+.now-text { font-size: 19px; font-weight: 500; line-height: 1.4; text-wrap: balance; }
+.now.grey { border-left: 3px solid var(--grey); }
+.now.amber { border-left: 3px solid var(--amber); }
+.now.orange { border-left: 3px solid #FF7A1A; }
+.next-row { display: grid; gap: 2px; padding-top: 10px; border-top: 1px solid var(--line); }
+.next-row:first-of-type { border-top: 0; padding-top: 0; }
+
+/* to-do */
+.todo-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 640px) { .todo-groups { grid-template-columns: minmax(0, 1fr); } }
+.group { display: grid; gap: 0; align-content: start; border: 1px solid var(--line); min-width: 0; }
+.group > .lbl { padding: 8px 12px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; }
+.item { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--line); align-items: start; }
+.item:last-child { border-bottom: 0; }
+.item.urgent { background: repeating-linear-gradient(135deg, rgba(255,69,58,.10) 0 8px, transparent 8px 16px); border-left: 3px solid var(--red); }
+.item input { appearance: none; width: 18px; height: 18px; border: 1px solid var(--muted); margin: 2px 0 0; cursor: pointer; display: grid; place-content: center; background: transparent; }
+.item input:checked { background: var(--ok); border-color: var(--ok); }
+.item input:checked::after { content: ""; width: 9px; height: 5px; border-left: 2px solid var(--bg); border-bottom: 2px solid var(--bg); transform: rotate(-45deg) translate(1px,-1px); }
+.item.done .title { color: var(--muted); text-decoration: line-through; }
+.title { font-weight: 500; }
+.detail { color: var(--muted); font-size: 13px; }
+.why { background: none; border: 0; color: var(--holo); font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; padding: 0; white-space: nowrap; }
+.why:hover { text-decoration: underline; }
+.time { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.from-watch { font-family: var(--mono); font-size: 10px; color: var(--ok); letter-spacing: .08em; }
+
+/* mesure */
+.measure { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+.m { border: 1px solid var(--line); padding: 10px; display: grid; gap: 2px; }
+.m .v { font-family: var(--mono); font-size: 26px; font-variant-numeric: tabular-nums; }
+.m .v small { font-size: 13px; color: var(--muted); }
+.m .b { font-size: 12px; color: var(--muted); }
+.spark { width: 100%; height: 34px; }
+
+/* raisonnement */
+.chain { display: grid; gap: 0; }
+.step { display: grid; grid-template-columns: 110px minmax(0,1fr); gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--line); position: relative; }
+.step:last-child { border-bottom: 0; }
+.step .k { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; color: var(--holo); padding-top: 2px; }
+.step .k::after { content: "↓"; display: block; color: var(--grey); margin-top: 6px; }
+.step:last-child .k::after { content: ""; }
+.step.decision .k { color: var(--fg); }
+.step .body { display: grid; gap: 6px; min-width: 0; }
+.quote { border-left: 2px solid var(--fg); padding: 4px 0 4px 12px; color: var(--fg); font-size: 13px; }
+.src { font-size: 12px; color: var(--muted); }
+.src a { color: var(--holo); }
+.limit { border: 1px dashed rgba(255,159,10,.5); padding: 10px 12px; font-size: 13px; color: var(--muted); }
+.limit b { color: var(--amber); font-family: var(--mono); font-size: 11px; letter-spacing: .1em; }
+@media (max-width: 520px) { .step { grid-template-columns: minmax(0,1fr); gap: 6px; } .step .k::after { display: none; } }
+
+/* montre */
+.watch-wrap { display: grid; grid-template-columns: auto minmax(0,1fr); gap: 32px; align-items: start; }
+@media (max-width: 760px) { .watch-wrap { grid-template-columns: minmax(0,1fr); justify-items: center; } }
+.watch { width: 220px; height: 268px; border-radius: 52px; background: #000; border: 10px solid #1C1D20; box-shadow: 0 0 0 1px var(--line); padding: 18px 14px; display: grid; grid-template-rows: auto 1fr; gap: 8px; overflow: hidden; }
+.w-head { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; color: var(--holo); }
+.w-list { display: grid; gap: 6px; align-content: start; overflow-y: auto; }
+.w-item { background: #1C1D20; border: 0; color: var(--fg); text-align: left; padding: 8px 10px; border-radius: 12px; font-family: var(--sans); font-size: 12px; cursor: pointer; display: flex; gap: 8px; align-items: center; }
+.w-item .c { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid var(--muted); flex: none; }
+.w-item.done { color: var(--muted); text-decoration: line-through; }
+.w-item.done .c { background: var(--ok); border-color: var(--ok); }
+.w-empty { color: var(--muted); font-size: 12px; text-align: center; padding-top: 30px; }
+.steps-list { display: grid; gap: 8px; margin: 0; padding-left: 20px; color: var(--muted); }
+.steps-list b { color: var(--fg); font-weight: 500; }
+.bar { height: 6px; background: var(--panel-2); border: 1px solid var(--line); }
+.bar > div { height: 100%; width: 0; background: var(--holo); transition: width .2s linear; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+td, th { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+th { font-family: var(--mono); font-weight: 400; font-size: 11px; letter-spacing: .1em; color: var(--muted); text-transform: uppercase; }
+td.n { font-family: var(--mono); text-align: right; font-variant-numeric: tabular-nums; }
+.tbl { overflow-x: auto; }
+.toast { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); background: var(--fg); color: var(--bg); font-family: var(--mono); font-size: 12px; padding: 10px 14px; letter-spacing: .06em; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="mission">
+    <div class="brand">SOL ZÉRO <span>/ WAR ROOM</span></div>
+    <div class="facts lbl">
+      <span class="fact">Astronaute<b>HADDAD [Persona]</b></span>
+      <span class="fact">Jour<b>J94</b></span>
+      <span class="fact">Date<b>2026-11-14</b></span>
+      <span class="fact">Délai radio<b>11,0 min</b></span>
+      <span class="fact">Position<b>CROISIÈRE MARS</b></span>
+    </div>
+    <div class="fictif">MAQUETTE — DONNÉES FICTIVES</div>
+  </header>
+
+  <nav aria-label="Pages">
+    <a href="#warroom" data-view="warroom">War Room</a>
+    <a href="#raisonnement" data-view="raisonnement">Raisonnement</a>
+    <a href="#montre" data-view="montre">Apple Watch</a>
+  </nav>
+
+  <!-- ============ WAR ROOM ============ -->
+  <section id="v-warroom" class="grid">
+    <div class="col">
+      <div class="panel" id="checkin">
+        <div class="ph"><span class="lbl">SYS-01 / Check-in du matin</span><span class="tag real">RÉEL</span></div>
+        <div id="ci-form" class="col" style="gap:12px">
+          <div class="ci-row"><div class="q"><span>Humeur</span><span class="lbl">1 = très mauvaise</span></div><div class="seg" data-k="mood" data-vals="1,2,3,4,5"></div></div>
+          <div class="ci-row"><div class="q"><span>Fatigue</span><span class="lbl">5 = épuisé</span></div><div class="seg" data-k="fatigue" data-vals="1,2,3,4,5"></div></div>
+          <div class="ci-row"><div class="q"><span>Douleur</span><span class="lbl">0 = aucune</span></div><div class="seg" data-k="pain" data-vals="0,1,2,3"></div></div>
+          <div class="ci-row" id="zone-row" hidden><div class="q"><span>Où ?</span></div><div class="seg" data-k="zone" data-vals="Dos,Hanche,Cuisse,Tête"></div></div>
+          <div class="ci-row"><div class="q"><span>Sommeil ressenti</span><span class="lbl">5 = excellent</span></div><div class="seg" data-k="sleep" data-vals="1,2,3,4,5"></div></div>
+          <button class="btn" id="ci-submit" disabled>Valider le check-in</button>
+        </div>
+        <div id="ci-summary" hidden class="col" style="gap:10px">
+          <div class="ci-done lbl" id="ci-values"></div>
+          <button class="btn ghost" id="ci-edit">Modifier</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="ph"><span class="lbl">SYS-02 / Mesure du jour</span><span class="tag real">RÉEL — NON NASA</span></div>
+        <div class="measure">
+          <div class="m"><span class="lbl">SpO₂</span><span class="v">97<small> %</small></span><svg class="spark" viewBox="0 0 100 34" preserveAspectRatio="none" aria-hidden="true"><polyline fill="none" stroke="#9FB4C7" stroke-width="1.5" points="0,14 12,12 24,16 36,10 48,13 60,11 72,15 84,12 100,17"/><circle cx="100" cy="17" r="2.5" fill="#9FB4C7"/></svg><span class="b">Réf. 30 j : 97,8 ± 0,9 · <span class="mono">−0,9σ</span></span></div>
+          <div class="m"><span class="lbl">FC repos</span><span class="v">58<small> bpm</small></span><svg class="spark" viewBox="0 0 100 34" preserveAspectRatio="none" aria-hidden="true"><polyline fill="none" stroke="#9FB4C7" stroke-width="1.5" points="0,18 12,20 24,16 36,19 48,22 60,18 72,21 84,20 100,23"/><circle cx="100" cy="23" r="2.5" fill="#9FB4C7"/></svg><span class="b">Réf. 30 j : 61 ± 3 · <span class="mono">−1,0σ</span></span></div>
+        </div>
+        <div class="src">Source : Raccourci iPhone, reçu à <span class="mono">07:12</span>. Si la montre ne répond pas : dernière mesure de l'export, sinon saisie manuelle.</div>
+        <button class="btn ghost" id="live-btn">Mesurer maintenant</button>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="now-next">
+        <div class="panel now grey" id="now">
+          <div class="ph"><span class="lbl">MAINTENANT · calculé à bord</span><span class="status st-grey" id="now-status"><span class="dot"></span><span>DONNÉES INSUFFISANTES</span></span></div>
+          <div class="now-text" id="now-text">Fais ton check-in pour obtenir la consigne du jour.</div>
+          <div class="src" id="now-why">Le triage du jour attend ton auto-évaluation. Aucun statut n'est affiché en vert par défaut.</div>
+        </div>
+        <div class="panel">
+          <div class="ph"><span class="lbl">ENSUITE · depuis la Terre</span><span class="tag">SIMULÉ</span></div>
+          <div class="next-row"><span class="lbl">Décideur : CMO · réponse ≥ 22 min</span><span>Point Sol-routine sur la hanche : discuter des bisphosphonates.</span></div>
+          <div class="next-row"><span class="lbl">Synthèse IA — à valider par le CMO</span><span>Hanche : perte estimée 1,99 % à J94, tendance stable sur 7 jours. Cuisse : volume en baisse de 0,6 %/semaine.</span><span class="src">Reçue de la Terre à <span class="mono">06:41</span>, délai 11 min</span></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="ph"><span class="lbl">SYS-03 / To-do du jour · fixée à 06:30</span><span class="lbl" id="todo-count"></span></div>
+        <div class="todo-groups" id="todo"></div>
+        <div class="src">« Le protocole décide, pas le moi du soir. » Chaque item a son lien Pourquoi ? vers la chaîne de raisonnement.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RAISONNEMENT ============ -->
+  <section id="v-raisonnement" hidden>
+    <div class="panel">
+      <div class="ph"><span class="lbl" id="r-id">RAISONNEMENT</span><button class="why" id="r-back">← Retour à la War Room</button></div>
+      <h1 id="r-title" style="margin:0;font-size:24px;font-weight:600;text-wrap:balance"></h1>
+      <div class="chain" id="r-chain"></div>
+    </div>
+  </section>
+
+  <!-- ============ MONTRE ============ -->
+  <section id="v-montre" hidden>
+    <div class="watch-wrap">
+      <div class="watch" aria-label="Simulation de l'Apple Watch">
+        <div class="w-head"><span>SOL ZÉRO</span><span id="w-time">10:09</span></div>
+        <div class="w-list" id="w-list"></div>
+      </div>
+      <div class="col">
+        <div class="panel">
+          <div class="ph"><span class="lbl">Raccourci « SOL ZÉRO — To-do »</span><span class="tag">HORS MVP</span></div>
+          <ol class="steps-list">
+            <li><b>Sur la montre</b>, le raccourci récupère la to-do du jour depuis l'ordinateur de bord.</li>
+            <li>L'astronaute <b>touche un item</b> pour le cocher.</li>
+            <li>La War Room <b>se coche toute seule</b> en moins de 3 secondes. Touche un item sur la montre ci-contre, puis reviens à la War Room.</li>
+          </ol>
+        </div>
+        <div class="panel">
+          <div class="ph"><span class="lbl">Import de l'export Santé</span><span class="tag real">RÉEL — NON NASA</span></div>
+          <div class="src">export.xml · 1,2 Go · lu en flux, l'interface reste fluide</div>
+          <div class="bar"><div id="imp-bar"></div></div>
+          <button class="btn ghost" id="imp-btn">Simuler l'import</button>
+          <div class="tbl">
+            <table>
+              <thead><tr><th>Mesure</th><th style="text-align:right">Points</th><th style="text-align:right">Réf. 30 j</th></tr></thead>
+              <tbody id="imp-table"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const TODO = [
+  { id:'med-cmo', kind:'medical', title:'Point Sol-routine avec le CMO', detail:'Hanche AMBRE · bisphosphonates à discuter', time:'14:00', p:1, r:'r-hanche-cmo' },
+  { id:'ex-ared', kind:'exercice', title:'ARED — squat 4×8 à 85 %', detail:'+ soulevé de terre 3×6 · 45 min', time:'07:30', p:1, r:'r-ared' },
+  { id:'ex-velo', kind:'exercice', title:'Vélo CEVIS — intervalles', detail:'6 × 4 min à 85 % FCmax · 35 min', time:'16:00', p:2, r:'r-velo' },
+  { id:'re-calc', kind:'repas', title:'Petit-déjeuner riche en calcium', detail:'1 200 mg Ca · vit. D 800 UI · 32 g protéines', time:'06:45', p:2, r:'r-ared' },
+  { id:'re-hydra', kind:'repas', title:'Hydratation renforcée', detail:'3,0 L sur la journée · calcium urinaire en hausse', time:'', p:2, r:'r-reins' },
+  { id:'te-pvt', kind:'test', title:'PVT — vigilance (3 min)', detail:'Dernier test il y a 3 jours', time:'09:00', p:3, r:'r-pvt' },
+  { id:'te-vision', kind:'test', title:'Test de vision + scan nerf optique', detail:'Gaine du nerf optique en hausse (AMBRE)', time:'11:00', p:2, r:'r-sans' },
+];
+const GROUPS = [['medical','Actions médicales'],['exercice','Exercices'],['repas','Repas'],['test','Tests']];
+
+const REASONS = {
+  'r-ared': { title:'Pourquoi un squat lourd sur l\'ARED ce matin ?', steps:[
+    { k:'DONNÉE', t:'Perte osseuse de la hanche estimée à 1,99 % vs pré-vol à J94. Calcium urinaire en hausse depuis 9 jours.', s:'Marqueurs urinaires quotidiens + bilan au sol pré-vol', tag:'SIMULÉ' },
+    { k:'MODÈLE', t:'Le modèle bone prolonge la tendance : 8,70 % de perte à J860 au rythme actuel, 4,22 % si le plan est suivi.', s:'Modèle bone, fiche §7 (bande d\'incertitude ± 1,1 %)', tag:'H', limit:'Projection d\'un modèle d\'équipe, recalée sur le bilan au sol. Le scanner ne mesure pas l\'os.' },
+    { k:'NORME', t:'Densité minérale osseuse à maintenir au-dessus d\'un seuil vs pré-vol, plus strict pour le col du fémur.', q:'Seuils : ≥ 95 % du pré-vol, col du fémur ≥ 90 %. Texte exact à vérifier dans la norme (Steve).', s:'NASA-STD-3001 Vol. 1 Rev C', id:'V1 4027', tag:'NASA', url:'https://standards.nasa.gov/sites/default/files/standards/NASA/C//nasa-std-3001-vol-1-rev-c-signature.pdf' },
+    { k:'DÉCISION', t:'ARED charge lourde aujourd\'hui à 07:30 (squat 4×8 à 85 %, soulevé de terre 3×6), petit-déjeuner riche en calcium et vitamine D.', s:'planDay · règle « hanche AMBRE »', tag:'H' },
+  ]},
+  'r-hanche-cmo': { title:'Pourquoi prévenir le CMO aujourd\'hui ?', steps:[
+    { k:'DONNÉE', t:'Hanche AMBRE depuis 7 jours, projection J860 dans le rouge.', s:'alertsForDay(94)', tag:'SIMULÉ' },
+    { k:'MODÈLE', t:'Tendance 7 jours : la pente sort de la bande de bruit de mesure.', s:'trend7d · régression simple', tag:'H' },
+    { k:'NORME', t:'Seuil de densité osseuse vs pré-vol.', q:'Voir V1 4027. Texte exact à vérifier.', s:'NASA-STD-3001 Vol. 1 Rev C', id:'V1 4027', tag:'NASA' },
+    { k:'DÉCISION', t:'Point Sol-routine à 14:00 avec le médecin au sol, sujet : bisphosphonates. La réponse arrive dans ENSUITE.', s:'triage · groundRoutine', tag:'H' },
+  ]},
+  'r-velo': { title:'Pourquoi des intervalles sur le vélo ?', steps:[
+    { k:'DONNÉE', t:'VO₂max estimé en baisse de 10,84 % vs pré-vol à J94.', s:'Apple Watch (VO₂max estimé) + simulation Haddad', tag:'SIMULÉ' },
+    { k:'MODÈLE', t:'Arrivée à Sol 0 : 36,5 ml/kg/min au rythme actuel, 37,3 avec le plan.', s:'Modèle aerobic, fiche §7', tag:'H' },
+    { k:'NORME', t:'Capacité aérobie minimale à maintenir.', q:'VO₂max ≥ 80 % du pré-vol et ≥ 36,5 ml/kg/min. Texte exact à vérifier.', s:'NASA-STD-3001 Vol. 1 Rev C', id:'V1 4003 / 4002', tag:'NASA' },
+    { k:'DÉCISION', t:'6 × 4 min à 85 % de la FC max à 16:00.', s:'planDay · règle « VO₂ AMBRE »', tag:'H' },
+  ]},
+  'r-reins': { title:'Pourquoi boire 3 litres aujourd\'hui ?', steps:[
+    { k:'DONNÉE', t:'Calcium urinaire en hausse. Scan des reins de J90 : pas de calcul visible.', s:'Urine quotidienne + scan hebdomadaire', tag:'SIMULÉ' },
+    { k:'MODÈLE', t:'Le calcium libéré par les os augmente le risque de calculs rénaux.', s:'Littérature spatiale, à sourcer (Steve)', tag:'Publié' },
+    { k:'NORME', t:'Seuil de calcium urinaire.', q:'Référence à compléter dans standards.json.', s:'À vérifier', tag:'NASA' },
+    { k:'DÉCISION', t:'3,0 L d\'eau sur la journée, scan des reins demain.', s:'planDay · règle « calcium en hausse »', tag:'H' },
+  ]},
+  'r-pvt': { title:'Pourquoi un PVT ce matin ?', steps:[
+    { k:'DONNÉE', t:'Dernier test de vigilance il y a 3 jours. Donnée expirée.', s:'Historique des tests', tag:'SIMULÉ' },
+    { k:'MODÈLE', t:'Une donnée expirée ne permet pas de calculer le statut : il passe en gris.', s:'Règle DONNEES_INSUFFISANTES', tag:'H' },
+    { k:'NORME', t:'Surveillance de la performance cognitive.', q:'Exigence à identifier dans la norme.', s:'NASA-STD-3001 Vol. 1 Rev C', tag:'NASA' },
+    { k:'DÉCISION', t:'PVT de 3 minutes à 09:00.', s:'planDay · règle « donnée manquante »', tag:'H' },
+  ]},
+  'r-sans': { title:'Pourquoi un test de vision ?', steps:[
+    { k:'DONNÉE', t:'Diamètre de la gaine du nerf optique en hausse sur 7 jours.', s:'Scan quotidien (échographie, comme sur l\'ISS)', tag:'SIMULÉ' },
+    { k:'MODÈLE', t:'Reflet de la pression intracrânienne, donc du risque oculaire SANS.', s:'Littérature, à sourcer (Steve)', tag:'Publié' },
+    { k:'NORME', t:'Surveillance de la vision en vol.', q:'Exigence à identifier dans la norme.', s:'NASA-STD-3001 Vol. 1 Rev C', tag:'NASA' },
+    { k:'DÉCISION', t:'Test de vision à 11:00 et point Sol-routine sur le risque SANS.', s:'planDay · règle « nerf optique AMBRE »', tag:'H' },
+  ]},
+};
+
+const state = { ci:{}, ciDone:false, done:new Set(), watchDone:new Set(), reason:'r-ared' };
+const $ = s => document.querySelector(s);
+
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.hidden=false; clearTimeout(toast.h); toast.h=setTimeout(()=>t.hidden=true,2600); }
+
+/* ---- check-in ---- */
+document.querySelectorAll('.seg').forEach(seg=>{
+  seg.dataset.vals.split(',').forEach(v=>{
+    const b=document.createElement('button'); b.type='button'; b.textContent=v; b.setAttribute('aria-pressed','false');
+    b.onclick=()=>{ seg.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed','false')); b.setAttribute('aria-pressed','true');
+      state.ci[seg.dataset.k]=v; if(seg.dataset.k==='pain'){ $('#zone-row').hidden = v==='0'; if(v==='0') delete state.ci.zone; } checkReady(); };
+    seg.appendChild(b);
+  });
+});
+function checkReady(){ const c=state.ci; const ok=c.mood&&c.fatigue&&c.pain!==undefined&&c.sleep&&(c.pain==='0'||c.zone); $('#ci-submit').disabled=!ok; }
+$('#ci-submit').onclick=()=>{ state.ciDone=true; renderCheckin(); renderNow(); toast('Check-in enregistré · triage recalculé à bord'); };
+$('#ci-edit').onclick=()=>{ state.ciDone=false; renderCheckin(); renderNow(); };
+function renderCheckin(){
+  $('#ci-form').hidden=state.ciDone; $('#ci-summary').hidden=!state.ciDone;
+  const c=state.ci;
+  $('#ci-values').innerHTML=`<span>Humeur <span class="mono">${c.mood}/5</span></span><span>Fatigue <span class="mono">${c.fatigue}/5</span></span><span>Douleur <span class="mono">${c.pain}/3${c.zone?' · '+c.zone:''}</span></span><span>Sommeil <span class="mono">${c.sleep}/5</span></span><span>Saisi à <span class="mono">07:05</span></span>`;
+}
+function renderNow(){
+  const now=$('#now'), st=$('#now-status');
+  if(!state.ciDone){ now.className='panel now grey'; st.className='status st-grey'; st.lastElementChild.textContent='DONNÉES INSUFFISANTES';
+    $('#now-text').textContent='Fais ton check-in pour obtenir la consigne du jour.';
+    $('#now-why').textContent='Le triage du jour attend ton auto-évaluation. Aucun statut n\'est affiché en vert par défaut.'; return; }
+  const c=state.ci, pain=+c.pain, mood=+c.mood;
+  let lvl='amber', label='AMBRE', text, why;
+  if(pain>=2 && (c.zone==='Dos'||c.zone==='Hanche')){ lvl='orange'; label='ORANGE';
+    text=`Séance ARED allégée à 60 % ce matin. Douleur ${c.zone.toLowerCase()} ${pain}/3 : préviens le CMO avant 12:00.`;
+    why='Douleur ≥ 2 sur une zone sollicitée par l\'ARED + hanche AMBRE.'; }
+  else if(mood<=2){ lvl='orange'; label='ORANGE';
+    text='Programme maintenu. Un point avec le psy est proposé aujourd\'hui, à toi de décider.';
+    why='Humeur ≤ 2 + sommeil ressenti '+c.sleep+'/5. Proposé, jamais imposé.'; }
+  else { text='ARED lourd à 07:30, petit-déjeuner riche en calcium, 3 L d\'eau. Point CMO à 14:00.';
+    why='Hanche AMBRE, cuisse AMBRE, VO₂ AMBRE. Check-in sans signal d\'alerte.'; }
+  now.className='panel now '+lvl; st.className='status st-'+lvl; st.lastElementChild.textContent=label;
+  $('#now-text').textContent=text; $('#now-why').textContent='Pourquoi : '+why+' Délai Terre ignoré pour cette consigne.';
+}
+
+/* ---- to-do ---- */
+function renderTodo(){
+  const el=$('#todo'); el.innerHTML='';
+  GROUPS.forEach(([k,name])=>{
+    const items=TODO.filter(t=>t.kind===k).sort((a,b)=>a.p-b.p);
+    const g=document.createElement('div'); g.className='group';
+    const doneN=items.filter(i=>state.done.has(i.id)).length;
+    g.innerHTML=`<div class="lbl"><span>${name}</span><span class="mono">${doneN}/${items.length}</span></div>`;
+    items.forEach(it=>{
+      const d=document.createElement('div');
+      d.className='item'+(state.done.has(it.id)?' done':'')+(it.kind==='medical'&&it.p===1?' urgent':'');
+      d.innerHTML=`<input type="checkbox" id="cb-${it.id}" ${state.done.has(it.id)?'checked':''} aria-label="${it.title}">
+        <div><div class="title">${it.title}</div><div class="detail">${it.detail}</div>${state.watchDone.has(it.id)?'<div class="from-watch">✓ COCHÉ DEPUIS LA MONTRE</div>':''}</div>
+        <div style="display:grid;gap:4px;justify-items:end"><span class="time">${it.time||'—'}</span><button class="why" data-r="${it.r}">Pourquoi ?</button></div>`;
+      d.querySelector('input').onchange=e=>{ e.target.checked?state.done.add(it.id):state.done.delete(it.id); state.watchDone.delete(it.id); renderTodo(); renderWatch(); };
+      d.querySelector('.why').onclick=()=>{ state.reason=it.r; location.hash='raisonnement'; };
+      g.appendChild(d);
+    });
+    el.appendChild(g);
+  });
+  $('#todo-count').textContent=`${state.done.size}/${TODO.length} FAITS`;
+}
+
+/* ---- raisonnement ---- */
+function renderReason(){
+  const r=REASONS[state.reason];
+  $('#r-id').textContent='RAISONNEMENT / '+state.reason.toUpperCase();
+  $('#r-title').textContent=r.title;
+  $('#r-chain').innerHTML=r.steps.map(s=>{
+    const tagCls=s.tag==='NASA'?'nasa':s.tag==='H'?'h':'';
+    const tagTxt=s.tag==='NASA'?`NASA${s.id?' '+s.id:''}`:s.tag==='H'?'[H]':s.tag;
+    return `<div class="step${s.k==='DÉCISION'?' decision':''}"><div class="k">${s.k}</div><div class="body">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:baseline"><span>${s.t}</span><span class="tag ${tagCls}">${tagTxt}</span></div>
+      ${s.q?`<div class="quote">${s.q}</div>`:''}
+      <div class="src">Source : ${s.url?`<a href="${s.url}" target="_blank" rel="noopener">${s.s}</a>`:s.s}</div>
+      ${s.limit?`<div class="limit"><b>LIMITE</b> · ${s.limit}</div>`:''}
+    </div></div>`;}).join('');
+}
+$('#r-back').onclick=()=>{ location.hash='warroom'; };
+
+/* ---- montre ---- */
+function renderWatch(){
+  const l=$('#w-list'); l.innerHTML='';
+  const items=[...TODO].sort((a,b)=>(a.time||'99').localeCompare(b.time||'99'));
+  items.forEach(it=>{
+    const b=document.createElement('button'); b.className='w-item'+(state.done.has(it.id)?' done':'');
+    b.innerHTML=`<span class="c"></span><span>${it.time?it.time+' · ':''}${it.title}</span>`;
+    b.onclick=()=>{ if(state.done.has(it.id)){ state.done.delete(it.id); state.watchDone.delete(it.id);} else { state.done.add(it.id); state.watchDone.add(it.id); toast('Montre → War Room : « '+it.title+' » coché'); } renderWatch(); renderTodo(); };
+    l.appendChild(b);
+  });
+}
+const IMPORT=[['FC repos','2 914','61 ± 3 bpm'],['VFC (SDNN)','3 102','48 ± 11 ms'],['VO₂max estimé','212','41,2 ± 0,6'],['SpO₂','1 845','97,8 ± 0,9 %'],['Temp. poignet (nuit)','286','−0,1 ± 0,3 °C'],['Sommeil (nuits)','301','7,1 ± 0,8 h'],['FC (30 derniers j)','41 760','—']];
+$('#imp-btn').onclick=()=>{
+  const bar=$('#imp-bar'), btn=$('#imp-btn'); btn.disabled=true; $('#imp-table').innerHTML=''; let p=0;
+  const h=setInterval(()=>{ p+=4; bar.style.width=Math.min(p,100)+'%'; btn.textContent=`Lecture… ${Math.min(p,100)} %`;
+    if(p>=100){ clearInterval(h); btn.disabled=false; btn.textContent='Relancer l\'import';
+      $('#imp-table').innerHTML=IMPORT.map(r=>`<tr><td>${r[0]}</td><td class="n">${r[1]}</td><td class="n">${r[2]}</td></tr>`).join(''); toast('Export Santé importé : 50 420 mesures'); } },60);
+};
+$('#live-btn').onclick=()=>toast('Mesure demandée · lance Oxygène sanguin sur la montre puis le Raccourci');
+
+/* ---- routage ---- */
+function route(){
+  const v=(location.hash.slice(1)||'warroom');
+  const view=['warroom','raisonnement','montre'].includes(v)?v:'warroom';
+  ['warroom','raisonnement','montre'].forEach(x=>$('#v-'+x).hidden=x!==view);
+  document.querySelectorAll('nav a').forEach(a=>a.toggleAttribute('aria-current',a.dataset.view===view)||a.setAttribute('aria-current', a.dataset.view===view?'page':''));
+  document.querySelectorAll('nav a').forEach(a=>{ if(a.dataset.view===view) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); });
+  if(view==='raisonnement') renderReason();
+  if(view==='montre') renderWatch();
+  window.scrollTo(0,0);
+}
+window.addEventListener('hashchange',route);
+renderTodo(); renderNow(); route();
+</script>
+</body>
+</html>

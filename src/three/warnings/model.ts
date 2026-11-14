@@ -1,4 +1,5 @@
 // Dérive la liste des warnings à afficher (pur) : alertes du jour × calques actifs × ancres 3D.
+import { sentenceCase } from '../../ui/format';
 import type { Alert, Color, LayerId, Level, OrganId } from '../../types';
 import { levelColor } from '../../ui/tokens';
 import { DAY_TODAY } from '../../mocks/mission';
@@ -61,8 +62,8 @@ export function warnItems(day: number, layers: Record<LayerId, boolean>, adheren
       anchor,
       side,
       projected: day > DAY_TODAY,
-      label: (alert.title.split(' — ')[0] || String(alert.organId)).toUpperCase(),
-      levelLabel: LEVEL_LABEL[alert.level],
+      label: sentenceCase(alert.title.split(' — ')[0] || String(alert.organId)),
+      levelLabel: sentenceCase(LEVEL_LABEL[alert.level]),
       ruleLabel: ruleLabel(alert.rule),
       leaving: false,
     });

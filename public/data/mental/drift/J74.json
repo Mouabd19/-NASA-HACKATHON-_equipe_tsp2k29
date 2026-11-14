@@ -1,0 +1,303 @@
+{
+ "day": 74,
+ "date": "2026-10-25",
+ "scenario": "drift",
+ "model": "claude-haiku-5-5",
+ "label": "Prototype — données SIMULÉES — signal IA, pas un diagnostic",
+ "input": {
+  "transcript": [
+   "06:44 — Réveil. Se lève directement.",
+   "07:30 — Petit-déjeuner avec l'équipage. Haddad : « Tu peux arrêter de me demander si ça va ? » Répond après un long silence.",
+   "08:30 — Briefing avec la Terre (message différé). Haddad pose deux questions sur le planning et propose une modification.",
+   "10:00 — Maintenance du système de filtration d'air : terminée dans les temps.",
+   "12:40 — Déjeuner commun. Haddad : « J'ai l'impression de tourner en rond ici. »",
+   "14:00 — Séance d'exercice : complète (60 min ARED + vélo).",
+   "16:00 — Expérience de biologie avec Okafor. Haddad plaisante et propose une variante du protocole.",
+   "17:30 — Appel vidéo différé avec sa famille (messages enregistrés). Message enregistré de 9 min, sourit.",
+   "19:30 — Dîner commun. Haddad : « Ito, tu me montres ta modif sur la pompe ? »",
+   "21:00 — Soirée film avec l'équipage, commente le film.",
+   "23:30 — Coucher."
+  ],
+  "sensors": {
+   "tempsDeParoleMin": 53,
+   "tempsAvecEquipageMin": 209,
+   "repasSautes": 0,
+   "pas": 3872,
+   "sommeilH": 7.1
+  },
+  "biomarkers": {
+   "checkinHumeur": 3,
+   "checkinFatigue": 2,
+   "vfcMs": 46.9,
+   "cortisolNmolL": null
+  }
+ },
+ "observers": [
+  {
+   "id": "obs-actions",
+   "label": "Observateur — actions et comportements",
+   "output": {
+    "faits": [
+     {
+      "heure": "06:44",
+      "fait": "Lever directement, sans délai signalé.",
+      "citation": null
+     },
+     {
+      "heure": "08:30",
+      "fait": "Participe au briefing avec la Terre et propose une modification du planning.",
+      "citation": null
+     },
+     {
+      "heure": "10:00",
+      "fait": "Maintenance du système de filtration d'air terminée dans les temps.",
+      "citation": null
+     },
+     {
+      "heure": "14:00",
+      "fait": "Séance d'exercice complète (60 min ARED et vélo).",
+      "citation": null
+     },
+     {
+      "heure": "19:30",
+      "fait": "Dîner pris avec l'équipage ; demande à Ito de lui montrer sa modification sur la pompe.",
+      "citation": "Ito, tu me montres ta modif sur la pompe ?"
+     },
+     {
+      "heure": "23:30",
+      "fait": "Coucher après une soirée film avec l'équipage.",
+      "citation": null
+     }
+    ],
+    "resume": "Haddad a pris ses trois repas, dont deux avec l'équipage, et a terminé la maintenance et la séance d'exercice prévues. Il a passé 209 minutes avec l'équipage, a dormi 7,1 heures et a effectué 3 872 pas."
+   },
+   "seconds": 6
+  },
+  {
+   "id": "obs-paroles",
+   "label": "Observateur — paroles et interactions",
+   "output": {
+    "faits": [
+     {
+      "heure": "07:30",
+      "fait": "Demande à l'équipage de cesser de lui demander comment il va ; répond après un long silence.",
+      "citation": "Tu peux arrêter de me demander si ça va ?"
+     },
+     {
+      "heure": "08:30",
+      "fait": "Prend l'initiative pendant le briefing avec la Terre : pose deux questions sur le planning et propose une modification.",
+      "citation": null
+     },
+     {
+      "heure": "12:40",
+      "fait": "Exprime au déjeuner une appréciation sur son environnement de vie à bord.",
+      "citation": "J'ai l'impression de tourner en rond ici."
+     },
+     {
+      "heure": "16:00",
+      "fait": "Pendant l'expérience de biologie avec Okafor, plaisante et propose de lui-même une variante du protocole.",
+      "citation": null
+     },
+     {
+      "heure": "17:30",
+      "fait": "Enregistre un message de 9 min pour l'appel différé avec sa famille.",
+      "citation": null
+     },
+     {
+      "heure": "19:30",
+      "fait": "Au dîner, initie une demande directe à Ito concernant la modification de la pompe.",
+      "citation": "Ito, tu me montres ta modif sur la pompe ?"
+     }
+    ],
+    "resume": "Haddad a parlé 53 min sur 209 min de temps avec l'équipage, et a pris l'initiative dans la plupart de ses échanges professionnels de la journée. Il a répondu à une question sur son bien-être après un long silence et a enregistré un message pour sa famille."
+   },
+   "seconds": 5.6
+  },
+  {
+   "id": "obs-corps",
+   "label": "Observateur — corps et ressentis",
+   "output": {
+    "faits": [
+     {
+      "heure": "06:44",
+      "fait": "Se lève directement au réveil, sans signalement de fatigue ou de latence.",
+      "citation": null
+     },
+     {
+      "heure": "07:30",
+      "fait": "Répond après un long silence lors du petit-déjeuner, avec une réponse différée.",
+      "citation": null
+     },
+     {
+      "heure": "12:40",
+      "fait": "Exprime un ressenti de lassitude face au lieu de vie lors du déjeuner.",
+      "citation": "J'ai l'impression de tourner en rond ici."
+     },
+     {
+      "heure": "14:00",
+      "fait": "Réalise la séance d'exercice complète, soit 60 minutes d'ARED et de vélo.",
+      "citation": null
+     },
+     {
+      "heure": "17:30",
+      "fait": "Sourit pendant le visionnage d'un message enregistré de 9 minutes.",
+      "citation": null
+     },
+     {
+      "heure": "23:30",
+      "fait": "Se couche ; sommeil mesuré de 7,1 heures sur la nuit.",
+      "citation": null
+     }
+    ],
+    "resume": "Haddad se lève sans délai, réalise une séance d'exercice complète et dort 7,1 heures. Il exprime en milieu de journée un ressenti de répétition et répond après un long silence le matin."
+   },
+   "seconds": 6.4
+  }
+ ],
+ "psychologists": [
+  {
+   "id": "psy-physique",
+   "label": "Psychologue — état physico-psychique",
+   "output": {
+    "niveau": "rien",
+    "confiance": "moyenne",
+    "hypotheses": [
+     {
+      "schema": "Lassitude liée au lieu de vie, possiblement ponctuelle, à regarder sur les prochains jours.",
+      "preuves": [
+       "Au déjeuner, Haddad dit « J'ai l'impression de tourner en rond ici. » (observateurs paroles et corps)",
+       "Humeur déclarée à 3/5 aujourd'hui, contre 4/5 les trois jours précédents (J72 à J74)",
+       "Il a demandé à l'équipage de cesser de lui demander comment il va, après un long silence (07:30)"
+      ]
+     },
+     {
+      "schema": "Baisse de récupération physiologique légère, sous le seuil d'alerte.",
+      "preuves": [
+       "VFC à 46.9 ms aujourd'hui, soit -17 % vs référence (sous le seuil de 20 %)",
+       "VFC moyenne sur 7 jours à 48.2 ms, soit -15 % vs référence",
+       "Le sommeil reste stable à 7.1 h, soit +3 % vs référence"
+      ]
+     }
+    ],
+    "ecartsReference": [
+     "Humeur déclarée : 3/5 aujourd'hui, soit -21 % vs référence 3.8 (seul écart ≥ 20 %)",
+     "VFC : 46.9 ms, soit -17 % vs référence 56.8 (sous le seuil)",
+     "Repas sautés : 0 aujourd'hui contre 0.5 de référence (écart favorable)"
+    ],
+    "pointsRassurants": [
+     "Haddad a pris l'initiative au briefing avec la Terre et a proposé une modification du planning",
+     "Il a terminé la maintenance de filtration dans les temps et réalisé la séance d'exercice complète",
+     "Il a participé à l'expérience de biologie avec Okafor en proposant une variante, et a enregistré un message pour sa famille",
+     "Sommeil stable à 7.1 h, pas à 3 872 (+5 %), temps avec l'équipage à 209 min (+16 %)",
+     "Aucun repas sauté aujourd'hui"
+    ],
+    "noteAuPsy": "Un seul indicateur (humeur déclarée) s'écarte de plus de 20 % aujourd'hui, et la VFC reste sous le seuil, donc le niveau reste « rien ». Le ressenti de lassitude exprimé au déjeuner mérite une attention, surtout si l'humeur reste à 3/5 les prochains jours. Un point léger avec Haddad sur son ressenti du lieu de vie pourrait suffire à éclairer la situation."
+   },
+   "seconds": 9.4
+  },
+  {
+   "id": "psy-anxiete",
+   "label": "Psychologue — rapport à l'anxiété",
+   "output": {
+    "niveau": "rien",
+    "confiance": "moyenne",
+    "hypotheses": [
+     {
+      "schema": "Lassitude exprimée face au lieu de vie, sans repli marqué : un schéma à regarder si elle se répète.",
+      "preuves": [
+       "Au déjeuner (12:40), Haddad dit : « J'ai l'impression de tourner en rond ici. »",
+       "Humeur déclarée de 3/5 aujourd'hui, contre une référence de 3,8 (-21 %).",
+       "Il reste pourtant investi : initiative au briefing, variante de protocole proposée à Okafor, séance d'exercice complète."
+      ]
+     },
+     {
+      "schema": "Irritabilité ou agacement face aux questions répétées sur son état : à observer.",
+      "preuves": [
+       "À 07:30, il demande à l'équipage d'arrêter de lui demander comment il va, après un long silence.",
+       "Ses réponses matinales sont différées, selon l'observateur corps et ressentis.",
+       "Le temps de parole reste proche de sa référence (+10 %), ce qui limite le signal."
+      ]
+     },
+     {
+      "schema": "Variabilité cardiaque légèrement basse : un indicateur physiologique à suivre, sans valeur d'alerte seule.",
+      "preuves": [
+       "VFC de 46,9 ms aujourd'hui, contre une référence de 56,8 ms (-17 %), sous le seuil de 20 %.",
+       "Moyenne sur 7 jours de 48,2 ms (-15 %), donc une baisse stable plutôt qu'une chute brutale.",
+       "Cortisol non mesuré aujourd'hui, donc aucune donnée hormonale pour confirmer."
+      ]
+     }
+    ],
+    "ecartsReference": [
+     "Humeur déclarée : 3 contre une référence de 3,8 (-21 %).",
+     "VFC : 46,9 ms contre 56,8 ms (-17 %).",
+     "Temps de parole moyen sur 7 jours : 39,3 min (-19 %)."
+    ],
+    "pointsRassurants": [
+     "Sommeil de 7,1 h, au niveau de sa référence (+3 %).",
+     "Trois repas pris, dont deux avec l'équipage, et aucun repas sauté aujourd'hui.",
+     "Temps avec l'équipage de 209 min (+16 %), avec des échanges spontanés et de l'humour pendant l'expérience de biologie.",
+     "Il sourit en regardant le message de sa famille et prend l'initiative au briefing avec la Terre."
+    ],
+    "noteAuPsy": "Un seul indicateur (l'humeur) dépasse le seuil de 20 % aujourd'hui, et l'écart n'est pas confirmé sur plusieurs jours. Les signaux qualitatifs (lassitude au déjeuner, demande d'arrêter les questions sur son état) méritent une attention douce lors du prochain point. Le cortisol n'a pas été mesuré, il serait utile de le relever si le schéma persiste."
+   },
+   "seconds": 9.7
+  },
+  {
+   "id": "psy-social",
+   "label": "Psychologue — lien social et isolement",
+   "output": {
+    "niveau": "rien",
+    "confiance": "moyenne",
+    "hypotheses": [
+     {
+      "schema": "Lassitude liée au cadre de vie à bord, à surveiller sur les prochains jours. Un seul indicateur dépasse le seuil de 20 % aujourd'hui.",
+      "preuves": [
+       "Haddad dit « J'ai l'impression de tourner en rond ici. » au déjeuner",
+       "Humeur déclarée à 3/5 aujourd'hui, contre 4/5 les jours J68, J69, J71, J72 et J73 (écart de -21 % vs référence)",
+       "VFC à 46.9 ms, soit -17 % vs référence, sans passage au seuil de 20 %"
+      ]
+     },
+     {
+      "schema": "Retrait ponctuel le matin, sans répétition sur la semaine.",
+      "preuves": [
+       "Demande à l'équipage de cesser de lui demander comment il va, après un long silence à 07:30",
+       "Réponse différée au petit-déjeuner, signalée par l'observateur corps et ressentis",
+       "Temps de parole moyen sur 7 jours à 39.3 min, soit -19 %, mais le temps de parole du jour est au-dessus de sa référence (+10 %)"
+      ]
+     }
+    ],
+    "ecartsReference": [
+     "Humeur déclarée : 3/5 aujourd'hui, soit -21 % vs référence 3.8",
+     "VFC : 46.9 ms aujourd'hui, soit -17 % vs référence 56.8",
+     "Temps de parole moyen 7 jours : 39.3 min, soit -19 % vs référence"
+    ],
+    "pointsRassurants": [
+     "Sommeil de 7.1 h, au-dessus de sa référence (+3 %)",
+     "Séance d'exercice complète et maintenance terminée dans les temps",
+     "Initiative prise pendant le briefing et proposition de variante lors de l'expérience avec Okafor",
+     "Temps avec l'équipage à +16 % vs référence, repas pris sans saut, message enregistré pour la famille, sourire pendant le visionnage"
+    ],
+    "noteAuPsy": "Un seul indicateur (humeur, -21 %) dépasse le seuil aujourd'hui, et le temps avec l'équipage reste au-dessus de la référence. Le ressenti de lassitude sur le cadre de vie mérite d'être repris en échange informel si le schéma se répète. Le cortisol du J70 (423 nmol/L) n'a pas été mesuré aujourd'hui et ne peut pas être relié à ce constat."
+   },
+   "seconds": 8.1
+  }
+ ],
+ "dossierPourLePsyHumain": {
+  "niveau": "rien",
+  "regle": "niveau atteint par au moins 2 psychologues sur 3",
+  "votes": [
+   {
+    "psy": "psy-physique",
+    "niveau": "rien"
+   },
+   {
+    "psy": "psy-anxiete",
+    "niveau": "rien"
+   },
+   {
+    "psy": "psy-social",
+    "niveau": "rien"
+   }
+  ]
+ }
+}

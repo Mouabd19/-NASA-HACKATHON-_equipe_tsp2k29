@@ -21,10 +21,11 @@ import { getSummary } from '../src/content/summaries';
 import { getStandard } from '../src/content/standards';
 import { lightTimeMin } from '../src/content/horizons';
 import { getExercise, getMeal, whyText } from '../src/content/library';
-import { baseline30d } from '../src/ingest/baseline30d';
-import { parseHealthExport } from '../src/ingest/healthExport';
-import { latestLive } from '../src/ingest/live';
-import { pullDone, pushTodo } from '../src/ingest/todoSync';
+// Les modules d'ingestion réels (Ahmed) lisent un vrai fichier et parlent à /api : on teste ici les mocks qu'ils remplacent.
+import {
+  mockBaseline30d as baseline30d, mockLatestLive as latestLive, mockParseHealthExport as parseHealthExport,
+  mockPullDone as pullDone, mockPushTodo as pushTodo,
+} from '../src/mocks';
 import { saveCheckIn, todayCheckIn } from '../src/ingest/checkin';
 import { CHRONO_AGE_J0, DAY_END, DAY_SOL0, DAY_TODAY, MISSION_START_DATE } from '../src/mocks/mission';
 import type { Color, LayerId, Measurement, OrganState } from '../src/types';
@@ -168,7 +169,8 @@ describe('sim/load', () => {
       expect(m.provenance).toBe('SIMULÉ');
     }
     expect(organ(94, 'cuisse').status).toBe('amber');
-    expect(metric(94, 'cuisse', 'volume').trend7d!).toBeLessThan(-0.8);
+    // Mouad : pente du modèle calé sur 6 % de perte à J94 ≈ −0,39 %/sem (le mock disait −0,8)
+    expect(metric(94, 'cuisse', 'volume').trend7d!).toBeLessThan(-0.2);
   });
 
   it('autres organes à J94', () => {
@@ -186,11 +188,12 @@ describe('sim/load', () => {
     for (const k of ['fraction_ejection', 'taille']) expect(metric(94, 'coeur', k)).toBeDefined();
   });
 
-  it('écart d’âge [H] : hanche +2,0 ans à J94, +8,7 / +4,2 à J860', () => {
+  // Mouad : vitesse de vieillissement osseux sourcée 0,5 %/an (MINOS, Steve) au lieu de 1 %/an → écarts × 2
+  it('écart d’âge [H] : hanche +4,0 ans à J94, +17,4 à J860', () => {
     const h = organ(94, 'hanche');
-    expect(h.bioAge - h.chronoAge).toBeCloseTo(1.99, 2);
+    expect(h.bioAge - h.chronoAge).toBeCloseTo(3.98, 1);
     const e = organ(860, 'hanche');
-    expect(e.bioAge - e.chronoAge).toBeCloseTo(8.7, 2);
+    expect(e.bioAge - e.chronoAge).toBeCloseTo(17.4, 1);
   });
 
   it('analyses : capillaire hebdo (J0..J91) + calcium urinaire quotidien', () => {
@@ -253,9 +256,10 @@ describe('models', () => {
     for (let i = 1; i < cur.length; i++) expect(cur[i].day).toBeGreaterThan(cur[i - 1].day);
     const at = (s: typeof cur, d: number) => s.find((p) => p.day === d)!;
     const chrono = (d: number) => 42 + d / 365.25;
-    expect(at(cur, 94).bioAge - chrono(94)).toBeCloseTo(1.99, 1);
-    expect(at(cur, 860).bioAge - chrono(860)).toBeCloseTo(8.7, 1);
-    expect(at(plan, 860).bioAge - chrono(860)).toBeCloseTo(4.22, 1);
+    // Mouad : 0,5 %/an pour l'os (sourcé) → perte / 0,5
+    expect(at(cur, 94).bioAge - chrono(94)).toBeCloseTo(3.98, 1);
+    expect(at(cur, 860).bioAge - chrono(860)).toBeCloseTo(17.4, 1);
+    expect(at(plan, 860).bioAge - chrono(860)).toBeCloseTo(8.44, 1);
     expect(at(plan, 94).bioAge).toBe(at(cur, 94).bioAge);
     const w = (p: (typeof cur)[number]) => p.band![1] - p.band![0];
     expect(w(at(cur, 860))).toBeGreaterThan(w(at(cur, DAY_SOL0)));
@@ -384,18 +388,19 @@ describe('models', () => {
 
 describe('content', () => {
   it('délai radio : 11,01 min le 2026-11-14', () => {
-    expect(lightTimeMin('2026-11-14')).toBe(11.01);
-    expect(lightTimeMin('2026-11-14T08:00:00Z')).toBe(11.01);
+    // horizons.json (Steve) : 11,016 min tant que fetch-horizons (JPL) n'a pas tourné — même valeur à 0,01 près
+    expect(lightTimeMin('2026-11-14')).toBeCloseTo(11.01, 1);
+    expect(lightTimeMin('2026-11-14T08:00:00Z')).toBeCloseTo(11.01, 1);
     const other = lightTimeMin('2027-06-01');
     expect(other).toBeGreaterThan(3);
     expect(other).toBeLessThan(23);
   });
 
-  it('normes V1 4027 / 4003 / 4002 : non vérifiées, lien vers le PDF NASA-STD-3001', () => {
+  it('normes V1 4027 / 4003 / 4002 : vérifiées sur le PDF NASA-STD-3001 (Steve), lien vers le PDF', () => {
     for (const id of ['V1 4027', 'V1 4003', 'V1 4002']) {
       const s = getStandard(id);
       expect(s.id).toBe(id);
-      expect(s.verified).toBe(false);
+      expect(s.verified).toBe(true);
       expect(s.url).toMatch(/^https:\/\/standards\.nasa\.gov\/.*nasa-std-3001-vol-1-rev-c/);
       expect(s.title.length).toBeGreaterThan(0);
       expect(s.quote.length).toBeGreaterThan(0);
@@ -426,15 +431,15 @@ describe('content', () => {
   });
 
   it('bibliothèque', () => {
-    expect(getExercise('ared-squat-sdt')?.title).toMatch(/ARED/);
-    expect(getMeal('dej-calcium')?.calciumMg).toBeGreaterThan(0);
+    expect(getExercise('ared-squat')?.title).toMatch(/ARED/);
+    expect(getMeal('menu-calcium-vitd')?.calciumMg).toBeGreaterThan(0);
     expect(getExercise('inconnu')).toBeNull();
     expect(whyText('V1 4027').length).toBeGreaterThan(20);
     expect(whyText('inconnu').length).toBeGreaterThan(0);
   });
 });
 
-describe('ingest (stubs en mémoire, sans réseau)', () => {
+describe('ingest (mocks en mémoire, sans réseau)', () => {
   it('parseHealthExport + baseline30d + latestLive', async () => {
     const pct: number[] = [];
     const ms = await parseHealthExport({} as File, (p) => pct.push(p));
@@ -466,16 +471,18 @@ describe('ingest (stubs en mémoire, sans réseau)', () => {
 });
 
 describe('honnêteté — ajouts hors contrat (revue du premier jet Body)', () => {
-  it('phenoAge du stub est marqué mock (formule publiée, valeur factice)', () => {
-    expect(phenoAge(94)!.mock).toBe(true);
+  it('phenoAge : vraie valeur calculée sur les prélèvements simulés (plus de mock)', () => {
+    expect(phenoAge(94)!.mock).toBeFalsy();
   });
   it('hasBioAgeModel : seuls les organes avec un modèle de perte ont un écart d’âge', () => {
     for (const id of ['hanche', 'rachis', 'femur', 'cuisse', 'mollet', 'paravertebraux', 'coeur']) expect(hasBioAgeModel(id)).toBe(true);
     for (const id of ['reins', 'sang', 'yeux', 'dose', 'poumons', 'foie', 'cerveau']) expect(hasBioAgeModel(id)).toBe(false);
   });
-  it('lightTimeSource : table pour la date de test, approximation ailleurs', () => {
+  it('lightTimeSource : table sur toute la mission, approximation hors mission', () => {
+    // horizons.json couvre toute la mission (J0 → J860) : hors de cette période, valeur bornée ('approx')
     expect(lightTimeSource('2026-11-14')).toBe('table');
-    expect(lightTimeSource('2027-03-10')).toBe('approx');
+    expect(lightTimeSource('2027-03-10')).toBe('table');
+    expect(lightTimeSource('2030-01-01')).toBe('approx');
   });
   it('sang : le VO₂max (porté par le cœur) ne compte pas dans son statut ; autant d’organes ambre que d’alertes à J94', () => {
     const body = getDayBody(94);
