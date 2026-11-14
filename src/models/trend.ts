@@ -1,10 +1,11 @@
 // Propriétaire : Mouad (ROADMAP §7).
-// STUB — remplace l'implémentation sans changer la signature.
-// Pour l'instant : simple délégation vers src/mocks/ (données factices). Supprime le corps et code le vrai module.
-import type { OrganId } from '../types';
-import { mockTrend7d } from '../mocks';
+import type { OrganId } from '../types.ts';
+import { trend7dFor } from '../sim/body.ts';
 
-/** (v3.2) Pente des 7 derniers jours d'une métrique, en %/semaine. null si indisponible. */
+/**
+ * (v3.2) Pente des 7 derniers jours d'une métrique (régression linéaire), en % de sa moyenne par semaine.
+ * null s'il manque des points (moins de 5 sur 7) ou si la métrique n'existe pas pour cet organe.
+ */
 export function trend7d(organId: OrganId, metricKey: string, day: number): number | null {
-  return mockTrend7d(organId, metricKey, day);
+  return trend7dFor(organId, metricKey, day, 0);
 }
