@@ -64,6 +64,7 @@ export const PSYCHOLOGISTS = [
 ];
 
 export const LEVELS = ['rien', 'a_surveiller', 'proposer_un_echange'];
+export const INSUFFICIENT = 'donnees_insuffisantes'; // jamais « rien » par défaut (règle de la roadmap)
 
 // Écarts à la référence calculés dans le code : le modèle n'a pas à faire d'arithmétique.
 const KEYS = [['tempsDeParoleMin', 'temps de parole (min)', (d) => d.sensors.tempsDeParoleMin], ['tempsAvecEquipageMin', 'temps avec l\'équipage (min)', (d) => d.sensors.tempsAvecEquipageMin], ['repasSautesParJour', 'repas sautés', (d) => d.sensors.repasSautes], ['pas', 'pas', (d) => d.sensors.pas], ['sommeilH', 'sommeil (h)', (d) => d.sensors.sommeilH], ['checkinHumeur', 'humeur déclarée (1–5)', (d) => d.biomarkers.checkinHumeur], ['vfcMs', 'VFC (ms)', (d) => d.biomarkers.vfcMs]];
@@ -89,6 +90,8 @@ Règles :
 4. Tu ne poses JAMAIS de diagnostic. Tu signales un « schéma à regarder ».
 5. Niveau : "rien" | "a_surveiller" (signal faible ou récent) | "proposer_un_echange" (signal persistant sur plusieurs jours ET cohérent entre plusieurs sources).
 6. Cite aussi les points rassurants.
+7. Sois CONCIS : 3 hypothèses maximum, 3 preuves maximum par hypothèse, 3 écarts et 3 points rassurants maximum, phrases courtes.
+8. N'utilise pas de guillemets droits (") à l'intérieur des textes : utilise « » pour citer.
 Format : {"niveau":"…","confiance":"faible|moyenne|elevee","hypotheses":[{"schema":"…","preuves":["…"]}],"ecartsReference":["…"],"pointsRassurants":["…"],"noteAuPsy":"3 phrases maximum, factuelles, pour le psychologue humain au sol"}` },
     { role: 'user', content: `Journée analysée : J${day.day}.
 
@@ -108,6 +111,8 @@ ${reports.map((r) => `### ${r.label}\n${JSON.stringify(r.output)}`).join('\n\n')
 // --- Consolidation (règle fixe, pas d'IA) : le dossier transmis au psy humain. --------------------
 // Le niveau du dossier = le niveau atteint par au moins 2 psychologues sur 3 (règle visible, auditable).
 export function consolidate(psyOutputs) {
+  const valid = psyOutputs.filter((p) => LEVELS.includes(p.output?.niveau));
+  if (valid.length < 2) return { niveau: INSUFFICIENT, regle: 'moins de 2 psychologues ont rendu un avis valide : données insuffisantes, jamais « rien » par défaut', votes: psyOutputs.map((p) => ({ psy: p.id, niveau: p.output?.niveau ?? 'erreur' })) };
   const rank = (n) => Math.max(0, LEVELS.indexOf(n));
   const counts = LEVELS.map((_, i) => psyOutputs.filter((p) => rank(p.output?.niveau) >= i).length);
   const level = counts[2] >= 2 ? LEVELS[2] : counts[1] >= 2 ? LEVELS[1] : LEVELS[0];

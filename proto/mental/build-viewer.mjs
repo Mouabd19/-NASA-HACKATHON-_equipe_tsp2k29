@@ -72,8 +72,8 @@ details li{margin:6px 0 6px 18px}
 <div class="foot">Données entièrement simulées · aucune personne réelle · signal à regarder, jamais un diagnostic</div>
 <script>
 const DATA=${JSON.stringify(data)}, ONSET=${ONSET};
-const C={rien:'var(--ok)',a_surveiller:'var(--amb)',proposer_un_echange:'var(--red)'};
-const T={rien:'Rien à signaler',a_surveiller:'À surveiller',proposer_un_echange:'Proposer un échange'};
+const C={rien:'var(--ok)',a_surveiller:'var(--amb)',proposer_un_echange:'var(--red)',donnees_insuffisantes:'#636366'};
+const T={rien:'Rien à signaler',a_surveiller:'À surveiller',proposer_un_echange:'Proposer un échange',donnees_insuffisantes:'Données insuffisantes'};
 const esc=s=>String(s??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 const days=[...new Set(Object.values(DATA).flat().map(d=>d.day))].sort((a,b)=>a-b);
 const lvl=n=>['rien','a_surveiller','proposer_un_echange'].indexOf(n);

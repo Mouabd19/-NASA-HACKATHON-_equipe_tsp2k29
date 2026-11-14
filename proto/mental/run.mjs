@@ -41,14 +41,19 @@ async function chatClaude(messages, tries = 3) {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-api-key': API_KEY, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({ model: MODEL, max_tokens: 2000, system, messages: rest }),
+      body: JSON.stringify({ model: MODEL, max_tokens: 6000, system, messages: rest }),
     });
     if (res.status === 429 || res.status >= 500) { console.warn(`  API ${res.status}, nouvel essai dans 10 s…`); await new Promise((r) => setTimeout(r, 10000)); continue; }
     if (!res.ok) throw new Error(`API Claude HTTP ${res.status} : ${await res.text()}`);
     const body = await res.json();
     const text = body.content.filter((c) => c.type === 'text').map((c) => c.text).join('');
     try { return { output: parseJson(text), seconds: +((Date.now() - t0) / 1000).toFixed(1) }; }
-    catch { console.warn(`  JSON invalide (essai ${i}/${tries}), on relance…`); }
+    catch (e) {
+      // Garde la réponse brute pour comprendre l'échec (dossier ignoré par git).
+      fs.mkdirSync(path.join(HERE, 'debug'), { recursive: true });
+      fs.writeFileSync(path.join(HERE, 'debug', `echec-${Date.now()}.txt`), `stop_reason: ${body.stop_reason}\nerreur: ${e.message}\n\n${text}`);
+      console.warn(`  JSON invalide (essai ${i}/${tries}, arrêt : ${body.stop_reason}) — réponse brute dans proto/mental/debug/`);
+    }
   }
   return { output: null, error: 'échec après plusieurs essais' };
 }
