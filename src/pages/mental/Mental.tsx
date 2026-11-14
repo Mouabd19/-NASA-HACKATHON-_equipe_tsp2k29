@@ -23,6 +23,9 @@ interface Summary { engine?: string; model?: string }
 const files = import.meta.glob<DayFile>('../../../public/data/mental/*/J*.json', { eager: true, import: 'default' });
 const summaries = import.meta.glob<Summary>('../../../public/data/mental/summary.json', { eager: true, import: 'default' });
 const SUMMARY: Summary = Object.values(summaries)[0] ?? {};
+interface Pt { day: number; humeur: number; sommeilH: number; vfcMs: number; equipageMin: number; paroleMin: number }
+const seriesFiles = import.meta.glob<{ scenarios: Record<string, Pt[]> }>('../../../public/data/mental/series.json', { eager: true, import: 'default' });
+const SERIES: Record<string, Pt[]> = Object.values(seriesFiles)[0]?.scenarios ?? {};
 
 const ONSET = 75;
 const SCENARIOS = ['drift', 'control'] as const;
@@ -52,40 +55,129 @@ function Kpi({ value, text }: { value: string; text: string }): JSX.Element {
   );
 }
 
-function Timeline({ sel, onSel }: { sel: { sc: Sc; day: number }; onSel: (sc: Sc, day: number) => void }): JSX.Element {
-  const iOnset = DAYS.findIndex((d) => d >= ONSET);
+/** Moyenne glissante centrée sur 3 jours (lisibilité ; les points bruts restent dans les données). */
+function smooth(v: number[]): number[] {
+  return v.map((_, i) => { const w = v.slice(Math.max(0, i - 1), i + 2); return w.reduce((a, b) => a + b, 0) / w.length; });
+}
+
+const METRICS: { k: keyof Pt; name: string; unit: string }[] = [
+  { k: 'humeur', name: 'Humeur déclarée', unit: '1 à 5' },
+  { k: 'sommeilH', name: 'Sommeil', unit: 'heures' },
+  { k: 'vfcMs', name: 'Variabilité cardiaque', unit: 'ms' },
+  { k: 'equipageMin', name: "Temps avec l'équipage", unit: 'min/jour' },
+];
+
+function Frise({ sel, onSel, mlAlert }: { sel: { sc: Sc; day: number }; onSel: (sc: Sc, day: number) => void; mlAlert: number | null }): JSX.Element {
+  const drift = SERIES.drift ?? [];
+  const ctrl = SERIES.control ?? [];
+  if (!drift.length) return <p style={{ color: T.textDim }}>Données insuffisantes : séries absentes.</p>;
+  const d0 = drift[0].day, d1 = drift[drift.length - 1].day;
+  const W = 1000, L = 190, R = 24;
+  const x = (d: number): number => L + ((d - d0) / (d1 - d0)) * (W - L - R);
+  const TRACK = [{ sc: 'drift' as Sc, y: 34, name: 'Verdict des agents · avec trouble' }, { sc: 'control' as Sc, y: 66, name: 'Verdict des agents · témoin' }];
+  const CH = 64, GAP = 22, TOP = 100;
+  const H = TOP + METRICS.length * (CH + GAP) + 24;
+  const ticks: number[] = [];
+  for (let d = d0; d <= d1; d += 4) ticks.push(d);
+  const path = (pts: Pt[], k: keyof Pt, y: (v: number) => number): string => {
+    const v = smooth(pts.map((p) => Number(p[k])));
+    return pts.map((p, i) => `${i ? 'L' : 'M'}${x(p.day).toFixed(1)},${y(v[i]).toFixed(1)}`).join(' ');
+  };
+  const txt = { fill: T.textDim, fontSize: 12, fontFamily: T.fontText } as const;
   return (
-    <div style={{ display: 'grid', gap: 8 }}>
-      {SCENARIOS.map((sc) => (
-        <div key={sc} style={{ display: 'grid', gridTemplateColumns: 'minmax(140px, 220px) 1fr', alignItems: 'center', gap: 16 }}>
-          <span style={{ fontSize: T.fs.md, color: T.textDim }}>{SC_LABEL[sc]}</span>
-          <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: `repeat(${DAYS.length}, 1fr)` }}>
-            {sc === 'drift' && iOnset > 0 ? (
-              <span aria-hidden style={{ position: 'absolute', top: -4, bottom: -4, left: `${((iOnset) / DAYS.length) * 100}%`, borderLeft: `1px dashed ${T.borderStrong}` }} />
-            ) : null}
-            {DAYS.map((d) => {
-              const x = DATA[sc].find((y) => y.day === d);
-              const on = sel.sc === sc && sel.day === d;
-              const n = x?.dossierPourLePsyHumain.niveau;
+    <div>
+      <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={`Frise J${d0} à J${d1} : humeur, sommeil, variabilité cardiaque et temps avec l'équipage, avec et sans trouble ; verdicts des agents aux jours analysés`} style={{ display: 'block', overflow: 'visible' }}>
+        {/* zone du trouble */}
+        <rect x={x(ONSET)} y={14} width={x(d1) - x(ONSET)} height={H - 38} fill={T.status.amber} opacity={0.07} />
+        <text x={x(ONSET) + 6} y={10} {...txt} fill={T.status.amber}>trouble injecté à J{ONSET} (scénario « avec trouble »)</text>
+        {mlAlert !== null ? (
+          <g>
+            <line x1={x(mlAlert)} x2={x(mlAlert)} y1={84} y2={H - 24} stroke={T.holo} strokeDasharray="4 4" />
+            <text x={x(mlAlert) - 6} y={94} {...txt} fill={T.holo} textAnchor="end">modèle de Mouad : alerte J{mlAlert}</text>
+          </g>
+        ) : null}
+        {/* pistes des verdicts */}
+        {TRACK.map((t) => (
+          <g key={t.sc}>
+            <text x={0} y={t.y + 4} {...txt}>{t.name}</text>
+            <line x1={L} x2={W - R} y1={t.y} y2={t.y} stroke={T.border} />
+            {DATA[t.sc].map((dd) => {
+              const n = dd.dossierPourLePsyHumain.niveau;
+              const on = sel.sc === t.sc && sel.day === dd.day;
               return (
-                <button key={d} type="button" className="wr-btn" onClick={() => onSel(sc, d)} aria-pressed={on}
-                  aria-label={`${SC_LABEL[sc]}, jour ${d} : ${n ? NIV_LABEL[n] : 'pas de donnée'}`}
-                  style={{ display: 'grid', justifyItems: 'center', gap: 6, padding: '10px 0', minHeight: 44, background: on ? T.panelRaised : 'transparent', border: `1px solid ${on ? T.borderStrong : 'transparent'}`, borderRadius: T.radius.control, color: T.textDim, cursor: 'pointer', fontFamily: T.fontText }}>
-                  <Dot color={nivColor(n)} size={12} />
-                  <span style={{ fontSize: T.fs.sm, fontVariantNumeric: 'tabular-nums' }}>J{d}</span>
-                </button>
+                <g key={dd.day} role="button" tabIndex={0} aria-label={`${SC_LABEL[t.sc]}, J${dd.day} : ${NIV_LABEL[n]}`} style={{ cursor: 'pointer' }}
+                  onClick={() => onSel(t.sc, dd.day)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSel(t.sc, dd.day); } }}>
+                  <circle cx={x(dd.day)} cy={t.y} r={14} fill="transparent" />
+                  {on ? <circle cx={x(dd.day)} cy={t.y} r={11} fill="none" stroke={T.text} strokeWidth={1.5} /> : null}
+                  <circle cx={x(dd.day)} cy={t.y} r={7} fill={nivColor(n)} />
+                </g>
               );
             })}
-          </div>
-        </div>
-      ))}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, marginTop: 8, fontSize: T.fs.sm, color: T.textDim }}>
+          </g>
+        ))}
+        {/* courbes */}
+        {METRICS.map((m, i) => {
+          const top = TOP + i * (CH + GAP);
+          const all = [...drift, ...ctrl].map((p) => Number(p[m.k]));
+          let lo = Math.min(...all), hi = Math.max(...all);
+          const pad = (hi - lo) * 0.1 || 1; lo -= pad; hi += pad;
+          const y = (v: number): number => top + CH - ((v - lo) / (hi - lo)) * CH;
+          return (
+            <g key={m.k}>
+              <text x={0} y={top + CH / 2 - 2} fill={T.text} fontSize={13} fontFamily={T.fontText}>{m.name}</text>
+              <text x={0} y={top + CH / 2 + 15} {...txt}>{m.unit}</text>
+              <line x1={L} x2={W - R} y1={top + CH} y2={top + CH} stroke={T.border} />
+              {ctrl.length ? <path d={path(ctrl, m.k, y)} fill="none" stroke={T.textDim} strokeWidth={1.5} strokeDasharray="5 4" /> : null}
+              <path d={path(drift, m.k, y)} fill="none" stroke={T.text} strokeWidth={2} />
+            </g>
+          );
+        })}
+        {/* axe */}
+        {ticks.map((d) => (
+          <text key={d} x={x(d)} y={H - 6} {...txt} textAnchor="middle" style={{ fontVariantNumeric: 'tabular-nums' }}>J{d}</text>
+        ))}
+      </svg>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, marginTop: 12, fontSize: T.fs.sm, color: T.textDim }}>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><svg width="24" height="4" aria-hidden><line x1="0" x2="24" y1="2" y2="2" stroke={T.text} strokeWidth="2" /></svg>Avec trouble</span>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><svg width="24" height="4" aria-hidden><line x1="0" x2="24" y1="2" y2="2" stroke={T.textDim} strokeWidth="1.5" strokeDasharray="5 4" /></svg>Témoin (sans trouble)</span>
         {(['rien', 'a_surveiller', 'proposer_un_echange'] as Niveau[]).map((n) => (
           <span key={n} style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><Dot color={nivColor(n)} />{NIV_LABEL[n]}</span>
         ))}
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><span aria-hidden style={{ width: 0, height: 12, borderLeft: `1px dashed ${T.borderStrong}` }} />début du trouble (J{ONSET})</span>
+        <span>Courbes : moyenne sur 3 jours</span>
       </div>
     </div>
+  );
+}
+
+const STEPS = [
+  { n: '1', t: 'Lunettes et montre', d: 'Captent la journée : scènes, temps de parole, repas, sommeil, variabilité cardiaque.' },
+  { n: '2', t: '3 observateurs IA', d: "Relèvent des faits, sans interpréter : actions, paroles, liens avec l'équipage." },
+  { n: '3', t: '3 psychologues IA', d: 'Chacun donne un niveau. On retient celui d’au moins 2 sur 3.' },
+  { n: '4', t: 'Psychologue humain', d: "Reçoit le dossier au sol et décide. L'astronaute ne peut pas couper le signal." },
+];
+
+function HowItWorks(): JSX.Element {
+  return (
+    <Panel title="Comment ça marche">
+      <ol style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+        {STEPS.map((s, i) => (
+          <li key={s.n} style={{ position: 'relative', background: T.panelRaised, border: `1px solid ${s.n === '4' ? T.holo : T.border}`, borderRadius: T.radius.inset, padding: 16 }}>
+            <div style={{ ...label, marginBottom: 6 }}>Étape {s.n}{i < STEPS.length - 1 ? ' →' : ''}</div>
+            <div style={{ fontSize: T.fs.lg, fontWeight: 600, marginBottom: 6 }}>{s.t}</div>
+            <div style={{ fontSize: T.fs.sm, color: T.textDim, lineHeight: 1.45 }}>{s.d}</div>
+          </li>
+        ))}
+      </ol>
+      <div style={{ marginTop: 16, padding: 16, borderRadius: T.radius.inset, border: `1px dashed ${T.borderStrong}` }}>
+        <div style={{ ...label, marginBottom: 8 }}>Ce qu'on simule ici</div>
+        <ul style={{ margin: 0, paddingLeft: 18, fontSize: T.fs.md, color: T.textDim, lineHeight: 1.6 }}>
+          <li><strong style={{ color: T.text, fontWeight: 500 }}>Haddad, astronaute fictif</strong> : 49 jours de vie à bord simulés (J46 → J94), aucune personne réelle.</li>
+          <li><strong style={{ color: T.text, fontWeight: 500 }}>Un trouble injecté à J{ONSET}</strong> : il s'isole, dort moins, saute des repas, de plus en plus. Les agents ne le savent pas.</li>
+          <li><strong style={{ color: T.text, fontWeight: 500 }}>Un témoin</strong> : les mêmes journées sans trouble, pour vérifier que l'IA ne donne pas de fausse alerte.</li>
+          <li><strong style={{ color: T.text, fontWeight: 500 }}>Les agents analysent 5 jours</strong> (J65, J74, J78, J85, J94), chacun avec les 7 jours précédents. Biomarqueurs : simulation de Mouad.</li>
+        </ul>
+      </div>
+    </Panel>
   );
 }
 
@@ -169,16 +261,18 @@ export function Mental(): JSX.Element {
           </div>
         </header>
 
-        <Panel title="En bref">
+        <HowItWorks />
+
+        <Panel title="Résultat">
           <div style={{ display: 'grid', gap: 32, gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
             <Kpi value={detected ? `J${detected.day}` : '—'} text={detected ? `nos agents proposent un échange, ${detected.day - ONSET} jours après le début du trouble (J${ONSET})` : 'aucune proposition d’échange'} />
             <Kpi value={mlAlert !== null ? `J${mlAlert}` : '—'} text="le modèle d'IA de Mouad (signal d'humeur, méthode indépendante) alerte" />
-            <Kpi value={String(ctrlEsc)} text="proposition d’échange chez le témoin en bonne santé" />
+            <Kpi value={String(ctrlEsc)} text="fausse alerte chez le témoin, sans trouble" />
           </div>
         </Panel>
 
-        <Panel title="Frise · cliquez un jour">
-          <Timeline sel={sel} onSel={(sc, day) => setSel({ sc, day })} />
+        <Panel title="La frise · cliquez un verdict pour ouvrir le dossier du jour">
+          <Frise sel={sel} onSel={(sc, day) => setSel({ sc, day })} mlAlert={mlAlert} />
         </Panel>
 
         {current ? <Dossier key={`${sel.sc}${sel.day}`} x={current} /> : null}
