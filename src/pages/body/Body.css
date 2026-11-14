@@ -250,3 +250,9 @@
 @media (max-height: 760px) {
   .body-page { --body-gap: 6px; }
 }
+
+/* ── Écran épuré (Steve) : tous les panneaux fermés → la scène occupe toute la page ── */
+.body-page--clean { display: block; position: relative; padding: 0; }
+.body-page--clean .body-scene { position: absolute; inset: 0; border: 0; }
+.body-page--clean .body-corner { display: none; }
+.body-page--clean .body-tag { top: auto; bottom: 22px; left: 24px; opacity: 0.75; }

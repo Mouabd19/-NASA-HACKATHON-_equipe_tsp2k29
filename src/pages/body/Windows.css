@@ -1,0 +1,71 @@
+/* Menu AFFICHAGE + statut minimal (Steve), en haut à droite de la scène de Walid. Sobre : beaucoup d'air, peu de traits. */
+
+/* ── Barre minimale ── */
+.bv {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  pointer-events: none;
+}
+.bv > * { pointer-events: auto; }
+.bv__row { display: flex; align-items: center; gap: 22px; }
+.bv__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 34px;
+  padding: 0 14px;
+  border: 1px solid var(--sz-border);
+  background: rgba(5, 6, 7, 0.6);
+  backdrop-filter: blur(10px);
+  color: var(--sz-text);
+  font: 500 13px/1 var(--sz-font-text);
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.bv__btn:hover, .bv__btn[data-active='true'] { border-color: var(--sz-border-strong); background: rgba(255, 255, 255, 0.06); }
+.bv__burger { display: inline-flex; flex-direction: column; gap: 3px; }
+.bv__burger i { display: block; width: 12px; height: 1px; background: currentColor; }
+.bv__day { font: 600 22px/1 var(--sz-font-text); letter-spacing: -0.01em; color: var(--sz-text); }
+.bv__meta { font: 400 13px/1 var(--sz-font-text); color: var(--sz-text-dim); }
+.bv__status { display: inline-flex; align-items: center; gap: 8px; font: 500 13px/1 var(--sz-font-text); color: var(--c); }
+.bv__status i { width: 7px; height: 7px; border-radius: 50%; background: var(--c); box-shadow: 0 0 10px var(--c); }
+
+/* Menu horizontal */
+.bv__menu {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  max-width: 560px;
+  gap: 6px;
+  padding: 6px;
+  border: 1px solid var(--sz-border);
+  background: rgba(5, 6, 7, 0.72);
+  backdrop-filter: blur(14px);
+  animation: bv-in 0.18s ease-out;
+}
+@keyframes bv-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+.bv__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--sz-text-dim);
+  font: 400 13px/1 var(--sz-font-text);
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+.bv__item i { width: 6px; height: 6px; border: 1px solid currentColor; border-radius: 50%; }
+.bv__item:hover { color: var(--sz-text); background: rgba(255, 255, 255, 0.05); }
+.bv__item[data-open='true'] { color: var(--sz-text); border-color: var(--sz-border); }
+.bv__item[data-open='true'] i { background: var(--sz-text); }
+.bv__item--ghost { margin-left: 8px; color: var(--sz-text-dim); }
