@@ -9,6 +9,8 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const SRC = process.env.MENTAL_DATA ?? path.join(HERE, '..', '..', 'public', 'data', 'mental');
 const ONSET = 75;
 const data = {};
+let engine = 'modèle de langage';
+try { const sm = JSON.parse(fs.readFileSync(path.join(SRC, 'summary.json'), 'utf8')); engine = sm.engine === 'claude' ? `Claude (${sm.model})` : `${sm.model}, en local`; } catch {}
 for (const sc of ['drift', 'control']) {
   const dir = path.join(SRC, sc);
   if (!fs.existsSync(dir)) continue;
@@ -60,7 +62,7 @@ details li{margin:6px 0 6px 18px}
 </style></head><body>
 <div class="eyebrow">SOL ZÉRO · Vision · Prototype · <span style="color:var(--amb)">Simulé</span></div>
 <h1>Repérer tôt.<br>Laisser l'humain décider.</h1>
-<p class="sub">Trois observateurs, trois psychologues IA, un psychologue humain. Un modèle qui tourne à bord, sans Internet.</p>
+<p class="sub">Trois observateurs, trois psychologues IA, un psychologue humain.<br>Prototype : <span id="engine"></span>. Vision : un modèle embarqué, à bord.</p>
 
 <div class="hero" id="hero"></div>
 
@@ -72,6 +74,7 @@ details li{margin:6px 0 6px 18px}
 <div class="foot">Données entièrement simulées · aucune personne réelle · signal à regarder, jamais un diagnostic</div>
 <script>
 const DATA=${JSON.stringify(data)}, ONSET=${ONSET};
+document.getElementById('engine').textContent=${JSON.stringify(engine)};
 const C={rien:'var(--ok)',a_surveiller:'var(--amb)',proposer_un_echange:'var(--red)',donnees_insuffisantes:'#636366'};
 const T={rien:'Rien à signaler',a_surveiller:'À surveiller',proposer_un_echange:'Proposer un échange',donnees_insuffisantes:'Données insuffisantes'};
 const esc=s=>String(s??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
@@ -85,7 +88,7 @@ const ctrlEsc=ctrl.filter(d=>lvl(d.niveau)>=2).length;
 const ctrlCalm=ctrl.filter(d=>lvl(d.niveau)===0).length;
 document.getElementById('hero').innerHTML=
  '<div class="kpi"><b>'+(det?'+'+(det.day-ONSET)+' j':'—')+'</b><span>avant de proposer un échange, après le début du trouble (J'+ONSET+')</span></div>'+
- '<div class="kpi"><b>'+ctrlEsc+'</b><span>proposition d\'échange chez l\'astronaute témoin, en bonne santé</span></div>'+
+ '<div class="kpi"><b>'+ctrlEsc+'</b><span>proposition d’échange chez l’astronaute témoin, en bonne santé</span></div>'+
  '<div class="kpi"><b>'+ctrlCalm+'/'+ctrl.length+'</b><span>jours « rien à signaler » chez le témoin</span></div>';
 
 // Frise

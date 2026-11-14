@@ -1,5 +1,5 @@
 # Status — Steve (D)
-_Mis à jour : sam. 16:42_
+_Mis à jour : sam. 17:55_
 
 ## Livré (poussé sur `feature/steve-models` ; PR vers `develop` dès que Walid aura créé la branche)
 - **Modèles 3D** (jalon 17:00, en avance) : `public/models/{squelette,muscles,organes,cardio,nerveux}.glb` (170–260 k triangles chacun, 1,2–2,9 Mo, ~1 M triangles si tout est affiché) + `manifest.json` (ancres des ⚠) + `CREDITS.md`.
@@ -11,7 +11,7 @@ _Mis à jour : sam. 16:42_
 - **PhenoAge** : coefficients vérifiés + vecteurs de test → `docs/sources/phenoage.md`.
 
 ## En cours
-- **Prototype santé mentale (§11)**, dossiers `proto/mental/` + `public/data/mental/` : générateur de journées simulées (glissement à J75 + témoin) ✅, 3 observateurs + 3 psychologues + dossier pour le psy humain ✅ (testé à blanc). Moteur : **API Claude** (Haiku 5.5 utilisé, Sonnet 5.5 par défaut) si `ANTHROPIC_API_KEY` est défini, sinon Ollama local (testé, trop lent). 1er passage complet fait (Haiku 5.5) : le trouble monte à « proposer un échange » à J85 et J94, le témoin n'a aucune alerte forte, mais « à surveiller » partout (seuils trop prudents). Seuils précisés → 2e passage en cours. Page de visualisation pour la capture : `node proto/mental/build-viewer.mjs` → `proto/mental/viewer.html` (autonome, hors ligne). Biomarqueurs provisoires dans le proto : à brancher sur ceux de Mouad quand `public/data/sim/` existe.
+- **Prototype santé mentale (§11)**, dossiers `proto/mental/` + `public/data/mental/` : générateur de journées simulées (glissement à J75 + témoin) ✅, 3 observateurs + 3 psychologues + dossier pour le psy humain ✅ (testé à blanc). Moteur : **API Claude** (Haiku 5.5 utilisé, Sonnet 5.5 par défaut) si `ANTHROPIC_API_KEY` est défini, sinon Ollama local (testé, trop lent). ✅ **Résultats figés** (Claude Haiku 5.5, seuils précisés) dans `public/data/mental/` + page `proto/mental/viewer.html` (ouvrir dans un navigateur, hors ligne). Trouble (dès J75) : J74 rien → J85 à surveiller → **J94 proposer un échange (3/3)**. Témoin : **0 proposition d'échange**, 4/5 jours « rien » (J65 = mauvais jour de fond, présent dans les deux scénarios). Seuils calibrés sur des données simulées : à dire tel quel dans le pitch. Page de visualisation pour la capture : `node proto/mental/build-viewer.mjs` → `proto/mental/viewer.html` (autonome, hors ligne). Biomarqueurs provisoires dans le proto : à brancher sur ceux de Mouad quand `public/data/sim/` existe.
 - Jalons 23:00 et 02:00 **livrés**. Suite : script des synthèses IA par organe (06:00), dès que `public/data/sim/` de Mouad est poussé.
 
 ## Bloqué / risques

@@ -1,0 +1,289 @@
+{
+ "day": 78,
+ "date": "2026-10-29",
+ "scenario": "drift",
+ "model": "claude-haiku-5-5",
+ "label": "Prototype — données SIMULÉES — signal IA, pas un diagnostic",
+ "input": {
+  "transcript": [
+   "06:51 — Réveil. Se lève directement.",
+   "07:30 — Petit-déjeuner avec l'équipage. Haddad : « C'est la troisième fois qu'on refait ça. » Répond après un long silence.",
+   "08:30 — Briefing avec la Terre (message différé). Haddad pose deux questions sur le planning et propose une modification.",
+   "10:00 — Maintenance du système de filtration d'air : terminée dans les temps.",
+   "12:40 — Déjeuner commun. Haddad : « De toute façon on verra bien. »",
+   "14:00 — Séance d'exercice : complète (60 min ARED + vélo).",
+   "16:00 — Expérience de biologie avec Okafor. Haddad exécute les étapes demandées, peu d'échanges.",
+   "17:30 — Appel vidéo différé avec sa famille (messages enregistrés). Message enregistré court (2 min), ton neutre.",
+   "19:30 — Dîner commun. Haddad : « On attaque le module 3 après le café ? »",
+   "21:00 — Soirée film avec l'équipage, commente le film.",
+   "23:20 — Coucher."
+  ],
+  "sensors": {
+   "tempsDeParoleMin": 37,
+   "tempsAvecEquipageMin": 196,
+   "repasSautes": 0,
+   "pas": 3230,
+   "sommeilH": 6.3
+  },
+  "biomarkers": {
+   "checkinHumeur": 3,
+   "checkinFatigue": 3,
+   "vfcMs": 44,
+   "cortisolNmolL": null
+  }
+ },
+ "observers": [
+  {
+   "id": "obs-actions",
+   "label": "Observateur — actions et comportements",
+   "output": {
+    "faits": [
+     {
+      "heure": "06:51",
+      "fait": "Se lève dès le réveil, sans délai signalé.",
+      "citation": null
+     },
+     {
+      "heure": "10:00",
+      "fait": "Termine la maintenance du système de filtration d'air dans les temps prévus.",
+      "citation": null
+     },
+     {
+      "heure": "14:00",
+      "fait": "Réalise la séance d'exercice complète : 60 min d'ARED et de vélo.",
+      "citation": null
+     },
+     {
+      "heure": "16:00",
+      "fait": "Exécute les étapes de l'expérience de biologie avec Okafor, avec peu d'échanges.",
+      "citation": null
+     },
+     {
+      "heure": "19:30",
+      "fait": "Participe au dîner commun et propose de passer au module 3 après le café.",
+      "citation": "On attaque le module 3 après le café ?"
+     },
+     {
+      "heure": "23:20",
+      "fait": "Se couche ; durée de sommeil mesurée de 6,3 h.",
+      "citation": null
+     }
+    ],
+    "resume": "Haddad a pris les trois repas avec l'équipage, sans repas sauté, et a terminé la maintenance et la séance d'exercice complète. Il a passé environ 196 minutes avec l'équipage et a réalisé 3 230 pas."
+   },
+   "seconds": 5.5
+  },
+  {
+   "id": "obs-paroles",
+   "label": "Observateur — paroles et interactions",
+   "output": {
+    "faits": [
+     {
+      "heure": "07:30",
+      "fait": "Au petit-déjeuner, Haddad répond après un long silence à l'échange avec l'équipage et fait une remarque sur la répétition d'une activité.",
+      "citation": "C'est la troisième fois qu'on refait ça."
+     },
+     {
+      "heure": "08:30",
+      "fait": "Lors du briefing avec la Terre, Haddad pose deux questions sur le planning et propose une modification.",
+      "citation": null
+     },
+     {
+      "heure": "12:40",
+      "fait": "Au déjeuner commun, Haddad s'exprime sur une situation à venir.",
+      "citation": "De toute façon on verra bien."
+     },
+     {
+      "heure": "16:00",
+      "fait": "Pendant l'expérience de biologie avec Okafor, Haddad exécute les étapes demandées avec peu d'échanges.",
+      "citation": null
+     },
+     {
+      "heure": "17:30",
+      "fait": "Haddad enregistre un message de 2 minutes pour sa famille dans le cadre de l'appel vidéo différé.",
+      "citation": null
+     },
+     {
+      "heure": "19:30",
+      "fait": "Au dîner commun, Haddad prend l'initiative d'une question sur la suite du travail.",
+      "citation": "On attaque le module 3 après le café ?"
+     }
+    ],
+    "resume": "Haddad a parlé 37 minutes sur les 196 minutes passées avec l'équipage. Il a pris l'initiative d'échanges au briefing et au dîner, et il a principalement répondu lors du petit-déjeuner et de l'expérience de biologie."
+   },
+   "seconds": 6.4
+  },
+  {
+   "id": "obs-corps",
+   "label": "Observateur — corps et ressentis",
+   "output": {
+    "faits": [
+     {
+      "heure": "06:51",
+      "fait": "Se lève directement après le réveil, sans temps de latence signalé.",
+      "citation": null
+     },
+     {
+      "heure": "07:30",
+      "fait": "Marque un long silence avant de répondre au petit-déjeuner.",
+      "citation": "C'est la troisième fois qu'on refait ça."
+     },
+     {
+      "heure": "14:00",
+      "fait": "Réalise la séance d'exercice complète : 60 minutes d'ARED et de vélo.",
+      "citation": null
+     },
+     {
+      "heure": "17:30",
+      "fait": "Enregistre un message vidéo court (2 minutes) au ton neutre.",
+      "citation": null
+     },
+     {
+      "heure": "23:20",
+      "fait": "Se couche ; le capteur de sommeil enregistre 6,3 heures de sommeil.",
+      "citation": null
+     }
+    ],
+    "resume": "Haddad s'est levé sans délai, a réalisé une séance d'exercice complète et a enregistré un message au ton neutre. Les capteurs indiquent 3 230 pas, aucun repas sauté et 6,3 heures de sommeil."
+   },
+   "seconds": 6.6
+  }
+ ],
+ "psychologists": [
+  {
+   "id": "psy-physique",
+   "label": "Psychologue — état physico-psychique",
+   "output": {
+    "niveau": "rien",
+    "confiance": "moyenne",
+    "hypotheses": [
+     {
+      "schema": "Repli verbal ponctuel, sans schéma durable sur la semaine",
+      "preuves": [
+       "Temps de parole de 37 min aujourd'hui, soit -24 % par rapport à la référence de 48,4 min",
+       "Long silence au petit-déjeuner, puis remarque « C'est la troisième fois qu'on refait ça »",
+       "Réponses brèves pendant l'expérience de biologie avec Okafor"
+      ]
+     },
+     {
+      "schema": "Légère fatigue sur deux jours seulement (J76 et J78), sans épuisement installé",
+      "preuves": [
+       "Fatigue déclarée à 3/5 le J76 et le J78, contre 2/5 les autres jours",
+       "Sommeil de 6,3 h, soit -5 % par rapport à la référence",
+       "VFC à 44 ms, soit -9 % par rapport à la référence"
+      ]
+     }
+    ],
+    "ecartsReference": [
+     "Temps de parole : -24 % aujourd'hui (37 min contre 48,4 min de référence)",
+     "Humeur déclarée : -17 % aujourd'hui (3/5 contre 3,6 de référence), moyenne 7 jours à -8 %",
+     "Pas : -13 % aujourd'hui (3 230 contre 3 695,9 de référence), moyenne 7 jours stable"
+    ],
+    "pointsRassurants": [
+     "Temps passé avec l'équipage à +9 % de la référence, et +15 % en moyenne sur 7 jours",
+     "Aucun repas sauté aujourd'hui, et séance d'exercice complète de 60 min",
+     "Initiative prise au briefing et au dîner, avec la proposition de passer au module 3",
+     "Temps de parole du J78 (37 min) reste dans la fourchette observée du J72 au J77 (33 à 53 min)",
+     "VFC moyenne sur 7 jours à +1 % de la référence, sommeil moyen à +2 %"
+    ],
+    "noteAuPsy": "Un seul indicateur (temps de parole, -24 %) dépasse le seuil de 20 % aujourd'hui, et aucun schéma persistant n'apparaît sur les 7 jours. Le cortisol du jour est absent, ce qui limite la lecture des biomarqueurs. Un point d'attention reste à garder en tête : humeur à 3/5 depuis cinq jours et une remarque sur la répétition des activités."
+   },
+   "seconds": 9.2
+  },
+  {
+   "id": "psy-anxiete",
+   "label": "Psychologue — rapport à l'anxiété",
+   "output": {
+    "niveau": "rien",
+    "confiance": "moyenne",
+    "hypotheses": [
+     {
+      "schema": "Baisse ponctuelle de la parole, possiblement liée à une irritation face à la répétition des tâches. Sans signal durable, à garder en observation.",
+      "preuves": [
+       "Temps de parole à 37 min, soit -24 % vs référence, seul indicateur qui dépasse 20 %",
+       "Remarque « C'est la troisième fois qu'on refait ça » suivie d'un long silence au petit-déjeuner",
+       "Réponse « De toute façon on verra bien » au déjeuner, ton résigné"
+      ]
+     },
+     {
+      "schema": "Léger fléchissement de l'humeur déclarée sur quatre jours, sans rupture nette.",
+      "preuves": [
+       "Humeur à 3/5 de J74 à J78, contre 3,6 de référence (-17 %, sous le seuil)",
+       "Moyenne 7 jours à 3,3 (-8 %)"
+      ]
+     }
+    ],
+    "ecartsReference": [
+     "Temps de parole : 37 min aujourd'hui (-24 %), moyenne 7 jours à -7 %",
+     "Repas sautés : 0 aujourd'hui (-100 %, écart favorable)",
+     "Humeur déclarée : 3/5 aujourd'hui (-17 %)"
+    ],
+    "pointsRassurants": [
+     "Les trois repas pris avec l'équipage, aucun repas sauté depuis J76",
+     "Séance d'exercice complète et maintenance d'filtration réalisée dans les temps",
+     "Initiative prise au briefing et au dîner, avec la proposition de passer au module 3",
+     "Sommeil stable sur 7 jours (+2 %) et temps avec l'équipage au-dessus de la référence (+15 % sur 7 jours)",
+     "Message vidéo pour la famille enregistré au ton neutre"
+    ],
+    "noteAuPsy": "Journée dans la variation habituelle de Haddad : seul le temps de parole s'écarte de plus de 20 %, et l'écart ne dure pas. La remarque sur la répétition des tâches et le « on verra bien » méritent une attention au prochain échange, sans suspicion de fond. Les cortisol de J77 (421 nmol/L) et l'absence de mesure aujourd'hui limitent la lecture biologique."
+   },
+   "seconds": 8.4
+  },
+  {
+   "id": "psy-social",
+   "label": "Psychologue — lien social et isolement",
+   "output": {
+    "niveau": "rien",
+    "confiance": "moyenne",
+    "hypotheses": [
+     {
+      "schema": "Baisse ponctuelle de la prise de parole à J78, à regarder sans signal persistant pour l'instant.",
+      "preuves": [
+       "Temps de parole de 37 min aujourd'hui, soit -24 % par rapport à la référence de 48,4 min.",
+       "Les jours précédents restent dans la norme : 50 min à J76 et 52 min à J77.",
+       "Observateur : réponse tardive après un long silence au petit-déjeuner, puis échanges plus courts pendant l'expérience de biologie."
+      ]
+     },
+     {
+      "schema": "Légère fatigue et humeur un peu basse, sous le seuil d'alerte mais à suivre dans les prochains jours.",
+      "preuves": [
+       "Fatigue à 3/5 à J76 et J78, contre 2/5 les autres jours.",
+       "Humeur déclarée à 3 aujourd'hui, soit -17 % par rapport à la référence de 3,6.",
+       "VFC à 44 ms, soit -9 % par rapport à la référence de 48,4 ms."
+      ]
+     }
+    ],
+    "ecartsReference": [
+     "Temps de parole : -24 % aujourd'hui (37 min contre 48,4 min de référence).",
+     "Humeur déclarée : -17 % aujourd'hui (3 contre 3,6).",
+     "Pas : -13 % aujourd'hui (3 230 contre 3 695,9), mais moyenne sur 7 jours à 0 %."
+    ],
+    "pointsRassurants": [
+     "Temps avec l'équipage à 196 min, soit +9 % par rapport à la référence et +15 % en moyenne sur 7 jours.",
+     "Les trois repas pris avec l'équipage, aucun repas sauté.",
+     "Initiatives sociales : proposition de modification du planning au briefing et question sur la suite du travail au dîner ; séance d'exercice complète et message enregistré pour la famille."
+    ],
+    "noteAuPsy": "Un seul indicateur (la parole) dépasse 20 % d'écart, et seulement à J78 : la règle ne déclenche pas d'alerte. Le lien social reste solide (temps avec l'équipage et initiatives en hausse), ce qui est à mettre au crédit de Haddad. Le cortisol n'est pas disponible aujourd'hui (valeur absente), la dernière mesure (421 nmol/L à J77) ne permet pas de conclure seule ; à relire si la fatigue ou l'humeur baissent encore les prochains jours."
+   },
+   "seconds": 8.8
+  }
+ ],
+ "dossierPourLePsyHumain": {
+  "niveau": "rien",
+  "regle": "niveau atteint par au moins 2 psychologues sur 3",
+  "votes": [
+   {
+    "psy": "psy-physique",
+    "niveau": "rien"
+   },
+   {
+    "psy": "psy-anxiete",
+    "niveau": "rien"
+   },
+   {
+    "psy": "psy-social",
+    "niveau": "rien"
+   }
+  ]
+ }
+}
