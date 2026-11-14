@@ -1,0 +1,27 @@
+{
+  "layers": [
+    { "id": "squelette", "file": "layer-squelette.glb", "organs": ["hanche", "rachis", "femur"] },
+    { "id": "muscles", "file": "layer-muscles.glb", "organs": ["cuisse", "mollet", "paravertebraux"] },
+    { "id": "organes", "file": "layer-organes.glb", "organs": ["coeur", "reins", "poumons", "foie", "cerveau"] },
+    { "id": "cardio", "file": "layer-cardio.glb", "organs": ["sang"] },
+    { "id": "nerveux", "file": "layer-nerveux.glb", "organs": ["yeux"] },
+    { "id": "exposition", "file": "layer-exposition.glb", "organs": ["dose"] }
+  ],
+  "organs": [
+    { "id": "hanche", "file": "organ-hanche.glb", "anchor": [0.14, 0.93, 0.02] },
+    { "id": "rachis", "file": "organ-rachis.glb", "anchor": [0, 1.15, -0.06] },
+    { "id": "femur", "file": "organ-femur.glb", "anchor": [0.13, 0.82, 0.02] },
+    { "id": "cuisse", "file": "organ-cuisse.glb", "anchor": [-0.13, 0.68, 0.04] },
+    { "id": "mollet", "file": "organ-mollet.glb", "anchor": [-0.11, 0.3, -0.03] },
+    { "id": "paravertebraux", "file": "organ-paravertebraux.glb", "anchor": [0.05, 1.1, -0.09] },
+    { "id": "coeur", "file": "organ-coeur.glb", "anchor": [0.04, 1.3, 0.05] },
+    { "id": "poumons", "file": "organ-poumons.glb", "anchor": [-0.09, 1.32, 0.03] },
+    { "id": "foie", "file": "organ-foie.glb", "anchor": [-0.07, 1.15, 0.06] },
+    { "id": "reins", "file": "organ-reins.glb", "anchor": [0.07, 1.08, -0.04] },
+    { "id": "cerveau", "file": "organ-cerveau.glb", "anchor": [0, 1.66, 0] },
+    { "id": "yeux", "file": "organ-oeil.glb", "anchor": [0.035, 1.63, 0.09] },
+    { "id": "sang", "anchor": [0.0, 1.2, 0.07] },
+    { "id": "dose", "anchor": [0, 1.0, 0.1] }
+  ],
+  "credits": "Z-Anatomy — CC BY-SA 4.0 (placeholder : les .glb ne sont pas encore livrés)"
+}

@@ -1,0 +1,181 @@
+/* Panneau ALERTES DU JOUR — préfixe .alr. Couleurs : variables --sz-* uniquement. */
+
+.alr {
+  width: 100%;
+  max-height: 100%;
+}
+.alr > .sz-panel__body {
+  padding: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.alr__count {
+  font-variant-numeric: tabular-nums;
+  color: var(--sz-text);
+}
+.alr__count[data-red='true'] { color: var(--sz-red); }
+
+.alr__proj {
+  padding: 5px 10px;
+  border-bottom: 1px dashed var(--sz-border-strong);
+  font-family: var(--sz-font-mono);
+  font-size: 10px;
+  line-height: 1.4;
+  letter-spacing: 0.1em;
+  color: var(--sz-text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── État vide : neutre, pas vert ── */
+
+.alr__empty {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px 10px;
+  font-family: var(--sz-font-mono);
+  font-size: 10px;
+  line-height: 1.5;
+  letter-spacing: var(--sz-tracking);
+  text-transform: uppercase;
+  color: var(--sz-text-dim);
+}
+.alr__empty-mark {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  margin-top: 4px;
+  border: 1px solid var(--sz-text-dim);
+}
+
+/* ── Cartes ── */
+
+.alr__list { display: block; }
+.alr__list > li + li { border-top: 1px solid var(--sz-border); }
+
+.alr__card {
+  --alr-c: var(--sz-unknown);
+  position: relative;
+  display: block;
+  cursor: pointer;
+  transition: background-color 120ms;
+}
+.alr__card[data-color='red'] { --alr-c: var(--sz-red); }
+.alr__card[data-color='amber'] { --alr-c: var(--sz-amber); }
+.alr__card[data-color='green'] { --alr-c: var(--sz-ok); }
+
+/* Filet de gravité à gauche */
+.alr__card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--alr-c);
+  opacity: 0.7;
+}
+.alr__card[data-hovered='true'],
+.alr__card[data-selected='true'] { background: var(--sz-panel-hover); }
+.alr__card[data-hovered='true']::before,
+.alr__card[data-selected='true']::before { opacity: 1; }
+.alr__card[data-selected='true'] { box-shadow: inset 0 0 0 1px var(--sz-border-strong); }
+.alr__card[data-level='ROUGE'] { background-color: color-mix(in srgb, var(--sz-red) 5%, transparent); }
+.alr__card[data-level='ROUGE'][data-hovered='true'],
+.alr__card[data-level='ROUGE'][data-selected='true'] { background-color: color-mix(in srgb, var(--sz-red) 9%, transparent); }
+.alr__card:focus-visible { outline-offset: -2px; }
+
+.alr__body {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 8px 10px 8px 12px;
+}
+
+.alr__top,
+.alr__foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.alr__fill { flex: 1; min-width: 0; }
+.alr__top .sz-chip { height: 16px; font-size: 10px; }
+
+.alr__title {
+  font-family: var(--sz-font-mono);
+  font-size: 11px;
+  line-height: 1.35;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sz-text);
+}
+
+.alr__msg {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  font-family: var(--sz-font-text);
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--sz-text-dim);
+}
+/* Carte épinglée : message complet */
+.alr__card[data-selected='true'] .alr__msg {
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+  color: var(--sz-text);
+}
+
+.alr__foot {
+  height: 16px;
+  font-family: var(--sz-font-mono);
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.alr__trend {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.alr__k { color: var(--sz-text-dim); }
+.alr__v {
+  font-variant-numeric: tabular-nums;
+  color: var(--sz-text);
+}
+.alr__v--none { color: var(--sz-unknown); }
+
+.alr__detail {
+  flex: none;
+  height: 16px;
+  padding: 0 5px;
+  border: 1px solid var(--sz-border);
+  font-family: var(--sz-font-mono);
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0.1em;
+  color: var(--sz-text-dim);
+  transition: color 120ms, border-color 120ms, background-color 120ms;
+}
+.alr__detail:hover,
+.alr__card[data-hovered='true'] .alr__detail {
+  color: var(--sz-text);
+  border-color: var(--sz-border-strong);
+}
+.alr__detail:hover { background: var(--sz-panel-hover); }
+
+/* Liste défilante : fondu bas de 16 px — une ligne coupée se lit comme « ça défile », pas comme un bug. */
+.alr > .sz-panel__body {
+  padding-bottom: 14px;
+  -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 16px), transparent);
+  mask-image: linear-gradient(to bottom, black calc(100% - 16px), transparent);
+}
