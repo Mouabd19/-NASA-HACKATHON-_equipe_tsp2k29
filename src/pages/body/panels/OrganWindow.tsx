@@ -745,7 +745,7 @@ export function OrganWindow(): JSX.Element | null {
         <header className="ow__head">
           <span className="sz-label sz-dim">{sys} / {isGlobal ? 'GLOBAL' : 'ORGANE'}</span>
           <h2 className="ow__name">{name}</h2>
-          {organ ? <StatusChip color={organ.status} label={organ.status === 'grey' ? 'NON MODÉLISÉ' : undefined} /> : null}
+          {organ ? <StatusChip color={organ.status} label={organ.status === 'grey' ? 'Non modélisé' : undefined} /> : null}
           <span className="ow__fill" />
           <span className="sz-label">
             {fmtDay(day)} <span className="sz-dim">· {body.date || dayToDate(day)} ·</span>{' '}

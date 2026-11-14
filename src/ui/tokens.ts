@@ -13,10 +13,11 @@ export const tokens = {
     text: '#E8E8E6',
     textDim: '#8A8F98',
     holo: '#9FB4C7',
-    ok: '#30D158',
-    amber: '#FF9F0A',
-    red: '#FF453A',
-    unknown: '#636366',
+    // Statuts calibrés pour le fond sombre (désaturés, distincts en luminance), pas les couleurs système iOS.
+    ok: '#7FA88F',
+    amber: '#D9A04A',
+    red: '#E5604F',
+    unknown: '#6E7378',
   },
   font: {
     text: "'Inter Variable', Inter, system-ui, sans-serif",
@@ -37,10 +38,10 @@ export const statusColor: Record<Color, string> = {
 };
 
 export const statusLabel: Record<Color, string> = {
-  green: 'NOMINAL',
-  amber: 'AMBRE',
-  red: 'ROUGE',
-  grey: 'INCONNU',
+  green: 'Nominal',
+  amber: 'Ambre',
+  red: 'Rouge',
+  grey: 'Inconnu',
 };
 
 export const levelColor: Record<Level, Color> = {

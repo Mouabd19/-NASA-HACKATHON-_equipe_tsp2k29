@@ -11,11 +11,11 @@ import './AlertsPanel.css';
 
 const LEVEL_RANK: Record<Level, number> = { ROUGE: 0, ORANGE: 1, AMBRE: 2, DONNEES_INSUFFISANTES: 3, VERT: 4 };
 const LEVEL_LABEL: Record<Level, string> = {
-  ROUGE: 'ROUGE',
-  ORANGE: 'ORANGE',
-  AMBRE: 'AMBRE',
-  DONNEES_INSUFFISANTES: 'DONNÉES INSUFFISANTES',
-  VERT: 'NOMINAL',
+  ROUGE: 'Rouge',
+  ORANGE: 'Orange',
+  AMBRE: 'Ambre',
+  DONNEES_INSUFFISANTES: 'Données insuffisantes',
+  VERT: 'Nominal',
 };
 
 /** Une règle « V1 4027 » / « V2 7038 » vient de NASA-STD-3001 ; tout le reste est une règle de l'équipe [H]. */

@@ -71,13 +71,13 @@
   overflow: visible;
 }
 .w3d-plate__fill {
-  fill: color-mix(in srgb, color-mix(in srgb, var(--w3d-c) 9%, var(--sz-bg)) 90%, transparent);
+  fill: color-mix(in srgb, var(--sz-bg) 88%, transparent);
   stroke: none;
   transition: fill 120ms linear;
 }
 .w3d-plate__stroke {
   fill: none;
-  stroke: var(--w3d-c);
+  stroke: color-mix(in srgb, var(--w3d-c) 70%, transparent);
   stroke-width: 1;
   animation: w3d-pulse var(--w3d-period) ease-in-out infinite;
 }
@@ -118,8 +118,8 @@
   font-size: 13px;
   line-height: 16px;
   margin: -2px 0;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-weight: 500;
+  letter-spacing: 0.01em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

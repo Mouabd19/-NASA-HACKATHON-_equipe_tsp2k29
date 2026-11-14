@@ -12,9 +12,9 @@ import { TagBadge, dayToDate, fmtDay } from './ui';
 import { syncDetailsAttr, usePrefs } from './ui/prefs';
 
 const TABS = [
-  { to: '/body', label: 'Body Health' },
+  { to: '/body', label: 'Corps' },
   { to: '/warroom', label: 'War Room' },
-  { to: '/mental', label: 'Mental Health' },
+  { to: '/mental', label: 'Mental' },
 ] as const;
 
 function utcClock(d: Date): string {

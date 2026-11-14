@@ -35,12 +35,15 @@ body {
   font-family: var(--sz-font-text);
   font-size: var(--sz-fs-data);
   line-height: 1.45;
-  font-feature-settings: 'tnum' 1, 'cv11' 1;
+  font-feature-settings: 'cv11' 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   overflow: hidden;
 }
+
+/* Chiffres alignés là où il y a des chiffres, pas sur le texte courant. */
+table, time, .sz-mono, [class*='num'], [class*='val'], [class*='__v'] { font-variant-numeric: tabular-nums; }
 
 h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd { margin: 0; }
 h1, h2, h3, h4, h5, h6 { font-size: inherit; font-weight: 500; }
@@ -223,6 +226,9 @@ html[data-details='on'] .sz-essential-only { display: none !important; }
   background: var(--sz-status, var(--sz-unknown));
   vertical-align: middle;
 }
+/* Une forme par niveau (lisible sans la couleur) : rond = nominal, triangle = ambre, carré = rouge. */
+.sz-dot[data-color='green'], .sz-chip[data-color='green'] .sz-dot { border-radius: 50%; }
+.sz-dot[data-color='amber'], .sz-chip[data-color='amber'] .sz-dot { clip-path: polygon(50% 0, 100% 100%, 0 100%); transform: scale(1.25); }
 /* Inconnu : pastille creuse, pour ne jamais passer pour un état mesuré */
 .sz-dot[data-color='grey'],
 .sz-chip[data-color='grey'] .sz-dot {
@@ -239,20 +245,17 @@ html[data-details='on'] .sz-essential-only { display: none !important; }
   height: 20px;
   padding: 0 8px;
   border-radius: var(--sz-radius-sm);
-  border: 1px solid color-mix(in srgb, var(--sz-status, var(--sz-unknown)) 55%, transparent);
-  background: color-mix(in srgb, var(--sz-status, var(--sz-unknown)) 10%, transparent);
-  color: var(--sz-status, var(--sz-unknown));
+  border: 1px solid var(--sz-border);
+  background: transparent;
+  color: var(--sz-text);
   font-family: var(--sz-font-text);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1;
-  letter-spacing: var(--sz-tracking);
-  text-transform: uppercase;
   font-weight: 500;
   white-space: nowrap;
 }
 .sz-chip[data-color='grey'] {
   color: var(--sz-text-dim);
-  background: transparent;
   border-style: dashed;
 }
 
@@ -430,8 +433,10 @@ html[data-details='on'] .sz-essential-only { display: none !important; }
 /* Pages qui ne gèrent pas encore leur défilement (War Room, Raisonnement) */
 .sz-main__scroll { height: 100%; }
 
-@media (max-width: 760px) {
+@media (max-width: 1180px) {
   .sz-topbar__opt { display: none; }
+}
+@media (max-width: 760px) {
   .sz-nav__tab { padding: 0 8px; }
 }
 
