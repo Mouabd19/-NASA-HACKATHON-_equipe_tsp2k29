@@ -168,7 +168,8 @@ describe('sim/load', () => {
       expect(m.provenance).toBe('SIMULÉ');
     }
     expect(organ(94, 'cuisse').status).toBe('amber');
-    expect(metric(94, 'cuisse', 'volume').trend7d!).toBeLessThan(-0.8);
+    // Mouad : pente du modèle calé sur 6 % de perte à J94 ≈ −0,39 %/sem (le mock disait −0,8)
+    expect(metric(94, 'cuisse', 'volume').trend7d!).toBeLessThan(-0.2);
   });
 
   it('autres organes à J94', () => {
@@ -186,11 +187,12 @@ describe('sim/load', () => {
     for (const k of ['fraction_ejection', 'taille']) expect(metric(94, 'coeur', k)).toBeDefined();
   });
 
-  it('écart d’âge [H] : hanche +2,0 ans à J94, +8,7 / +4,2 à J860', () => {
+  // Mouad : vitesse de vieillissement osseux sourcée 0,5 %/an (MINOS, Steve) au lieu de 1 %/an → écarts × 2
+  it('écart d’âge [H] : hanche +4,0 ans à J94, +17,4 à J860', () => {
     const h = organ(94, 'hanche');
-    expect(h.bioAge - h.chronoAge).toBeCloseTo(1.99, 2);
+    expect(h.bioAge - h.chronoAge).toBeCloseTo(3.98, 1);
     const e = organ(860, 'hanche');
-    expect(e.bioAge - e.chronoAge).toBeCloseTo(8.7, 2);
+    expect(e.bioAge - e.chronoAge).toBeCloseTo(17.4, 1);
   });
 
   it('analyses : capillaire hebdo (J0..J91) + calcium urinaire quotidien', () => {
@@ -253,9 +255,10 @@ describe('models', () => {
     for (let i = 1; i < cur.length; i++) expect(cur[i].day).toBeGreaterThan(cur[i - 1].day);
     const at = (s: typeof cur, d: number) => s.find((p) => p.day === d)!;
     const chrono = (d: number) => 42 + d / 365.25;
-    expect(at(cur, 94).bioAge - chrono(94)).toBeCloseTo(1.99, 1);
-    expect(at(cur, 860).bioAge - chrono(860)).toBeCloseTo(8.7, 1);
-    expect(at(plan, 860).bioAge - chrono(860)).toBeCloseTo(4.22, 1);
+    // Mouad : 0,5 %/an pour l'os (sourcé) → perte / 0,5
+    expect(at(cur, 94).bioAge - chrono(94)).toBeCloseTo(3.98, 1);
+    expect(at(cur, 860).bioAge - chrono(860)).toBeCloseTo(17.4, 1);
+    expect(at(plan, 860).bioAge - chrono(860)).toBeCloseTo(8.44, 1);
     expect(at(plan, 94).bioAge).toBe(at(cur, 94).bioAge);
     const w = (p: (typeof cur)[number]) => p.band![1] - p.band![0];
     expect(w(at(cur, 860))).toBeGreaterThan(w(at(cur, DAY_SOL0)));
@@ -466,8 +469,8 @@ describe('ingest (stubs en mémoire, sans réseau)', () => {
 });
 
 describe('honnêteté — ajouts hors contrat (revue du premier jet Body)', () => {
-  it('phenoAge du stub est marqué mock (formule publiée, valeur factice)', () => {
-    expect(phenoAge(94)!.mock).toBe(true);
+  it('phenoAge : vraie valeur calculée sur les prélèvements simulés (plus de mock)', () => {
+    expect(phenoAge(94)!.mock).toBeFalsy();
   });
   it('hasBioAgeModel : seuls les organes avec un modèle de perte ont un écart d’âge', () => {
     for (const id of ['hanche', 'rachis', 'femur', 'cuisse', 'mollet', 'paravertebraux', 'coeur']) expect(hasBioAgeModel(id)).toBe(true);

@@ -13,7 +13,7 @@ mkdirSync(outDir, { recursive: true });
 const sim = generateSim(seed);
 const files: Record<string, unknown> = {
   'meta.json': sim.meta,
-  'days.json': sim.days,
+  'scan.json': sim.scan,
   'blood.json': sim.blood,
   'urine.json': sim.urine,
   'checkins.json': sim.checkins,
