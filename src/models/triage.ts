@@ -8,7 +8,9 @@
 // Jamais vert par défaut : sans check-in un jour mesuré et sans alerte → DONNEES_INSUFFISANTES.
 import type { Alert, CheckIn, Level, TriageResult } from '../types.ts';
 import { alertsForDay } from './alerts.ts';
-import { getCheckIn } from '../sim/load.ts';
+import { getBloodTests, getCheckIn } from '../sim/load.ts';
+import { getRealBaseline, getRealSeries } from '../ingest/realData.ts';
+import { zScore } from '../ingest/baseline30d.ts';
 import { DAY_TODAY } from '../sim/persona.ts';
 import { moodSignals } from './ml/index.ts';
 
@@ -57,6 +59,35 @@ function groundRoutineFor(alerts: Alert[], psy: boolean): string[] {
   return out;
 }
 
+/** Prélèvement hebdomadaire : au-delà de 7 jours, la donnée est expirée (§8, cas limites). */
+export const BLOOD_MAX_AGE_DAYS = 7;
+/** Au-delà de 14 jours sans prélèvement, aucun statut vert n'est possible. */
+const BLOOD_STALE_DAYS = 14;
+
+/** Jours depuis le dernier prélèvement ≤ day (Infinity s'il n'y en a aucun). */
+export function bloodAgeDays(day: number): number {
+  const last = getBloodTests('crp').filter(b => b.day <= day).at(-1)?.day;
+  return last === undefined ? Infinity : day - last;
+}
+
+/**
+ * Fusion des VRAIES données de la montre du présentateur (ingest d'Ahmed) dans le triage du jour.
+ * On compare sa dernière fréquence cardiaque au repos à SA référence sur 30 jours (z-score) :
+ * |z| ≥ 2 → au moins AMBRE, étiqueté RÉEL. Aucune donnée réelle → rien (la simulation reste la source).
+ */
+export function realWatchCheck(): { level: Level; reason: string } | null {
+  const rhr = getRealSeries('RestingHeartRate');
+  const last = rhr.at(-1);
+  if (!last) return null;
+  const z = zScore(last.value, getRealBaseline('RestingHeartRate'));
+  if (z === null) return { level: 'VERT', reason: `Montre RÉELLE : FC au repos ${Math.round(last.value)} bpm (référence personnelle insuffisante)` };
+  const off = Math.abs(z) >= 2;
+  return {
+    level: off ? 'AMBRE' : 'VERT',
+    reason: `Montre RÉELLE : FC au repos ${Math.round(last.value)} bpm, ${z >= 0 ? '+' : '−'}${Math.abs(z).toFixed(1).replace('.', ',')} écart-type vs sa référence 30 j${off ? ' → à recontrôler' : ''}`,
+  };
+}
+
 const cache = new Map<number, TriageResult>();
 
 export function triage(day: number): TriageResult {
@@ -82,6 +113,21 @@ export function triage(day: number): TriageResult {
     if (level === 'VERT') level = 'DONNEES_INSUFFISANTES';
   } else if (day > DAY_TODAY) {
     reasons.push(`Projection J${day} : statuts issus des modèles, pas de check-in`);
+  }
+
+  // cas limites : prélèvement expiré → jamais de vert
+  if (day >= 0 && day <= DAY_TODAY) {
+    const age = bloodAgeDays(day);
+    if (age > BLOOD_MAX_AGE_DAYS) {
+      reasons.push(Number.isFinite(age) ? `Prélèvement expiré (dernier il y a ${age} jours) : à refaire` : 'Aucun prélèvement disponible : à faire');
+      if (age > BLOOD_STALE_DAYS && level === 'VERT') level = 'DONNEES_INSUFFISANTES';
+    }
+  }
+
+  // aujourd'hui : vraies données de la montre du présentateur
+  if (day === DAY_TODAY) {
+    const w = realWatchCheck();
+    if (w) { reasons.push(w.reason); level = worst(level, w.level); }
   }
 
   // humeur basse 3 jours de suite (règle §8) ou signal du modèle C → point psy PROPOSÉ, niveau inchangé
