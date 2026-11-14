@@ -9,12 +9,12 @@ import type { ThreeEvent } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { Bloom, EffectComposer, Vignette } from '@react-three/postprocessing';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
-import type { Color, OrganId } from '../types';
+import type { Color, LayerId, OrganId } from '../types';
 import { tokens } from '../ui/tokens';
 import { DAY_TODAY } from '../mocks/mission';
 import { getDayBodyPlan } from '../sim/load';
 import { bodyAxis, scanState, screenAnchors, useBody } from '../pages/body/store';
-import { FALLBACK_MANIFEST, organLayers } from './anatomy';
+import { activeAnchors, organLayers } from './anatomy';
 import { createBodyRig } from './core/rig';
 import { createFloor, disposeFloor } from './core/floor';
 import { look } from './look';
@@ -27,11 +27,9 @@ function statusesForDay(day: number, adherence: number): Map<OrganId, Color> {
   return map;
 }
 
-const ANCHORS = FALLBACK_MANIFEST.organs.map((o) => ({
-  id: o.id,
-  anchor: new THREE.Vector3(...o.anchor),
-  layers: organLayers(o.id),
-}));
+// Ancres lues à la première utilisation : après le chargement éventuel des modèles Z-Anatomy (main.tsx).
+let anchorsCache: { id: OrganId; anchor: THREE.Vector3; layers: LayerId[] }[] | null = null;
+const getAnchors = () => (anchorsCache ??= activeAnchors().map((o) => ({ id: o.id, anchor: new THREE.Vector3(...o.anchor), layers: organLayers(o.id) })));
 
 function Rig(): JSX.Element {
   const rig = useMemo(() => createBodyRig(), []);
@@ -155,7 +153,7 @@ function Rig(): JSX.Element {
         st.transition = true;
       }
       if (st.transition) {
-        const a = s.selected ? ANCHORS.find((x) => x.id === s.selected) : undefined;
+        const a = s.selected ? getAnchors().find((x) => x.id === s.selected) : undefined;
         tmp.target.set(...look.camera.target);
         // Épinglage : on se rapproche sans centrer l'organe — le corps reste dans l'axe (la carte et les plaques
         // gardent leurs colonnes), seule la hauteur visée glisse vers l'organe.
@@ -189,7 +187,7 @@ function Rig(): JSX.Element {
         scanState.x = (tmp.v.x * 0.5 + 0.5) * w;
         scanState.y = (-tmp.v.y * 0.5 + 0.5) * h;
       }
-      for (const a of ANCHORS) {
+      for (const a of getAnchors()) {
         tmp.v.copy(a.anchor).applyMatrix4(g.matrixWorld).project(state.camera);
         let active = false;
         for (const l of a.layers) if (s.layers[l] && rig.layerFade(l) > 0.5) active = true;

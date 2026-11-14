@@ -1,7 +1,8 @@
 # Status — Steve (D)
-_Mis à jour : sam. 18:20_
+_Mis à jour : sam. 18:55_
 
-## Livré (poussé sur `feature/steve-models` ; PR vers `develop` dès que Walid aura créé la branche)
+## Livré (PR `feature/steve-models` → `develop`)
+- **Z-Anatomy branché dans la page Body** (avec l'accord de Walid) : `src/three/zanatomy.ts` charge les calques + l'avatar et produit la même liste `PartDef[]` que le corps procédural ; chargement dans `main.tsx` avant le premier rendu (repli automatique sur le corps procédural si échec ou > 15 s) ; ancres des ⚠ lues dans le manifeste (`activeAnchors()`) ; crédits Z-Anatomy affichés. Réseau vasculaire (`arteres`, `veines`, `aorte`) → organe `sang` du calque cardio. 94 tests verts, build OK.
 - **Modèles 3D** (jalon 17:00, en avance) : `public/models/{squelette,muscles,organes,cardio,nerveux}.glb` (170–260 k triangles chacun, 1,2–2,9 Mo, ~1 M triangles si tout est affiché) + `manifest.json` (ancres des ⚠) + `CREDITS.md`.
 - **Avatar de Haddad** : `public/models/avatar.glb` (60 k triangles, doigts séparés, meshopt) — enveloppe lisse dérivée des muscles + squelette Z-Anatomy, **même repère que les calques** (alignement exact avec les organes). Nœud `avatar`, `userData.layer = 'shell'`. Sert de silhouette (aucun calque actif) et de surface pour la carte de dose (calque `exposition` du manifeste). Scripts : `docs/tools/build-avatar.py` + `build-avatar.mjs`.
 - **Organes isolés** (jalon 20:00, en avance) : `public/models/organs/<organId>.glb` pour coeur, poumons, foie, reins, cerveau, yeux, hanche, femur, rachis, cuisse, mollet, paravertebraux. Centrés à l'origine.
@@ -22,7 +23,7 @@ _Mis à jour : sam. 18:20_
 - Constante finale de PhenoAge : 0.090165 (Aging 2018) vs 0.09165 (correction PLOS Med 2019). Recommandation : 0.090165.
 
 ## Demandes aux autres
-- @Walid **(bloque la PR vers develop)** : `develop` a été mergé dans `feature/steve-models`, le code compile et le build passe, mais **5 de tes tests vérifient les valeurs provisoires des stubs** et échouent avec les vraies implémentations. Proposition de mise à jour (c'est ton périmètre, dis-moi si tu préfères que je le fasse dans la PR) :
+- @Walid ✅ (fait par Steve avec ton accord) — ~~bloque la PR~~ : `develop` a été mergé dans `feature/steve-models`, le code compile et le build passe, mais **5 de tes tests vérifient les valeurs provisoires des stubs** et échouent avec les vraies implémentations. **Mis à jour dans la PR** :
   1. `délai radio` : `toBe(11.01)` → `toBeCloseTo(11.01, 1)` (horizons.json donne 11,016 ; provisoire tant que fetch-horizons n'a pas tourné) ;
   2. `normes … non vérifiées` : les 3 normes sont maintenant **vérifiées** (`verified: true`, citations relues) ;
   3. `bibliothèque` : ids réels `ared-squat` et `menu-calcium-vitd` (au lieu de `ared-squat-sdt`, `dej-calcium`) ;

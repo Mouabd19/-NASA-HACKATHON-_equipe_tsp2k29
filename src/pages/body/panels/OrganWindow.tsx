@@ -21,6 +21,7 @@ import {
 import { OrganViewer } from '../../../three/OrganViewer';
 import { LAYER_META, useBody } from '../store';
 import './OrganWindow.css';
+import { anatomySource } from '../../../three/anatomy';
 
 // ── Réglages du graphe (itération rapide) ────────────────────────────────────────────────────
 const C = tokens.color;
@@ -724,7 +725,7 @@ export function OrganWindow(): JSX.Element | null {
                   </span>
                 </div>
               ) : null}
-              <span className="sz-label sz-dim">MODÈLE DE SECOURS — PROCÉDURAL</span>
+              <span className="sz-label sz-dim">{anatomySource() === 'z-anatomy' ? 'Z-ANATOMY — CC BY-SA 4.0' : 'MODÈLE DE SECOURS — PROCÉDURAL'}</span>
             </div>
           </div>
 

@@ -387,18 +387,19 @@ describe('models', () => {
 
 describe('content', () => {
   it('délai radio : 11,01 min le 2026-11-14', () => {
-    expect(lightTimeMin('2026-11-14')).toBe(11.01);
-    expect(lightTimeMin('2026-11-14T08:00:00Z')).toBe(11.01);
+    // horizons.json (Steve) : 11,016 min tant que fetch-horizons (JPL) n'a pas tourné — même valeur à 0,01 près
+    expect(lightTimeMin('2026-11-14')).toBeCloseTo(11.01, 1);
+    expect(lightTimeMin('2026-11-14T08:00:00Z')).toBeCloseTo(11.01, 1);
     const other = lightTimeMin('2027-06-01');
     expect(other).toBeGreaterThan(3);
     expect(other).toBeLessThan(23);
   });
 
-  it('normes V1 4027 / 4003 / 4002 : non vérifiées, lien vers le PDF NASA-STD-3001', () => {
+  it('normes V1 4027 / 4003 / 4002 : vérifiées sur le PDF NASA-STD-3001 (Steve), lien vers le PDF', () => {
     for (const id of ['V1 4027', 'V1 4003', 'V1 4002']) {
       const s = getStandard(id);
       expect(s.id).toBe(id);
-      expect(s.verified).toBe(false);
+      expect(s.verified).toBe(true);
       expect(s.url).toMatch(/^https:\/\/standards\.nasa\.gov\/.*nasa-std-3001-vol-1-rev-c/);
       expect(s.title.length).toBeGreaterThan(0);
       expect(s.quote.length).toBeGreaterThan(0);
@@ -429,8 +430,8 @@ describe('content', () => {
   });
 
   it('bibliothèque', () => {
-    expect(getExercise('ared-squat-sdt')?.title).toMatch(/ARED/);
-    expect(getMeal('dej-calcium')?.calciumMg).toBeGreaterThan(0);
+    expect(getExercise('ared-squat')?.title).toMatch(/ARED/);
+    expect(getMeal('menu-calcium-vitd')?.calciumMg).toBeGreaterThan(0);
     expect(getExercise('inconnu')).toBeNull();
     expect(whyText('V1 4027').length).toBeGreaterThan(20);
     expect(whyText('inconnu').length).toBeGreaterThan(0);
@@ -476,9 +477,11 @@ describe('honnêteté — ajouts hors contrat (revue du premier jet Body)', () =
     for (const id of ['hanche', 'rachis', 'femur', 'cuisse', 'mollet', 'paravertebraux', 'coeur']) expect(hasBioAgeModel(id)).toBe(true);
     for (const id of ['reins', 'sang', 'yeux', 'dose', 'poumons', 'foie', 'cerveau']) expect(hasBioAgeModel(id)).toBe(false);
   });
-  it('lightTimeSource : table pour la date de test, approximation ailleurs', () => {
+  it('lightTimeSource : table sur toute la mission, approximation hors mission', () => {
+    // horizons.json couvre toute la mission (J0 → J860) : hors de cette période, valeur bornée ('approx')
     expect(lightTimeSource('2026-11-14')).toBe('table');
-    expect(lightTimeSource('2027-03-10')).toBe('approx');
+    expect(lightTimeSource('2027-03-10')).toBe('table');
+    expect(lightTimeSource('2030-01-01')).toBe('approx');
   });
   it('sang : le VO₂max (porté par le cœur) ne compte pas dans son statut ; autant d’organes ambre que d’alertes à J94', () => {
     const body = getDayBody(94);
