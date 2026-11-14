@@ -1,8 +1,9 @@
-/* Page Body — préfixe .body-. Couleurs : variables --sz-* uniquement. */
+/* Page Corps — préfixe .body-. Couleurs : variables --sz-* uniquement.
+   Grille : bandeau · [colonne gauche | scène 3D | colonne droite] · chronologie. Une seule gouttière partout. */
 
 .body-page {
-  --body-gap: 8px;
-  --body-left: 300px;
+  --body-gap: var(--sz-gap);
+  --body-left: 320px;
   --body-right: 320px;
   display: grid;
   grid-template-columns: var(--body-left) minmax(0, 1fr) var(--body-right);
@@ -19,14 +20,29 @@
   overflow: hidden;
 }
 
-.body-page[data-left='false'] { --body-left: 0px; }
-.body-page[data-right='false'] { --body-right: 0px; }
-/* colonne fermée : la piste vide ne garde pas de gouttière */
-.body-page[data-left='false'] { grid-template-columns: 0 minmax(0, 1fr) var(--body-right); column-gap: 0; }
-.body-page[data-right='false'] { grid-template-columns: var(--body-left) minmax(0, 1fr) 0; column-gap: 0; }
-.body-page[data-left='false'][data-right='false'] { grid-template-columns: 0 minmax(0, 1fr) 0; }
+/* Colonne fermée : la piste vide ne garde pas de gouttière. */
+.body-page[data-left='false'] { --body-left: 0px; column-gap: 0; }
+.body-page[data-right='false'] { --body-right: 0px; column-gap: 0; }
 .body-page[data-left='false'] .body-col--right { margin-left: var(--body-gap); }
 .body-page[data-right='false'] .body-col--left { margin-right: var(--body-gap); }
+
+/* Bandeau ou chronologie fermés : la rangée disparaît avec sa gouttière. */
+.body-page[data-top='false'] {
+  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'left scene right'
+    'bottom bottom bottom';
+}
+.body-page[data-bottom='false'] {
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas:
+    'top top top'
+    'left scene right';
+}
+.body-page[data-top='false'][data-bottom='false'] {
+  grid-template-rows: minmax(0, 1fr);
+  grid-template-areas: 'left scene right';
+}
 
 .body-top { grid-area: top; min-width: 0; }
 .body-bottom { grid-area: bottom; min-width: 0; }
@@ -45,13 +61,16 @@
 
 .body-slot { flex: none; min-width: 0; min-height: 0; display: flex; flex-direction: column; }
 .body-slot > * { min-height: 0; }
-.body-slot--grow { flex: 1 1 0; }
-/* Colonne gauche : le sang prend sa hauteur naturelle (il défile s'il manque de place), la montre suit */
+/* Colonne gauche : les analyses prennent leur hauteur naturelle et cèdent seules la place qui manque (la liste
+   défile) ; les constantes gardent la leur. */
 .body-col--left .body-slot--grow { flex: 0 1 auto; }
-/* Les calques prennent leur hauteur naturelle, sans jamais étouffer les alertes */
-.body-slot--layers { flex: 0 1 auto; max-height: 62%; }
+/* Colonne droite : les calques prennent leur hauteur naturelle ; les alertes remplissent jusqu'au bas de la scène.
+   Quand la place manque, les deux listes cèdent en proportion et défilent ; les alertes gardent quatre lignes. */
+.body-slot--layers { flex: 0 1 auto; }
+.body-col--right .body-slot--grow { flex: 1 1 auto; min-height: 180px; }
+.body-col--right .body-slot--grow > * { flex: 1 1 auto; }
 
-/* ── Scène ── */
+/* ── Scène 3D : un panneau comme les autres ── */
 
 .body-scene {
   grid-area: scene;
@@ -62,197 +81,109 @@
   border: 1px solid var(--sz-border);
   border-radius: var(--sz-radius);
   background: var(--sz-bg);
+  container-type: size;
 }
 
-/* Puces des panneaux fermés (et « mode focus ») */
-.body-dock {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 7;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 6px;
-  max-width: 60%;
-}
-.body-dock__chip {
-  height: 24px;
-  padding: 0 10px;
-  border: 1px solid var(--sz-border);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--sz-bg) 80%, transparent);
-  color: var(--sz-text-dim);
-  font-size: var(--sz-fs-small);
-  white-space: nowrap;
-  transition: color 120ms, border-color 120ms, background-color 120ms;
-}
-.body-dock__chip:hover { color: var(--sz-text); border-color: var(--sz-border-strong); background: var(--sz-panel-hover); }
-.body-dock__chip--all { color: var(--sz-text); }
-.body-dock__chip--quiet { border-color: transparent; background: transparent; opacity: 0.7; }
-
+/* Informations posées sur la scène (ne captent pas la souris). */
 .body-chrome {
   position: absolute;
-  inset: 0;
+  top: 12px;
+  left: 12px;
   z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  max-width: 48%;
   pointer-events: none;
 }
 
-.body-corner {
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  border: 0 solid var(--sz-text);
-  opacity: 0.8;
+/* Mention « Projection » : puce neutre, toujours visible quand le jour affiché est futur. */
+.body-ribbon {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 24px;
+  padding: 0 8px;
+  border: 1px solid var(--sz-border);
+  border-radius: var(--sz-radius-xs);
+  background: var(--sz-panel);
+  font-size: var(--sz-fs-small);
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: auto;
 }
-.body-corner--tl { top: 6px; left: 6px; border-top-width: 1px; border-left-width: 1px; }
-.body-corner--tr { top: 6px; right: 6px; border-top-width: 1px; border-right-width: 1px; }
-.body-corner--bl { bottom: 6px; left: 6px; border-bottom-width: 1px; border-left-width: 1px; }
-.body-corner--br { bottom: 6px; right: 6px; border-bottom-width: 1px; border-right-width: 1px; }
+.body-ribbon__text { font-weight: 500; color: var(--sz-text); }
+.body-ribbon__sub {
+  padding-left: 8px;
+  border-left: 1px solid var(--sz-border);
+  color: var(--sz-text-dim);
+}
 
+/* Provenance de la scène (mode Détails) : liste libellé / valeur. */
 .body-tag {
-  position: absolute;
-  top: 14px;
-  left: 28px;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  margin: 0;
+  font-size: var(--sz-fs-small);
+  line-height: 16px;
 }
 .body-tag__row {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 14px;
-  white-space: nowrap;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0 8px;
 }
-
-.body-tag__row--note .sz-label { font-size: 11px; letter-spacing: var(--sz-tracking); }
-.body-tag__row--note { gap: 6px; }
-/* Légende de la carte d'exposition : 5 paliers de luminance (la couleur reste réservée aux statuts) */
-.body-unit { text-transform: none; }
-.body-heat { display: inline-flex; gap: 1px; }
-.body-heat { padding: 1px; border: 1px solid var(--sz-border-strong); }
+.body-tag dt { flex: none; font-weight: 500; color: var(--sz-text); }
+.body-tag dd { margin: 0; color: var(--sz-text-dim); }
+.body-tag .sz-prov { align-self: center; }
+.body-tag__num { color: var(--sz-text); font-variant-numeric: tabular-nums; }
+/* Légende de la carte d'exposition : paliers de luminance (la couleur reste réservée aux statuts). */
+.body-heat {
+  display: inline-flex;
+  gap: 1px;
+  margin-right: 8px;
+  vertical-align: middle;
+}
 .body-heat i { width: 16px; height: 8px; background: var(--sz-holo); }
 
-.body-scanlabel {
-  position: absolute;
-  top: 0;
-  left: 0;
-  font-size: 11px;
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-  transition: opacity 160ms;
-}
-
-.body-help,
-.body-credit {
-  position: absolute;
-  bottom: 10px;
-  white-space: nowrap;
-}
-.body-help { left: 24px; }
-.body-credit { right: 24px; text-align: right; }
-.body-help .sz-label,
-.body-credit .sz-label {
-  padding: 2px 4px;
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  background: color-mix(in srgb, var(--sz-bg) 72%, transparent);
-}
-
-/* Bandeau « projection » : hachures diagonales sur toute la largeur, impossible à confondre
-   avec un corps mesuré. L'étiquette de provenance descend d'un cran pour lui laisser la place. */
-.body-ribbon {
-  position: absolute;
-  top: 6px;
-  left: 28px;
-  right: 28px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  padding: 0 12px;
-  overflow: hidden;
-  white-space: nowrap;
-  border: 1px solid var(--sz-border-strong);
-  background:
-    repeating-linear-gradient(
-      -45deg,
-      color-mix(in srgb, var(--sz-text) 14%, transparent) 0 6px,
-      transparent 6px 12px
-    ),
-    color-mix(in srgb, var(--sz-bg) 80%, transparent);
-  font-family: var(--sz-font-text);
-  text-transform: uppercase;
-  font-weight: 500;
-}
-.body-ribbon__text {
-  flex: none;
-  font-size: 11px;
-  letter-spacing: var(--sz-tracking);
-  color: var(--sz-text);
-}
-.body-ribbon__sub {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 11px;
-  letter-spacing: var(--sz-tracking);
-  color: var(--sz-text-dim);
-  font-variant-numeric: tabular-nums;
-}
-.body-chrome[data-projected='true'] .body-tag { top: 40px; }
-
-/* ── 3D indisponible ── */
+/* ── Vue 3D indisponible ── */
 
 .body-noscene {
   position: absolute;
   inset: 0;
   display: grid;
   place-items: center;
-  background:
-    repeating-linear-gradient(
-      -45deg,
-      color-mix(in srgb, var(--sz-unknown) 14%, transparent) 0 1px,
-      transparent 1px 10px
-    );
+  padding: var(--sz-pad);
 }
 .body-noscene__box {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 10px;
+  gap: 8px;
   max-width: 360px;
-  padding: 16px;
-  border: 1px dashed var(--sz-unknown);
-  background: var(--sz-bg);
   pointer-events: auto;
 }
 .body-noscene__text {
-  margin: 0;
-  font-size: 12px;
-  line-height: 1.5;
+  font-size: var(--sz-fs-data);
   color: var(--sz-text-dim);
 }
-.body-noscene__err { word-break: break-word; white-space: normal; }
-
-/* ── Petits écrans : aide et crédit ne se chevauchent pas ── */
-
-@container (max-width: 760px) {
-  /* scène étroite (1280×720) : l'aide passerait sur les pieds et l'anneau du sol → elle reste dans l'infobulle */
-  .body-help { display: none; }
-  /* la note ne doit pas passer sur la tête du corps : elle se replie sous l'étiquette */
-  .body-tag__row--note { flex-wrap: wrap; height: auto; max-width: 236px; row-gap: 2px; }
+.body-noscene__err {
+  font-size: var(--sz-fs-small);
+  color: var(--sz-text-muted);
+  word-break: break-word;
 }
-.body-scene { container-type: size; }
+.body-noscene__box .sz-btn { margin-top: 8px; }
+
+/* ── Petites hauteurs : gouttière resserrée ── */
 
 @media (max-height: 760px) {
-  .body-page { --body-gap: 6px; }
+  .body-page { --body-gap: 8px; }
 }
 
-/* ── Écran épuré (Steve) : tous les panneaux fermés → la scène occupe toute la page ── */
-.body-page--clean { display: block; position: relative; padding: 0; }
-.body-page--clean .body-scene { position: absolute; inset: 0; border: 0; }
-.body-page--clean .body-corner { display: none; }
-.body-page--clean .body-tag { top: auto; bottom: 22px; left: 24px; opacity: 0.75; }
+/* ── Écran épuré : tous les panneaux fermés → la scène occupe toute la page ── */
+/* La grille est déjà réduite à la seule cellule de la scène (data-left/right/top/bottom = false) :
+   il ne reste qu'à retirer la marge et le cadre. */
+.body-page--clean { padding: 0; }
+.body-page--clean .body-scene { border: 0; border-radius: 0; }

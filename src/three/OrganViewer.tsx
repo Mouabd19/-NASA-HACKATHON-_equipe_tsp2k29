@@ -22,11 +22,11 @@ const VIEW = {
   fit: 1.06,
   /** Hauteur max : un organe allongé (fémur, corps entier) est limité par sa hauteur. */
   fitHeight: 2.05,
-  /** Point visé : sous le centre, pour remonter l'organe au-dessus des libellés du bas. */
-  targetY: -0.16,
-  camera: { position: [0, 0.5, 4.3] as [number, number, number], fov: 34 },
+  /** Point visé : le centre de l'organe (plus aucun libellé superposé à la vue). */
+  targetY: 0,
+  camera: { position: [0, 0.4, 4.3] as [number, number, number], fov: 34 },
   /** Vitesse de rotation automatique (OrbitControls : 2 ≈ 30 s par tour). */
-  autoRotateSpeed: 1.1,
+  autoRotateSpeed: 0.6,
   /** Poids de la teinte de statut (0 = hologramme neutre). */
   tintMix: 0.5,
   /** Remplissage « à cœur » de la teinte (0 = seul le liseré porte la couleur : pas d'aplat strié). */
@@ -37,18 +37,13 @@ const VIEW = {
   /** Liseré de l'organe isolé (plus fin que dans le corps entier). */
   rim: 0.6,
   fresnelPower: 2.2,
-  /** Rayon du socle, en part de la demi-largeur de l'organe cadré. */
-  ringScale: 0.62,
   /** Opacité d'un organe non modélisé (gris). */
   greyOpacity: 0.55,
-  /** Lignes de balayage visibles sur la hauteur de l'organe cadré. */
-  scanlines: 70,
-  ring: { opacity: 0.5, ticks: 48, tickOpacity: 0.3 },
   /** Silhouette du corps entier ('global') : l'enveloppe seule doit se lire sur fond noir. */
   shell: { opacity: look.shell.opacityAlone, rim: 0.6, core: 0.03 },
 } as const;
 
-interface Fit { parts: PartDef[]; scale: number; offset: THREE.Vector3; floorY: number; radius: number; placeholder: boolean }
+interface Fit { parts: PartDef[]; scale: number; offset: THREE.Vector3; placeholder: boolean }
 
 function partMatrix(p: PartDef): THREE.Matrix4 {
   return new THREE.Matrix4().compose(
@@ -73,7 +68,7 @@ function computeFit(organId: OrganId): Fit {
     if (b && !b.isEmpty()) box.union(b.clone().applyMatrix4(partMatrix(p)));
   }
   if (parts.length === 0 || box.isEmpty()) {
-    return { parts: [], scale: 1, offset: new THREE.Vector3(), floorY: -0.75, radius: 0.6, placeholder: true };
+    return { parts: [], scale: 1, offset: new THREE.Vector3(), placeholder: true };
   }
   const size = box.getSize(new THREE.Vector3());
   const centre = box.getCenter(new THREE.Vector3());
@@ -83,8 +78,6 @@ function computeFit(organId: OrganId): Fit {
     parts,
     scale,
     offset: centre.multiplyScalar(-1),
-    floorY: -(size.y * scale) / 2 - 0.1,
-    radius: Math.min(0.8, Math.max(0.3, ((horizontal * scale) / 2) * VIEW.ringScale)),
     placeholder: false,
   };
 }
@@ -102,12 +95,8 @@ function Organ({ fit, status, neutral }: { fit: Fit; status: Color; neutral: boo
   const materials = useMemo(
     () => fit.parts.map((p) => {
       const m = createHologramMaterial({ layer: p.layer, fx: p.fx === 'flow' ? 'flow' : undefined });
-      // la densité des lignes est en « lignes par mètre monde » : on la ramène à la taille cadrée
-      const sl = m.uniforms.uScanline?.value as THREE.Vector3 | undefined;
-      if (sl) sl.x = VIEW.scanlines / VIEW.fitHeight;
-      // organe isolé : pas de repère de profondeur (il tourne sur lui-même), pas de balayage, liseré seul
+      // organe isolé : pas de repère de profondeur (il tourne sur lui-même), liseré seul
       m.uniforms.uDepthCue.value = 0;
-      m.uniforms.uScanHide.value = 1;
       m.uniforms.uAlphaMax.value = VIEW.alphaMax;
       m.uniforms.uBackFace.value = VIEW.backFace;
       (m.uniforms.uTintLook.value as THREE.Vector2).y = VIEW.tintCore;
@@ -169,42 +158,6 @@ function Placeholder(): JSX.Element {
   return <lineSegments ref={ref} geometry={geo} material={mat} />;
 }
 
-/** Anneau de sol gradué. */
-function FloorRing({ y, radius }: { y: number; radius: number }): JSX.Element {
-  const { ring, ticks, ringMat, tickMat } = useMemo(() => {
-    const circle: number[] = [];
-    const N = 96;
-    for (let i = 0; i < N; i++) {
-      const a0 = (i / N) * Math.PI * 2;
-      const a1 = ((i + 1) / N) * Math.PI * 2;
-      circle.push(Math.cos(a0), 0, Math.sin(a0), Math.cos(a1), 0, Math.sin(a1));
-    }
-    const tk: number[] = [];
-    for (let i = 0; i < VIEW.ring.ticks; i++) {
-      const a = (i / VIEW.ring.ticks) * Math.PI * 2;
-      const r1 = i % 12 === 0 ? 1.16 : i % 4 === 0 ? 1.1 : 1.05;
-      tk.push(Math.cos(a), 0, Math.sin(a), Math.cos(a) * r1, 0, Math.sin(a) * r1);
-    }
-    const g1 = new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(circle, 3));
-    const g2 = new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(tk, 3));
-    const c = new THREE.Color(tokens.color.holo);
-    return {
-      ring: g1,
-      ticks: g2,
-      ringMat: new THREE.LineBasicMaterial({ color: c, transparent: true, opacity: VIEW.ring.opacity }),
-      tickMat: new THREE.LineBasicMaterial({ color: c, transparent: true, opacity: VIEW.ring.tickOpacity }),
-    };
-  }, []);
-  useEffect(() => () => { ring.dispose(); ticks.dispose(); ringMat.dispose(); tickMat.dispose(); }, [ring, ticks, ringMat, tickMat]);
-  return (
-    <group position={[0, y, 0]} scale={radius}>
-      <lineSegments geometry={ring} material={ringMat} />
-      <lineSegments geometry={ticks} material={tickMat} />
-      <lineSegments geometry={ring} material={tickMat} scale={0.55} />
-    </group>
-  );
-}
-
 export function OrganViewer({ organId }: { organId: OrganId }): JSX.Element {
   const fit = useMemo(() => computeFit(organId), [organId]);
   const status = useStatus(organId);
@@ -217,7 +170,6 @@ export function OrganViewer({ organId }: { organId: OrganId }): JSX.Element {
       style={{ width: '100%', height: '100%', cursor: 'grab', touchAction: 'none' }}
     >
       {fit.placeholder ? <Placeholder /> : <Organ fit={fit} status={status} neutral={organId === 'global'} />}
-      <FloorRing y={fit.floorY} radius={fit.radius} />
       <OrbitControls
         makeDefault
         enablePan={false}

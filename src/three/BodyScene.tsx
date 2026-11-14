@@ -1,4 +1,4 @@
-// Scène 3D de la page Body : le corps holographique de l'astronaute.
+// Scène 3D de la page Corps : visualisation anatomique de l'astronaute.
 // Tout l'état vient du store useBody et des modules §7 ; le rendu est piloté par uniforms
 // (aucun setState dans la boucle de rendu, aucune reconstruction quand le jour change).
 import { useEffect, useMemo, useRef } from 'react';
@@ -7,13 +7,12 @@ import * as THREE from 'three';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import type { ThreeEvent } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
-import { Bloom, EffectComposer, Vignette } from '@react-three/postprocessing';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import type { Color, LayerId, OrganId } from '../types';
 import { tokens } from '../ui/tokens';
 import { DAY_TODAY } from '../mocks/mission';
 import { getDayBodyPlan } from '../sim/load';
-import { bodyAxis, scanState, screenAnchors, useBody } from '../pages/body/store';
+import { bodyAxis, screenAnchors, useBody } from '../pages/body/store';
 import { activeAnchors, organLayers } from './anatomy';
 import { createBodyRig } from './core/rig';
 import { createFloor, disposeFloor } from './core/floor';
@@ -46,23 +45,18 @@ function Rig(): JSX.Element {
     lastInteraction: -100,
     swayPhase: 0,
     swayWeight: 0,
-    lastSelected: null as OrganId | null,
-    transition: false,
     sizeH: 0,
-    homeDistance: new THREE.Vector3(...look.camera.position).distanceTo(new THREE.Vector3(...look.camera.target)),
     now: 0,
   }).current;
   const tmp = useMemo(() => ({ v: new THREE.Vector3(), target: new THREE.Vector3(), dir: new THREE.Vector3() }), []);
 
-  // statuts du jour + balayage : abonnements au store, sans re-rendu React
+  // statuts du jour : abonnement au store, sans re-rendu React
   useEffect(() => {
     const s0 = useBody.getState();
     rig.setStatuses(statusesForDay(s0.day, s0.adherence), true);
-    const noscan = new URLSearchParams(window.location.search).get('noscan') === '1';
-    if (!noscan) rig.startScan();
+    // Plus de balayage au chargement : « ?noscan=1 » reste accepté dans l'URL, sans effet.
     const unsub = useBody.subscribe((s, prev) => {
       if (s.day !== prev.day || s.adherence !== prev.adherence) rig.setStatuses(statusesForDay(s.day, s.adherence));
-      if (s.scanNonce !== prev.scanNonce) rig.startScan();
     });
     return () => {
       unsub();
@@ -70,7 +64,6 @@ function Rig(): JSX.Element {
       gl.domElement.style.cursor = '';
       screenAnchors.clear();
       bodyAxis.x = Number.NaN;
-      scanState.t = -1;
     };
   }, [rig, gl, st]);
 
@@ -131,7 +124,8 @@ function Rig(): JSX.Element {
       g.updateMatrixWorld();
     }
 
-    // recentrage de la caméra sur l'organe sélectionné
+    // Cadrage : le corps entier reste dans le cadre. La sélection d'un organe ne déplace PAS la caméra (un zoom
+    // coupait la tête et les pieds) : l'organe est mis en évidence par son rendu, la fiche se pose à côté du corps.
     const c = controls.current;
     if (c) {
       const cam = state.camera;
@@ -141,31 +135,8 @@ function Rig(): JSX.Element {
         const pad = look.camera.fitPadPx, ref = look.camera.fitRefPx;
         const k = Math.max(1, (1 - (2 * pad) / ref) / Math.max(0.5, 1 - (2 * pad) / Math.max(1, st.sizeH)));
         const base = tmp.v.set(...look.camera.position).distanceTo(tmp.target.set(...look.camera.target));
-        st.homeDistance = base * k;
-        if (!s.selected) {
-          tmp.dir.copy(cam.position).sub(c.target).normalize();
-          cam.position.copy(c.target).addScaledVector(tmp.dir, st.homeDistance);
-        }
-      }
-      if (s.selected !== st.lastSelected) {
-        if (!st.lastSelected && s.selected) st.homeDistance = cam.position.distanceTo(c.target);
-        st.lastSelected = s.selected;
-        st.transition = true;
-      }
-      if (st.transition) {
-        const a = s.selected ? getAnchors().find((x) => x.id === s.selected) : undefined;
-        tmp.target.set(...look.camera.target);
-        // Épinglage : on se rapproche sans centrer l'organe — le corps reste dans l'axe (la carte et les plaques
-        // gardent leurs colonnes), seule la hauteur visée glisse vers l'organe.
-        if (a) tmp.target.y += (a.anchor.y - tmp.target.y) * look.camera.focusPull;
-        const wantDist = a ? Math.min(st.homeDistance, look.camera.focusDistance) : st.homeDistance;
-        const k = 1 - Math.exp(-look.camera.focusSpeed * dt);
-        tmp.dir.copy(cam.position).sub(c.target);
-        const dist = tmp.dir.length();
-        const newDist = dist + (wantDist - dist) * k;
-        c.target.lerp(tmp.target, k);
-        cam.position.copy(c.target).addScaledVector(tmp.dir.normalize(), newDist);
-        if (c.target.distanceToSquared(tmp.target) < 1e-6 && Math.abs(newDist - wantDist) < 1e-3) st.transition = false;
+        tmp.dir.copy(cam.position).sub(c.target).normalize();
+        cam.position.copy(c.target).addScaledVector(tmp.dir, base * k);
       }
       c.update();
     }
@@ -179,14 +150,6 @@ function Rig(): JSX.Element {
       const fov = (state.camera as THREE.PerspectiveCamera).fov;
       bodyAxis.pxPerM = h / (2 * Math.tan(THREE.MathUtils.degToRad(fov) / 2) * axisDist);
       bodyAxis.x = (tmp.v.project(state.camera).x * 0.5 + 0.5) * w;
-      // libellé « SCAN n % » : suit le bord droit de l'anneau de scan
-      const sc = rig.scan();
-      scanState.t = sc.t;
-      if (sc.t >= 0) {
-        tmp.v.set(look.scan.ringRadius, sc.y, 0).project(state.camera);
-        scanState.x = (tmp.v.x * 0.5 + 0.5) * w;
-        scanState.y = (-tmp.v.y * 0.5 + 0.5) * h;
-      }
       for (const a of getAnchors()) {
         tmp.v.copy(a.anchor).applyMatrix4(g.matrixWorld).project(state.camera);
         let active = false;
@@ -203,7 +166,6 @@ function Rig(): JSX.Element {
   return (
     <>
       <primitive object={floor} />
-      <primitive object={rig.scanGroup} />
       <group ref={root}>
         <primitive object={rig.staticGroup} />
         <primitive object={rig.pickGroup} onPointerMove={onMove} onPointerOut={onOut} onClick={onClick} onDoubleClick={onDouble} />
@@ -242,18 +204,6 @@ export function BodyScene(): JSX.Element {
     >
       <color attach="background" args={[tokens.color.bg]} />
       <Rig />
-      {look.bloom.enabled && (
-        <EffectComposer multisampling={look.bloom.multisampling}>
-          <Bloom
-            mipmapBlur
-            luminanceThreshold={look.bloom.threshold}
-            luminanceSmoothing={look.bloom.smoothing}
-            intensity={look.bloom.intensity}
-            radius={look.bloom.radius}
-          />
-          <Vignette darkness={look.bloom.vignette} offset={look.bloom.vignetteOffset} />
-        </EffectComposer>
-      )}
     </Canvas>
   );
 }

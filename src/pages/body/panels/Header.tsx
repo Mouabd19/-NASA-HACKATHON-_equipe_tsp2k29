@@ -1,39 +1,31 @@
-// En-tête de la page Body (ROADMAP §1 « En tête de page ») : une seule bande dense.
-// Gauche : qui / quel jour / mesuré ou projeté. Centre : âge biologique global (PhenoAge [Publié]).
-// Droite : statut du jour, source du corps, délai radio, rejouer le scan.
+// En-tête de la page Corps : bandeau de synthèse, une ligne de blocs « libellé + valeur ».
+// Jour de mission · âge biologique (ouvre la fenêtre de détail) · statut du jour.
 import { useMemo } from 'react';
 import type { CSSProperties, JSX } from 'react';
-import type { Color, DayBody } from '../../../types';
-import { ASTRONAUT, DAY_END, DAY_SOL0, DAY_TODAY } from '../../../mocks/mission';
+import type { Color } from '../../../types';
+import { DAY_END, DAY_SOL0, DAY_TODAY } from '../../../mocks/mission';
 import { phenoAge } from '../../../models/phenoAge';
 import { bloodAgeSeries } from '../../../models/ml';
-import { lightTimeMin, lightTimeSource } from '../../../content/horizons';
-import { PanelClose, ProvenanceBadge, StatusChip, TagBadge, dayToDate, fmt, fmtDay } from '../../../ui';
+import { PanelClose, StatusChip, StatusDot, dayToDate, fmt, fmtDay, statusVar } from '../../../ui';
 import { useBody, useDayBody } from '../store';
 import './Header.css';
 
-const STATUS_VAR: Record<Color, string> = {
-  green: 'var(--sz-ok)',
-  amber: 'var(--sz-amber)',
-  red: 'var(--sz-red)',
-  grey: 'var(--sz-unknown)',
-};
-
-/** Phase de mission. Bornes [Persona] (DAY_SOL0 provisoire dans mocks/mission). */
+/** Phase de mission (bornes du scénario, DAY_SOL0 provisoire dans mocks/mission). */
 function phaseLabel(day: number): string {
-  if (day <= 0) return 'DÉPART — J0';
-  if (day < DAY_SOL0) return 'CROISIÈRE ALLER';
-  if (day === DAY_SOL0) return 'SOL 0 — ARRIVÉE';
-  if (day < DAY_END) return 'SURFACE';
-  return 'FIN DE MISSION';
+  if (day <= 0) return 'Départ';
+  if (day < DAY_SOL0) return 'Croisière aller';
+  if (day === DAY_SOL0) return 'Arrivée sur Mars';
+  if (day < DAY_END) return 'Surface';
+  return 'Fin de mission';
 }
 
-const SOURCE_LABEL: Record<DayBody['source'], { text: string; hyp: boolean }> = {
-  'echo-bord-sim': { text: 'SCAN ÉCHO — CENTRIFUGEUSE 0,1 g', hyp: true },
-  // « Midjourney Medical » est le NOM du scanner (ROADMAP §1), pas une phase de mission.
-  'scan-midjourney-sim': { text: 'SCAN US + ANALYSES + MONTRE', hyp: true },
-  projection: { text: 'PROJECTION — AUCUN SCAN', hyp: true },
-};
+const DATE_FORMAT = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+
+/** Date ISO → « 14 novembre 2026 ». */
+function longDate(iso: string): string {
+  const t = Date.parse(`${iso}T00:00:00Z`);
+  return Number.isFinite(t) ? DATE_FORMAT.format(t) : iso;
+}
 
 /** Statut du jour = le pire statut mesuré. Gris seulement si rien n'est mesuré (jamais vert par défaut). */
 function worstStatus(counts: Record<Color, number>): Color {
@@ -43,7 +35,7 @@ function worstStatus(counts: Record<Color, number>): Color {
   return 'grey';
 }
 
-/** Couleur de l'écart âge biologique − âge réel. Seuils d'affichage [H]. */
+/** Couleur de l'écart âge biologique − âge réel. Seuils d'affichage : hypothèse de l'équipe. */
 function deltaStatus(delta: number): Color {
   if (delta <= 0) return 'green';
   if (delta <= 3) return 'amber';
@@ -55,20 +47,30 @@ function signed(n: number, digits: number): string {
   return `${n < 0 ? '−' : '+'}${s}`;
 }
 
+const COUNT_LABEL: Record<Color, string> = { red: 'rouge', amber: 'ambre', green: 'nominal', grey: 'inconnu' };
+
+/** Décompte d'un statut ; rien si aucun organe n'est dans ce statut. */
+function Count({ color, n }: { color: Color; n: number }): JSX.Element | null {
+  if (n <= 0) return null;
+  return (
+    <span className="hdr__count">
+      <StatusDot color={color} size={6} />
+      <span>{n} {COUNT_LABEL[color]}</span>
+    </span>
+  );
+}
+
 export function Header(): JSX.Element {
   const day = useBody((s) => s.day);
   const openOrganWindow = useBody((s) => s.openOrganWindow);
-  const replayScan = useBody((s) => s.replayScan);
   const globalOpen = useBody((s) => s.organWindow === 'global');
 
   const body = useDayBody();
   const pheno = useMemo(() => phenoAge(day), [day]);
-  // Modèle d'IA A (âge sanguin, NHANES) : dernier prélèvement ≤ jour affiché ; rien d'inventé au-delà.
+  // Âge sanguin (modèle NHANES) : dernier prélèvement ≤ jour affiché ; rien d'inventé au-delà.
   const bloodSeries = useMemo(() => bloodAgeSeries(), []);
   const blood = useMemo(() => bloodSeries.filter((p) => p.day <= day).at(-1) ?? null, [bloodSeries, day]);
   const date = dayToDate(day);
-  const delay = useMemo(() => lightTimeMin(date), [date]);
-  const delayExact = useMemo(() => lightTimeSource(date) === 'table', [date]);
 
   const counts = useMemo(() => {
     const c: Record<Color, number> = { green: 0, amber: 0, red: 0, grey: 0 };
@@ -84,136 +86,96 @@ export function Header(): JSX.Element {
   const worst = worstStatus(counts);
 
   const mode: 'today' | 'past' | 'projection' = day === DAY_TODAY ? 'today' : day < DAY_TODAY ? 'past' : 'projection';
-  const source = SOURCE_LABEL[body.source] ?? { text: String(body.source).toUpperCase(), hyp: true };
 
   const delta = pheno ? pheno.phenoAge - pheno.chronoAge : null;
   const dStatus: Color = delta === null ? 'grey' : deltaStatus(delta);
 
   return (
-    <header className="hdr" data-mode={mode}>
-      {/* ── Gauche : identité, jour, état ── */}
-      <div className="hdr__left">
-        <div className="hdr__id sz-detail">
-          <span className="sz-label sz-dim">{ASTRONAUT.id} · {ASTRONAUT.role}</span>
-          <span className="hdr__name sz-mono">{ASTRONAUT.name}</span>
-          <TagBadge tag="Persona" />
-        </div>
-        <div className="hdr__rule sz-detail" aria-hidden="true" />
-        <div className="hdr__day">
-          <span className="hdr__daynum sz-mono" title="Jour de mission">J{String(day).padStart(3, '0')}</span>
-          <div className="hdr__daymeta">
-            <span className="sz-label" title={day < DAY_SOL0 ? `Sol 0 dans ${DAY_SOL0 - day} j [Persona]` : `Fin de mission dans ${Math.max(0, DAY_END - day)} j [Persona]`}>
-              {date}<span className="sz-dim sz-detail"> · {phaseLabel(day)}</span> <TagBadge tag="Persona" />
-            </span>
-            <div className="hdr__state" data-mode={mode} title={
-              mode === 'projection'
-                ? 'Jour futur : corps projeté par le modèle, pas une mesure'
-                : mode === 'today' ? 'Dernier corps mesuré' : 'Corps enregistré ce jour-là'
-            }>
-              <span className="hdr__state-mark" aria-hidden="true" />
-              {mode === 'today' && <span>Aujourd’hui · mesuré</span>}
-              {mode === 'past' && <span>Historique · mesuré</span>}
-              {mode === 'projection' && <span>Projection · modèle <TagBadge tag="H" /></span>}
-            </div>
-          </div>
-        </div>
+    <header className="sz-panel hdr" data-mode={mode}>
+      {/* ── Jour de mission ── */}
+      <div
+        className="hdr__block hdr__block--day"
+        title={day < DAY_SOL0 ? `Arrivée sur Mars dans ${DAY_SOL0 - day} j` : `Fin de mission dans ${Math.max(0, DAY_END - day)} j`}
+      >
+        <span className="hdr__label">
+          <span className="sz-label">Jour de mission</span>
+          <span className="hdr__meta sz-detail">{phaseLabel(day)}</span>
+        </span>
+        <span className="hdr__line">
+          <span className="sz-value">Jour {day}</span>
+          <span className="hdr__sub">{longDate(date)}</span>
+        </span>
       </div>
 
-      {/* ── Centre : âge biologique global ── */}
+      {/* ── Âge biologique (ouvre le détail) ── */}
       <button
         type="button"
-        className="hdr__bio"
+        className="hdr__block hdr__block--bio"
         data-open={globalOpen}
-        style={{ '--hdr-delta': STATUS_VAR[dStatus] } as CSSProperties}
+        aria-haspopup="dialog"
+        aria-expanded={globalOpen}
+        style={{ '--hdr-delta': statusVar[dStatus] } as CSSProperties}
         onClick={() => openOrganWindow('global')}
-        title="Ouvrir le détail de l’âge biologique global"
+        title="Ouvrir le détail de l’âge biologique"
       >
-        <span className="hdr__bio-head">
-          <span className="sz-label sz-dim">ÂGE BIOLOGIQUE</span>
-          <TagBadge tag="Publié" />
-          {pheno?.mock ? (
-            <span className="hdr__mock sz-label sz-detail" title="La formule PhenoAge est publiée (Levine 2018) mais n'est pas encore calculée : la valeur affichée est factice.">
-              FACTICE
-            </span>
-          ) : null}
-          <span className="hdr__bio-open sz-label" aria-hidden="true">→</span>
+        <span className="hdr__label">
+          <span className="sz-label">Âge biologique</span>
+          <span className="hdr__meta sz-detail">
+            {pheno ? (pheno.mock ? 'Valeur provisoire' : 'Levine 2018') : 'Aucun prélèvement'}
+          </span>
+          <svg className="hdr__chevron" viewBox="0 0 8 12" aria-hidden="true">
+            <path d="M2 2l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
         </span>
         {pheno && delta !== null ? (
-          <span className="hdr__bio-main">
-            <span className="hdr__bio-num sz-mono">{fmt(pheno.phenoAge, 1)}</span>
-            <span className="hdr__bio-unit sz-label">ANS</span>
-            <span className="hdr__bio-vs">
-              <span className="hdr__bio-delta sz-mono">{signed(delta, 1)}</span>
-              <span className="sz-label sz-dim sz-detail">
-                ÂGE RÉEL {fmt(pheno.chronoAge, Number.isInteger(pheno.chronoAge) ? 0 : 1)} <TagBadge tag="Persona" />
-              </span>
+          <span className="hdr__line">
+            <span className="hdr__valunit">
+              <span className="sz-value">{fmt(pheno.phenoAge, 1)}</span> <span className="sz-unit">ans</span>
             </span>
+            <span className="hdr__delta">
+              <span className="hdr__delta-num">{signed(delta, 1)}</span>
+              <span className="hdr__sub"> vs âge réel</span>
+              <span className="hdr__sub sz-detail"> {fmt(pheno.chronoAge, Number.isInteger(pheno.chronoAge) ? 0 : 1)}</span>
+            </span>
+            {mode === 'projection' ? (
+              // Jour futur : l'âge biologique n'est pas projeté, c'est celui du dernier prélèvement — dit en clair.
+              <span className="hdr__sub hdr__blood">Dernier prélèvement {fmtDay(pheno.day)}</span>
+            ) : blood ? (
+              <span
+                className="hdr__sub hdr__blood"
+                title={`Âge sanguin estimé par régression entraînée sur NHANES 2015–2018 (hypothèse), prélèvement ${fmtDay(blood.day)} — âge réel ${fmt(blood.chronoAge, 1)} ans`}
+              >
+                Âge sanguin estimé <span className="hdr__strong">{fmt(blood.bloodAge, 1)} ans</span>
+                <span className="sz-detail"> · NHANES</span>
+              </span>
+            ) : null}
           </span>
         ) : (
-          <span className="hdr__bio-main">
-            <span className="hdr__bio-none sz-mono">DONNÉES INSUFFISANTES</span>
+          <span className="hdr__line">
+            <span className="hdr__none">Données insuffisantes</span>
           </span>
         )}
-        <span className="hdr__bio-foot sz-label sz-dim">
-          {blood ? (
-            <span
-              className="hdr__blood"
-              title={`Âge sanguin estimé par le modèle d'IA A (régression ElasticNet entraînée sur NHANES 2015–2018), prélèvement ${fmtDay(blood.day)} — âge réel ${fmt(blood.chronoAge, 1)} ans`}
-            >
-              ÂGE SANGUIN <span className="hdr__blood-num">{fmt(blood.bloodAge, 1)} ANS</span>
-              <span className="sz-detail"> (RÉEL {fmt(blood.chronoAge, 1)})</span> · MODÈLE D’IA, NHANES <TagBadge tag="H" />
-            </span>
-          ) : null}
-          <span className="sz-detail">
-            {blood ? ' · ' : ''}{pheno?.mock ? 'FORMULE NON CALCULÉE' : 'LEVINE 2018'}
-            {pheno ? <> · {mode === 'projection' ? 'DERNIER PRÉLÈV.' : 'PRÉLÈV.'} {fmtDay(pheno.day)}</> : <> · AUCUN PRÉLÈVEMENT</>}
-          </span>
-        </span>
       </button>
 
-      {/* ── Droite : statut du jour, source, délai radio ── */}
-      <div className="hdr__right">
-        <div className="hdr__status">
-          <span className="hdr__row">
-            <span className="sz-label sz-dim">STATUT DU JOUR</span>
-            <StatusChip color={worst} />
+      {/* ── Statut du jour ── */}
+      <div className="hdr__block hdr__block--status">
+        <span className="hdr__label">
+          <span className="sz-label">Statut du jour</span>
+          <span className="hdr__meta sz-detail">{tracked} suivis · {unmodeled} non modélisés</span>
+        </span>
+        <span className="hdr__line">
+          <StatusChip color={worst} />
+          <span className="hdr__counts">
+            <Count color="red" n={counts.red} />
+            <Count color="amber" n={counts.amber} />
+            <Count color="green" n={counts.green} />
+            <Count color="grey" n={unknownTracked} />
           </span>
-          <span className="hdr__counts sz-label">
-            <span data-c="red" data-zero={counts.red === 0}>{counts.red} ROUGE</span>
-            <span data-c="amber" data-zero={counts.amber === 0}>{counts.amber} AMBRE</span>
-            <span data-c="green">{counts.green} NOMINAL</span>
-            {unknownTracked > 0 ? <span data-c="grey">{unknownTracked} INCONNU</span> : null}
-          </span>
-          <span className="sz-label sz-dim sz-detail">
-            {tracked} SUIVIS + {unmodeled} NON MODÉLISÉS
-          </span>
-        </div>
-        <div className="hdr__rule sz-detail" aria-hidden="true" />
-        <div className="hdr__src sz-detail">
-          <span className="hdr__row">
-            <span className="sz-label sz-dim">SOURCE</span>
-            <ProvenanceBadge value="SIMULÉ" />
-          </span>
-          <span className="sz-label hdr__src-text">
-            {source.text} {source.hyp ? <TagBadge tag="H" /> : null}
-          </span>
-          <span className="sz-label sz-dim">
-            DÉLAI RADIO{' '}
-            {delayExact ? (
-              <><span className="hdr__delay">{fmt(delay, 2)} MIN</span> <TagBadge tag="Publié" /></>
-            ) : (
-              <span title="Approximation d'orbite circulaire de l'équipe, pas une éphéméride JPL Horizons">
-                <span className="hdr__delay">≈ {fmt(delay, 1)} MIN</span> <TagBadge tag="H" /> APPROX.
-              </span>
-            )}
-          </span>
-        </div>
-        <button type="button" className="sz-btn hdr__scan" onClick={replayScan} title="Rejouer le balayage du scan sur le corps 3D">
-          <span className="hdr__scan-glyph" aria-hidden="true" />
-          Rejouer le scan
-        </button>
-        <PanelClose className="hdr__close" />
+        </span>
       </div>
+
+      <span className="hdr__fill" />
+      <PanelClose className="hdr__close" />
     </header>
   );
 }
