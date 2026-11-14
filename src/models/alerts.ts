@@ -7,6 +7,7 @@ import { DAY_END, DAY_SOL0, DAY_TODAY } from '../sim/persona.ts';
 import { BONE_RED, boneLossPct, type BoneSite } from './bone.ts';
 import { VO2_MIN_ABS, vo2max } from './aerobic.ts';
 import { DOSE_CAREER_LIMIT_MSV, DOSE_CRUISE_MSV_DAY } from './radiation.ts';
+import { redOnTwoMeasures } from '../sim/body.ts';
 
 const LEVEL: Partial<Record<Color, Level>> = { amber: 'AMBRE', red: 'ROUGE' };
 const ORDER: Level[] = ['ROUGE', 'ORANGE', 'AMBRE', 'DONNEES_INSUFFISANTES', 'VERT'];
@@ -28,12 +29,16 @@ function boneAlert(o: OrganState, level: Level, name: string, day: number, a: nu
   return { id: `alert-${o.id}`, organId: o.id, level, title: `${name} — PERTE OSSEUSE ESTIMÉE`, message, rule: 'V1 4027' };
 }
 
-function muscleAlert(o: OrganState, level: Level, name: string): Alert {
+/** Alerte immédiate (exception §8) : seuil rouge franchi sur les 2 dernières mesures, sans attendre la moyenne 7 j. */
+const IMMEDIATE = 'Seuil rouge franchi sur les 2 dernières mesures : alerte immédiate, sans attendre la moyenne sur 7 jours.';
+
+function muscleAlert(o: OrganState, level: Level, name: string, day: number): Alert {
+  const now = redOnTwoMeasures(o.id, 'volume', day);
   const vol = get(o, 'volume');
   return {
     id: `alert-${o.id}`, organId: o.id, level, title: `${name} — ATROPHIE MUSCULAIRE`,
-    message: `Volume au scan ${fr(vol?.value ?? NaN, 1)} % de J0 (perte moyenne sur 7 j), ${trendTxt(vol)} (bruit de mesure ± ${fr(vol?.noise ?? 0, 2)}). Alerte sur 7 jours, pas sur le point du jour.`,
-    rule: 'TENDANCE-7J',
+    message: `Volume au scan ${fr(vol?.value ?? NaN, 1)} % de J0 (perte moyenne sur 7 j), ${trendTxt(vol)} (bruit de mesure ± ${fr(vol?.noise ?? 0, 2)}). ${now ? IMMEDIATE : 'Alerte sur 7 jours, pas sur le point du jour.'}`,
+    rule: now ? 'ROUGE-2-MESURES' : 'TENDANCE-7J',
   };
 }
 
@@ -42,9 +47,9 @@ function organAlert(o: OrganState, level: Level, day: number, a: number): Alert 
     case 'hanche': return boneAlert(o, level, 'HANCHE', day, a);
     case 'rachis': return boneAlert(o, level, 'RACHIS', day, a);
     case 'femur': return boneAlert(o, level, 'COL DU FÉMUR', day, a);
-    case 'cuisse': return muscleAlert(o, level, 'CUISSE');
-    case 'mollet': return muscleAlert(o, level, 'MOLLET');
-    case 'paravertebraux': return muscleAlert(o, level, 'PARAVERTÉBRAUX');
+    case 'cuisse': return muscleAlert(o, level, 'CUISSE', day);
+    case 'mollet': return muscleAlert(o, level, 'MOLLET', day);
+    case 'paravertebraux': return muscleAlert(o, level, 'PARAVERTÉBRAUX', day);
     case 'coeur': {
       const v = get(o, 'vo2max')?.value ?? NaN;
       const pct = get(o, 'vo2_pct')?.value ?? NaN;
@@ -62,15 +67,16 @@ function organAlert(o: OrganState, level: Level, day: number, a: number): Alert 
       const g = get(o, 'gaine_nerf_optique');
       return {
         id: 'alert-yeux', organId: 'yeux', level, title: 'NERF OPTIQUE — GAINE EN HAUSSE',
-        message: `Diamètre de la gaine ${fr(g?.value ?? NaN, 2)} mm, moyenne 7 j au-dessus du seuil de vigilance 5,5 mm [H]. Indicateur indirect de pression intracrânienne : risque SANS à surveiller.`,
+        message: `Diamètre de la gaine ${fr(g?.value ?? NaN, 2)} mm, ${redOnTwoMeasures('yeux', 'gaine_nerf_optique', day) ? IMMEDIATE.toLowerCase() : 'moyenne 7 j au-dessus du seuil de vigilance 5,5 mm [H].'} Indicateur indirect de pression intracrânienne : risque SANS à surveiller.`,
         rule: 'SANS-ONSD',
       };
     }
     case 'reins': {
       const c = get(o, 'calcium_urinaire');
       return {
-        id: 'alert-reins', organId: 'reins', level, title: 'REINS — CALCIUM URINAIRE ÉLEVÉ',
-        message: `Calcium urinaire ${fr(c?.value ?? NaN, 0)} mg/24 h (référence < 300), ${trendTxt(c)}. Risque de calculs : hydratation renforcée, scan des reins.`,
+        id: 'alert-reins', organId: 'reins', level,
+        title: (get(o, 'calculs')?.value ?? 0) >= 1 ? 'REINS — CALCUL DÉTECTÉ AU SCAN' : 'REINS — CALCIUM URINAIRE ÉLEVÉ',
+        message: `${(get(o, 'calculs')?.value ?? 0) >= 1 ? `${fr(get(o, 'calculs')!.value, 0)} calcul(s) vu(s) au scan. ` : ''}Calcium urinaire ${fr(c?.value ?? NaN, 0)} mg/24 h (référence < 300), ${trendTxt(c)}.${redOnTwoMeasures('reins', 'calcium_urinaire', day) ? ` ${IMMEDIATE}` : ''} Risque de calculs : hydratation renforcée, échographie des reins.`,
         rule: 'CALCIUM-U',
       };
     }

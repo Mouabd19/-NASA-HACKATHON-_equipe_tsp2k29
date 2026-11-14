@@ -1,5 +1,5 @@
 # Status — Mouad (C)
-_Mis à jour : sam. 14 nov. 19:40_
+_Mis à jour : sam. 14 nov. 21:00_
 
 ## Livré (PR `feature/mouad-sim` → `develop`)
 - **Générateur Haddad J0 → J94** : `node scripts/generate-sim.ts` → `public/data/sim/{meta,days,blood,urine,checkins,watch}.json`.
@@ -56,6 +56,16 @@ Entraînés AVANT la démo (`scripts/ml/*.py`, Python + scikit-learn), inférenc
 - **Vraies données montre** (ingest d'Ahmed) : à J94, la FC au repos RÉELLE est comparée à la référence 30 j du présentateur
   (z-score) ; |z| ≥ 2 → au moins AMBRE, raison étiquetée « Montre RÉELLE ». Sans données réelles, rien ne change.
 - Tests : `tests/models/plan.test.ts` (10) ; 139 tests au total, build vert.
+
+## Règles §8 complétées (PR `feature/mouad-regles`)
+- **Exception « 2 mesures »** : seuil rouge franchi sur les 2 dernières mesures (muscle −10 %, gaine 6,0 mm, calcium urinaire 350 mg/24 h)
+  → ROUGE immédiat, sans attendre la moyenne 7 j (règle d'alerte `ROUGE-2-MESURES` pour le muscle).
+- **Calculs rénaux au scan** : 1 ou plus → reins AMBRE (titre « CALCUL DÉTECTÉ AU SCAN ») → menu anti-calculs + échographie.
+- **Plus de vert fixé en dur** : fraction d'éjection, masse ventriculaire, FC de repos, tension, volume des jambes, PVT, dose du jour
+  ont maintenant une couleur calculée sur une plage [H] (`BANDS` dans `src/models/rules.ts`). Haddad reste dans ses plages : la démo ne change pas.
+- **Test PVT** dans la to-do : donnée manquante ou expirée, temps de réaction > 300 ms (moyenne 7 j), ou fatigue ≥ 4 / sommeil ≤ 2 ;
+  raisonnement `r-pvt`.
+- 147 tests (8 nouveaux), build vert.
 
 ## Écarts avec les mocks (tests de contrat mis à jour dans cette PR, commentés « Mouad : »)
 - **Écart d'âge** : 0,5 %/an pour l'os (décision Mouad + Steve) → hanche **+4,0 ans** à J94 (mock : +2,0), +17,4 à J860.
