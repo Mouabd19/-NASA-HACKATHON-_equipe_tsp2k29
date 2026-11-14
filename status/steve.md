@@ -1,5 +1,5 @@
 # Status — Steve (D)
-_Mis à jour : sam. 15:22_
+_Mis à jour : sam. 16:05_
 
 ## Livré (poussé sur `feature/steve-models` ; PR vers `develop` dès que Walid aura créé la branche)
 - **Modèles 3D** (jalon 17:00, en avance) : `public/models/{squelette,muscles,organes,cardio,nerveux}.glb` (170–260 k triangles chacun, 1,2–2,9 Mo, ~1 M triangles si tout est affiché) + `manifest.json` (ancres des ⚠) + `CREDITS.md`.
@@ -10,7 +10,7 @@ _Mis à jour : sam. 15:22_
 - **PhenoAge** : coefficients vérifiés + vecteurs de test → `docs/sources/phenoage.md`.
 
 ## En cours
-- **Steve prend le prototype multi-agents santé mentale (§11)** : dossiers `proto/mental/` et `public/data/mental/`.
+- **Prototype santé mentale (§11)**, dossiers `proto/mental/` + `public/data/mental/` : générateur de journées simulées (glissement à J75 + témoin) ✅, 3 observateurs + 3 psychologues + dossier pour le psy humain ✅ (testé à blanc). Modèle local Ollama (qwen2.5:7b), lancement sur le Mac de Steve en cours. Biomarqueurs provisoires dans le proto : à brancher sur ceux de Mouad quand `public/data/sim/` existe.
 - Jalon 23:00 **livré**. Suite : contenus (exercices, menus, textes « Pourquoi ? ») pour dim. 02:00.
 
 ## Bloqué / risques
