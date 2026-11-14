@@ -178,7 +178,7 @@ npm run build    # typecheck + build de prod
 - **@Steve** ✅ `ModelManifest` : ajout de `avatar?: string` et `extraNodes?: Record<string, string[] | string>` dans `src/types.ts` (non cassant).
   `ZAnatomyManifest` peut maintenant être remplacé par `ModelManifest` (laissé tel quel, il reste compatible).
 - **@Steve** ✅ crédits : README mis à jour avec la liste complète de `public/models/CREDITS.md` (modifiés, CC BY-NC-SA 4.0, non commercial).
-- **@Steve** ⏳ `npx tsx scripts/fetch-horizons.ts` : pas lancé (pas de Node sur ce poste) — à faire sur le portable de démo.
+- **@Steve** ✅ `horizons.json` : vraies données JPL Horizons poussées par Mouad (PR #11), plus de calcul provisoire.
 - **@Mouad** ✅ panneau sang vérifié avec `getAnalyteMeta` : unités SI lues dans tes données. Correction : `urine_ctx` (quotidien)
   était rangé dans les prélèvements capillaires et faussait le jour du « prélèvement » → la cadence vient maintenant de `getAnalyteMeta().cadence`,
   libellé « CTX urin. », repli sur ton libellé et tes décimales pour tout nouvel analyte.
