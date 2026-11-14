@@ -1,0 +1,50 @@
+{
+ "organId": "rachis",
+ "generatedBy": "IA-sol",
+ "model": "Claude (Anthropic), rédigé hors ligne",
+ "generatedAt": "2026-11-14",
+ "reviewed": false,
+ "note": "Synthèse IA rédigée au sol à partir des seuls chiffres du simulateur (src/sim, données de Mouad). À valider par le CMO. N'est jamais utilisée pour décider d'une alerte.",
+ "days": [
+  {
+   "day": 0,
+   "adherence": 0,
+   "text": "Bilan de référence (J0) : densité du rachis lombaire à 100 % du pré-vol. Le seuil NASA est de 95 % [V1 4027]. Statut nominal."
+  },
+  {
+   "day": 30,
+   "adherence": 0,
+   "text": "Rachis à 99,66 % du pré-vol, soit une perte de 0,34 %. La colonne perd environ deux fois moins vite que la hanche. Statut nominal."
+  },
+  {
+   "day": 60,
+   "adherence": 0,
+   "text": "Rachis à 99,34 % du pré-vol (perte de 0,66 %). La perte reste lente et régulière (−0,07 point par semaine). Aucun signal."
+  },
+  {
+   "day": 94,
+   "adherence": 0,
+   "text": "Rachis à 99,01 % du pré-vol (perte de 1 %), statut nominal. La pente est la plus faible des trois sites osseux suivis. Pas d'action spécifique en plus du plan osseux général."
+  },
+  {
+   "day": 210,
+   "adherence": 0,
+   "text": "Projection à Sol 0 (J210) au rythme actuel : 98,05 % du pré-vol, soit une perte de 1,95 %. Statut nominal. Projection du modèle, pas une mesure."
+  },
+  {
+   "day": 210,
+   "adherence": 1,
+   "text": "Projection à Sol 0 (J210) avec le plan suivi : 98,69 % du pré-vol, soit une perte de 1,31 %. Statut nominal. Projection du modèle, pas une mesure."
+  },
+  {
+   "day": 860,
+   "adherence": 0,
+   "text": "Projection au retour (J860) au rythme actuel : 95,65 % du pré-vol, soit une perte de 4,35 %. C'est juste au-dessus du seuil de 95 % [V1 4027] : statut à surveiller. Projection du modèle, pas une mesure."
+  },
+  {
+   "day": 860,
+   "adherence": 1,
+   "text": "Projection au retour (J860) avec le plan suivi : 97,89 % du pré-vol, soit une perte de 2,11 %. Statut nominal. Projection du modèle, pas une mesure."
+  }
+ ]
+}
