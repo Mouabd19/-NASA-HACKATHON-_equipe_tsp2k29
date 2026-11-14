@@ -57,8 +57,14 @@ describe('J94 — statuts attendus (mocks roadmap §7)', () => {
   it('check-in J94 : humeur 3, fatigue 3, douleur 1 (bas du dos)', () => {
     expect(getCheckIn(94)).toMatchObject({ mood: 3, fatigue: 3, pain: 1, painZone: 'paravertebraux' });
   });
-  it('tendance 7 j calculée sur la cuisse (perte → pente négative)', () => {
-    expect(organ(94, 'cuisse').metrics[0].trend7d).toBeLessThan(0);
+  it.each([
+    // [organe, clé, pente vraie du modèle en %/sem, tolérance = 3 écarts-types mesurés sur 200 graines]
+    ['cuisse', 'volume', -0.385, 0.12], ['mollet', 'volume', -0.29, 0.12], ['paravertebraux', 'volume', -0.22, 0.12],
+    ['coeur', 'vo2max', -0.57, 0.29],
+  ])('tendance 7 j %s/%s retrouve la pente vraie (%s %/sem)', (id, key, truth, tol) => {
+    const t = organ(94, id).metrics.find(m => m.key === key)!.trend7d!;
+    expect(t).toBeLessThan(0);
+    expect(Math.abs(t - truth)).toBeLessThanOrEqual(tol);
   });
 });
 

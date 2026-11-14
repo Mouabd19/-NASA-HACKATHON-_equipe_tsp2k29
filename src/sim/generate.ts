@@ -39,6 +39,8 @@ const SCAN_WEEKLY = (d: number) => d % 7 === 0;
 const BLOOD_DAYS = DAYS.filter(d => d % 7 === 0);         // J0, J7 … J91
 const PHENOAGE_TARGET = { day: 91, value: 43.1 };        // mock roadmap §7
 const SIM_TAG: Tag = 'Persona';
+const MUSCLE_NOISE = 0.03;   // point de % vs J0, écart-type par mesure
+const VO2_NOISE = 0.03;      // ml/kg/min, écart-type par mesure
 
 type Series = { day: number; value: number }[];
 const ramp = (d: number, end = DAY_TODAY) => Math.min(1, Math.max(0, d / end));
@@ -58,7 +60,9 @@ const valueAt = (s: Series, day: number) => {
 // ---------------------------------------------------------------------------------------------
 
 function scannerSeries(rng: Rng) {
-  const muscle = (site: MuscleSite) => series(rng, DAYS, d => -muscleLossPct(site, d), 0.1);
+  // Bruit [H] : volume musculaire = moyenne de plusieurs coupes du scan du jour → ±0,03 point.
+  // Assez bas pour que la tendance 7 j sorte nettement du bruit (cuisse ≈ −0,39 %/sem ± 0,04).
+  const muscle = (site: MuscleSite) => series(rng, DAYS, d => -muscleLossPct(site, d), MUSCLE_NOISE);
   return {
     cuisse: muscle('cuisse'),
     mollet: muscle('mollet'),
@@ -73,10 +77,11 @@ function scannerSeries(rng: Rng) {
 }
 
 function watchSeries(rng: Rng): Measurement[] {
-  const defs: { type: Measurement['type']; unit: string; base: (d: number) => number; sd: number; clamp?: [number, number] }[] = [
+  const defs: { type: Measurement['type']; unit: string; base: (d: number) => number; sd: number; clamp?: [number, number]; digits?: number }[] = [
     { type: 'RestingHeartRate', unit: 'count/min', base: d => 57 + 5 * ramp(d), sd: 1.5 },
     { type: 'HeartRateVariabilitySDNN', unit: 'ms', base: d => 58 - 11 * ramp(d), sd: 5 },
-    { type: 'VO2Max', unit: 'mL/min·kg', base: d => vo2max(d), sd: 0.4 },
+    // La montre lisse son estimation de VO₂max sur plusieurs jours → bruit quotidien faible [H].
+    { type: 'VO2Max', unit: 'mL/min·kg', base: d => vo2max(d), sd: VO2_NOISE, digits: 2 },
     { type: 'OxygenSaturation', unit: '%', base: () => 98.2, sd: 0.6, clamp: [97, 99.5] },
     { type: 'AppleSleepingWristTemperature', unit: 'degC', base: d => 35.6 + 0.15 * ramp(d), sd: 0.15 },
     { type: 'SleepAnalysis', unit: 'hr', base: d => 7.1 - 0.7 * ramp(d), sd: 0.4 },
@@ -87,7 +92,7 @@ function watchSeries(rng: Rng): Measurement[] {
       let v = def.base(day) + rng.gauss(def.sd);
       if (def.clamp) v = Math.min(def.clamp[1], Math.max(def.clamp[0], v));
       out.push({
-        type: def.type, value: round(v, 1), unit: def.unit,
+        type: def.type, value: round(v, def.digits ?? 1), unit: def.unit,
         date: `${dayToDate(day)}T${def.type === 'SleepAnalysis' ? '06:30' : '07:00'}:00Z`, source: 'simulated',
       });
     }
@@ -218,7 +223,7 @@ function muscleOrgan(site: MuscleSite, name: string, day: number, s: Series): Or
   const color = muscleColor(value);
   return organ(site, 'muscles', name, day, [metric(day, {
     key: 'volume', label: 'Volume musculaire vs J0 (scan)', value, unit: '% vs J0', color, tag: SIM_TAG, provenance: 'SIMULÉ',
-    ref: { low: -MUSCLE_THRESHOLDS.amber }, noise: 0.1, trend: s, base: 100,
+    ref: { low: -MUSCLE_THRESHOLDS.amber }, noise: MUSCLE_NOISE, trend: s, base: 100,
   })], muscleLossPct(site, day));
 }
 
@@ -253,7 +258,7 @@ function buildDays(scan: ReturnType<typeof scannerSeries>, watch: Measurement[],
       organ('coeur', 'organes', 'Cœur', day, [
         metric(day, { key: 'vo2max', label: 'VO₂max', value: vo2v, unit: 'ml/kg/min', tag: SIM_TAG, provenance: 'SIMULÉ',
           color: vo2Color(vo2v),
-          ref: { low: vo2Floor(), standardId: VO2_STANDARD }, noise: 0.4, trend: vo2, base: VO2_PREFLIGHT }),
+          ref: { low: vo2Floor(), standardId: VO2_STANDARD }, noise: VO2_NOISE, trend: vo2, base: VO2_PREFLIGHT }),
         metric(day, { key: 'fraction_ejection', label: 'Fraction d\'éjection (scan hebdo)', value: fe, unit: '%',
           tag: SIM_TAG, provenance: 'SIMULÉ', color: fe < 50 ? 'red' : fe < 55 ? 'amber' : 'green', ref: { low: 55 }, noise: 0.8 }),
         metric(day, { key: 'masse_vg', label: 'Masse du ventricule gauche (scan hebdo)', value: valueAt(scan.masse_vg, day)!,
