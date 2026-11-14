@@ -1,0 +1,450 @@
+{
+ "id": "organ-forecast",
+ "version": 1,
+ "title": "Projection des organes — régression quantile (10 / 50 / 90 %)",
+ "learning": "Supervisé (régression quantile linéaire, perte « pinball »). Entrée : mesures J0–J94. Cible : perte vraie à Sol 0 et J860.",
+ "data": "Cohorte SIMULÉE de 2000 astronautes virtuels calibrée sur les ordres de grandeur NASA publiés (os, muscle, VO₂max), variabilité entre astronautes, 75 % entraînement / 25 % test.",
+ "tag": "H",
+ "units": {
+  "hanche": "% de perte de densité",
+  "cuisse": "% de perte de volume",
+  "coeur": "% de déficit de VO₂max"
+ },
+ "features_doc": {
+  "uca_rise": "calcium urinaire : moyenne J88–J94 − moyenne J0–J6 (mg/24 h)",
+  "ctx_rise": "CTX urinaire : moyenne J88–J94 − moyenne J0–J6",
+  "thigh_loss_now": "perte de volume de la cuisse, moyenne des 7 derniers jours (%)",
+  "thigh_slope28": "pente de la perte de la cuisse sur 28 jours (points de %/semaine)",
+  "vo2_def_now": "déficit de VO₂max vs pré-vol, moyenne des 7 derniers jours (%)",
+  "vo2_slope28": "pente du déficit de VO₂max sur 28 jours (points de %/semaine)"
+ },
+ "limits": [
+  "Entraîné sur une cohorte SIMULÉE : il apprend les relations que nous avons calibrées, pas des données d'astronautes réels.",
+  "La bande 10–90 % couvre la variabilité entre astronautes de la cohorte (couverture mesurée sur le test).",
+  "Scénario « plan » : réponse au plan inconnue à J94 → incluse dans l'incertitude."
+ ],
+ "models": {
+  "hanche/210/cur": {
+   "features": [
+    "uca_rise",
+    "ctx_rise"
+   ],
+   "quantiles": {
+    "0.1": {
+     "coef": [
+      0.011376,
+      0.011637
+     ],
+     "intercept": 0.479139
+    },
+    "0.5": {
+     "coef": [
+      0.0121,
+      0.018682
+     ],
+     "intercept": 0.718993
+    },
+    "0.9": {
+     "coef": [
+      0.027054,
+      0.020561
+     ],
+     "intercept": 1.001799
+    }
+   }
+  },
+  "hanche/210/plan": {
+   "features": [
+    "uca_rise",
+    "ctx_rise"
+   ],
+   "quantiles": {
+    "0.1": {
+     "coef": [
+      0.008012,
+      0.007612
+     ],
+     "intercept": 0.318214
+    },
+    "0.5": {
+     "coef": [
+      0.011426,
+      0.010777
+     ],
+     "intercept": 0.486737
+    },
+    "0.9": {
+     "coef": [
+      0.017021,
+      0.014665
+     ],
+     "intercept": 0.758446
+    }
+   }
+  },
+  "hanche/860/cur": {
+   "features": [
+    "uca_rise",
+    "ctx_rise"
+   ],
+   "quantiles": {
+    "0.1": {
+     "coef": [
+      0.030084,
+      0.024375
+     ],
+     "intercept": 1.113779
+    },
+    "0.5": {
+     "coef": [
+      0.037401,
+      0.032819
+     ],
+     "intercept": 1.760801
+    },
+    "0.9": {
+     "coef": [
+      0.061238,
+      0.037485
+     ],
+     "intercept": 2.431796
+    }
+   }
+  },
+  "hanche/860/plan": {
+   "features": [
+    "uca_rise",
+    "ctx_rise"
+   ],
+   "quantiles": {
+    "0.1": {
+     "coef": [
+      0.012316,
+      0.012673
+     ],
+     "intercept": 0.532369
+    },
+    "0.5": {
+     "coef": [
+      0.024207,
+      0.014277
+     ],
+     "intercept": 0.735459
+    },
+    "0.9": {
+     "coef": [
+      0.033758,
+      0.018635
+     ],
+     "intercept": 1.359145
+    }
+   }
+  },
+  "cuisse/210/cur": {
+   "features": [
+    "thigh_loss_now",
+    "thigh_slope28"
+   ],
+   "quantiles": {
+    "0.1": {
+     "coef": [
+      -0.195567,
+      30.866198
+     ],
+     "intercept": -0.118139
+    },
+    "0.5": {
+     "coef": [
+      -0.217773,
+      31.210228
+     ],
+     "intercept": 0.09597
+    },
+    "0.9": {
+     "coef": [
+      -0.09202,
+      29.425097
+     ],
+     "intercept": 0.288769
+    }
+   }
+  },
+  "cuisse/210/plan": {
+   "features": [
+    "thigh_loss_now",
+    "thigh_slope28"
+   ],
+   "quantiles": {
+    "0.1": {
+     "coef": [
+      0.755887,
+      6.899936
+     ],
+     "intercept": 0.049574
+    },
+    "0.5": {
+     "coef": [
+      0.488311,
+      12.533121
+     ],
+     "intercept": 0.024022
+    },
+    "0.9": {
+     "coef": [
+      0.557887,
+      12.901239
+     ],
+     "intercept": 0.087482
+    }
+   }
+  },
+  "cuisse/860/cur": {
+   "features": [
+    "thigh_loss_now",
+    "thigh_slope28"
+   ],
+   "quantiles": {
+    "0.1": {
+     "coef": [
+      -11.025457,
+      213.182206
+     ],
+     "intercept": -0.689976
+    },
+    "0.5": {
+     "coef": [
+      -12.522688,
+      235.716502
+     ],
+     "intercept": 0.685671
+    },
+    "0.9": {
+     "coef": [
+      -12.720468,
+      238.577452
+     ],
+     "intercept": 2.322653
+    }
+   }
+  },
+  "cuisse/860/plan": {
+   "features": [
+    "thigh_loss_now",
+    "thigh_slope28"
+   ],
+   "quantiles": {
+    "0.1": {
+     "coef": [
+      -1.857539,
+      50.713222
+     ],
+     "intercept": 0.189346
+    },
+    "0.5": {
+     "coef": [
+      -4.05357,
+      87.814025
+     ],
+     "intercept": 0.17199
+    },
+    "0.9": {
+     "coef": [
+      -4.853425,
+      103.436313
+     ],
+     "intercept": 0.520586
+    }
+   }
+  },
+  "coeur/210/cur": {
+   "features": [
+    "vo2_def_now",
+    "vo2_slope28"
+   ],
+   "quantiles": {
+    "0.1": {
+     "coef": [
+      0.265025,
+      22.855373
+     ],
+     "intercept": -0.190346
+    },
+    "0.5": {
+     "coef": [
+      0.238094,
+      23.387268
+     ],
+     "intercept": 0.135492
+    },
+    "0.9": {
+     "coef": [
+      0.224174,
+      23.541897
+     ],
+     "intercept": 0.558867
+    }
+   }
+  },
+  "coeur/210/plan": {
+   "features": [
+    "vo2_def_now",
+    "vo2_slope28"
+   ],
+   "quantiles": {
+    "0.1": {
+     "coef": [
+      0.814589,
+      5.969038
+     ],
+     "intercept": -0.042935
+    },
+    "0.5": {
+     "coef": [
+      0.696338,
+      9.004623
+     ],
+     "intercept": 0.102527
+    },
+    "0.9": {
+     "coef": [
+      0.651741,
+      10.946748
+     ],
+     "intercept": 0.136272
+    }
+   }
+  },
+  "coeur/860/cur": {
+   "features": [
+    "vo2_def_now",
+    "vo2_slope28"
+   ],
+   "quantiles": {
+    "0.1": {
+     "coef": [
+      -1.778809,
+      65.199449
+     ],
+     "intercept": -0.532302
+    },
+    "0.5": {
+     "coef": [
+      -2.049091,
+      69.972566
+     ],
+     "intercept": 0.539107
+    },
+    "0.9": {
+     "coef": [
+      -2.195433,
+      73.037443
+     ],
+     "intercept": 1.472216
+    }
+   }
+  },
+  "coeur/860/plan": {
+   "features": [
+    "vo2_def_now",
+    "vo2_slope28"
+   ],
+   "quantiles": {
+    "0.1": {
+     "coef": [
+      0.242777,
+      17.517312
+     ],
+     "intercept": 0.011589
+    },
+    "0.5": {
+     "coef": [
+      -0.140102,
+      25.91786
+     ],
+     "intercept": 0.254427
+    },
+    "0.9": {
+     "coef": [
+      -0.412474,
+      32.650381
+     ],
+     "intercept": 0.370991
+    }
+   }
+  }
+ },
+ "metrics": {
+  "hanche/210/cur": {
+   "mae_median": 0.897,
+   "mae_baseline_without_ml": 1.273,
+   "coverage_10_90": 0.808,
+   "mean_target": 4.281
+  },
+  "hanche/210/plan": {
+   "mae_median": 0.642,
+   "mae_baseline_without_ml": 0.888,
+   "coverage_10_90": 0.828,
+   "mean_target": 2.921
+  },
+  "hanche/860/cur": {
+   "mae_median": 1.715,
+   "mae_baseline_without_ml": 2.614,
+   "coverage_10_90": 0.788,
+   "mean_target": 9.357
+  },
+  "hanche/860/plan": {
+   "mae_median": 1.013,
+   "mae_baseline_without_ml": 1.413,
+   "coverage_10_90": 0.812,
+   "mean_target": 4.691
+  },
+  "cuisse/210/cur": {
+   "mae_median": 0.129,
+   "mae_baseline_without_ml": 0.412,
+   "coverage_10_90": 0.838,
+   "mean_target": 11.823
+  },
+  "cuisse/210/plan": {
+   "mae_median": 0.418,
+   "mae_baseline_without_ml": 0.453,
+   "coverage_10_90": 0.82,
+   "mean_target": 8.263
+  },
+  "cuisse/860/cur": {
+   "mae_median": 0.935,
+   "mae_baseline_without_ml": 2.702,
+   "coverage_10_90": 0.842,
+   "mean_target": 22.135
+  },
+  "cuisse/860/plan": {
+   "mae_median": 1.247,
+   "mae_baseline_without_ml": 1.453,
+   "coverage_10_90": 0.812,
+   "mean_target": 11.873
+  },
+  "coeur/210/cur": {
+   "mae_median": 0.236,
+   "mae_baseline_without_ml": 0.943,
+   "coverage_10_90": 0.792,
+   "mean_target": 17.756
+  },
+  "coeur/210/plan": {
+   "mae_median": 0.501,
+   "mae_baseline_without_ml": 0.588,
+   "coverage_10_90": 0.82,
+   "mean_target": 13.545
+  },
+  "coeur/860/cur": {
+   "mae_median": 0.802,
+   "mae_baseline_without_ml": 2.803,
+   "coverage_10_90": 0.782,
+   "mean_target": 22.872
+  },
+  "coeur/860/plan": {
+   "mae_median": 0.912,
+   "mae_baseline_without_ml": 1.22,
+   "coverage_10_90": 0.792,
+   "mean_target": 15.33
+  }
+ }
+}

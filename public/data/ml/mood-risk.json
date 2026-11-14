@@ -1,0 +1,44 @@
+{
+ "id": "mood-risk",
+ "version": 1,
+ "title": "Signal d'humeur — régression logistique sur la référence personnelle",
+ "learning": "Supervisé (classification binaire, régression logistique). Cible : épisode installé ce jour (injecté donc connu). Découpage par astronaute.",
+ "data": "Cohorte SIMULÉE de 1500 astronautes × 151 jours, 40 % avec un épisode (début et intensité aléatoires), mauvaises passes isolées comme pièges.",
+ "tag": "H",
+ "features": [
+  "mood",
+  "fatigue",
+  "sleep_felt",
+  "sleep_h",
+  "hrv",
+  "cortisol"
+ ],
+ "baseline_days": 21,
+ "window": 7,
+ "consecutive_days": 2,
+ "coef": [
+  -1.072262,
+  1.094025,
+  -1.244461,
+  -1.112845,
+  -0.574664,
+  0.636081
+ ],
+ "intercept": -10.762905,
+ "threshold": 0.44,
+ "limits": [
+  "Données SIMULÉES : montre que la méthode marche sur des épisodes que nous avons définis, pas sur de vrais astronautes.",
+  "Signal à regarder, jamais un diagnostic : il PROPOSE un point psy, il n'impose rien (§11).",
+  "Compare l'astronaute à lui-même (référence J0–J20), jamais à une norme."
+ ],
+ "metrics": {
+  "n_astronauts_train": 1125,
+  "n_astronauts_test": 375,
+  "auc_test": 0.993,
+  "threshold": 0.44,
+  "detection_rate": 0.919,
+  "median_delay_days": 13.0,
+  "false_alarm_rate_astronauts": 0.064,
+  "comparison_auc_isolation_forest_unsupervised": 0.984
+ }
+}

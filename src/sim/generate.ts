@@ -46,6 +46,13 @@ const VO2_NOISE = 0.03;      // ml/kg/min, écart-type par mesure
 const ramp = (d: number, end = DAY_TODAY) => Math.min(1, Math.max(0, d / end));
 const sat = (d: number, tau: number) => 1 - Math.exp(-d / tau);
 
+/**
+ * Glissement dépressif injecté chez Haddad (vérité connue pour évaluer le modèle d'humeur, ROADMAP §11) :
+ * début J75, installé en 14 jours. 0 = aucun, 1 = installé. Mêmes effets que la cohorte (scripts/ml/cohort.py).
+ */
+export const MOOD_EPISODE_ONSET = 75;
+export const moodEpisode = (d: number) => Math.min(1, Math.max(0, (d - MOOD_EPISODE_ONSET) / 14));
+
 function series(rng: Rng, days: number[], base: (d: number) => number, sd: number, digits = 2): Series {
   return days.map(day => ({ day, value: round(base(day) + rng.gauss(sd), digits) }));
 }
@@ -77,12 +84,12 @@ function scannerSeries(rng: Rng): ScanSeries {
 function watchSeries(rng: Rng): Measurement[] {
   const defs: { type: Measurement['type']; unit: string; base: (d: number) => number; sd: number; clamp?: [number, number]; digits?: number }[] = [
     { type: 'RestingHeartRate', unit: 'count/min', base: d => 57 + 5 * ramp(d), sd: 1.5 },
-    { type: 'HeartRateVariabilitySDNN', unit: 'ms', base: d => 58 - 11 * ramp(d), sd: 5 },
+    { type: 'HeartRateVariabilitySDNN', unit: 'ms', base: d => 58 - 6 * ramp(d) - 8 * moodEpisode(d), sd: 5 },
     // La montre lisse son estimation de VO₂max sur plusieurs jours → bruit quotidien faible [H].
     { type: 'VO2Max', unit: 'mL/min·kg', base: d => vo2max(d), sd: VO2_NOISE, digits: 2 },
     { type: 'OxygenSaturation', unit: '%', base: () => 98.2, sd: 0.6, clamp: [97, 99] },
     { type: 'AppleSleepingWristTemperature', unit: 'degC', base: d => 35.6 + 0.15 * ramp(d), sd: 0.15 },
-    { type: 'SleepAnalysis', unit: 'hr', base: d => 7.1 - 0.7 * ramp(d), sd: 0.4 },
+    { type: 'SleepAnalysis', unit: 'hr', base: d => 7.1 - 0.4 * ramp(d) - 0.8 * moodEpisode(d), sd: 0.4 },
   ];
   const out: Measurement[] = [];
   for (const day of DAYS) {
@@ -119,7 +126,8 @@ function bloodTests(rng: Rng): BloodTest[] {
   const out: BloodTest[] = [];
   for (const def of BLOOD_DEFS) {
     for (const day of BLOOD_DAYS) {
-      const v = def.j0 + (def.j91 - def.j0) * ramp(day, 91) + rng.gauss(def.sd);
+      const trend = def.analyte === 'cortisol' ? 40 * ramp(day, 91) + 70 * moodEpisode(day) : (def.j91 - def.j0) * ramp(day, 91);
+      const v = def.j0 + trend + rng.gauss(def.sd);
       out.push({ day, analyte: def.analyte, value: round(v, 2), unit: def.unit, refLow: def.low, refHigh: def.high, tag: SIM_TAG });
     }
   }
@@ -166,15 +174,16 @@ function checkIns(rng: Rng): CheckIn[] {
     if (day === DAY_TODAY) {   // mock roadmap §7 : humeur 3, fatigue 3, douleur 1 (bas du dos)
       return { day, mood: 3, fatigue: 3, pain: 1, painZone: 'paravertebraux', sleepFelt: 3, source: 'simulated' } satisfies CheckIn;
     }
-    const drift = day > 60 ? (day - 60) / 34 : 0;
-    const pain = clamp(rng.next() < 0.15 + 0.25 * drift ? 1 : 0, 0, 3) as CheckIn['pain'];
+    const ep = moodEpisode(day);
+    const fatigueMission = ramp(day);   // usure de mission, indépendante de l'épisode
+    const pain = clamp(rng.next() < 0.15 + 0.25 * fatigueMission ? 1 : 0, 0, 3) as CheckIn['pain'];
     return {
       day,
-      mood: clamp(4 - 0.8 * drift + rng.gauss(0.5), 1, 5) as CheckIn['mood'],
-      fatigue: clamp(2 + 0.8 * drift + rng.gauss(0.5), 1, 5) as CheckIn['fatigue'],
+      mood: clamp(4 - 0.3 * fatigueMission - 1.2 * ep + rng.gauss(0.5), 1, 5) as CheckIn['mood'],
+      fatigue: clamp(2 + 0.4 * fatigueMission + 1.2 * ep + rng.gauss(0.5), 1, 5) as CheckIn['fatigue'],
       pain,
       ...(pain > 0 ? { painZone: 'paravertebraux' as OrganId } : {}),
-      sleepFelt: clamp(4 - 0.7 * drift + rng.gauss(0.5), 1, 5) as CheckIn['sleepFelt'],
+      sleepFelt: clamp(4 - 0.3 * fatigueMission - 1.0 * ep + rng.gauss(0.5), 1, 5) as CheckIn['sleepFelt'],
       source: 'simulated',
     };
   });
