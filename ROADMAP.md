@@ -2,7 +2,8 @@
 
 > **À lire par chaque membre ET par son Claude avant de toucher au code.**
 > v3 (sam. 12:40) : nouvelle interface en **2 pages** (War Room + Body Overview 3D), décidée au tableau blanc. Elle remplace les écrans de la fiche `sol-zero-fiche-v3` (silhouettes 2D, §3). Les **normes NASA, modèles et chiffres** de la fiche restent la référence.
-> Temps réel disponible : **~30 h** (sam. 12:40 → dim. 18:30).
+> v3.1 (sam. 12:50) : scénario du scanner (module rotatif) et chaîne de données bord → Terre (§1).
+> **Début du travail : sam. 13:30.** Temps disponible : **~29 h** (sam. 13:30 → dim. 18:30).
 
 **Repo :** https://github.com/Mouabd19/-NASA-HACKATHON-_equipe_tsp2k29
 ```bash
@@ -26,10 +27,24 @@ cd sol-zero
 ## 1. Le produit (version tableau blanc)
 
 **Entrées :**
-- **Scan corps entier type Midjourney Medical** (SIMULÉ) : traité **sur Terre**, renvoyé au vaisseau avec une **synthèse IA par organe**. Un « corps du jour » est enregistré chaque jour.
+- **Scan corps entier type Midjourney Medical** (SIMULÉ). Un « corps du jour » est enregistré chaque jour (voir « Le scanner à bord » ci-dessous).
 - **Apple Watch** (RÉEL, présentateur) : FC de repos, VFC, VO₂max estimé, **SpO₂ (% O₂ dans le sang)**, température du poignet, sommeil.
 - **Prise de sang quotidienne** (SIMULÉ).
 - **Normes NASA-STD-3001 Rev C** (RÉEL) pour tous les seuils rouges.
+
+### Le scanner à bord (scénario de mission [Persona] / [H])
+
+- **Problème :** le scanner (tomographie par ultrasons) plonge l'astronaute dans une cuve d'eau. En apesanteur, l'eau ne reste pas au fond de la cuve.
+- **Solution retenue :** le vaisseau a un **module rotatif** de gravité artificielle, qui sert d'abord de **contre-mesure au déconditionnement**. Le scanner y est installé et profite de sa gravité.
+  - Pas besoin de 1 g : il suffit que l'eau reste au fond. Le module tourne à **0,38 g, la gravité de Mars** : l'astronaute s'entraîne à l'arrivée, et le scanner fonctionne. Ordre de grandeur : a = ω²r, soit environ 21 m de rayon à 4 tours/min.
+  - Patient **allongé**, corps parallèle à l'axe de rotation (pas de gradient de gravité tête/pieds) ; pas de scan pendant les manœuvres (ballottement).
+  - Le même scanner sert ensuite **à la base martienne** (0,38 g naturels). Avant le départ et au retour : scan complet au sol.
+- **Chaîne de données (le calcul qui compte) :** un scan produit environ 17 Go/s, soit **~20 To pour 20 min**. Le lien Mars–Terre fait quelques Mb/s : envoyer un seul scan brut prendrait **plus de 2 ans**. Donc :
+  1. reconstruction et segmentation des organes **à bord** ;
+  2. seules les **métriques par organe** (volumes, densités : quelques Ko) partent vers la Terre ;
+  3. la Terre renvoie la **synthèse IA par organe** et l'avis médical, avec le délai radio réel.
+- **Phrase de pitch :** « Notre module rotatif garde les astronautes en forme et fait tenir l'eau du scanner. Et vers la Terre, on n'envoie pas 20 téraoctets : on envoie 4 kilooctets. »
+- **Honnêteté :** aucun vaisseau actuel n'a de module rotatif (seulement des concepts étudiés). C'est une hypothèse de mission, affichée comme telle.
 
 ### Page 1 — BODY (Overview Health)
 
@@ -84,7 +99,8 @@ Inspiration **Evangelion (interfaces NERV)** et **Cyberpunk 2077 (écran Cyberwa
 - Chaque écran porte **RÉEL**, **SIMULÉ** ou **[H]**.
 - **Âge biologique = modèle de l'équipe [H]** (§8), construit sur des vitesses de perte publiées. La fiche §10 refusait l'« âge d'organe » non validé : on l'affiche donc comme **« âge biologique estimé [H] »**, avec sa formule visible dans Raisonnement.
 - **Synthèse IA** : générée **hors ligne** à partir des chiffres traçables (pas d'appel réseau pendant la démo), étiquetée, jamais utilisée pour un seuil.
-- **Scan Midjourney** : aucune donnée publique (fiche §10). Tous les scans sont simulés, et le pitch le dit.
+- **Scan Midjourney** : aucune donnée publique (fiche §10). Tous les scans sont simulés, et le pitch le dit. Le module rotatif est une hypothèse de mission [H].
+- **Synthèse IA « générée au sol »** : cohérent avec la chaîne bord → Terre ci-dessus. Dans l'app, la fenêtre organe affiche « reçue de la Terre à HH:MM, délai X min ».
 
 ---
 
@@ -111,7 +127,7 @@ Repères des orgas : déjeuner sam. 13:00 · dîner sam. 19:30 · déjeuner dim.
 ### Walid (A) — Body Overview 3D
 | Livré avant | Quoi |
 | :-- | :-- |
-| **sam. 14:00** | **Bootstrap** (§5) : scaffold, `src/types.ts` (§6), **tous les stubs** (§7), `src/mocks/`, design system de base (§1), routes `/body`, `/warroom`, `/reasoning/:id`, `status/`. **Priorité absolue.** |
+| **sam. 14:30** | **Bootstrap** (§5) : scaffold, `src/types.ts` (§6), **tous les stubs** (§7), `src/mocks/`, design system de base (§1), routes `/body`, `/warroom`, `/reasoning/:id`, `status/`. **Priorité absolue.** |
 | sam. 18:00 | Scène 3D avec un **corps de secours** (mannequin low-poly + organes en primitives positionnées), calques activables, survol → overlay récap (sur mocks) |
 | sam. 22:00 | **Warnings 3D** ancrés (⚠ qui pulsent) ; **fenêtre organe** : 3D de l'organe + synthèse + graphe âge biologique (plein = mesuré, **pointillé = prédit**, bande) |
 | dim. 02:00 | **Timeline** (J0 → aujourd'hui → Sol 0 → J860, corps fantôme dans le futur) ; panneau sang (courbes) ; widget SpO₂ |
@@ -132,7 +148,7 @@ Repères des orgas : déjeuner sam. 13:00 · dîner sam. 19:30 · déjeuner dim.
 ### Mouad (C) — Données simulées + modèles
 | Livré avant | Quoi |
 | :-- | :-- |
-| sam. 13:00 | Réglages GitHub (collaborateurs, app Claude, protection de `main`) |
+| sam. 13:45 | Réglages GitHub (collaborateurs, app Claude, protection de `main`) |
 | sam. 16:00 | **`scripts/generate-sim.ts`** (graine fixe) → `public/data/sim/` : 95 `DayBody` (J0 → J94), prises de sang quotidiennes, données montre simulées de Haddad. Cohérent avec la fiche §7 |
 | sam. 19:00 | Modèles de la fiche (`aerobic`, `bone`, `band`, `radiation`) + **`bioAge`** (§8) : série mesurée + prédite jusqu'à J860 avec bande ; tests d'or |
 | sam. 23:00 | **`alerts`** (une alerte par organe en danger, avec niveau et règle) ; `triage` (+ Sol-routine) ; `router` + tests d'invariance |
@@ -196,7 +212,7 @@ Repères des orgas : déjeuner sam. 13:00 · dîner sam. 19:30 · déjeuner dim.
 | `release/1.0` | Créée au jalon MVP (dim. 10:00) | Walid (+ hotfix) |
 | `hotfix/<sujet>` | Après le gel | Le propriétaire du fichier, PR vers `release/1.0` |
 
-### Bootstrap (Walid, avant sam. 14:00)
+### Bootstrap (Walid, avant sam. 14:30)
 ```bash
 git checkout main && git pull
 git checkout -b develop
@@ -447,7 +463,7 @@ Chaque alerte produit des items, chaque item garde son `reasoningId` :
 | Temps | Ce qu'on montre |
 | :-- | :-- |
 | 0:00–0:15 | Accroche : « Pourrez-vous marcher en sortant du vaisseau ? » + délai radio du jour |
-| 0:15–0:45 | **Body** : le corps 3D de Haddad à J94, calques, un ⚠ sur la hanche |
+| 0:15–0:45 | **Body** : le corps 3D de Haddad à J94 (scan du matin dans le module rotatif, métriques envoyées à la Terre, synthèse reçue), calques, un ⚠ sur la hanche |
 | 0:45–1:20 | Survol → récap ; clic → fenêtre organe : synthèse IA, âge biologique +2 ans, **pointillé** vers +8,7 ans au retour |
 | 1:20–1:45 | **Timeline** J0 → J94 → Sol 0 : le corps fantôme se dégrade ; on active le plan → il se dégrade moins |
 | 1:45–2:10 | **RÉEL** : SpO₂ et FC du présentateur depuis sa montre, comparés à sa référence |
