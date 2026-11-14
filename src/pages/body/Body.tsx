@@ -7,7 +7,7 @@ import { DAY_TODAY } from '../../mocks/mission';
 import { BodyScene } from '../../three/BodyScene';
 import { look } from '../../three/look';
 import { Label, PanelCloseContext, ProvenanceBadge, TagBadge, fmt, fmtDay } from '../../ui';
-import { BODY_PANEL_LABEL, usePrefs } from '../../ui/prefs';
+import { usePrefs } from '../../ui/prefs';
 import type { BodyPanelId } from '../../ui/prefs';
 import { scanState, scenarioBody, useBody } from './store';
 import { useUrlState } from './urlState';
@@ -22,6 +22,7 @@ import { Timeline } from './panels/Timeline';
 import { OrganWindow } from './panels/OrganWindow';
 import './Body.css';
 import { anatomySource } from '../../three/anatomy';
+import { ViewMenu, useCleanScreen } from './Windows';
 
 /** Si la 3D tombe (pas de WebGL, erreur de shader), la page reste utilisable : panneau gris, pas d'écran blanc. */
 class SceneBoundary extends Component<{ children: ReactNode }, { error: string | null }> {
@@ -167,38 +168,6 @@ function Closable({ id, children }: { id: BodyPanelId; children: ReactNode }): J
   return <PanelCloseContext.Provider value={() => closePanel(id)}>{children}</PanelCloseContext.Provider>;
 }
 
-/** Panneaux fermés : une puce par panneau pour le rouvrir, en haut à droite de la scène. */
-function ClosedDock(): JSX.Element | null {
-  const closed = usePrefs((s) => s.closed);
-  const openPanel = usePrefs((s) => s.openPanel);
-  const openAll = usePrefs((s) => s.openAll);
-  const closeAll = usePrefs((s) => s.closePanel);
-  const all: BodyPanelId[] = ['header', 'blood', 'spo2', 'layers', 'alerts', 'timeline'];
-  const hidden = all.filter((id) => closed.includes(id));
-  return (
-    <div className="body-dock" role="toolbar" aria-label="Panneaux">
-      {hidden.map((id) => (
-        <button key={id} type="button" className="body-dock__chip" onClick={() => openPanel(id)} title={`Rouvrir : ${BODY_PANEL_LABEL[id]}`}>
-          + {BODY_PANEL_LABEL[id]}
-        </button>
-      ))}
-      {hidden.length > 1 ? (
-        <button type="button" className="body-dock__chip body-dock__chip--all" onClick={openAll}>Tout afficher</button>
-      ) : null}
-      {hidden.length === 0 ? (
-        <button
-          type="button"
-          className="body-dock__chip body-dock__chip--quiet"
-          onClick={() => all.filter((id) => id !== 'timeline').forEach(closeAll)}
-          title="Fermer les panneaux autour du corps (la chronologie reste)"
-        >
-          Mode focus
-        </button>
-      ) : null}
-    </div>
-  );
-}
-
 export function Body(): JSX.Element {
   useUrlState();
   // En quittant la page, la lecture de la timeline s'arrête (sinon le jour avance hors écran).
@@ -207,8 +176,9 @@ export function Body(): JSX.Element {
   const isOpen = (id: BodyPanelId): boolean => !closed.includes(id);
   const left = isOpen('blood') || isOpen('spo2');
   const right = isOpen('layers') || isOpen('alerts');
+  const clean = useCleanScreen();
   return (
-    <div className="body-page" data-left={left} data-right={right}>
+    <div className={`body-page${clean ? ' body-page--clean' : ''}`} data-left={left} data-right={right}>
       {isOpen('header') ? <div className="body-top"><Closable id="header"><Header /></Closable></div> : null}
 
       {left ? (
@@ -223,7 +193,7 @@ export function Body(): JSX.Element {
         <LeaderLines />
         <SceneChrome />
         <HoverCard />
-        <ClosedDock />
+        <ViewMenu />
       </section>
 
       {right ? (
