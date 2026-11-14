@@ -5,6 +5,7 @@ import type { ReasoningStep } from '../../types';
 import { explain } from '../../models/explain';
 import { getStandard } from '../../content/standards';
 import { Panel, Prov, T, TagBadge } from '../warroom/ui';
+import { ModelCards } from './ModelCards';
 import '../warroom/warroom.css';
 
 const KIND: Record<ReasoningStep['kind'], { label: string }> = {
@@ -73,6 +74,7 @@ export function ReasoningPage() {
           </p>
         </Panel>
       )}
+      <ModelCards />
     </>,
   );
 }
