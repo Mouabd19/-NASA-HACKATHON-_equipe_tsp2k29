@@ -8,6 +8,8 @@
   height: 84px;
   background: var(--sz-panel);
   border: 1px solid var(--sz-border);
+  border-radius: var(--sz-radius);
+  overflow: hidden;
   user-select: none;
   -webkit-user-select: none;
 }
@@ -33,6 +35,10 @@
   white-space: nowrap;
 }
 .tl__fill { flex: 1; min-width: 8px; }
+.tl__close { margin-right: -6px; }
+/* sans le mode détails, les commandes se centrent verticalement */
+html[data-details='off'] .tl__left { justify-content: center; }
+html[data-details='off'] .tl__right { justify-content: center; gap: 6px; }
 
 .tl__buttons {
   display: flex;
@@ -58,7 +64,7 @@
   align-items: center;
   gap: 4px;
   height: 14px;
-  font-size: 10px;
+  font-size: 11px;
   white-space: nowrap;
 }
 .tl__key {
@@ -136,7 +142,7 @@
   inset: 0;
   max-width: none;
   pointer-events: none;
-  font-family: var(--sz-font-mono);
+  font-family: var(--sz-font-text);
   shape-rendering: crispEdges;
 }
 .tl__svg text { shape-rendering: auto; }
@@ -153,8 +159,8 @@
   stroke-dasharray: 4 3;
 }
 .tl__zonelabel {
-  font-size: 10px;
-  letter-spacing: 0.16em;
+  font-size: 11px;
+  letter-spacing: 0;
   fill: var(--sz-text);
 }
 .tl__zonelabel--proj { fill: var(--sz-text-dim); }
@@ -174,7 +180,7 @@
 .tl__tick--major[data-proj='true'] { stroke: var(--sz-text-dim); }
 
 .tl__ticklabel {
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.08em;
   fill: var(--sz-text);
   font-variant-numeric: tabular-nums;
@@ -196,8 +202,8 @@
   stroke-dasharray: 2 2;
 }
 .tl__mark text {
-  font-size: 10px;
-  letter-spacing: 0.1em;
+  font-size: 11px;
+  letter-spacing: 0;
   fill: var(--sz-text-dim);
 }
 .tl__mark--strong line {
@@ -239,9 +245,9 @@
   border: 1px solid var(--sz-text);
   background: var(--sz-bg);
   color: var(--sz-text);
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1;
-  letter-spacing: 0.1em;
+  letter-spacing: var(--sz-tracking);
   white-space: nowrap;
   pointer-events: none;
   will-change: transform;

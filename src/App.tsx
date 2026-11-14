@@ -8,10 +8,11 @@ import { Body } from './pages/body/Body';
 import { ReasoningPage } from './pages/reasoning/Reasoning';
 import { WarRoom } from './pages/warroom/WarRoom';
 import { TagBadge, dayToDate, fmtDay } from './ui';
+import { syncDetailsAttr, usePrefs } from './ui/prefs';
 
 const TABS = [
-  { to: '/body', num: '01', label: 'BODY' },
-  { to: '/warroom', num: '02', label: 'WAR ROOM' },
+  { to: '/body', label: 'Body' },
+  { to: '/warroom', label: 'War Room' },
 ] as const;
 
 function utcClock(d: Date): string {
@@ -49,32 +50,55 @@ function TopBar(): JSX.Element {
           </svg>
           SOL ZÉRO
         </span>
-        <span className="sz-topbar__rule sz-topbar__opt" />
-        <span className="sz-dim sz-topbar__opt">MISSION {ASTRONAUT.id}</span>
+        <span className="sz-topbar__rule sz-topbar__opt sz-detail" />
+        <span className="sz-dim sz-topbar__opt sz-detail">Mission {ASTRONAUT.id}</span>
       </div>
 
       <nav className="sz-nav" aria-label="Pages">
         {TABS.map((t) => (
           <NavLink key={t.to} to={t.to} className="sz-nav__tab">
-            <span className="sz-nav__num">{t.num}</span>
-            <span aria-hidden="true">/</span>
             {t.label}
           </NavLink>
         ))}
       </nav>
 
       <div className="sz-topbar__right">
-        <Clock />
-        <span className="sz-topbar__rule" />
+        <span className="sz-detail sz-topbar__opt"><Clock /></span>
+        <span className="sz-topbar__rule sz-detail sz-topbar__opt" />
         <span className="sz-topbar__day" title={`Jour de mission — ${dayToDate(DAY_TODAY)}`}>{fmtDay(DAY_TODAY)}</span>
-        <span className="sz-dim sz-topbar__opt">{dayToDate(DAY_TODAY)}</span>
+        <span className="sz-dim sz-topbar__opt sz-detail">{dayToDate(DAY_TODAY)}</span>
         <span className="sz-topbar__rule sz-topbar__opt" />
         <span className="sz-topbar__opt">
-          <span className="sz-dim">{ASTRONAUT.role}</span> {ASTRONAUT.name}
+          <span className="sz-dim sz-detail">{ASTRONAUT.role}</span> {ASTRONAUT.name}
         </span>
         <span className="sz-topbar__opt"><TagBadge tag="Persona" /></span>
+        {/* rappel d'honnêteté unique quand les étiquettes par chiffre sont masquées */}
+        <span
+          className="sz-topbar__sim sz-essential-only"
+          title="Données simulées (persona fictive) — activez « Détails » pour voir la provenance de chaque chiffre"
+        >
+          Données simulées
+        </span>
+        <DetailsToggle />
       </div>
     </header>
+  );
+}
+
+/** Bouton « Détails » : affiche ou masque les étiquettes de provenance et les textes secondaires. */
+function DetailsToggle(): JSX.Element {
+  const details = usePrefs((s) => s.details);
+  const setDetails = usePrefs((s) => s.setDetails);
+  return (
+    <button
+      type="button"
+      className="sz-btn sz-topbar__details"
+      aria-pressed={details}
+      onClick={() => setDetails(!details)}
+      title="Afficher les sources, la provenance de chaque chiffre et les textes d'aide (D)"
+    >
+      Détails
+    </button>
   );
 }
 
@@ -84,6 +108,20 @@ function Scroll({ children }: { children: JSX.Element }): JSX.Element {
 }
 
 export function App(): JSX.Element {
+  useEffect(() => syncDetailsAttr(), []);
+  // raccourci D : bascule le mode détails (hors champs de saisie)
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent): void => {
+      if (e.ctrlKey || e.metaKey || e.altKey || e.defaultPrevented) return;
+      const t = e.target;
+      if (t instanceof HTMLElement && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+      if (e.key !== 'd' && e.key !== 'D') return;
+      const p = usePrefs.getState();
+      p.setDetails(!p.details);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
   return (
     <BrowserRouter>
       <div className="sz-shell">

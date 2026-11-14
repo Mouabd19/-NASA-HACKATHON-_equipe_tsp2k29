@@ -22,9 +22,10 @@ export const tokens = {
     text: "'Inter Variable', Inter, system-ui, sans-serif",
     mono: "'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, monospace",
   },
-  size: { xs: 10, sm: 11, md: 13, lg: 16, xl: 22, xxl: 34 },
+  // = --sz-fs-* (global.css) : label 11 · small 12 · data 13 · body 14 · title 16 · num 22 · display 34
+  size: { xs: 11, sm: 12, data: 13, md: 14, lg: 16, xl: 22, xxl: 34 },
   space: { 1: 4, 2: 8, 3: 12, 4: 16, 5: 24, 6: 32 },
-  labelTracking: '0.14em',
+  labelTracking: '0.08em',
 } as const;
 
 /** Couleur d'un statut. Gris = inconnu, jamais vert par défaut. */

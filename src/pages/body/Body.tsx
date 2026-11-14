@@ -6,7 +6,9 @@ import type { ErrorInfo, JSX, ReactNode } from 'react';
 import { DAY_TODAY } from '../../mocks/mission';
 import { BodyScene } from '../../three/BodyScene';
 import { look } from '../../three/look';
-import { Label, ProvenanceBadge, TagBadge, fmt, fmtDay } from '../../ui';
+import { Label, PanelCloseContext, ProvenanceBadge, TagBadge, fmt, fmtDay } from '../../ui';
+import { BODY_PANEL_LABEL, usePrefs } from '../../ui/prefs';
+import type { BodyPanelId } from '../../ui/prefs';
 import { scanState, scenarioBody, useBody } from './store';
 import { useUrlState } from './urlState';
 import { Header } from './panels/Header';
@@ -86,12 +88,7 @@ function SceneChrome(): JSX.Element {
   const steps = Array.from({ length: look.heat.levels }, (_, i) => i);
   return (
     <div className="body-chrome" data-projected={projected}>
-      <span className="body-corner body-corner--tl" />
-      <span className="body-corner body-corner--tr" />
-      <span className="body-corner body-corner--bl" />
-      <span className="body-corner body-corner--br" />
-
-      <div className="body-tag">
+      <div className="body-tag sz-detail">
         <div className="body-tag__row">
           <Label>{projected ? 'CORPS PROJETÉ' : 'SCAN DU JOUR'}</Label>
           <Label dim>{fmtDay(day)}</Label>
@@ -138,26 +135,66 @@ function SceneChrome(): JSX.Element {
 
       {projected && (
         <div className="body-ribbon" role="status">
-          <span className="body-ribbon__text">PROJECTION — CORPS FANTÔME — MODÈLE [H]</span>
+          <span className="body-ribbon__text">Projection · non mesuré</span>
           <span className="body-ribbon__sub">
-            {fmtDay(day)} · {adherence === 1 ? 'AVEC LE PLAN' : 'AU RYTHME ACTUEL'} · NON MESURÉ
+            {fmtDay(day)} · {adherence === 1 ? 'avec le plan' : 'au rythme actuel'}<span className="sz-detail"> · corps fantôme · modèle [H]</span>
           </span>
         </div>
       )}
 
       <ScanLabel />
-      <div className="body-help" title="Glisser : orbite · Molette : zoom · Clic : épingler · Double-clic : fenêtre organe · Espace : lecture · ← → : jour">
+      <div className="body-help sz-detail" title="Glisser : orbite · Molette : zoom · Clic : épingler · Double-clic : fenêtre organe · Espace : lecture · ← → : jour">
         <Label dim>GLISSER : ORBITE · MOLETTE : ZOOM · CLIC : ÉPINGLER · 2× CLIC : FENÊTRE · ESPACE : LECTURE</Label>
       </div>
       {anatomySource() === 'z-anatomy' ? (
-        <div className="body-credit" title="Z-Anatomy — CC BY-SA 4.0 · BodyParts3D — CC BY-SA 2.1 JP · rein et oreille interne CC BY-NC · usage hackathon non commercial (public/models/CREDITS.md)">
+        <div className="body-credit sz-detail" title="Z-Anatomy — CC BY-SA 4.0 · BodyParts3D — CC BY-SA 2.1 JP · rein et oreille interne CC BY-NC · usage hackathon non commercial (public/models/CREDITS.md)">
           <Label dim>MODÈLES Z-ANATOMY — CC BY-SA 4.0</Label>
         </div>
       ) : (
-        <div className="body-credit" title="Corps de secours procédural de l'équipe (stylisé, pas un atlas). Les modèles Z-Anatomy (CC BY-SA 4.0) le remplaceront.">
+        <div className="body-credit sz-detail" title="Corps de secours procédural de l'équipe (stylisé, pas un atlas). Les modèles Z-Anatomy (CC BY-SA 4.0) le remplaceront.">
           <Label dim>CORPS PROCÉDURAL DE SECOURS</Label>
         </div>
       )}
+    </div>
+  );
+}
+
+/** Fournit le bouton × aux panneaux d'un emplacement. */
+function Closable({ id, children }: { id: BodyPanelId; children: ReactNode }): JSX.Element | null {
+  const closed = usePrefs((s) => s.closed.includes(id));
+  const closePanel = usePrefs((s) => s.closePanel);
+  if (closed) return null;
+  return <PanelCloseContext.Provider value={() => closePanel(id)}>{children}</PanelCloseContext.Provider>;
+}
+
+/** Panneaux fermés : une puce par panneau pour le rouvrir, en haut à droite de la scène. */
+function ClosedDock(): JSX.Element | null {
+  const closed = usePrefs((s) => s.closed);
+  const openPanel = usePrefs((s) => s.openPanel);
+  const openAll = usePrefs((s) => s.openAll);
+  const closeAll = usePrefs((s) => s.closePanel);
+  const all: BodyPanelId[] = ['header', 'blood', 'spo2', 'layers', 'alerts', 'timeline'];
+  const hidden = all.filter((id) => closed.includes(id));
+  return (
+    <div className="body-dock" role="toolbar" aria-label="Panneaux">
+      {hidden.map((id) => (
+        <button key={id} type="button" className="body-dock__chip" onClick={() => openPanel(id)} title={`Rouvrir : ${BODY_PANEL_LABEL[id]}`}>
+          + {BODY_PANEL_LABEL[id]}
+        </button>
+      ))}
+      {hidden.length > 1 ? (
+        <button type="button" className="body-dock__chip body-dock__chip--all" onClick={openAll}>Tout afficher</button>
+      ) : null}
+      {hidden.length === 0 ? (
+        <button
+          type="button"
+          className="body-dock__chip body-dock__chip--quiet"
+          onClick={() => all.filter((id) => id !== 'timeline').forEach(closeAll)}
+          title="Fermer les panneaux autour du corps (la chronologie reste)"
+        >
+          Mode focus
+        </button>
+      ) : null}
     </div>
   );
 }
@@ -166,28 +203,37 @@ export function Body(): JSX.Element {
   useUrlState();
   // En quittant la page, la lecture de la timeline s'arrête (sinon le jour avance hors écran).
   useEffect(() => () => useBody.getState().setPlaying(false), []);
+  const closed = usePrefs((s) => s.closed);
+  const isOpen = (id: BodyPanelId): boolean => !closed.includes(id);
+  const left = isOpen('blood') || isOpen('spo2');
+  const right = isOpen('layers') || isOpen('alerts');
   return (
-    <div className="body-page">
-      <div className="body-top"><Header /></div>
+    <div className="body-page" data-left={left} data-right={right}>
+      {isOpen('header') ? <div className="body-top"><Closable id="header"><Header /></Closable></div> : null}
 
-      <aside className="body-col body-col--left" aria-label="Analyses et montre">
-        <div className="body-slot body-slot--grow"><BloodPanel /></div>
-        <div className="body-slot"><Spo2Widget /></div>
-      </aside>
+      {left ? (
+        <aside className="body-col body-col--left" aria-label="Analyses et montre">
+          {isOpen('blood') ? <div className="body-slot body-slot--grow"><Closable id="blood"><BloodPanel /></Closable></div> : null}
+          {isOpen('spo2') ? <div className="body-slot"><Closable id="spo2"><Spo2Widget /></Closable></div> : null}
+        </aside>
+      ) : null}
 
       <section className="body-scene" aria-label="Corps 3D">
         <SceneBoundary><BodyScene /></SceneBoundary>
         <LeaderLines />
         <SceneChrome />
         <HoverCard />
+        <ClosedDock />
       </section>
 
-      <aside className="body-col body-col--right" aria-label="Calques et alertes">
-        <div className="body-slot body-slot--layers"><LayersPanel /></div>
-        <div className="body-slot body-slot--grow"><AlertsPanel /></div>
-      </aside>
+      {right ? (
+        <aside className="body-col body-col--right" aria-label="Calques et alertes">
+          {isOpen('layers') ? <div className="body-slot body-slot--layers"><Closable id="layers"><LayersPanel /></Closable></div> : null}
+          {isOpen('alerts') ? <div className="body-slot body-slot--grow"><Closable id="alerts"><AlertsPanel /></Closable></div> : null}
+        </aside>
+      ) : null}
 
-      <div className="body-bottom"><Timeline /></div>
+      {isOpen('timeline') ? <div className="body-bottom"><Closable id="timeline"><Timeline /></Closable></div> : null}
 
       <OrganWindow />
     </div>

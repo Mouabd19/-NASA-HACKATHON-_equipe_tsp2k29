@@ -3,7 +3,7 @@
 import { useMemo } from 'react';
 import type { JSX, KeyboardEvent, MouseEvent } from 'react';
 import type { Color, LayerId, Metric, OrganState } from '../../../types';
-import { Panel, StatusDot, TagBadge, fmt } from '../../../ui';
+import { Panel, StatusDot, TagBadge, fmt, sentenceCase } from '../../../ui';
 import { LAYER_META, LAYER_ORDER, useBody, useDayAlerts, useDayBody } from '../store';
 import './LayersPanel.css';
 
@@ -46,7 +46,7 @@ const LAYER_NOTE: Partial<Record<LayerId, JSX.Element>> = {
 
 /** Libellé court des bascules (2 rangées de 3). */
 const SHORT: Record<LayerId, string> = {
-  squelette: 'SQUELETTE', muscles: 'MUSCLES', organes: 'ORGANES', cardio: 'CARDIO', nerveux: 'NERVEUX', exposition: 'EXPOSIT.',
+  squelette: 'Squelette', muscles: 'Muscles', organes: 'Organes', cardio: 'Cardio', nerveux: 'Nerveux', exposition: 'Exposition',
 };
 
 export function LayersPanel(): JSX.Element {
@@ -95,10 +95,10 @@ export function LayersPanel(): JSX.Element {
   return (
     <Panel
       sys="SYS"
-      title="CALQUES"
+      title="Calques"
       provenance="SIMULÉ"
       className="lyr"
-      right={<span className="sz-dim" title="Clic : afficher / masquer · Alt+clic ou double-clic : isoler">{activeCount}/{LAYER_ORDER.length}</span>}
+      right={<span className="sz-dim sz-detail" title="Clic : afficher / masquer · Alt+clic ou double-clic : isoler">{activeCount}/{LAYER_ORDER.length}</span>}
     >
       {/* Les 6 bascules, toujours visibles (jamais sous la ligne de flottaison) ; le détail des calques actifs défile dessous. */}
       <div className="lyr__grid" role="group" aria-label="Calques">
@@ -144,8 +144,8 @@ export function LayersPanel(): JSX.Element {
                 title={`${active ? 'Masquer' : 'Afficher'} le calque — Alt+clic ou double-clic : isoler`}
               >
                 <span className="lyr__box" aria-hidden="true" />
-                <span className="lyr__sys">{meta.sys}</span>
-                <span className="lyr__label">{meta.label}</span>
+                <span className="lyr__sys sz-detail">{meta.sys}</span>
+                <span className="lyr__label">{sentenceCase(meta.label)}</span>
                 {!meta.mvp ? <span className="lyr__beta" title="Calque hors MVP — données partielles">BÊTA</span> : null}
                 <span className="lyr__fill" />
                 <span className="lyr__alerts" data-zero={n === 0} title={`${n} alerte${n > 1 ? 's' : ''} sur ce calque`}>
@@ -154,7 +154,7 @@ export function LayersPanel(): JSX.Element {
                 <StatusDot color={worst} size={7} />
               </button>
 
-              {active && LAYER_NOTE[l] ? <div className="lyr__src">{LAYER_NOTE[l]}</div> : null}
+              {active && LAYER_NOTE[l] ? <div className="lyr__src sz-detail">{LAYER_NOTE[l]}</div> : null}
               {active && organs.length > 0 ? (
                 <ul className="lyr__organs">
                   {organs.filter((o) => o.metrics.length > 0).map((o) => {

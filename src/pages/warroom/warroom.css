@@ -47,3 +47,9 @@ label:has(input:focus-visible), [tabindex="-1"]:focus-visible { outline: 2px sol
   .wr-btn:not(:disabled):active { transform: none; }
   * { transition-duration: 0ms !important; }
 }
+
+/* Bloc repliable (synthèse IA) : flèche discrète à la place du triangle natif */
+.wr-fold > summary { list-style: none; }
+.wr-fold > summary::-webkit-details-marker { display: none; }
+.wr-fold > summary::before { content: '▸'; display: inline-block; width: 1em; transition: transform 120ms; }
+.wr-fold[open] > summary::before { transform: rotate(90deg); }

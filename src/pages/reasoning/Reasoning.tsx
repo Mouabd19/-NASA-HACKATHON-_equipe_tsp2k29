@@ -29,7 +29,7 @@ export function ReasoningPage() {
   const shell = (children: ReactNode) => (
     <main style={{ background: T.bg, color: T.text, fontFamily: T.fontText, minHeight: '100vh', padding: '32px clamp(16px, 3vw, 32px) 48px', boxSizing: 'border-box', WebkitFontSmoothing: 'antialiased' }}>
       <div style={{ maxWidth: 820, margin: '0 auto' }}>
-        <Link className="wr-link" to="/warroom" style={{ fontSize: 15, marginLeft: -2 }}>‹ War Room</Link>
+        <Link className="wr-link" to="/warroom" style={{ fontSize: T.fs.md, marginLeft: -2 }}>‹ War Room</Link>
         <div style={{ marginTop: 24 }}>{children}</div>
       </div>
     </main>
@@ -48,7 +48,7 @@ export function ReasoningPage() {
   return shell(
     <>
       <div style={{ display: 'flex', alignItems: 'flex-end', gap: 16, flexWrap: 'wrap', marginBottom: 32 }}>
-        <h1 style={{ fontFamily: T.fontDisplay, fontSize: 'clamp(28px, 3vw, 40px)', fontWeight: 600, letterSpacing: '-0.015em', lineHeight: 1.12, margin: 0 }}>
+        <h1 style={{ fontFamily: T.fontDisplay, fontSize: 'clamp(24px, 2.4vw, 30px)', fontWeight: 600, letterSpacing: '-0.015em', lineHeight: 1.12, margin: 0 }}>
           <span style={{ color: T.textMuted }}>Pourquoi · </span>{r.title}
         </h1>
         <span style={{ marginLeft: 'auto' }}><Prov p="SIMULÉ" /></span>
@@ -68,7 +68,7 @@ export function ReasoningPage() {
       </ol>
       {hasH && (
         <Panel title="Limite" style={{ marginTop: 8 }}>
-          <p style={{ margin: 0, color: T.textDim, fontSize: 15, lineHeight: 1.5 }}>
+          <p style={{ margin: 0, color: T.textDim, fontSize: T.fs.md, lineHeight: 1.5 }}>
             Les étapes [H] sont des hypothèses ou indicateurs de l'équipe. L'écart d'âge d'un organe est un équivalent en années de
             vieillissement terrestre, pas un vieillissement réel : la perte osseuse ou musculaire spatiale est en partie réversible au retour.
           </p>
@@ -88,20 +88,20 @@ function Step({ step }: { step: ReasoningStep }) {
       title={k.label}
       prov={<TagBadge tag={step.tag} id={step.tag === 'NASA' && stdId ? stdId : undefined} />}
           >
-      <p style={{ margin: 0, fontSize: 17, lineHeight: 1.47 }}>{step.text}</p>
+      <p style={{ margin: 0, fontSize: T.fs.lg, lineHeight: 1.47 }}>{step.text}</p>
       {std && (
         <blockquote style={{ margin: '16px 0 0', padding: '12px 16px', borderRadius: T.radius.inset, background: T.panelRaised, border: `1px solid ${T.border}` }}>
-          <div style={{ fontSize: 13, color: T.textMuted, marginBottom: 4 }}>
+          <div style={{ fontSize: T.fs.sm, color: T.textMuted, marginBottom: 4 }}>
             NASA-STD-3001 Vol. 1 Rev C · {std.id} — {std.title}
             {!std.verified && <span style={{ color: T.textDim }}> · non vérifié</span>}
           </div>
-          {std.quote ? <p style={{ margin: 0, fontSize: 15, lineHeight: 1.5, color: T.text }}>« {std.quote} »</p>
-            : <p style={{ margin: 0, fontSize: 13, color: T.textDim }}>Citation indisponible hors ligne</p>}
-          {std.url && <a href={std.url} target="_blank" rel="noreferrer" className="wr-link" style={{ fontSize: 13, display: 'inline-block', marginTop: 8 }}>Source en ligne ↗</a>}
+          {std.quote ? <p style={{ margin: 0, fontSize: T.fs.md, lineHeight: 1.5, color: T.text }}>« {std.quote} »</p>
+            : <p style={{ margin: 0, fontSize: T.fs.sm, color: T.textDim }}>Citation indisponible hors ligne</p>}
+          {std.url && <a href={std.url} target="_blank" rel="noreferrer" className="wr-link" style={{ fontSize: T.fs.sm, display: 'inline-block', marginTop: 8 }}>Source en ligne ↗</a>}
         </blockquote>
       )}
       {!std && step.source && (
-        <div style={{ marginTop: 12, fontSize: 13, color: T.textMuted }}>
+        <div style={{ marginTop: 12, fontSize: T.fs.sm, color: T.textMuted }}>
           Source :{' '}
           {step.source.url ? <a href={step.source.url} target="_blank" rel="noreferrer" className="wr-link">{step.source.label} ↗</a> : step.source.label}
         </div>

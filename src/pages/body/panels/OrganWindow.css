@@ -26,12 +26,15 @@
   max-height: calc(100dvh - 48px);
   background: var(--sz-bg);
   border: 1px solid var(--sz-border-strong);
+  border-radius: var(--sz-radius);
+  overflow: hidden;
   outline: none;
   animation: ow-in 160ms ease-out both;
 }
 
-/* équerres d'angle */
-.ow__corner {
+/* équerres d'angle (retirées : fenêtre arrondie) */
+.ow__corner { display: none; }
+.ow__corner-unused {
   position: absolute;
   width: 12px;
   height: 12px;
@@ -58,11 +61,11 @@
   white-space: nowrap;
 }
 .ow__name {
-  font-family: var(--sz-font-mono);
+  font-family: var(--sz-font-text);
   font-size: 14px;
   font-weight: 500;
-  letter-spacing: var(--sz-tracking);
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: none;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -129,7 +132,7 @@
 .ow__scn-num small,
 .ow__pheno-num small {
   margin-left: 6px;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: var(--sz-tracking);
   color: var(--sz-text-dim);
 }
@@ -150,8 +153,8 @@
 .ow__table th {
   padding: 0 8px 5px 0;
   text-align: left;
-  font-family: var(--sz-font-mono);
-  font-size: 10px;
+  font-family: var(--sz-font-text);
+  font-size: 11px;
   font-weight: 400;
   letter-spacing: var(--sz-tracking);
   color: var(--sz-text-dim);
@@ -177,19 +180,19 @@
 .ow__unit {
   margin-left: 4px;
   font-family: var(--sz-font-mono);
-  font-size: 10px;
+  font-size: 11px;
   color: var(--sz-text-dim);
   letter-spacing: 0.04em;
 }
 .ow__noise {
   display: block;
-  font-family: var(--sz-font-mono);
-  font-size: 10px;
+  font-family: var(--sz-font-text);
+  font-size: 11px;
   color: var(--sz-text-dim);
 }
 .ow__ref {
   display: block;
-  font-family: var(--sz-font-mono);
+  font-family: var(--sz-font-text);
   font-size: 11px;
   white-space: nowrap;
 }
@@ -288,7 +291,7 @@ button.ow__scn:hover:not(:disabled) { background: var(--sz-panel-hover); border-
   gap: 8px;
   flex: none;
   margin-top: 10px;
-  font-size: 10px;
+  font-size: 11px;
   white-space: nowrap;
 }
 .ow__chart {
@@ -321,7 +324,7 @@ button.ow__scn:hover:not(:disabled) { background: var(--sz-panel-hover); border-
   gap: 4px 14px;
   flex: none;
   margin-top: 6px;
-  font-size: 10px;
+  font-size: 11px;
   color: var(--sz-text-dim);
 }
 .ow__legend li { display: inline-flex; align-items: center; gap: 6px; }
@@ -343,7 +346,7 @@ button.ow__scn:hover:not(:disabled) { background: var(--sz-panel-hover); border-
   padding-top: 8px;
   border-top: 1px solid var(--sz-border);
 }
-.ow__formula { font-size: 10px; line-height: 1.5; color: var(--sz-text); }
+.ow__formula { font-size: 11px; line-height: 1.5; color: var(--sz-text); }
 .ow__limit { margin-top: 4px; font-size: 11px; line-height: 1.4; color: var(--sz-text-dim); }
 
 /* ── Infobulle ── */
@@ -354,7 +357,7 @@ button.ow__scn:hover:not(:disabled) { background: var(--sz-panel-hover); border-
   padding: 7px 9px;
   border: 1px solid var(--sz-border-strong);
   background: color-mix(in srgb, var(--sz-bg) 94%, transparent);
-  font-size: 10px;
+  font-size: 11px;
   white-space: nowrap;
 }
 .ow__tip-head { padding-bottom: 3px; border-bottom: 1px solid var(--sz-border); }

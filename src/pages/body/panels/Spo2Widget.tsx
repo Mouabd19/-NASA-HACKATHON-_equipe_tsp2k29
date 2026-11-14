@@ -64,6 +64,9 @@ const VITALS: { type: Measurement['type']; label: string; digits: number }[] = [
   { type: 'SleepAnalysis', label: 'Sommeil', digits: 1 },
 ];
 
+/** Unités d'export Apple Santé → affichage. */
+const UNIT_LABEL: Record<string, string> = { 'count/min': 'bpm', degC: '°C', hr: 'h' };
+
 export function Spo2Widget(): JSX.Element {
   const day = useBody((s) => s.day);
 
@@ -108,7 +111,7 @@ export function Spo2Widget(): JSX.Element {
                 <span>7 J</span>
                 <span className="sw-side__val">{fmt(wMin, 0)} – {fmt(wMax, 0)} %</span>
               </div>
-              <div className="sw-side__line sw-side__line--dim">
+              <div className="sw-side__line sw-side__line--dim sz-detail">
                 <span>O₂ SANG</span>
                 {spo2.real ? <span className="sw-side__val">MONTRE</span> : <TagBadge tag="Persona" />}
               </div>
@@ -154,11 +157,11 @@ export function Spo2Widget(): JSX.Element {
               </AreaChart>
             </ResponsiveContainer>
           </div>
-          <div className="sw-caption">
+          <div className="sw-caption sz-detail">
             <span>{WINDOW} J → {fmtDay(cur.day)}</span>
             <span>- - REPÈRE {SPO2_REF} % <TagBadge tag="H" /></span>
           </div>
-          <div className="sw-caption sw-caption--base">
+          <div className="sw-caption sw-caption--base sz-detail">
             <span>RÉF. PERSO 30 J</span>
             <span>
               {base.n > 0 && Number.isFinite(base.mean)
@@ -167,7 +170,7 @@ export function Spo2Widget(): JSX.Element {
               {spo2.real ? null : <TagBadge tag="Persona" />}
             </span>
           </div>
-          <div className="sw-caption sw-caption--vit">
+          <div className="sw-caption sw-caption--vit sz-detail">
             <span>CONSTANTES MONTRE</span>
             <span>{spo2.real ? 'EXPORT RÉEL' : <TagBadge tag="Persona" />}</span>
           </div>
@@ -181,7 +184,7 @@ export function Spo2Widget(): JSX.Element {
                   {p ? (
                     <span className="sw-vital__val">
                       {fmt(p.value, v.digits)}
-                      <span className="sw-vital__unit">{v.series.unit}</span>
+                      <span className="sw-vital__unit">{UNIT_LABEL[v.series.unit] ?? v.series.unit}</span>
                     </span>
                   ) : (
                     <span className="sw-vital__val sw-vital__val--none">—</span>
@@ -190,7 +193,7 @@ export function Spo2Widget(): JSX.Element {
               );
             })}
           </div>
-          {stale ? <div className="sw-stale">AUTRES CONSTANTES : DERNIÈRE MESURE {fmtDay(cur.day)} — PAS DE PROJECTION</div> : null}
+          {stale ? <div className="sw-stale sz-detail">AUTRES CONSTANTES : DERNIÈRE MESURE {fmtDay(cur.day)} — PAS DE PROJECTION</div> : null}
         </>
       )}
     </Panel>

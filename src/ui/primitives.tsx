@@ -1,5 +1,6 @@
 // Primitives du design system — ROADMAP §1 « Direction artistique ».
 // Aucune couleur en dur : tout passe par les variables CSS injectées par tokens.ts.
+import { createContext, useContext } from 'react';
 import type { CSSProperties, JSX, ReactNode } from 'react';
 import type { Color, Provenance, Tag } from '../types';
 import { statusLabel } from './tokens';
@@ -106,9 +107,33 @@ export interface PanelProps {
   children?: ReactNode;
 }
 
-/** Panneau en équerre, bordure 1 px. En-tête : n° de système · titre · emplacement libre · provenance. */
+/**
+ * Fermeture du panneau courant : le parent qui sait rouvrir le panneau (page Body) fournit la fonction ;
+ * Panel affiche alors un bouton × dans son en-tête. Sans fournisseur, aucun bouton.
+ */
+export const PanelCloseContext = createContext<(() => void) | null>(null);
+
+export interface CloseButtonProps { onClose: () => void; label?: string; className?: string }
+
+/** Bouton × discret. */
+export function CloseButton({ onClose, label = 'Fermer le panneau', className }: CloseButtonProps): JSX.Element {
+  return (
+    <button type="button" className={cx('sz-close', className)} onClick={onClose} aria-label={label} title={label}>
+      <svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 1l8 8M9 1l-8 8" stroke="currentColor" strokeWidth="1.3" /></svg>
+    </button>
+  );
+}
+
+/** Bouton × du panneau courant, si le parent permet de le fermer. */
+export function PanelClose({ className }: { className?: string }): JSX.Element | null {
+  const onClose = useContext(PanelCloseContext);
+  return onClose ? <CloseButton onClose={onClose} className={className} /> : null;
+}
+
+/** Panneau, bordure 1 px. En-tête : n° de système · titre · emplacement libre · provenance · fermer. */
 export function Panel({ title, sys, provenance, right, className, style, children }: PanelProps): JSX.Element {
-  const hasHead = Boolean(title || sys || provenance || right);
+  const closable = useContext(PanelCloseContext) !== null;
+  const hasHead = Boolean(title || sys || provenance || right || closable);
   return (
     <section className={cx('sz-panel', className)} style={style}>
       {hasHead ? (
@@ -119,6 +144,7 @@ export function Panel({ title, sys, provenance, right, className, style, childre
           <span className="sz-panel__fill" />
           {right ? <span className="sz-panel__right">{right}</span> : null}
           {provenance ? <ProvenanceBadge value={provenance} /> : null}
+          <PanelClose />
         </header>
       ) : null}
       <div className="sz-panel__body">{children}</div>

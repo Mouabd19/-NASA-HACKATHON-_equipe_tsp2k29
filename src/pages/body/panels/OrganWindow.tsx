@@ -682,7 +682,7 @@ export function OrganWindow(): JSX.Element | null {
   const isGlobal = target === 'global';
   const organ = isGlobal ? null : body.organs.find((o) => o.id === target) ?? null;
   const sys = organ ? LAYER_META[organ.layer]?.sys ?? 'SYS-00' : 'SYS-00';
-  const name = isGlobal ? 'CORPS ENTIER' : organ?.name ?? String(target);
+  const name = isGlobal ? 'Corps entier' : organ?.name ?? String(target);
   const gap = organ && hasBioAgeModel(organ.id) ? organ.bioAge - organ.chronoAge : null;
 
   return (

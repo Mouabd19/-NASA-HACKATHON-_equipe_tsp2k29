@@ -132,16 +132,16 @@ export function WarRoom() {
       <div style={{ maxWidth: 1440, margin: '0 auto', padding: '32px clamp(16px, 3vw, 32px) 48px', boxSizing: 'border-box' }}>
         <header style={{ display: 'flex', flexWrap: 'wrap', gap: '16px 32px', alignItems: 'flex-end', marginBottom: 32 }}>
           <div>
-            <h1 style={{ fontFamily: T.fontDisplay, fontSize: 'clamp(24px, 2.4vw, 32px)', fontWeight: 600, letterSpacing: '-0.015em', lineHeight: 1.1, margin: 0 }}>
+            <h1 style={{ fontFamily: T.fontDisplay, fontSize: 'clamp(24px, 2.4vw, 30px)', fontWeight: 600, letterSpacing: '-0.015em', lineHeight: 1.1, margin: 0 }}>
               Jour {DAY} · {dateLabel}
             </h1>
-            <div style={{ fontSize: 15, color: T.textDim, marginTop: 8 }}>Haddad [Persona] · en route vers Mars</div>
+            <div style={{ fontSize: T.fs.md, color: T.textDim, marginTop: 8 }}>Haddad <span className="sz-tag">[Persona]</span> · en route vers Mars</div>
           </div>
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', borderRadius: T.radius.pill, border: `1px solid ${T.border}`, background: T.panel }}>
             <Dot color={T.holo} size={6} />
-            <span style={{ fontSize: 13, color: T.textDim }}>Lien Terre</span>
-            <span style={{ fontSize: 15, fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>{fr(delay)} min</span>
-            <span style={{ fontSize: 13, color: T.textMuted }}>[{delayTag}]</span>
+            <span style={{ fontSize: T.fs.sm, color: T.textDim }}>Lien Terre</span>
+            <span style={{ fontSize: T.fs.md, fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>{fr(delay)} min</span>
+            <span className="sz-tag" style={{ fontSize: T.fs.sm, color: T.textMuted }}>[{delayTag}]</span>
           </div>
         </header>
 
@@ -164,7 +164,7 @@ export function WarRoom() {
             Réinitialiser la démo
           </Btn>
         )}
-        <footer style={{ marginTop: 32, fontSize: 13, color: T.textMuted }}>Mission simulée · check-in et montre réels</footer>
+        <footer className="sz-detail" style={{ marginTop: 32, fontSize: T.fs.sm, color: T.textMuted }}>Mission simulée · check-in et montre réels</footer>
       </div>
     </main>
   );
