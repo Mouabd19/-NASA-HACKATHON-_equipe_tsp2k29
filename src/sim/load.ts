@@ -1,72 +1,44 @@
-// Accès aux données simulées (public/data/sim/, produites par scripts/generate-sim.ts).
-// Signatures fixées par la roadmap §7 : ne pas les changer.
-// Les JSON sont chargés à la compilation (import.meta.glob eager) : tout est synchrone et hors ligne.
-import type { BloodTest, CheckIn, DayBody, Measurement } from '../types.ts';
-import { DAY_END, DAY_SOL0, DAY_TODAY, chronoAge, dayToDate } from './persona.ts';
-import { projectDayBody } from './project.ts';
+// Propriétaire : Mouad (ROADMAP §7).
+// STUB — remplace l'implémentation sans changer la signature.
+// Pour l'instant : simple délégation vers src/mocks/ (données factices). Supprime le corps et code le vrai module.
+import type { BloodTest, CheckIn, DayBody, Measurement } from '../types';
+import { analyteMeta, mockBloodTests, mockCheckIn, mockDayBody, mockDays, mockWatchSeries } from '../mocks';
+import type { AnalyteMeta } from '../mocks';
 
-const files = import.meta.glob('../../public/data/sim/*.json', { eager: true, import: 'default' }) as Record<string, unknown>;
-const file = <T>(name: string, fallback: T): T => (files[`../../public/data/sim/${name}`] as T | undefined) ?? fallback;
-
-const DAYS = file<DayBody[]>('days.json', []);
-const BLOOD = file<BloodTest[]>('blood.json', []);
-const URINE = file<BloodTest[]>('urine.json', []);
-const CHECKINS = file<CheckIn[]>('checkins.json', []);
-const WATCH = file<Measurement[]>('watch.json', []);
-const byDay = new Map(DAYS.map(d => [d.day, d]));
-
-/** Corps vide : tous les organes inconnus, statut gris (jamais vert par défaut). */
-function unknownBody(day: number): DayBody {
-  const age = Math.round(chronoAge(day) * 100) / 100;
-  const ref = byDay.get(DAY_TODAY);
-  return {
-    day, date: dayToDate(day), projected: day > DAY_TODAY, source: day > DAY_TODAY ? 'projection' : 'scan-midjourney-sim',
-    organs: (ref?.organs ?? []).map(o => ({ ...o, metrics: [], status: 'grey', chronoAge: age, bioAge: age })),
-  };
-}
-
-/** J0–J94 : corps mesuré (SIMULÉ). Au-delà : corps projeté au rythme actuel ([H]). */
+/** Corps du jour. Tout jour 0..860 ; > J94 → projected: true, source: 'projection' (rythme actuel). Mémoïsé. */
 export function getDayBody(day: number): DayBody {
-  const measured = byDay.get(day);
-  if (measured) return measured;
-  const today = byDay.get(DAY_TODAY);
-  if (day > DAY_TODAY && day <= DAY_END && today) return projectDayBody(today, day);
-  return unknownBody(day);
+  return mockDayBody(day);
 }
 
-/** Jours de la timeline : J0 → J94 (un par jour), puis la projection (une par semaine, + Sol 0 et J860). */
+/** Jours mesurés (0..94). */
 export function getDays(): number[] {
-  const measured = DAYS.map(d => d.day);
-  const projected: number[] = [];
-  for (let d = DAY_TODAY + 7; d < DAY_END; d += 7) projected.push(d);
-  return [...new Set([...measured, ...projected, DAY_SOL0, DAY_END])].sort((a, b) => a - b);
+  return mockDays();
 }
 
-/** Prélèvement capillaire hebdo + urine quotidienne (analytes `urine_*`). Triés par jour. */
+/** Analyses biologiques (capillaire hebdo + calcium urinaire quotidien), toutes ou pour un analyte. */
 export function getBloodTests(analyte?: string): BloodTest[] {
-  const all = [...BLOOD, ...URINE];
-  return (analyte ? all.filter(b => b.analyte === analyte) : all).sort((a, b) => a.day - b.day);
+  return mockBloodTests(analyte);
 }
 
-/** Série simulée de la montre de Haddad. (Dim. 08:00 : fusion avec les vraies mesures, getRealSeries d'Ahmed.) */
+/** Série quotidienne de la montre (simulée tant que l'export réel n'est pas branché). */
 export function getWatchSeries(type: Measurement['type']): Measurement[] {
-  return WATCH.filter(m => m.type === type);
+  return mockWatchSeries(type);
 }
 
-/** Check-in simulé du jour (le check-in saisi en démo est géré par Ahmed : todayCheckIn()). */
+/** (v3.2) Check-in du jour : saisi s'il existe, sinon simulé ; null hors J0..J94. */
 export function getCheckIn(day: number): CheckIn | null {
-  return CHECKINS.find(c => c.day === day) ?? null;
+  return mockCheckIn(day);
 }
 
-// --- Ajouts hors contrat §7 utilisés par les pages (Walid) -----------------------------------
+// --- Ajouts hors contrat §7 (non cassants, à garder ou à supprimer) ---------------------------
 
 /** Corps du jour selon l'adhérence au plan (0 = rythme actuel, 1 = avec le plan ; ne diffère qu'après J94). */
 export function getDayBodyPlan(day: number, adherence: number): DayBody {
-  const today = byDay.get(DAY_TODAY);
-  if (day > DAY_TODAY && day <= DAY_END && today) return projectDayBody(today, day, adherence);
-  return getDayBody(day);
+  return mockDayBody(day, adherence);
 }
 
 /** Libellé français, unité, référence et cadence d'un analyte (pour le panneau sang). */
-export { analyteMeta as getAnalyteMeta } from '../mocks';
-export type { AnalyteMeta } from '../mocks';
+export function getAnalyteMeta(analyte: string): AnalyteMeta | null {
+  return analyteMeta(analyte);
+}
+export type { AnalyteMeta };

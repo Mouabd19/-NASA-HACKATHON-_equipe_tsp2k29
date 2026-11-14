@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { generateSim } from '../../src/sim/generate.ts';
-import { getBloodTests, getCheckIn, getDayBody, getDays, getWatchSeries } from '../../src/sim/load.ts';
+import { getBloodTests, getCheckIn, getDayBody, getDays, getWatchSeries } from '../../src/sim/loadSim.ts';
 import { computePhenoAge, type PhenoAgeMarkers } from '../../src/models/phenoAgeFormula.ts';
 import { chronoAge, DAY_SOL0 } from '../../src/sim/persona.ts';
 
