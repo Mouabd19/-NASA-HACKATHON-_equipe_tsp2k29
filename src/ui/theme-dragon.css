@@ -1,0 +1,107 @@
+/* DA ALTERNATIVE « Dragon » — habillage seul, chargé APRÈS global.css.
+   Aucune fonctionnalité ni aucun élément n'est retiré : on ne change que l'apparence.
+   Inspiration : écrans tactiles de cockpit (bleu nuit, jauges fines, cartes arrondies) + sobriété Apple. */
+
+:root {
+  --sz-radius: 16px;
+  --sz-radius-sm: 10px;
+  --dr-glow: color-mix(in srgb, var(--sz-holo) 22%, transparent);
+}
+
+/* Fond : bleu nuit avec un léger halo en haut, comme un écran rétroéclairé */
+.sz-shell {
+  background:
+    radial-gradient(120% 70% at 50% -10%, #16284A 0%, rgba(10, 20, 36, 0) 60%),
+    var(--sz-bg);
+}
+
+/* Chiffres et données : police DIN (Barlow), fine et tabulaire */
+.sz-mono, [class*='num'], [class*='__v'], [class*='val'], time {
+  font-family: var(--sz-font-mono);
+  font-feature-settings: 'tnum' 1, 'lnum' 1;
+  letter-spacing: 0.01em;
+}
+
+/* Étiquettes : capitales DIN espacées */
+.sz-label, .sz-panel__title, .sz-wordmark {
+  font-family: var(--sz-font-mono);
+  font-weight: 500;
+}
+
+/* ── Bandeau : barre de verre + navigation en contrôle segmenté ── */
+.sz-topbar {
+  background: rgba(10, 20, 36, 0.55);
+  backdrop-filter: blur(14px);
+  border-bottom-color: var(--sz-border);
+}
+.sz-nav {
+  align-self: center;
+  height: 32px !important;
+  padding: 3px;
+  gap: 2px;
+  border-radius: 999px;
+  background: var(--sz-panel);
+  border: 1px solid var(--sz-border);
+}
+.sz-nav__tab {
+  border-radius: 999px;
+  padding: 0 16px;
+  font-size: 13px;
+}
+.sz-nav__tab.active {
+  background: color-mix(in srgb, var(--sz-holo) 18%, transparent);
+  color: var(--sz-text);
+}
+.sz-nav__tab.active::after { display: none; }
+.sz-topbar__sim, .sz-topbar__details { border-radius: 999px; }
+
+/* ── Panneaux : cartes arrondies, verre bleuté ── */
+.sz-panel {
+  background: linear-gradient(180deg, rgba(130, 175, 240, 0.075), rgba(130, 175, 240, 0.035));
+  border-color: var(--sz-border);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 12px 32px -18px rgba(0, 0, 0, 0.6);
+}
+.sz-panel__head { border-bottom-color: transparent; }
+
+/* ── Boutons et puces : pilules douces ── */
+.sz-btn {
+  border-radius: 999px;
+  height: 28px;
+  padding: 0 14px;
+  font-size: 12px;
+  background: var(--sz-panel);
+}
+.sz-btn:hover { background: var(--sz-panel-hover); }
+.sz-btn[aria-pressed='true'], .sz-btn.is-active {
+  background: var(--sz-holo);
+  border-color: var(--sz-holo);
+  color: #071224;
+}
+.sz-chip, .sz-prov, .sz-tag { border-radius: 999px; }
+
+/* Focus : anneau bleu, comme sur un écran tactile */
+:focus-visible { outline: 2px solid var(--sz-holo); outline-offset: 2px; }
+::selection { background: var(--dr-glow); }
+
+/* ── Plaques d'organes sur le corps 3D : cartes arrondies au lieu de l'hexagone (mêmes clics, même double-clic) ── */
+.w3d-plate__hex { display: none; }
+.w3d-plate__inner {
+  border-radius: 12px;
+  background: rgba(12, 24, 44, 0.78);
+  border: 1px solid color-mix(in srgb, var(--w3d-c) 55%, transparent);
+  backdrop-filter: blur(8px);
+  padding: 0 12px;
+}
+.w3d-plate.is-hot .w3d-plate__inner,
+.w3d-plate:focus-visible .w3d-plate__inner {
+  border-color: var(--w3d-c);
+  background: rgba(18, 34, 60, 0.9);
+}
+.w3d-plate.is-projected .w3d-plate__inner { border-style: dashed; }
+.w3d-plate__label { font-weight: 500; letter-spacing: 0; }
+
+/* ── Petits éléments carrés du HUD : arrondis ── */
+.hdr__state { border-radius: 999px; padding-inline: 10px; }
+.hdr__state-mark { border-radius: 50%; }
+.tl__readout, .tl__toggle, .tl__key { border-radius: 999px; }
+.body-corner, .ow__corner { opacity: 0; }

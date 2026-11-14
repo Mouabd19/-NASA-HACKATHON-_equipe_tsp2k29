@@ -4,29 +4,29 @@
 import type { Color, Level } from '../types';
 
 export const tokens = {
+  // DA ALTERNATIVE « Dragon » (branche feature/mouad-da-dragon) : cockpit tactile bleu nuit, inspiration Apple + SpaceX.
   color: {
-    bg: '#050607',
-    panel: 'rgba(255,255,255,0.03)',
-    panelHover: 'rgba(255,255,255,0.06)',
-    border: 'rgba(255,255,255,0.12)',
-    borderStrong: 'rgba(255,255,255,0.28)',
-    text: '#E8E8E6',
-    textDim: '#8A8F98',
-    holo: '#9FB4C7',
-    // Statuts calibrés pour le fond sombre (désaturés, distincts en luminance), pas les couleurs système iOS.
-    ok: '#7FA88F',
-    amber: '#D9A04A',
-    red: '#E5604F',
-    unknown: '#6E7378',
+    bg: '#0A1424',
+    panel: 'rgba(120,165,230,0.055)',
+    panelHover: 'rgba(120,165,230,0.10)',
+    border: 'rgba(150,185,235,0.13)',
+    borderStrong: 'rgba(150,185,235,0.30)',
+    text: '#EEF3FA',
+    textDim: '#8C9AB3',
+    holo: '#7FB6FF',
+    ok: '#6CC79A',
+    amber: '#F2B451',
+    red: '#FF6B5E',
+    unknown: '#6B778C',
   },
   font: {
-    text: "'Inter Variable', Inter, system-ui, sans-serif",
-    mono: "'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, monospace",
+    text: "'Inter Variable', -apple-system, 'SF Pro Text', system-ui, sans-serif",
+    mono: "'Barlow', 'Inter Variable', system-ui, sans-serif",
   },
   // = --sz-fs-* (global.css) : label 11 · small 12 · data 13 · body 14 · title 16 · num 22 · display 34
   size: { xs: 11, sm: 12, data: 13, md: 14, lg: 16, xl: 22, xxl: 34 },
   space: { 1: 4, 2: 8, 3: 12, 4: 16, 5: 24, 6: 32 },
-  labelTracking: '0.08em',
+  labelTracking: '0.1em',
 } as const;
 
 /** Couleur d'un statut. Gris = inconnu, jamais vert par défaut. */
