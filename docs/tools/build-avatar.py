@@ -5,8 +5,8 @@
 #   python3 docs/tools/build-avatar.py /tmp/avatar/body /tmp/avatar/avatar-raw.glb
 #   puis compression meshopt (décimation) : voir build-avatar.mjs
 #
-# Méthode : voxelisation de la surface (pas de 6 mm) → fermeture morphologique et remplissage (volume plein)
-# → dilatation ≈ 1,2 cm (couche « peau ») → lissage gaussien → marching cubes → lissage de Taubin.
+# Méthode : voxelisation de la surface (pas de 3 mm) → fermeture morphologique et remplissage (volume plein)
+# → dilatation ≈ 6 mm (couche « peau », assez fine pour garder les doigts séparés) → lissage gaussien → marching cubes → lissage de Taubin.
 import sys
 import numpy as np
 import trimesh
@@ -16,7 +16,7 @@ from skimage import measure
 src, out = sys.argv[1], sys.argv[2]
 V = np.fromfile(src + '.v.bin', dtype=np.float32).reshape(-1, 3).astype(np.float64)
 F = np.fromfile(src + '.f.bin', dtype=np.uint32).reshape(-1, 3)
-PITCH = 0.006
+PITCH = float(sys.argv[3]) if len(sys.argv) > 3 else 0.003   # 3 mm : assez fin pour garder les doigts séparés
 lo = V.min(0) - 0.05
 hi = V.max(0) + 0.05
 shape = np.ceil((hi - lo) / PITCH).astype(int) + 1
@@ -44,18 +44,18 @@ for vv in (V,):
 print('voxels de surface', int(occ.sum()))
 
 ball = lambda r: (np.add.outer(np.add.outer(np.arange(-r, r + 1) ** 2, np.arange(-r, r + 1) ** 2), np.arange(-r, r + 1) ** 2) <= r * r)
-solid = ndimage.binary_closing(occ, structure=ball(3), iterations=1)
+solid = ndimage.binary_closing(occ, structure=ball(2), iterations=1)   # ferme les trous < ~1 cm, pas les espaces entre les doigts
 solid = ndimage.binary_fill_holes(solid)
 # Remplissage tranche par tranche (horizontal) pour boucher les cavités ouvertes (bouche, bassin…)
 for j in range(solid.shape[1]):
     solid[:, j, :] = ndimage.binary_fill_holes(solid[:, j, :])
-solid = ndimage.binary_dilation(solid, structure=ball(2))          # ≈ 1,2 cm de « peau »
+solid = ndimage.binary_dilation(solid, structure=ball(2))          # ≈ 6 mm de « peau »
 # Garde la plus grande composante (évite les petits fragments flottants)
 lab, nlab = ndimage.label(solid)
 if nlab > 1:
     sizes = ndimage.sum(solid, lab, range(1, nlab + 1))
     solid = lab == (1 + int(np.argmax(sizes)))
-field = ndimage.gaussian_filter(solid.astype(np.float32), sigma=1.2)
+field = ndimage.gaussian_filter(solid.astype(np.float32), sigma=1.3)
 verts, faces, _, _ = measure.marching_cubes(field, level=0.5, spacing=(PITCH, PITCH, PITCH))
 verts += lo
 mesh = trimesh.Trimesh(verts, faces[:, ::-1], process=True)
