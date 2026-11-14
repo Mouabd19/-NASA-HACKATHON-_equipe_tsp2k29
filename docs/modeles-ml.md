@@ -142,6 +142,22 @@ Dans l'app, cela s'affiche comme un **« signal à surveiller, on propose un poi
 
 ---
 
+## Où les voir dans l'app
+
+| Où | Déjà branché ? | Comment |
+|---|---|---|
+| **Page Raisonnement** (bouton « Pourquoi ? » de chaque tâche) | **Oui** (PR n°9) | Les explications citent les modèles : B pour l'os, le cœur et la cuisse (« 8,6 % à J860, fourchette 6,4–11,7 ») ; A pour le prélèvement (« âge sanguin 44,6 ans ») ; C pour le point psy (« score 0,99 ») |
+| **War Room** : niveau du jour + to-do | **Oui** (PR n°9) | Le modèle C ajoute « point psy proposé » au triage et à la to-do, sans changer le niveau |
+| **Page Body**, en-tête | À faire (Walid) | `bloodAgeSeries().at(-1)` → « Âge sanguin 44,6 ans », à côté de PhenoAge |
+| **Fenêtre organe** hanche / cuisse / cœur | À faire (Walid) | `organForecast(organe, 210 ou 860, plan)` → bande 10–90 % autour de la projection |
+| **Page Raisonnement**, section « Nos modèles d'IA » | À faire (Ahmed) | `modelCards()` → données, méthode, métriques et limites de chaque modèle |
+| **War Room**, courbe d'humeur (option) | À faire (Ahmed) | `moodSignals()` → score jour par jour, seuil 0,44 |
+
+Parcours de démo conseillé :
+1. **War Room** : J94 AMBRE, avec l'item « point psy proposé ».
+2. **« Pourquoi ? »** sur le point psy : le modèle C, son score et ses performances sur le test.
+3. **« Pourquoi ? »** sur l'ARED : le modèle B et la projection de la hanche à J860 avec sa fourchette.
+
 ## Questions probables du jury
 
 **« Vous avez entraîné sur des données inventées ? »**
