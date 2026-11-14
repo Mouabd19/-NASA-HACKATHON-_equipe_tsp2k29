@@ -40,7 +40,7 @@
 /* Colonne gauche : le sang prend sa hauteur naturelle (il défile s'il manque de place), la montre suit */
 .body-col--left .body-slot--grow { flex: 0 1 auto; }
 /* Les calques prennent leur hauteur naturelle, sans jamais étouffer les alertes */
-.body-slot--layers { flex: 0 1 auto; max-height: 58%; }
+.body-slot--layers { flex: 0 1 auto; max-height: 62%; }
 
 /* ── Scène ── */
 
@@ -89,6 +89,24 @@
   white-space: nowrap;
 }
 
+.body-tag__row--note .sz-label { font-size: 10px; letter-spacing: 0.1em; }
+.body-tag__row--note { gap: 6px; }
+/* Légende de la carte d'exposition : 5 paliers de luminance (la couleur reste réservée aux statuts) */
+.body-unit { text-transform: none; }
+.body-heat { display: inline-flex; gap: 1px; }
+.body-heat { padding: 1px; border: 1px solid var(--sz-border-strong); }
+.body-heat i { width: 16px; height: 8px; background: var(--sz-holo); }
+
+.body-scanlabel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 10px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  transition: opacity 160ms;
+}
+
 .body-help,
 .body-credit {
   position: absolute;
@@ -100,8 +118,8 @@
 .body-help .sz-label,
 .body-credit .sz-label {
   padding: 2px 4px;
-  font-size: 8px;
-  letter-spacing: 0.1em;
+  font-size: 10px;
+  letter-spacing: 0.08em;
   background: color-mix(in srgb, var(--sz-bg) 72%, transparent);
 }
 
@@ -141,7 +159,7 @@
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 0.1em;
   color: var(--sz-text-dim);
   font-variant-numeric: tabular-nums;
@@ -184,7 +202,10 @@
 /* ── Petits écrans : aide et crédit ne se chevauchent pas ── */
 
 @container (max-width: 760px) {
-  .body-help { bottom: 22px; }
+  /* scène étroite (1280×720) : l'aide passerait sur les pieds et l'anneau du sol → elle reste dans l'infobulle */
+  .body-help { display: none; }
+  /* la note ne doit pas passer sur la tête du corps : elle se replie sous l'étiquette */
+  .body-tag__row--note { flex-wrap: wrap; height: auto; max-width: 236px; row-gap: 2px; }
 }
 .body-scene { container-type: size; }
 

@@ -5,11 +5,10 @@ import { useMemo } from 'react';
 import type { CSSProperties, JSX } from 'react';
 import type { Color, DayBody } from '../../../types';
 import { ASTRONAUT, DAY_END, DAY_SOL0, DAY_TODAY } from '../../../mocks/mission';
-import { getDayBody } from '../../../sim/load';
 import { phenoAge } from '../../../models/phenoAge';
-import { lightTimeMin } from '../../../content/horizons';
+import { lightTimeMin, lightTimeSource } from '../../../content/horizons';
 import { ProvenanceBadge, StatusChip, TagBadge, dayToDate, fmt, fmtDay } from '../../../ui';
-import { useBody } from '../store';
+import { useBody, useDayBody } from '../store';
 import './Header.css';
 
 const STATUS_VAR: Record<Color, string> = {
@@ -30,7 +29,8 @@ function phaseLabel(day: number): string {
 
 const SOURCE_LABEL: Record<DayBody['source'], { text: string; hyp: boolean }> = {
   'echo-bord-sim': { text: 'SCAN ÉCHO — CENTRIFUGEUSE 0,1 g', hyp: true },
-  'scan-midjourney-sim': { text: 'SCAN COMPLET — MI-PARCOURS', hyp: true },
+  // « Midjourney Medical » est le NOM du scanner (ROADMAP §1), pas une phase de mission.
+  'scan-midjourney-sim': { text: 'SCAN US + ANALYSES + MONTRE', hyp: true },
   projection: { text: 'PROJECTION — AUCUN SCAN', hyp: true },
 };
 
@@ -60,15 +60,22 @@ export function Header(): JSX.Element {
   const replayScan = useBody((s) => s.replayScan);
   const globalOpen = useBody((s) => s.organWindow === 'global');
 
-  const body = useMemo(() => getDayBody(day), [day]);
+  const body = useDayBody();
   const pheno = useMemo(() => phenoAge(day), [day]);
   const date = dayToDate(day);
   const delay = useMemo(() => lightTimeMin(date), [date]);
+  const delayExact = useMemo(() => lightTimeSource(date) === 'table', [date]);
 
   const counts = useMemo(() => {
     const c: Record<Color, number> = { green: 0, amber: 0, red: 0, grey: 0 };
     for (const o of body.organs) c[o.status] += 1;
     return c;
+  }, [body]);
+  // « non modélisé » = aucun chiffre du tout (poumons, foie, cerveau) : à part des organes réellement suivis
+  const unmodeled = useMemo(() => body.organs.filter((o) => o.metrics.length === 0).length, [body]);
+  const tracked = body.organs.length - unmodeled;
+  const unknownTracked = useMemo(() => {
+    return body.organs.filter((o) => o.metrics.length > 0 && o.status === 'grey').length;
   }, [body]);
   const worst = worstStatus(counts);
 
@@ -92,7 +99,7 @@ export function Header(): JSX.Element {
           <span className="hdr__daynum sz-mono" title="Jour de mission">J{String(day).padStart(3, '0')}</span>
           <div className="hdr__daymeta">
             <span className="sz-label" title={day < DAY_SOL0 ? `Sol 0 dans ${DAY_SOL0 - day} j [Persona]` : `Fin de mission dans ${Math.max(0, DAY_END - day)} j [Persona]`}>
-              {date} <span className="sz-dim">· {phaseLabel(day)}</span>
+              {date} <span className="sz-dim">· {phaseLabel(day)}</span> <TagBadge tag="Persona" />
             </span>
             <div className="hdr__state" data-mode={mode} title={
               mode === 'projection'
@@ -120,6 +127,11 @@ export function Header(): JSX.Element {
         <span className="hdr__bio-head">
           <span className="sz-label sz-dim">ÂGE BIOLOGIQUE</span>
           <TagBadge tag="Publié" />
+          {pheno?.mock ? (
+            <span className="hdr__mock sz-label" title="La formule PhenoAge est publiée (Levine 2018) mais n'est pas encore calculée : la valeur affichée est factice.">
+              FACTICE
+            </span>
+          ) : null}
           <span className="hdr__bio-open sz-label" aria-hidden="true">DÉTAIL →</span>
         </span>
         {pheno && delta !== null ? (
@@ -139,9 +151,8 @@ export function Header(): JSX.Element {
           </span>
         )}
         <span className="hdr__bio-foot sz-label sz-dim">
-          PHENOAGE — LEVINE 2018
-          {pheno ? <> · PRÉLÈVEMENT {fmtDay(pheno.day)}</> : <> · AUCUN PRÉLÈVEMENT EXPLOITABLE</>}
-          {mode === 'projection' && pheno ? <> · DERNIER CONNU</> : null}
+          {pheno?.mock ? 'FORMULE NON CALCULÉE' : 'LEVINE 2018'}
+          {pheno ? <> · {mode === 'projection' ? 'DERNIER PRÉLÈV.' : 'PRÉLÈV.'} {fmtDay(pheno.day)}</> : <> · AUCUN PRÉLÈVEMENT</>}
         </span>
       </button>
 
@@ -155,10 +166,11 @@ export function Header(): JSX.Element {
           <span className="hdr__counts sz-label">
             <span data-c="red" data-zero={counts.red === 0}>{counts.red} ROUGE</span>
             <span data-c="amber" data-zero={counts.amber === 0}>{counts.amber} AMBRE</span>
-            <span data-c="grey">{counts.grey} INCONNU</span>
+            <span data-c="green">{counts.green} NOMINAL</span>
+            {unknownTracked > 0 ? <span data-c="grey">{unknownTracked} INCONNU</span> : null}
           </span>
           <span className="sz-label sz-dim">
-            {body.organs.length} ORGANES SUIVIS · {counts.green} NOMINAL
+            {tracked} SUIVIS + {unmodeled} NON MODÉLISÉS
           </span>
         </div>
         <div className="hdr__rule" aria-hidden="true" />
@@ -171,7 +183,14 @@ export function Header(): JSX.Element {
             {source.text} {source.hyp ? <TagBadge tag="H" /> : null}
           </span>
           <span className="sz-label sz-dim">
-            DÉLAI RADIO <span className="hdr__delay">{fmt(delay, 2)} MIN</span> <TagBadge tag="Publié" />
+            DÉLAI RADIO{' '}
+            {delayExact ? (
+              <><span className="hdr__delay">{fmt(delay, 2)} MIN</span> <TagBadge tag="Publié" /></>
+            ) : (
+              <span title="Approximation d'orbite circulaire de l'équipe, pas une éphéméride JPL Horizons">
+                <span className="hdr__delay">≈ {fmt(delay, 1)} MIN</span> <TagBadge tag="H" /> APPROX.
+              </span>
+            )}
           </span>
         </div>
         <button type="button" className="sz-btn hdr__scan" onClick={replayScan} title="Rejouer le balayage du scan sur le corps 3D">

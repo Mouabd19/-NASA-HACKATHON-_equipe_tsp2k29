@@ -14,3 +14,8 @@ export function getSummary(organId: OrganId, day: number): OrganSummary | null {
  * 'ia-sol' = vraie synthèse IA hors ligne lue dans public/data/summaries/. À passer à 'ia-sol' avec le vrai module.
  */
 export const SUMMARY_SOURCE: 'gabarit' | 'ia-sol' = 'gabarit';
+
+/** (ajout hors contrat §7) Synthèse selon l'adhérence au plan (0 = rythme actuel, 1 = avec le plan ; ne diffère qu'après J94). */
+export function getSummaryPlan(organId: OrganId, day: number, adherence: number): OrganSummary | null {
+  return mockSummary(organId, day, adherence);
+}

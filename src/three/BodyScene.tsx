@@ -12,8 +12,8 @@ import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import type { Color, OrganId } from '../types';
 import { tokens } from '../ui/tokens';
 import { DAY_TODAY } from '../mocks/mission';
-import { getDayBody } from '../sim/load';
-import { screenAnchors, useBody } from '../pages/body/store';
+import { getDayBodyPlan } from '../sim/load';
+import { bodyAxis, scanState, screenAnchors, useBody } from '../pages/body/store';
 import { FALLBACK_MANIFEST, organLayers } from './anatomy';
 import { createBodyRig } from './core/rig';
 import { createFloor, disposeFloor } from './core/floor';
@@ -21,9 +21,9 @@ import { look } from './look';
 import { Warnings3D } from './Warnings3D';
 
 /** Statut de chaque organe pour un jour donné (lecture §7). */
-function statusesForDay(day: number): Map<OrganId, Color> {
+function statusesForDay(day: number, adherence: number): Map<OrganId, Color> {
   const map = new Map<OrganId, Color>();
-  for (const o of getDayBody(day).organs) map.set(o.id, o.status);
+  for (const o of getDayBodyPlan(day, adherence).organs) map.set(o.id, o.status);
   return map;
 }
 
@@ -50,6 +50,7 @@ function Rig(): JSX.Element {
     swayWeight: 0,
     lastSelected: null as OrganId | null,
     transition: false,
+    sizeH: 0,
     homeDistance: new THREE.Vector3(...look.camera.position).distanceTo(new THREE.Vector3(...look.camera.target)),
     now: 0,
   }).current;
@@ -58,11 +59,11 @@ function Rig(): JSX.Element {
   // statuts du jour + balayage : abonnements au store, sans re-rendu React
   useEffect(() => {
     const s0 = useBody.getState();
-    rig.setStatuses(statusesForDay(s0.day), true);
+    rig.setStatuses(statusesForDay(s0.day, s0.adherence), true);
     const noscan = new URLSearchParams(window.location.search).get('noscan') === '1';
     if (!noscan) rig.startScan();
     const unsub = useBody.subscribe((s, prev) => {
-      if (s.day !== prev.day) rig.setStatuses(statusesForDay(s.day));
+      if (s.day !== prev.day || s.adherence !== prev.adherence) rig.setStatuses(statusesForDay(s.day, s.adherence));
       if (s.scanNonce !== prev.scanNonce) rig.startScan();
     });
     return () => {
@@ -70,6 +71,8 @@ function Rig(): JSX.Element {
       if (st.clearTimer) clearTimeout(st.clearTimer);
       gl.domElement.style.cursor = '';
       screenAnchors.clear();
+      bodyAxis.x = Number.NaN;
+      scanState.t = -1;
     };
   }, [rig, gl, st]);
 
@@ -134,6 +137,18 @@ function Rig(): JSX.Element {
     const c = controls.current;
     if (c) {
       const cam = state.camera;
+      // petit canevas (vidéoprojecteur 720p) : les marges en pixels (étiquettes, aide) pèsent plus → on recule un peu
+      if (state.size.height !== st.sizeH) {
+        st.sizeH = state.size.height;
+        const pad = look.camera.fitPadPx, ref = look.camera.fitRefPx;
+        const k = Math.max(1, (1 - (2 * pad) / ref) / Math.max(0.5, 1 - (2 * pad) / Math.max(1, st.sizeH)));
+        const base = tmp.v.set(...look.camera.position).distanceTo(tmp.target.set(...look.camera.target));
+        st.homeDistance = base * k;
+        if (!s.selected) {
+          tmp.dir.copy(cam.position).sub(c.target).normalize();
+          cam.position.copy(c.target).addScaledVector(tmp.dir, st.homeDistance);
+        }
+      }
       if (s.selected !== st.lastSelected) {
         if (!st.lastSelected && s.selected) st.homeDistance = cam.position.distanceTo(c.target);
         st.lastSelected = s.selected;
@@ -141,8 +156,10 @@ function Rig(): JSX.Element {
       }
       if (st.transition) {
         const a = s.selected ? ANCHORS.find((x) => x.id === s.selected) : undefined;
-        if (a && g) tmp.target.copy(a.anchor).applyMatrix4(g.matrixWorld);
-        else tmp.target.set(...look.camera.target);
+        tmp.target.set(...look.camera.target);
+        // Épinglage : on se rapproche sans centrer l'organe — le corps reste dans l'axe (la carte et les plaques
+        // gardent leurs colonnes), seule la hauteur visée glisse vers l'organe.
+        if (a) tmp.target.y += (a.anchor.y - tmp.target.y) * look.camera.focusPull;
         const wantDist = a ? Math.min(st.homeDistance, look.camera.focusDistance) : st.homeDistance;
         const k = 1 - Math.exp(-look.camera.focusSpeed * dt);
         tmp.dir.copy(cam.position).sub(c.target);
@@ -158,6 +175,20 @@ function Rig(): JSX.Element {
     // ancres écran pour les traits de liaison et la carte de survol
     if (g) {
       const w = state.size.width, h = state.size.height;
+      // axe du corps à l'écran + échelle px/m à sa profondeur (la carte de survol se pose hors silhouette)
+      tmp.v.set(0, 1, 0).applyMatrix4(g.matrixWorld);
+      const axisDist = Math.max(0.1, tmp.v.distanceTo(state.camera.position));
+      const fov = (state.camera as THREE.PerspectiveCamera).fov;
+      bodyAxis.pxPerM = h / (2 * Math.tan(THREE.MathUtils.degToRad(fov) / 2) * axisDist);
+      bodyAxis.x = (tmp.v.project(state.camera).x * 0.5 + 0.5) * w;
+      // libellé « SCAN n % » : suit le bord droit de l'anneau de scan
+      const sc = rig.scan();
+      scanState.t = sc.t;
+      if (sc.t >= 0) {
+        tmp.v.set(look.scan.ringRadius, sc.y, 0).project(state.camera);
+        scanState.x = (tmp.v.x * 0.5 + 0.5) * w;
+        scanState.y = (-tmp.v.y * 0.5 + 0.5) * h;
+      }
       for (const a of ANCHORS) {
         tmp.v.copy(a.anchor).applyMatrix4(g.matrixWorld).project(state.camera);
         let active = false;

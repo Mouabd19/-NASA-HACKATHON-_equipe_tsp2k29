@@ -7,13 +7,14 @@ import { Area, AreaChart, ReferenceLine, ResponsiveContainer, XAxis, YAxis } fro
 import type { Color, Measurement, Provenance } from '../../../types';
 import { DAY_TODAY, MISSION_START_DATE } from '../../../mocks/mission';
 import { getWatchSeries } from '../../../sim/load';
+import { baseline30d } from '../../../ingest/baseline30d';
 import { Panel, TagBadge, fmt, fmtDay, statusColor, tokens } from '../../../ui';
 import { useBody } from '../store';
 import './Spo2Widget.css';
 
 const DAY_MS = 86_400_000;
 const T0 = Date.parse(`${MISSION_START_DATE}T00:00:00Z`);
-const SPO2_REF = 95;      // seuil d'attention usuel [Publié]
+const SPO2_REF = 95;      // repère d'attention de l'équipe [H] (aucune source citée dans content/standards)
 const SPO2_RED = 92;
 const WINDOW = 30;
 
@@ -59,7 +60,7 @@ function spo2Color(v: number): Color {
 const VITALS: { type: Measurement['type']; label: string; digits: number }[] = [
   { type: 'RestingHeartRate', label: 'FC repos', digits: 0 },
   { type: 'HeartRateVariabilitySDNN', label: 'VFC', digits: 0 },
-  { type: 'AppleSleepingWristTemperature', label: 'T° poignet', digits: 1 },
+  { type: 'AppleSleepingWristTemperature', label: 'T° poign.', digits: 1 },
   { type: 'SleepAnalysis', label: 'Sommeil', digits: 1 },
 ];
 
@@ -67,6 +68,8 @@ export function Spo2Widget(): JSX.Element {
   const day = useBody((s) => s.day);
 
   const spo2 = useMemo(() => toDaily(getWatchSeries('OxygenSaturation')), []);
+  // référence personnelle 30 j (§7 baseline30d) : même appel quand l'export réel de la montre sera branché
+  const base = useMemo(() => baseline30d(getWatchSeries('OxygenSaturation'), 'OxygenSaturation'), []);
   const vitals = useMemo(() => VITALS.map((v) => ({ ...v, series: toDaily(getWatchSeries(v.type)) })), []);
 
   const cur = lastAtOrBefore(spo2.points, day);
@@ -81,7 +84,7 @@ export function Spo2Widget(): JSX.Element {
   const valueColor = color === 'green' ? 'var(--sz-text)' : statusColor[color];
 
   const yLow = Math.min(93, Math.floor(Math.min(...win.map((p) => p.value), 100)) - 1);
-  const mono = { fontFamily: tokens.font.mono, fontSize: 9, fill: tokens.color.textDim } as const;
+  const mono = { fontFamily: tokens.font.mono, fontSize: 10, fill: tokens.color.textDim } as const;
   const x0 = cur ? Math.max(0, cur.day - WINDOW + 1) : 0;
   const x1 = cur ? Math.max(cur.day, x0 + 6) : WINDOW;
 
@@ -153,7 +156,20 @@ export function Spo2Widget(): JSX.Element {
           </div>
           <div className="sw-caption">
             <span>{WINDOW} J → {fmtDay(cur.day)}</span>
-            <span>- - RÉF. {SPO2_REF} % <TagBadge tag="Publié" /></span>
+            <span>- - REPÈRE {SPO2_REF} % <TagBadge tag="H" /></span>
+          </div>
+          <div className="sw-caption sw-caption--base">
+            <span>RÉF. PERSO 30 J</span>
+            <span>
+              {base.n > 0 && Number.isFinite(base.mean)
+                ? <>{fmt(base.mean, 1)} ± {fmt(base.sd, 1)} % </>
+                : <>INDISPONIBLE </>}
+              {spo2.real ? null : <TagBadge tag="Persona" />}
+            </span>
+          </div>
+          <div className="sw-caption sw-caption--vit">
+            <span>CONSTANTES MONTRE</span>
+            <span>{spo2.real ? 'EXPORT RÉEL' : <TagBadge tag="Persona" />}</span>
           </div>
 
           <div className="sw-vitals">

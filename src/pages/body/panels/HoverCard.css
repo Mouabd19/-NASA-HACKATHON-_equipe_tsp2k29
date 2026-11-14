@@ -43,16 +43,16 @@
   top: 0;
   left: 0;
   width: var(--hvc-w);
-  will-change: transform;
 }
 
 .hvc__in {
   position: relative;
   border: 1px solid var(--sz-border-strong);
-  background: var(--sz-bg);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  animation: hvc-in 120ms ease-out both;
+  /* IMPORTANT : ni fond 100 % opaque, ni animation de transform sur ce bloc. Un calque opaque animé au-dessus du
+     canevas WebGL est pris pour un « occulteur » par le compositeur de Chromium : la colonne du canevas qu'il a
+     traversée restait noire (moitié du corps effacée au survol). Reproduit puis vérifié corrigé en rendu logiciel. */
+  background: color-mix(in srgb, var(--sz-bg) 96%, transparent);
+  animation: hvc-fade 120ms ease-out both;
 }
 /* liseré de statut, côté ancre */
 .hvc__in::before {
@@ -67,10 +67,6 @@
 .hvc__card[data-side='left'] .hvc__in::before { left: auto; right: -1px; }
 .hvc[data-projected='true'] .hvc__in { border-style: dashed; }
 
-@keyframes hvc-in {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: none; }
-}
 @keyframes hvc-fade {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -89,7 +85,7 @@
   padding: 0 10px 0 12px;
   border-bottom: 1px solid var(--sz-border);
   font-family: var(--sz-font-mono);
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: var(--sz-tracking);
   text-transform: uppercase;
   color: var(--sz-text-dim);
@@ -138,7 +134,7 @@
 .hvc__recap-k,
 .hvc__k {
   font-family: var(--sz-font-mono);
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: var(--sz-tracking);
   text-transform: uppercase;
   color: var(--sz-text-dim);
@@ -150,7 +146,7 @@
 .hvc__metrics { padding: 2px 0; }
 .hvc__m {
   --hvc-m: var(--sz-unknown);
-  padding: 6px 10px 6px 12px;
+  padding: 4px 10px 4px 12px;
 }
 .hvc__m + .hvc__m { border-top: 1px solid var(--sz-border); }
 .hvc__m-top {
@@ -178,7 +174,7 @@
 }
 .hvc__m-unit {
   margin-left: 4px;
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 0.06em;
   color: var(--sz-text-dim);
 }
@@ -194,7 +190,7 @@
 .hvc__m-sub .sz-prov { margin-left: auto; }
 .hvc__m-th {
   font-family: var(--sz-font-mono);
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 0.06em;
   color: var(--sz-text-dim);
   white-space: nowrap;
@@ -203,7 +199,7 @@
 .hvc__none {
   padding: 10px 10px 10px 12px;
   font-family: var(--sz-font-mono);
-  font-size: 9px;
+  font-size: 10px;
   line-height: 1.6;
   letter-spacing: 0.08em;
   color: var(--sz-text-dim);
@@ -238,7 +234,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   font-family: var(--sz-font-mono);
-  font-size: 8px;
+  font-size: 10px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--sz-text-dim);
@@ -263,7 +259,7 @@
 }
 .hvc__age-v--none { color: var(--sz-unknown); }
 .hvc__age-v--none small {
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: var(--sz-tracking);
 }
 
@@ -271,7 +267,7 @@
   padding: 5px 10px 5px 12px;
   border-top: 1px solid var(--sz-border);
   font-family: var(--sz-font-mono);
-  font-size: 8px;
+  font-size: 10px;
   letter-spacing: var(--sz-tracking);
   color: var(--sz-text-dim);
   background: var(--sz-panel);
@@ -286,8 +282,20 @@
 }
 .hvc__trend-noise {
   font-family: var(--sz-font-mono);
-  font-size: 8px;
+  font-size: 10px;
   letter-spacing: 0.06em;
   color: var(--sz-text-dim);
   white-space: nowrap;
+}
+
+/* Os : la source n'est PAS le scanner */
+.hvc__src {
+  margin: 0;
+  padding: 5px 10px 5px 12px;
+  border-bottom: 1px dashed var(--sz-border-strong);
+  font-family: var(--sz-font-mono);
+  font-size: 10px;
+  line-height: 1.5;
+  letter-spacing: 0.06em;
+  color: var(--sz-text);
 }

@@ -2,8 +2,8 @@
 import type { Alert, Color, LayerId, Level, OrganId } from '../../types';
 import { levelColor } from '../../ui/tokens';
 import { DAY_TODAY } from '../../mocks/mission';
-import { alertsForDay } from '../../models/alerts';
-import { getDayBody } from '../../sim/load';
+import { alertsForDayPlan } from '../../models/alerts';
+import { getDayBodyPlan } from '../../sim/load';
 import * as anatomy from '../anatomy';
 
 export interface WarnItem {
@@ -36,11 +36,11 @@ function ruleLabel(rule: string): string {
   return /^V\d /.test(rule) ? `NASA ${rule}` : rule;
 }
 
-export function warnItems(day: number, layers: Record<LayerId, boolean>): WarnItem[] {
-  const body = getDayBody(day);
+export function warnItems(day: number, layers: Record<LayerId, boolean>, adherence = 0): WarnItem[] {
+  const body = getDayBodyPlan(day, adherence);
   const out: WarnItem[] = [];
   let left = 0, right = 0;
-  for (const alert of alertsForDay(day)) {
+  for (const alert of alertsForDayPlan(day, adherence)) {
     if (alert.level === 'VERT') continue; // un warning ne s'affiche jamais en vert
     const anchor = anatomy.getAnchor(alert.organId);
     if (!anchor) continue;

@@ -6,7 +6,7 @@ import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useStat
 import type { JSX, PointerEvent as ReactPointerEvent } from 'react';
 import type { Color, Level } from '../../../types';
 import { CHRONO_AGE_J0, DAY_END, DAY_SOL0, DAY_TODAY } from '../../../mocks/mission';
-import { alertsForDay } from '../../../models/alerts';
+import { alertsForDayPlan } from '../../../models/alerts';
 import { bioAgeSeries } from '../../../models/bioAge';
 import { ProvenanceBadge, TagBadge, dayToDate, fmt, levelColor, statusColor, statusLabel } from '../../../ui';
 import { useBody } from '../store';
@@ -41,11 +41,11 @@ const SEVERITY: Record<Level, number> = { VERT: 0, DONNEES_INSUFFISANTES: 1, AMB
 interface Run { from: number; to: number; color: Color }
 
 /** Pire niveau d'alerte par tranche de RIBBON_STEP jours, fusionné en segments de même couleur. */
-function computeRuns(): Run[] {
+function computeRuns(adherence: number): Run[] {
   const runs: Run[] = [];
   for (let d = 0; d <= DAY_END; d += RIBBON_STEP) {
     let worst: Level | null = null;
-    for (const a of alertsForDay(d)) {
+    for (const a of alertsForDayPlan(d, adherence)) {
       if (SEVERITY[a.level] > 0 && (worst === null || SEVERITY[a.level] > SEVERITY[worst])) worst = a.level;
     }
     if (worst === null) continue; // aucune alerte : rien à tracer (pas de vert par défaut)
@@ -79,8 +79,8 @@ interface Landmark { day: number; key: string; labels: string[]; strong?: boolea
 const LANDMARKS: Landmark[] = [
   { day: 0, key: 'depart', labels: ['J0 DÉPART', 'J0'] },
   { day: DAY_TODAY, key: 'today', labels: [`J${DAY_TODAY} AUJOURD'HUI`, `J${DAY_TODAY} AUJ.`, `J${DAY_TODAY}`], strong: true },
-  { day: DAY_SOL0, key: 'sol0', labels: ['SOL 0 · ARRIVÉE MARS', 'SOL 0 · ARRIVÉE', 'SOL 0'] },
-  { day: DAY_END, key: 'fin', labels: [`J${DAY_END} FIN DE MISSION`, `J${DAY_END} FIN`, `J${DAY_END}`], alignEnd: true },
+  { day: DAY_SOL0, key: 'sol0', labels: ['SOL 0 · ARRIVÉE MARS [Persona]', 'SOL 0 · ARRIVÉE [Persona]', 'SOL 0 [Persona]', 'SOL 0'] },   // date provisoire (mocks/mission.ts)
+  { day: DAY_END, key: 'fin', labels: [`J${DAY_END} FIN DE MISSION [Persona]`, `J${DAY_END} FIN [Persona]`, `J${DAY_END} FIN`, `J${DAY_END}`], alignEnd: true },
 ];
 
 /** Choisit, pour chaque repère, le libellé le plus long qui tient avant le repère suivant. */
@@ -257,7 +257,7 @@ export function Timeline(): JSX.Element {
     return () => ro.disconnect();
   }, []);
 
-  const runs = useMemo(computeRuns, []);
+  const runs = useMemo(() => computeRuns(adherence), [adherence]);
   const impact = useMemo(() => ({ rythme: hipLossAtEnd(0), plan: hipLossAtEnd(1) }), []);
 
   // Lecture : J0 → J860 en ~PLAY_SECONDS s, arrêt en fin de mission.
@@ -273,7 +273,7 @@ export function Timeline(): JSX.Element {
     const frame = (now: number): void => {
       const s = useBody.getState();
       if (s.day !== lastSet) pos = s.day; // quelqu'un d'autre a déplacé le jour : on repart de là
-      pos = Math.min(DAY_END, pos + (Math.min(100, now - prev) / 1000) * speed);
+      pos = Math.min(DAY_END, pos + (Math.min(1000, now - prev) / 1000) * speed);
       prev = now;
       const d = Math.floor(pos);
       if (d !== s.day) s.setDay(d);
@@ -296,6 +296,12 @@ export function Timeline(): JSX.Element {
       else if (e.key === 'Home') next = 0;
       else if (e.key === 'End') next = DAY_END;
       else if (e.key === 't' || e.key === 'T') next = DAY_TODAY;
+      // Espace : lecture / pause (sauf si le focus est sur un bouton ou une plaque : Espace l'active)
+      if (e.key === ' ' && !(e.target instanceof HTMLElement && e.target.closest('button, [role="button"], a'))) {
+        e.preventDefault();
+        s.setPlaying(!s.playing);
+        return;
+      }
       if (next === null) return;
       e.preventDefault();
       if (s.playing) s.setPlaying(false);
@@ -363,7 +369,7 @@ export function Timeline(): JSX.Element {
             className="sz-btn tl__play"
             aria-pressed={playing}
             aria-label={playing ? 'Pause' : 'Lecture'}
-            title={playing ? 'Pause' : `Lecture (J0 → J${DAY_END} en ${PLAY_SECONDS} s)`}
+            title={playing ? 'Pause (Espace)' : `Lecture (Espace) — J0 → J${DAY_END} en ${PLAY_SECONDS} s`}
             onClick={() => setPlaying(!playing)}
           >
             <PlayGlyph playing={playing} />

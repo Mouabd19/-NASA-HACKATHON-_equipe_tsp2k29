@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-11-14T14:21:19.139Z",
+  "generatedAt": "2026-11-14T16:22:16.542Z",
   "viewport": "1600x900",
   "deviceScaleFactor": 1,
   "webgl": "défaut",
-  "fpsBody": 3.5,
+  "fpsBody": 3.7,
   "fpsNote": "requestAnimationFrame sur 3 s ; rendu logiciel (SwiftShader) en CI, indicatif seulement",
   "shots": [
     {
@@ -13,8 +13,8 @@
       "errors": [],
       "ignoredThirdParty": [
         "[warning] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
-        "[warning] [.WebGL-0x2ebc001a9000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
-        "[warning] [.WebGL-0x2ebc001a9000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+        "[warning] [.WebGL-0x3ed4001a8400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+        "[warning] [.WebGL-0x3ed4001a8400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
       ]
     },
     {
@@ -192,6 +192,40 @@
       "ignoredThirdParty": [
         "[warning] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
       ]
+    },
+    {
+      "name": "22-j860-plan-corps",
+      "url": "/body?noscan=1&day=860&plan=1",
+      "finalUrl": "/body?noscan=1&day=860&plan=1",
+      "errors": [],
+      "ignoredThirdParty": [
+        "[warning] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+      ]
+    },
+    {
+      "name": "23-window-global-1280x720",
+      "url": "/body?noscan=1&window=global",
+      "finalUrl": "/body?noscan=1&window=global",
+      "errors": [],
+      "ignoredThirdParty": [
+        "[warning] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+      ]
+    },
+    {
+      "name": "24-selected-hanche-j300-plan",
+      "url": "/body?noscan=1&day=300&plan=1&organ=hanche",
+      "finalUrl": "/body?noscan=1&day=300&organ=hanche&plan=1",
+      "errors": [],
+      "ignoredThirdParty": [
+        "[warning] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+      ]
+    },
+    {
+      "name": "keys-160-arrowright",
+      "url": "/body?noscan=1",
+      "finalUrl": "/body?noscan=1&day=254",
+      "errors": [],
+      "ignoredThirdParty": []
     }
   ]
 }

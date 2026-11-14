@@ -3,12 +3,10 @@
 import { useMemo } from 'react';
 import type { JSX, KeyboardEvent } from 'react';
 import type { Alert, Color, DayBody, Level } from '../../../types';
-import { getDayBody } from '../../../sim/load';
-import { alertsForDay } from '../../../models/alerts';
 import { trend7d } from '../../../models/trend';
 import { getStandard } from '../../../content/standards';
 import { HatchBand, Panel, StatusChip, TagBadge, fmt, levelColor } from '../../../ui';
-import { useBody } from '../store';
+import { useBody, useDayAlerts, useDayBody } from '../store';
 import './AlertsPanel.css';
 
 const LEVEL_RANK: Record<Level, number> = { ROUGE: 0, ORANGE: 1, AMBRE: 2, DONNEES_INSUFFISANTES: 3, VERT: 4 };
@@ -24,12 +22,12 @@ const LEVEL_LABEL: Record<Level, string> = {
 const isNasaRule = (rule: string): boolean => /^V\d\s*\d+/i.test(rule.trim());
 
 /** Tendance 7 j de la première métrique de l'organe qui en a une. */
-function alertTrend(a: Alert, body: DayBody, day: number): { value: number; label: string } | null {
+function alertTrend(a: Alert, body: DayBody, day: number): { value: number; label: string; model: boolean } | null {
   const organ = body.organs.find((o) => o.id === a.organId);
   if (!organ) return null;
   for (const m of organ.metrics) {
-    const t = trend7d(organ.id, m.key, day);
-    if (t !== null && Number.isFinite(t)) return { value: t, label: m.label };
+    const t = m.trend7d ?? trend7d(organ.id, m.key, day);
+    if (t !== null && Number.isFinite(t)) return { value: t, label: m.label, model: organ.layer === 'squelette' };
   }
   return null;
 }
@@ -47,10 +45,12 @@ export function AlertsPanel(): JSX.Element {
   const setSelected = useBody((s) => s.setSelected);
   const openOrganWindow = useBody((s) => s.openOrganWindow);
 
-  const body = useMemo(() => getDayBody(day), [day]);
+  const adherence = useBody((s) => s.adherence);
+  const body = useDayBody();
+  const raw = useDayAlerts();
   const alerts = useMemo(
-    () => [...alertsForDay(day)].sort((a, b) => (LEVEL_RANK[a.level] ?? 9) - (LEVEL_RANK[b.level] ?? 9)),
-    [day],
+    () => [...raw].sort((a, b) => (LEVEL_RANK[a.level] ?? 9) - (LEVEL_RANK[b.level] ?? 9)),
+    [raw],
   );
   const cards = useMemo(
     () => alerts.map((a) => ({ a, trend: alertTrend(a, body, day), std: isNasaRule(a.rule) ? getStandard(a.rule) : null })),
@@ -72,7 +72,7 @@ export function AlertsPanel(): JSX.Element {
       }
     >
       {body.projected ? (
-        <div className="alr__proj">PROJECTION — ALERTES CALCULÉES SUR LE CORPS PROJETÉ <TagBadge tag="H" /></div>
+        <div className="alr__proj">PROJECTION {adherence === 1 ? 'AVEC LE PLAN' : 'AU RYTHME ACTUEL'} — CORPS PROJETÉ <TagBadge tag="H" /></div>
       ) : null}
 
       {cards.length === 0 ? (
@@ -122,7 +122,8 @@ export function AlertsPanel(): JSX.Element {
                     <div className="alr__foot">
                       {trend ? (
                         <span className="alr__trend" title={`Pente sur 7 jours — ${trend.label}`}>
-                          <span className="alr__k">TENDANCE 7 J</span>
+                          {/* os : pente du MODÈLE (rien n'est mesuré par le scanner), pas une tendance mesurée */}
+                          <span className="alr__k">{trend.model ? 'PENTE MODÈLE 7 J' : 'TENDANCE 7 J'}</span>
                           <span className="alr__v">{signed(trend.value, 2)} %/SEM</span>
                         </span>
                       ) : (

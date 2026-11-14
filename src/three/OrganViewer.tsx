@@ -14,25 +14,38 @@ import { useBody } from '../pages/body/store';
 import { buildAnatomy, organParts } from './anatomy';
 import type { PartDef } from './anatomy';
 import { createHologramMaterial } from './HologramMaterial';
+import { look } from './look';
 
 /** Réglages de la visionneuse (itération rapide). */
 const VIEW = {
   /** Plus grande dimension de l'organe une fois cadré (unités de scène). */
-  fit: 1.12,
+  fit: 1.06,
   /** Hauteur max : un organe allongé (fémur, corps entier) est limité par sa hauteur. */
-  fitHeight: 1.85,
+  fitHeight: 2.05,
   /** Point visé : sous le centre, pour remonter l'organe au-dessus des libellés du bas. */
-  targetY: -0.22,
-  camera: { position: [0, 0.55, 4.6] as [number, number, number], fov: 34 },
+  targetY: -0.16,
+  camera: { position: [0, 0.5, 4.3] as [number, number, number], fov: 34 },
   /** Vitesse de rotation automatique (OrbitControls : 2 ≈ 30 s par tour). */
   autoRotateSpeed: 1.1,
   /** Poids de la teinte de statut (0 = hologramme neutre). */
-  tintMix: 0.7,
+  tintMix: 0.5,
+  /** Remplissage « à cœur » de la teinte (0 = seul le liseré porte la couleur : pas d'aplat strié). */
+  tintCore: 0,
+  /** Plafond d'alpha par fragment et atténuation des faces arrière : évite le blanc brûlé des pièces superposées. */
+  alphaMax: 0.6,
+  backFace: 0.22,
+  /** Liseré de l'organe isolé (plus fin que dans le corps entier). */
+  rim: 0.6,
+  fresnelPower: 2.2,
+  /** Rayon du socle, en part de la demi-largeur de l'organe cadré. */
+  ringScale: 0.62,
   /** Opacité d'un organe non modélisé (gris). */
   greyOpacity: 0.55,
   /** Lignes de balayage visibles sur la hauteur de l'organe cadré. */
   scanlines: 70,
   ring: { opacity: 0.5, ticks: 48, tickOpacity: 0.3 },
+  /** Silhouette du corps entier ('global') : l'enveloppe seule doit se lire sur fond noir. */
+  shell: { opacity: look.shell.opacityAlone, rim: 0.6, core: 0.03 },
 } as const;
 
 interface Fit { parts: PartDef[]; scale: number; offset: THREE.Vector3; floorY: number; radius: number; placeholder: boolean }
@@ -71,7 +84,7 @@ function computeFit(organId: OrganId): Fit {
     scale,
     offset: centre.multiplyScalar(-1),
     floorY: -(size.y * scale) / 2 - 0.1,
-    radius: Math.min(0.62, Math.max(0.4, (horizontal * scale) / 2 + 0.06)),
+    radius: Math.min(0.8, Math.max(0.3, ((horizontal * scale) / 2) * VIEW.ringScale)),
     placeholder: false,
   };
 }
@@ -92,6 +105,16 @@ function Organ({ fit, status, neutral }: { fit: Fit; status: Color; neutral: boo
       // la densité des lignes est en « lignes par mètre monde » : on la ramène à la taille cadrée
       const sl = m.uniforms.uScanline?.value as THREE.Vector3 | undefined;
       if (sl) sl.x = VIEW.scanlines / VIEW.fitHeight;
+      // organe isolé : pas de repère de profondeur (il tourne sur lui-même), pas de balayage, liseré seul
+      m.uniforms.uDepthCue.value = 0;
+      m.uniforms.uScanHide.value = 1;
+      m.uniforms.uAlphaMax.value = VIEW.alphaMax;
+      m.uniforms.uBackFace.value = VIEW.backFace;
+      (m.uniforms.uTintLook.value as THREE.Vector2).y = VIEW.tintCore;
+      if (p.layer !== 'shell' && !p.fx) {
+        m.uniforms.uRim.value = VIEW.rim;
+        m.uniforms.uFresnelPower.value = VIEW.fresnelPower;
+      }
       return m;
     }),
     [fit],
@@ -102,8 +125,13 @@ function Organ({ fit, status, neutral }: { fit: Fit; status: Color; neutral: boo
     materials.forEach((m, i) => {
       const modeled = fit.parts[i].modeled;
       (m.uniforms.uTint.value as THREE.Color).copy(tint);
-      m.uniforms.uTintMix.value = neutral ? 0 : VIEW.tintMix;
+      m.uniforms.uTintMix.value = neutral ? 0 : VIEW.tintMix * (status === 'grey' ? 1 : fit.parts[i].tintWeight ?? 1);
       m.uniforms.uOpacity.value = !neutral && (status === 'grey' || !modeled) ? VIEW.greyOpacity : 1;
+      if (fit.parts[i].layer === 'shell') {
+        m.uniforms.uOpacity.value = VIEW.shell.opacity;
+        m.uniforms.uRim.value = VIEW.shell.rim;
+        m.uniforms.uCore.value = VIEW.shell.core;
+      }
     });
   }, [materials, status, neutral, fit]);
   useFrame(({ clock }) => {

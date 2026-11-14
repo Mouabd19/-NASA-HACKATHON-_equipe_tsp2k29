@@ -15,7 +15,7 @@ import { triage } from '../../models/triage';
 import { router } from '../../models/router';
 import { planDay } from '../../models/planDay';
 import { alertsForDay } from '../../models/alerts';
-import { lightTimeMin } from '../../content/horizons';
+import { lightTimeMin, lightTimeSource } from '../../content/horizons';
 import { saveCheckIn } from '../../ingest/checkin';
 import { pullDone, pushTodo } from '../../ingest/todoSync';
 
@@ -137,12 +137,18 @@ export function WarRoom(): JSX.Element {
           </div>
         </Panel>
 
-        <Panel sys="WR-02" title="DÉLAI RADIO" provenance="RÉEL">
+        {/* RÉEL seulement quand public/data/nasa/horizons.json (JPL Horizons) sera branché : d'ici là, valeur de test ou approximation. */}
+        <Panel sys="WR-02" title="DÉLAI RADIO" provenance={lightTimeSource(date) === 'table' ? 'SIMULÉ' : 'H'}>
           <div style={S.row}>
-            <span style={S.delay}>{fmt(delay, 2)}</span>
+            <span style={S.delay}>{lightTimeSource(date) === 'table' ? '' : '≈ '}{fmt(delay, 2)}</span>
             <Label>MIN · ALLER SIMPLE</Label>
-            <TagBadge tag="NASA" id="JPL HORIZONS" />
+            {lightTimeSource(date) === 'table' ? <TagBadge tag="Publié" /> : <TagBadge tag="H" />}
           </div>
+          <Label dim>
+            {lightTimeSource(date) === 'table'
+              ? 'VALEUR DE TEST DE LA ROADMAP — JPL HORIZONS PAS ENCORE BRANCHÉ'
+              : 'APPROXIMATION ORBITE CIRCULAIRE — PAS UNE ÉPHÉMÉRIDE JPL HORIZONS'}
+          </Label>
           <p style={S.dim}>
             Terre–Mars le {date}. Aller-retour : {fmt(2 * delay, 1)} min. MAINTENANT n’attend jamais la Terre ;
             la synthèse IA et l’avis du médecin au sol arrivent dans ENSUITE.

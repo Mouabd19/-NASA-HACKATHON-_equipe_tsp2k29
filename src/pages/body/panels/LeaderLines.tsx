@@ -1,5 +1,6 @@
 // Traits de liaison « Cyberware » : relient les cartes [data-organ-id] des colonnes latérales
-// aux ancres écran des organes. Un SVG couvre le conteneur de la scène ; les attributs sont
+// aux ancres écran des organes — UNIQUEMENT pour l'organe survolé ou épinglé (au repos, chaque
+// alerte a déjà son trait plaque → marqueur dans la scène : un seul système de traits à la fois). Un SVG couvre le conteneur de la scène ; les attributs sont
 // mutés directement à chaque frame (aucun setState), les éléments SVG sont recyclés.
 import { useEffect, useRef } from 'react';
 import type { JSX } from 'react';
@@ -12,6 +13,7 @@ import './LeaderLines.css';
 const RUN = 18;            // 1er segment horizontal depuis le bord du conteneur (px)
 const STAGGER = 9;         // décalage du coude entre deux traits voisins (px)
 const NODE = 5;            // côté du carré posé sur l'ancre
+const MIN_VISIBLE = 0.5;   // part de la carte qui doit être visible dans sa liste pour tirer un trait
 const EDGE_PAD = 6;        // le départ reste à EDGE_PAD px du haut/bas du conteneur
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -89,6 +91,9 @@ export function LeaderLines(): JSX.Element {
           const id = el.dataset.organId;
           if (!id) continue;
           if (scene && scene.contains(el)) continue;          // marqueurs posés dans la scène : pas des cartes
+          // au repos : pas de trait. Trait seulement si l'organe est épinglé, ou si CETTE carte est survolée / a le focus
+          // (un survol venu de la 3D a déjà la carte de survol : pas de second trait à travers la scène).
+          if (selected !== id && !(hovered === id && el.matches(':hover, :focus-visible'))) continue;
           const a = screenAnchors.get(id);
           if (!a || !a.visible || !Number.isFinite(a.x) || !Number.isFinite(a.y)) continue;
           const r = el.getBoundingClientRect();
@@ -97,7 +102,8 @@ export function LeaderLines(): JSX.Element {
           const clip = clipParent(el);
           if (clip) {                                         // carte sortie de sa liste défilante
             const cr = clip.getBoundingClientRect();
-            if (cyAbs < cr.top || cyAbs > cr.bottom) continue;
+            const seen = Math.min(r.bottom, cr.bottom) - Math.max(r.top, cr.top);
+            if (seen < r.height * MIN_VISIBLE) continue;      // carte en grande partie rognée : pas de trait vers un coin
           }
           const fromRight = r.left + r.width / 2 >= box.left + W / 2;
           const k = fromRight ? perSide.right++ : perSide.left++;
@@ -122,7 +128,7 @@ export function LeaderLines(): JSX.Element {
           used++;
           w.g.style.display = '';
           w.g.style.color = wireColor(el);
-          const state = hovered === id ? 'hot' : selected === id ? 'pin' : hovered ? 'dim' : 'idle';
+          const state = hovered === id ? 'hot' : 'pin';
           if (w.g.dataset.state !== state) w.g.dataset.state = state;
           w.line.setAttribute('points', pts);
           w.node.setAttribute('x', (Math.round(a.x) - (NODE - 1) / 2).toFixed(1));

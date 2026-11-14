@@ -46,7 +46,7 @@
   flex-direction: column;
   gap: 2px;
   padding-bottom: 2px;
-  font-size: 9px;
+  font-size: 10px;
   line-height: 1.4;
   letter-spacing: 0.1em;
   color: var(--sz-text);
@@ -71,12 +71,12 @@
   justify-content: space-between;
   gap: 8px;
   padding: 5px 0 6px;
-  font-size: 8px;
+  font-size: 10px;
   letter-spacing: 0.08em;
   color: var(--sz-unknown);
   white-space: nowrap;
 }
-.sw-caption .sz-tag { font-size: 8px; color: var(--sz-unknown); }
+.sw-caption .sz-tag { font-size: 10px; color: var(--sz-unknown); }
 
 .sw-vitals {
   display: grid;
@@ -94,7 +94,7 @@
 }
 .sw-vital:first-child { border-left: 0; }
 .sw-vital__label {
-  font-size: 8px;
+  font-size: 10px;
   line-height: 1.3;
   letter-spacing: 0.08em;
   color: var(--sz-text-dim);
@@ -109,15 +109,18 @@
   white-space: nowrap;
 }
 .sw-vital__val--none { color: var(--sz-unknown); }
-.sw-vital__unit { margin-left: 3px; font-size: 8px; color: var(--sz-text-dim); }
+.sw-vital__unit { margin-left: 3px; font-size: 10px; color: var(--sz-text-dim); }
 
 .sw-stale {
   margin: 0 -10px;
   padding: 4px 10px;
   border-top: 1px solid var(--sz-border);
-  font-size: 8px;
+  font-size: 10px;
   letter-spacing: 0.08em;
   color: var(--sz-unknown);
 }
 
 .sw .sz-tag { text-transform: none; }
+
+.sw-caption--base, .sw-caption--vit { padding: 0 0 5px; }
+.sw-caption--base span:last-child { color: var(--sz-text-dim); }

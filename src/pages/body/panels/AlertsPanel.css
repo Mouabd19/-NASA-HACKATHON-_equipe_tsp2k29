@@ -20,7 +20,7 @@
   padding: 5px 10px;
   border-bottom: 1px dashed var(--sz-border-strong);
   font-family: var(--sz-font-mono);
-  font-size: 8px;
+  font-size: 10px;
   line-height: 1.4;
   letter-spacing: 0.1em;
   color: var(--sz-text-dim);
@@ -103,7 +103,7 @@
   min-width: 0;
 }
 .alr__fill { flex: 1; min-width: 0; }
-.alr__top .sz-chip { height: 16px; font-size: 9px; }
+.alr__top .sz-chip { height: 16px; font-size: 10px; }
 
 .alr__title {
   font-family: var(--sz-font-mono);
@@ -118,8 +118,8 @@
 .alr__msg {
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
   overflow: hidden;
   font-family: var(--sz-font-text);
   font-size: 12px;
@@ -136,7 +136,7 @@
 .alr__foot {
   height: 16px;
   font-family: var(--sz-font-mono);
-  font-size: 9px;
+  font-size: 10px;
   line-height: 1;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -160,7 +160,7 @@
   padding: 0 5px;
   border: 1px solid var(--sz-border);
   font-family: var(--sz-font-mono);
-  font-size: 9px;
+  font-size: 10px;
   line-height: 1;
   letter-spacing: 0.1em;
   color: var(--sz-text-dim);
@@ -172,3 +172,10 @@
   border-color: var(--sz-border-strong);
 }
 .alr__detail:hover { background: var(--sz-panel-hover); }
+
+/* Liste défilante : fondu bas de 16 px — une ligne coupée se lit comme « ça défile », pas comme un bug. */
+.alr > .sz-panel__body {
+  padding-bottom: 14px;
+  -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 16px), transparent);
+  mask-image: linear-gradient(to bottom, black calc(100% - 16px), transparent);
+}

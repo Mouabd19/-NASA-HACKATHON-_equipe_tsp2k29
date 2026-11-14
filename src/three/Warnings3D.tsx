@@ -12,7 +12,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import type { Color } from '../types';
 import { statusColor } from '../ui/tokens';
-import { useBody } from '../pages/body/store';
+import { hoverCardRect, plateSides, useBody } from '../pages/body/store';
 import { warnKnobs as K } from './warnings/knobs';
 import { deOverlap, elbowPoints } from './warnings/layout';
 import type { Slot } from './warnings/layout';
@@ -24,6 +24,7 @@ import './Warnings3D.css';
 /** État mutable d'un warning (hors React). */
 interface Rec extends Slot {
   vis: number;        // 0..1, fondu d'apparition
+  cover: number;      // 0..1, plaque masquée parce que la carte de survol la recouvre
   x: number;          // bord intérieur de la plaque (px), lissé
   placed: boolean;    // première position déjà posée (sinon on « saute » sans lisser)
   live: boolean;
@@ -33,7 +34,7 @@ interface Rec extends Slot {
   marker: THREE.Group | null;
 }
 
-const newRec = (): Rec => ({ want: 0, y: 0, vis: 0, x: 0, placed: false, live: false, phase: Math.random(), plate: null, line: null, marker: null });
+const newRec = (): Rec => ({ want: 0, y: 0, vis: 0, cover: 0, x: 0, placed: false, live: false, phase: Math.random(), plate: null, line: null, marker: null });
 
 // Géométries partagées : losanges (anneau / disque à 4 segments), rayon 1.
 const GEO_RING = new THREE.RingGeometry(0.74, 1, 4, 1);
@@ -58,19 +59,34 @@ function baseMaterial(color: Color): THREE.MeshBasicMaterial {
   return m;
 }
 
-/** Garde les warnings sortants montés le temps de leur fondu. */
+/**
+ * Garde les warnings sortants montés le temps de leur fondu.
+ * `target` reste la source : on ne stocke en état QUE les sortants, et on n'appelle setState que si une clé a
+ * réellement disparu (une dizaine de fois sur toute la mission). Un setState à chaque changement de jour
+ * faisait déborder le compteur de mises à jour imbriquées du réconciliateur (React #185) en maintenant ← / →.
+ */
 function useLingering(target: WarnItem[]): WarnItem[] {
-  const [shown, setShown] = useState(target);
+  const [leaving, setLeaving] = useState<WarnItem[]>([]);
+  const prev = useRef<WarnItem[]>(target);
+  const timer = useRef<ReturnType<typeof setTimeout> | 0>(0);
   useEffect(() => {
-    setShown((prev) => {
-      const keys = new Set(target.map((t) => t.key));
-      const gone = prev.filter((p) => !keys.has(p.key)).map((p) => (p.leaving ? p : { ...p, leaving: true }));
-      return gone.length ? [...target, ...gone] : target;
-    });
-    const timer = setTimeout(() => setShown((prev) => (prev.some((p) => p.leaving) ? prev.filter((p) => !p.leaving) : prev)), K.exitMs);
-    return () => clearTimeout(timer);
+    const before = prev.current;
+    prev.current = target;
+    if (before === target) return;
+    const keys = new Set(target.map((t) => t.key));
+    const gone = before.filter((p) => !keys.has(p.key));
+    if (!gone.length) return;
+    setLeaving((cur) => [...cur.filter((c) => !gone.some((g) => g.key === c.key)), ...gone.map((g) => ({ ...g, leaving: true }))]);
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => { timer.current = 0; setLeaving([]); }, K.exitMs);
   }, [target]);
-  return shown;
+  useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
+  return useMemo(() => {
+    if (!leaving.length) return target;
+    const keys = new Set(target.map((t) => t.key));
+    const rest = leaving.filter((l) => !keys.has(l.key));
+    return rest.length ? [...target, ...rest] : target;
+  }, [target, leaving]);
 }
 
 /** Marqueur en scène : losange + cœur + onde de pouls. Animé par le parent via la ref du groupe. */
@@ -120,12 +136,25 @@ const tmp = {
 };
 const columns: Record<1 | -1, Rec[]> = { 1: [], [-1]: [] };
 
+const sameItem = (a: WarnItem, b: WarnItem): boolean =>
+  a.key === b.key && a.color === b.color && a.side === b.side && a.projected === b.projected
+  && a.levelLabel === b.levelLabel && a.alert.message === b.alert.message;
+
 export function Warnings3D(): JSX.Element | null {
+  const lastTarget = useRef<WarnItem[]>([]);
   const day = useBody((s) => s.day);
   const layers = useBody((s) => s.layers);
   const gl = useThree((s) => s.gl);
 
-  const target = useMemo(() => warnItems(day, layers), [day, layers]);
+  const adherence = useBody((s) => s.adherence);
+  const target = useMemo(() => {
+    const next = warnItems(day, layers, adherence);
+    // même liste qu'au rendu précédent (cas courant d'un jour à l'autre) : on garde la même référence
+    const prev = lastTarget.current;
+    if (prev.length === next.length && next.every((n, i) => sameItem(n, prev[i]))) return prev;
+    lastTarget.current = next;
+    return next;
+  }, [day, layers, adherence]);
   const items = useLingering(target);
   const recs = useRef(new Map<string, Rec>()).current;
   const group = useRef<THREE.Group>(null);
@@ -231,6 +260,10 @@ export function Warnings3D(): JSX.Element | null {
     }
 
     // 3) plaques + traits
+    const pinned = useBody.getState().selected;
+    const focus = useBody.getState().hovered ?? pinned;
+    plateSides.clear();
+    for (const it of items) if (!it.leaving) plateSides.set(it.organId, it.side);
     for (const it of items) {
       const r = recs.get(it.key);
       const a = anchors.get(it.key);
@@ -241,19 +274,29 @@ export function Warnings3D(): JSX.Element | null {
         if (!r.placed) { r.x = wantX; r.y = wantY; r.placed = true; }
         else { r.x += (wantX - r.x) * kFollow; r.y += (wantY - r.y) * kFollow; }
       }
+      // la carte de survol passe devant : une plaque qu'elle recouvre s'efface (avec son trait),
+      // sauf celle de l'organe survolé — la carte se pose toujours du côté opposé à cette plaque.
+      const pl = it.side > 0 ? r.x : r.x - K.plateW, pt = r.y - K.plateH / 2;
+      const hc = hoverCardRect;
+      // Organe épinglé : sa carte porte déjà nom + statut → sa propre plaque s'efface (le marqueur reste sur l'organe).
+      const covered = it.organId === pinned || (hc.on && it.organId !== focus
+        && pl < hc.x + hc.w + 6 && pl + K.plateW > hc.x - 6 && pt < hc.y + hc.h + 4 && pt + K.plateH > hc.y - 4);
+      r.cover += ((covered ? 1 : 0) - r.cover) * kFade;
+      if (r.cover < 0.002) r.cover = 0;
+      const shown = r.vis * (1 - r.cover);
       const el = r.plate;
       if (el) {
-        const live = r.vis > 0.5 && !it.leaving;
+        const live = r.vis > 0.5 && r.cover < 0.5 && !it.leaving;
         // style en ligne (pas une classe : React réécrit className quand le niveau change)
         if (live !== r.live || !el.style.pointerEvents) { r.live = live; el.style.pointerEvents = live ? 'auto' : 'none'; }
         const left = Math.round(it.side > 0 ? r.x : r.x - K.plateW);
         const topPx = Math.round(r.y - K.plateH / 2);
-        el.style.opacity = r.vis.toFixed(3);
+        el.style.opacity = shown.toFixed(3);
         el.style.transform = `translate3d(${left}px,${topPx}px,0) scale(${(0.86 + 0.14 * r.vis).toFixed(3)})`;
       }
       const line = r.line;
       if (line) {
-        line.style.opacity = (r.vis * K.lineOpacity * (it.projected ? 0.7 : 1)).toFixed(3);
+        line.style.opacity = (shown * K.lineOpacity * (it.projected ? 0.7 : 1)).toFixed(3);
         if (r.vis > 0 && r.placed) line.setAttribute('points', elbowPoints(a.ax, a.ay, Math.round(r.x), Math.round(r.y), it.side, K.lineTrim));
       }
     }

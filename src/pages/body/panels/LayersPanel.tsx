@@ -2,11 +2,9 @@
 // Le survol d'une ligne allume l'organe en 3D, et inversement (store.hovered / store.selected).
 import { useMemo } from 'react';
 import type { JSX, KeyboardEvent, MouseEvent } from 'react';
-import type { Color, LayerId, OrganState } from '../../../types';
-import { getDayBody } from '../../../sim/load';
-import { alertsForDay } from '../../../models/alerts';
+import type { Color, LayerId, Metric, OrganState } from '../../../types';
 import { Panel, StatusDot, TagBadge, fmt } from '../../../ui';
-import { LAYER_META, LAYER_ORDER, useBody } from '../store';
+import { LAYER_META, LAYER_ORDER, useBody, useDayAlerts, useDayBody } from '../store';
 import './LayersPanel.css';
 
 const SEVERITY: Record<Color, number> = { red: 3, amber: 2, green: 1, grey: 0 };
@@ -30,8 +28,28 @@ function shortName(name: string): string {
   return name.replace(/\s*[—–(-]\s*non modélisé\)?\s*$/i, '').trim();
 }
 
+/** Métrique affichée sur la ligne : celle qui PORTE le statut de l'organe, sinon la première (jamais un « 0,00 » sans unité). */
+function headline(o: OrganState): Metric | undefined {
+  const withUnit = o.metrics.filter((m) => m.unit !== '');
+  return withUnit.find((m) => m.color === o.status && (m.color === 'amber' || m.color === 'red'))
+    ?? (o.id === 'dose' ? o.metrics.find((m) => m.key === 'dose_jour') : undefined)
+    ?? (o.id === 'sang' ? o.metrics.find((m) => m.key === 'hemoglobine') : undefined)   // le VO₂max est porté par le cœur
+    ?? withUnit[0] ?? o.metrics[0];
+}
+
+/** Ce que chaque calque dit de sa source ou de ses limites (honnêteté : rien n'est sous-entendu). */
+const LAYER_NOTE: Partial<Record<LayerId, JSX.Element>> = {
+  squelette: <><b>ESTIMÉ</b> : MODÈLE + BILAN AU SOL + MARQUEURS URINAIRES [H] — PAS LE SCANNER</>,
+  nerveux: <>BÊTA : NERF OPTIQUE + VIGILANCE (PVT). SOMMEIL ET HUMEUR : VOIR MONTRE ET CHECK-IN</>,
+  exposition: <>BÊTA : DOSE GLOBALE SEULEMENT. CARTE DU CORPS = RÉPARTITION ILLUSTRATIVE [H]</>,
+};
+
+/** Libellé court des bascules (2 rangées de 3). */
+const SHORT: Record<LayerId, string> = {
+  squelette: 'SQUELETTE', muscles: 'MUSCLES', organes: 'ORGANES', cardio: 'CARDIO', nerveux: 'NERVEUX', exposition: 'EXPOSIT.',
+};
+
 export function LayersPanel(): JSX.Element {
-  const day = useBody((s) => s.day);
   const layers = useBody((s) => s.layers);
   const hovered = useBody((s) => s.hovered);
   const selected = useBody((s) => s.selected);
@@ -41,8 +59,8 @@ export function LayersPanel(): JSX.Element {
   const setSelected = useBody((s) => s.setSelected);
   const openOrganWindow = useBody((s) => s.openOrganWindow);
 
-  const body = useMemo(() => getDayBody(day), [day]);
-  const alerts = useMemo(() => alertsForDay(day), [day]);
+  const body = useDayBody();
+  const alerts = useDayAlerts();
 
   const byLayer = useMemo(() => {
     const m = new Map<LayerId, OrganState[]>();
@@ -80,10 +98,36 @@ export function LayersPanel(): JSX.Element {
       title="CALQUES"
       provenance="SIMULÉ"
       className="lyr"
-      right={<span className="sz-dim">{activeCount}/{LAYER_ORDER.length}</span>}
+      right={<span className="sz-dim" title="Clic : afficher / masquer · Alt+clic ou double-clic : isoler">{activeCount}/{LAYER_ORDER.length}</span>}
     >
-      <ul className="lyr__list">
+      {/* Les 6 bascules, toujours visibles (jamais sous la ligne de flottaison) ; le détail des calques actifs défile dessous. */}
+      <div className="lyr__grid" role="group" aria-label="Calques">
         {LAYER_ORDER.map((l) => {
+          const meta = LAYER_META[l];
+          const n = alertCount.get(l) ?? 0;
+          const worst = worstOf(byLayer.get(l) ?? []);
+          return (
+            <button
+              key={l}
+              type="button"
+              className="lyr__tog"
+              data-active={layers[l]}
+              data-layer-toggle={l}
+              aria-pressed={layers[l]}
+              onClick={onLayerClick(l)}
+              onDoubleClick={() => soloLayer(l)}
+              title={`${meta.sys} ${meta.label}${meta.mvp ? '' : ' (BÊTA)'} — ${n} alerte${n > 1 ? 's' : ''} · clic : ${layers[l] ? 'masquer' : 'afficher'} · Alt+clic ou double-clic : isoler`}
+            >
+              <span className="lyr__box" aria-hidden="true" />
+              <span className="lyr__tog-l">{SHORT[l]}</span>
+              <StatusDot color={worst} size={6} />
+            </button>
+          );
+        })}
+      </div>
+      <ul className="lyr__list sz-scroll">
+        {activeCount === 0 ? <li className="lyr__empty lyr__empty--all">AUCUN CALQUE ACTIF — ENVELOPPE DU CORPS SEULE</li> : null}
+        {LAYER_ORDER.filter((l) => layers[l]).map((l) => {
           const meta = LAYER_META[l];
           const organs = byLayer.get(l) ?? [];
           const active = layers[l];
@@ -110,10 +154,11 @@ export function LayersPanel(): JSX.Element {
                 <StatusDot color={worst} size={7} />
               </button>
 
+              {active && LAYER_NOTE[l] ? <div className="lyr__src">{LAYER_NOTE[l]}</div> : null}
               {active && organs.length > 0 ? (
                 <ul className="lyr__organs">
-                  {organs.map((o) => {
-                    const m = o.metrics[0];
+                  {organs.filter((o) => o.metrics.length > 0).map((o) => {
+                    const m = headline(o);
                     const unmodeled = o.status === 'grey' && !m;
                     return (
                       <li key={o.id}>
@@ -151,6 +196,16 @@ export function LayersPanel(): JSX.Element {
                       </li>
                     );
                   })}
+                  {/* organes sans aucun chiffre : une seule ligne grise (place gagnée, rien de caché) */}
+                  {organs.some((o) => o.metrics.length === 0) ? (
+                    <li>
+                      <div className="lyr__organ lyr__organ--static" data-status="grey" title="Aucune mesure ni modèle : statut inconnu, jamais vert par défaut">
+                        <StatusDot color="grey" />
+                        <span className="lyr__oname">{organs.filter((o) => o.metrics.length === 0).map((o) => shortName(o.name)).join(' · ')}</span>
+                        <span className="lyr__none">NON MODÉLISÉ</span>
+                      </div>
+                    </li>
+                  ) : null}
                 </ul>
               ) : null}
               {active && organs.length === 0 ? <div className="lyr__empty">AUCUNE DONNÉE CE JOUR</div> : null}
@@ -158,7 +213,6 @@ export function LayersPanel(): JSX.Element {
           );
         })}
       </ul>
-      <div className="lyr__foot">CLIC : AFFICHER · ALT+CLIC : ISOLER</div>
     </Panel>
   );
 }

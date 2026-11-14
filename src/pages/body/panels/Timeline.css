@@ -58,7 +58,7 @@
   align-items: center;
   gap: 4px;
   height: 14px;
-  font-size: 9px;
+  font-size: 10px;
   white-space: nowrap;
 }
 .tl__key {
@@ -153,7 +153,7 @@
   stroke-dasharray: 4 3;
 }
 .tl__zonelabel {
-  font-size: 8px;
+  font-size: 10px;
   letter-spacing: 0.16em;
   fill: var(--sz-text);
 }
@@ -174,7 +174,7 @@
 .tl__tick--major[data-proj='true'] { stroke: var(--sz-text-dim); }
 
 .tl__ticklabel {
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 0.08em;
   fill: var(--sz-text);
   font-variant-numeric: tabular-nums;
@@ -196,7 +196,7 @@
   stroke-dasharray: 2 2;
 }
 .tl__mark text {
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 0.1em;
   fill: var(--sz-text-dim);
 }

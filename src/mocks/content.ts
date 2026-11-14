@@ -75,15 +75,15 @@ export function mockLightTimeSource(date: string): 'table' | 'approx' {
 export const SUMMARY_KEY_DAYS = [0, 30, 60, DAY_TODAY, DAY_SOL0, DAY_END].sort((a, b) => a - b);
 
 const val = (o: OrganState, key: string): Metric | undefined => o.metrics.find((m) => m.key === key);
-const when = (b: DayBody) =>
+const when = (b: DayBody, a = 0) =>
   b.day === 0 ? 'Bilan de référence J0'
-    : b.projected ? `Projection J${b.day} au rythme actuel (modèle, pas une mesure)`
+    : b.projected ? `Projection J${b.day} ${a >= 0.5 ? 'avec le plan suivi' : 'au rythme actuel'} (modèle, pas une mesure)`
       : `J${b.day}`;
 const STATUS_TXT = { green: 'nominal', amber: 'à surveiller (ambre)', red: 'hors seuil (rouge)', grey: 'inconnu' } as const;
 const trendSentence = (m?: Metric) =>
   m?.trend7d === undefined ? '' : ` La tendance sur 7 jours est de ${m.trend7d > 0 ? '+' : '−'}${fr(Math.abs(m.trend7d), 2)} %/semaine.`;
 
-function summaryText(o: OrganState, b: DayBody): string | null {
+function summaryText(o: OrganState, b: DayBody, a = 0): string | null {
   const gap = o.bioAge - o.chronoAge;
   const age = ` Écart d'âge estimé [H] : +${fr(gap, 1)} an${round(gap, 1) >= 2 ? 's' : ''} (équivalent en années, en partie réversible au retour).`;
   switch (o.id) {
@@ -92,13 +92,13 @@ function summaryText(o: OrganState, b: DayBody): string | null {
       const thr = d?.ref?.low ?? 95;
       const end = lossPct(o.id, DAY_END, 0) as number;
       const endPlan = lossPct(o.id, DAY_END, 1) as number;
-      return `${when(b)} : la densité osseuse estimée (${o.name.toLowerCase()}) est à ${fr(d?.value ?? NaN, 2)} % du pré-vol, soit une perte de ${fr(100 - (d?.value ?? NaN), 2)} % ; statut ${STATUS_TXT[o.status]}. ` +
+      return `${when(b, a)} : la densité osseuse estimée (${o.name.toLowerCase()}) est à ${fr(d?.value ?? NaN, 2)} % du pré-vol, soit une perte de ${fr(100 - (d?.value ?? NaN), 2)} % ; statut ${STATUS_TXT[o.status]}. ` +
         `Cette valeur vient du modèle recalé sur le bilan au sol et sur les marqueurs urinaires : le scanner ne mesure pas l'os. ` +
         `Seuil NASA V1 4027 : ≥ ${thr} %. À J${DAY_END}, la perte atteindrait ${fr(end, 2)} % au rythme actuel contre ${fr(endPlan, 2)} % avec le plan suivi.${age}`;
     }
     case 'cuisse': case 'mollet': case 'paravertebraux': {
       const v = val(o, 'volume');
-      return `${when(b)} : le volume musculaire (${o.name.toLowerCase()}) est à ${fr(v?.value ?? NaN, 1)} % de J0 au scan, statut ${STATUS_TXT[o.status]}.${trendSentence(v)} ` +
+      return `${when(b, a)} : le volume musculaire (${o.name.toLowerCase()}) est à ${fr(v?.value ?? NaN, 1)} % de J0 au scan, statut ${STATUS_TXT[o.status]}.${trendSentence(v)} ` +
         `Le point du jour est bruité (± ${fr(v?.noise ?? 0, 1)} point) : seule la tendance sur 7 jours déclenche une alerte. ` +
         `Contre-mesure proposée : travail en charge sur ARED et apport protéique maintenu.${age}`;
     }
@@ -106,14 +106,14 @@ function summaryText(o: OrganState, b: DayBody): string | null {
       const v = val(o, 'vo2max');
       const p = val(o, 'vo2_pct');
       const fe = val(o, 'fraction_ejection');
-      return `${when(b)} : VO₂max à ${fr(v?.value ?? NaN, 1)} ml/kg/min, soit ${fr(p?.value ?? NaN, 1)} % du pré-vol ; statut ${STATUS_TXT[o.status]}. ` +
+      return `${when(b, a)} : VO₂max à ${fr(v?.value ?? NaN, 1)} ml/kg/min, soit ${fr(p?.value ?? NaN, 1)} % du pré-vol ; statut ${STATUS_TXT[o.status]}. ` +
         `Fraction d'éjection au scan : ${fr(fe?.value ?? NaN, 0)} %, dans la référence. ` +
         `Au rythme actuel, l'arrivée (Sol 0) se ferait à ${fr(vo2max(DAY_SOL0, 0), 1)} ml/kg/min, à la limite du seuil ${fr(VO2_SOL0, 1)} [NASA V1 4002] ; avec le plan, ${fr(vo2max(DAY_SOL0, 1), 1)}.${age}`;
     }
     case 'reins': {
       const c = val(o, 'calcium_urinaire');
       const k = val(o, 'calculs');
-      return `${when(b)} : ${k?.value ? `${k.value} calcul(s) détecté(s)` : 'aucun calcul détecté'} au scan ; calcium urinaire à ${fr(c?.value ?? NaN, 0)} mg/24 h (référence < 300), statut ${STATUS_TXT[o.status]}.${trendSentence(c)} ` +
+      return `${when(b, a)} : ${k?.value ? `${k.value} calcul(s) détecté(s)` : 'aucun calcul détecté'} au scan ; calcium urinaire à ${fr(c?.value ?? NaN, 0)} mg/24 h (référence < 300), statut ${STATUS_TXT[o.status]}.${trendSentence(c)} ` +
         `La hausse du calcium urinaire accompagne la perte osseuse et augmente le risque de calculs. ` +
         `Conduite proposée : hydratation renforcée et contrôle des reins au prochain scan.`;
     }
@@ -121,20 +121,20 @@ function summaryText(o: OrganState, b: DayBody): string | null {
       const hb = val(o, 'hemoglobine');
       const s = val(o, 'spo2');
       const j = val(o, 'volume_jambes');
-      return `${when(b)} : hémoglobine à ${fr(hb?.value ?? NaN, 1)} g/dL (référence 13,5–17,5), en légère baisse depuis J0, compatible avec l'anémie spatiale. ` +
+      return `${when(b, a)} : hémoglobine à ${fr(hb?.value ?? NaN, 1)} g/dL (référence 13,5–17,5), en légère baisse depuis J0, compatible avec l'anémie spatiale. ` +
         `SpO₂ à ${fr(s?.value ?? NaN, 0)} %, stable. Le volume des jambes est à ${fr(j?.value ?? NaN, 1)} % de J0 : déplacement des fluides vers le haut du corps, attendu en apesanteur. ` +
         `Statut ${STATUS_TXT[o.status]} ; le VO₂max est suivi avec le cœur.`;
     }
     case 'yeux': {
       const g = val(o, 'gaine_nerf_optique');
-      return `${when(b)} : le diamètre de la gaine du nerf optique est de ${fr(g?.value ?? NaN, 2)} mm (repère de vigilance 5,5 mm [H]), statut ${STATUS_TXT[o.status]}.${trendSentence(g)} ` +
+      return `${when(b, a)} : le diamètre de la gaine du nerf optique est de ${fr(g?.value ?? NaN, 2)} mm (repère de vigilance 5,5 mm [H]), statut ${STATUS_TXT[o.status]}.${trendSentence(g)} ` +
         `Cette mesure reflète la pression intracrânienne et le risque oculaire SANS. ` +
         `Conduite proposée : test de vision et transmission des mesures au médecin au sol.`;
     }
     case 'dose': {
       const d = val(o, 'dose_cumulee');
       const j = val(o, 'dose_jour');
-      return `${when(b)} : dose cumulée de ${fr(d?.value ?? NaN, 0)} mSv, conforme au prévu ; dose du jour ${fr(j?.value ?? NaN, 2)} mSv. ` +
+      return `${when(b, a)} : dose cumulée de ${fr(d?.value ?? NaN, 0)} mSv, conforme au prévu ; dose du jour ${fr(j?.value ?? NaN, 2)} mSv. ` +
         `Référence de croisière : 1,84 mSv/j [Publié RAD]. Le repère de 600 mSv est une hypothèse d'équipe [H] à vérifier. ` +
         `Statut ${STATUS_TXT[o.status]}.`;
     }
@@ -146,14 +146,16 @@ function summaryText(o: OrganState, b: DayBody): string | null {
 const summaryCache = new Map<string, OrganSummary | null>();
 
 /** Synthèse du jour clé le plus proche (J0, J30, J60, J94, Sol 0, J860). null si l'organe n'est pas modélisé. */
-export function mockSummary(organId: OrganId, day: number): OrganSummary | null {
+export function mockSummary(organId: OrganId, day: number, adherence = 0): OrganSummary | null {
+  let a = adherence >= 0.5 ? 1 : 0;
   let key = SUMMARY_KEY_DAYS[0];
   for (const k of SUMMARY_KEY_DAYS) if (Math.abs(k - day) < Math.abs(key - day)) key = k;
-  const ck = `${organId}/${key}`;
+  if (key <= DAY_TODAY) a = 0; // jour mesuré : un seul texte
+  const ck = `${organId}/${key}/${a}`;
   if (summaryCache.has(ck)) return summaryCache.get(ck) ?? null;
-  const body = mockDayBody(key);
+  const body = mockDayBody(key, a);
   const o = body.organs.find((x) => x.id === organId);
-  const text = o && o.status !== 'grey' ? summaryText(o, body) : null;
+  const text = o && o.status !== 'grey' ? summaryText(o, body, a) : null;
   const out: OrganSummary | null = text ? { organId, day: key, text, generatedBy: 'IA-sol', reviewed: false } : null;
   summaryCache.set(ck, out);
   return out;

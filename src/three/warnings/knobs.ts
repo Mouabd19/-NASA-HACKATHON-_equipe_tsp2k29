@@ -1,12 +1,12 @@
 // Réglages des warnings 3D — TOUT ce qui se règle à l'œil est ici (itération rapide).
 export const warnKnobs = {
   /** Plaque hexagonale (px). */
-  plateW: 156,
-  plateH: 44,
+  plateW: 184,
+  plateH: 50,
   /** Écart vertical minimal entre deux plaques d'une même colonne (px). */
   plateGap: 12,
   /** Distance axe du corps → bord intérieur des plaques, en mètres (suit le zoom). */
-  columnOffsetM: 0.46,
+  columnOffsetM: 0.43,
   /** Marge minimale entre une plaque et le bord de la scène (px). */
   edgeMargin: 10,
   /** Marge haute / basse réservée (px) — laisse la place à l'en-tête et à la timeline. */

@@ -111,7 +111,7 @@ function Detail({ row, day }: { row: Row; day: number }): JSX.Element {
   const hi = Math.max(last.refHigh, ...values);
   const pad = (hi - lo) * 0.12 || 1;
   const xMax = Math.max(Math.min(day, DAY_TODAY), last.day, 7);
-  const mono = { fontFamily: tokens.font.mono, fontSize: 9, fill: tokens.color.textDim } as const;
+  const mono = { fontFamily: tokens.font.mono, fontSize: 10, fill: tokens.color.textDim } as const;
   const out = outOfRange(last);
   return (
     <div className="bp-detail">
@@ -161,7 +161,7 @@ function Detail({ row, day }: { row: Row; day: number }): JSX.Element {
       </div>
       <div className="bp-detail__foot">
         <span>
-          {day > last.day ? 'DERNIER ' : ''}{row.daily ? 'RECUEIL' : 'PRÉLÈVEMENT'} {fmtDay(last.day)} · {fmt(last.value, digits)} {last.unit}
+          {day > last.day ? 'DERNIER ' : ''}{row.daily ? 'RECUEIL' : 'PRÉLÈV.'} {fmtDay(last.day)} · {fmt(last.value, digits)} {last.unit}
         </span>
         <TagBadge tag={last.tag} />
       </div>

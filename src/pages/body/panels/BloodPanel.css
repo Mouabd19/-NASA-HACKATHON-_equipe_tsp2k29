@@ -40,7 +40,7 @@
   border-left: 2px solid var(--sz-unknown);
   background: var(--sz-panel);
   color: var(--sz-text-dim);
-  font-size: 9px;
+  font-size: 10px;
   line-height: 1.5;
 }
 
@@ -61,7 +61,7 @@
   background: color-mix(in srgb, var(--sz-bg) 92%, var(--sz-text));
   border-bottom: 1px solid var(--sz-border);
   color: var(--sz-text-dim);
-  font-size: 9px;
+  font-size: 10px;
   line-height: 1.4;
   white-space: nowrap;
 }
@@ -130,13 +130,13 @@ button.bp-row:hover { background: var(--sz-panel-hover); }
   align-items: baseline;
   gap: 5px;
   font-family: var(--sz-font-mono);
-  font-size: 8px;
+  font-size: 10px;
   line-height: 10px;
   color: var(--sz-text-dim);
   white-space: nowrap;
   overflow: hidden;
 }
-.bp-row__sub .sz-tag { font-size: 8px; line-height: 10px; color: var(--sz-unknown); }
+.bp-row__sub .sz-tag { font-size: 10px; line-height: 10px; color: var(--sz-unknown); }
 .bp-row__unit { letter-spacing: 0.04em; }
 
 .bp-row__value {
@@ -150,12 +150,12 @@ button.bp-row:hover { background: var(--sz-panel-hover); }
   min-width: 38px;
 }
 .bp-row__trend {
-  font-size: 7px;
+  font-size: 10px;
   line-height: 1;
   text-align: center;
 }
 .bp-row--empty { grid-template-columns: minmax(0, 1fr) auto; }
-.bp-row__empty { font-size: 9px; color: var(--sz-unknown); }
+.bp-row__empty { font-size: 10px; color: var(--sz-unknown); }
 
 /* Position dans l'intervalle de référence */
 .bp-range {
@@ -205,7 +205,7 @@ button.bp-row:hover { background: var(--sz-panel-hover); }
   justify-content: space-between;
   align-items: baseline;
   gap: 8px;
-  font-size: 9px;
+  font-size: 10px;
   line-height: 1.5;
   letter-spacing: 0.08em;
   color: var(--sz-text-dim);
@@ -213,14 +213,15 @@ button.bp-row:hover { background: var(--sz-panel-hover); }
 }
 .bp-detail__meta { padding-top: 4px; text-transform: none; }
 .bp-detail__n { color: var(--sz-unknown); }
-.bp-detail__chart { height: 120px; margin: 2px 0; }
+.bp-detail__chart { height: 120px; margin: 2px 8px 2px 0; }
 .bp-detail__chart .recharts-surface { overflow: visible; }
-.bp-detail__foot { color: var(--sz-text); text-transform: none; }
+.bp-detail__foot { color: var(--sz-text); text-transform: none; flex-wrap: wrap; row-gap: 0; white-space: normal; }
+.bp-detail__foot > span { white-space: nowrap; }
 .bp-detail__note {
   margin-top: 4px;
   padding-top: 4px;
   border-top: 1px dashed var(--sz-border);
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 0.08em;
   color: var(--sz-text-dim);
 }
@@ -232,12 +233,12 @@ button.bp-row:hover { background: var(--sz-panel-hover); }
   gap: 4px 10px;
   padding: 6px 10px;
   border-top: 1px solid var(--sz-border);
-  font-size: 8px;
+  font-size: 10px;
   letter-spacing: 0.08em;
   color: var(--sz-unknown);
 }
 .bp-legend__key { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
-.bp-legend__key .sz-tag { font-size: 8px; color: var(--sz-unknown); }
+.bp-legend__key .sz-tag { font-size: 10px; color: var(--sz-unknown); }
 .bp-legend__ref {
   display: inline-block;
   width: 12px;
@@ -248,3 +249,10 @@ button.bp-row:hover { background: var(--sz-panel-hover); }
 }
 
 .bp .sz-tag { text-transform: none; }
+
+/* Liste défilante : fondu bas de 16 px — une ligne coupée se lit comme « ça défile », pas comme un bug. */
+.bp-scroll {
+  padding-bottom: 14px;
+  -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 16px), transparent);
+  mask-image: linear-gradient(to bottom, black calc(100% - 16px), transparent);
+}

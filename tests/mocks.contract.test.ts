@@ -9,6 +9,8 @@ import { vo2DeficitAt, vo2maxAt } from '../src/models/aerobic';
 import { boneLossPct } from '../src/models/bone';
 import { cumulativeDoseMSv } from '../src/models/radiation';
 import { phenoAge } from '../src/models/phenoAge';
+import { hasBioAgeModel } from '../src/models/bioAge';
+import { lightTimeSource } from '../src/content/horizons';
 import { trend7d } from '../src/models/trend';
 import { alertsForDay } from '../src/models/alerts';
 import { triage } from '../src/models/triage';
@@ -460,5 +462,50 @@ describe('ingest (stubs en mémoire, sans réseau)', () => {
     saveCheckIn({ day: 94, mood: 4, fatigue: 2, pain: 0, sleepFelt: 4, source: 'manual' });
     expect(todayCheckIn()).toMatchObject({ mood: 4, source: 'manual' });
     expect(getCheckIn(94)).toMatchObject({ mood: 4, source: 'manual' });
+  });
+});
+
+describe('honnêteté — ajouts hors contrat (revue du premier jet Body)', () => {
+  it('phenoAge du stub est marqué mock (formule publiée, valeur factice)', () => {
+    expect(phenoAge(94)!.mock).toBe(true);
+  });
+  it('hasBioAgeModel : seuls les organes avec un modèle de perte ont un écart d’âge', () => {
+    for (const id of ['hanche', 'rachis', 'femur', 'cuisse', 'mollet', 'paravertebraux', 'coeur']) expect(hasBioAgeModel(id)).toBe(true);
+    for (const id of ['reins', 'sang', 'yeux', 'dose', 'poumons', 'foie', 'cerveau']) expect(hasBioAgeModel(id)).toBe(false);
+  });
+  it('lightTimeSource : table pour la date de test, approximation ailleurs', () => {
+    expect(lightTimeSource('2026-11-14')).toBe('table');
+    expect(lightTimeSource('2027-03-10')).toBe('approx');
+  });
+  it('sang : le VO₂max (porté par le cœur) ne compte pas dans son statut ; autant d’organes ambre que d’alertes à J94', () => {
+    const body = getDayBody(94);
+    expect(body.organs.find((o) => o.id === 'sang')!.status).toBe('green');
+    expect(body.organs.filter((o) => o.status === 'amber').length).toBe(alertsForDay(94).length);
+  });
+  it('perte osseuse cumulée et projection : pas de « tendance 7 j » (la pente est portée par la densité)', () => {
+    const hip = getDayBody(94).organs.find((o) => o.id === 'hanche')!;
+    expect(hip.metrics.find((m) => m.key === 'perte_osseuse')!.trend7d).toBeUndefined();
+    expect(hip.metrics.find((m) => m.key === 'projection_j860')!.trend7d).toBeUndefined();
+    expect(typeof hip.metrics.find((m) => m.key === 'densite_osseuse')!.trend7d).toBe('number');
+  });
+});
+
+describe('scénario « avec le plan » — ajouts hors contrat (revue n° 2)', () => {
+  it('alertsForDayPlan : identique avant J94, différent en projection', async () => {
+    const { alertsForDay, alertsForDayPlan } = await import('../src/models/alerts');
+    expect(alertsForDayPlan(94, 1)).toEqual(alertsForDay(94));
+    expect(alertsForDayPlan(860, 0)).toEqual(alertsForDay(860));
+    const pace = alertsForDayPlan(860, 0).find((a) => a.organId === 'hanche');
+    const plan = alertsForDayPlan(860, 1).find((a) => a.organId === 'hanche');
+    expect(pace?.level).toBe('ROUGE');
+    expect(plan?.level).not.toBe('ROUGE');
+    if (plan) expect(plan.message).not.toMatch(/au rythme actuel/);
+  });
+  it('getSummaryPlan : le texte de projection nomme le bon scénario', async () => {
+    const { getSummary, getSummaryPlan } = await import('../src/content/summaries');
+    expect(getSummaryPlan('hanche', 94, 1)).toEqual(getSummary('hanche', 94));
+    expect(getSummaryPlan('hanche', 860, 0)?.text).toMatch(/au rythme actuel/);
+    expect(getSummaryPlan('hanche', 860, 1)?.text).toMatch(/avec le plan suivi/);
+    expect(getSummaryPlan('hanche', 860, 1)?.text).toMatch(/95,78 %/);
   });
 });

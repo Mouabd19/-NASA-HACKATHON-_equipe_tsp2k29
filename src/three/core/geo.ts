@@ -99,8 +99,17 @@ export function fusiform(a: V3, b: V3, rmax: number, opts: TubeOpts & { peak?: n
 }
 
 /** Ellipsoïde orienté (sphère mise à l'échelle), en espace monde. */
-export function blob(c: V3, r: V3, rot: V3 = [0, 0, 0], detail = 14): THREE.BufferGeometry {
+export function blob(c: V3, r: V3, rot: V3 = [0, 0, 0], detail = 14, square = 1): THREE.BufferGeometry {
   const g = new THREE.SphereGeometry(1, detail, Math.max(6, Math.round(detail * 0.7)));
+  // square < 1 : super-ellipsoïde (pavé aux coins arrondis) — évite l'effet « bouton rond » des petits muscles plats
+  if (square !== 1) {
+    const pos = g.attributes.position;
+    for (let i = 0; i < pos.count; i++) {
+      const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
+      pos.setXYZ(i, Math.sign(x) * Math.pow(Math.abs(x), square), Math.sign(y) * Math.pow(Math.abs(y), square), z);
+    }
+    g.computeVertexNormals();
+  }
   const m = new THREE.Matrix4().compose(
     new THREE.Vector3(...c),
     new THREE.Quaternion().setFromEuler(new THREE.Euler(...rot)),

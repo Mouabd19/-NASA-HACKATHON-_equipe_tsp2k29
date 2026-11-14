@@ -28,26 +28,19 @@ export function deOverlap(slots: Slot[], step: number, top: number, bottom: numb
 }
 
 /**
- * Trait coudé ancre → plaque : un segment oblique (45° si la place le permet) puis un segment horizontal.
+ * Trait coudé ancre → plaque : un segment HORIZONTAL au départ de l'ancre, puis un segment oblique (45° si la place
+ * le permet) qui arrive sur la plaque. Le coude est côté plaque : sur le corps, les traits d'une même colonne sont
+ * parallèles et, les plaques étant rangées dans l'ordre des ancres, ils ne se croisent jamais.
  * Renvoie la chaîne `points` d'un <polyline>. `side` = +1 plaque à droite, −1 à gauche.
  */
 export function elbowPoints(ax: number, ay: number, ex: number, ey: number, side: number, trim: number): string {
   const reach = Math.abs(ex - ax);
   const dy = ey - ay;
-  const run = Math.min(Math.abs(dy), Math.max(0, reach - 8));
-  const kx = ax + side * run;
-  const len = Math.hypot(kx - ax, dy);
-  let sx = ax, sy = ay;
-  if (len > trim) {
-    sx = ax + ((kx - ax) / len) * trim;
-    sy = ay + (dy / len) * trim;
-  } else {
-    // ancre et plaque quasi alignées : on part directement à l'horizontale
-    sx = ax + side * trim;
-    sy = ey;
-    return `${r(sx)},${r(sy)} ${r(ex)},${r(ey)}`;
-  }
-  return `${r(sx)},${r(sy)} ${r(kx)},${r(ey)} ${r(ex)},${r(ey)}`;
+  const run = Math.min(Math.abs(dy), Math.max(0, reach - trim - 8));
+  const kx = ex - side * run;                 // coude, côté plaque
+  const sx = ax + side * Math.min(trim, Math.max(0, Math.abs(kx - ax)));
+  if (Math.abs(dy) < 1.5) return `${r(sx)},${r(ey)} ${r(ex)},${r(ey)}`;
+  return `${r(sx)},${r(ay)} ${r(kx)},${r(ay)} ${r(ex)},${r(ey)}`;
 }
 
 /** Arrondi au demi-pixel : un trait de 1 px reste net. */

@@ -11,14 +11,16 @@ const get = (o: OrganState, key: string): Metric | undefined => o.metrics.find((
 const trendTxt = (m?: Metric) =>
   m?.trend7d === undefined ? 'tendance 7 j indisponible' : `tendance 7 j ${m.trend7d > 0 ? '+' : '−'}${fr(Math.abs(m.trend7d), 2)} %/sem`;
 
-function boneAlert(o: OrganState, level: Level, name: string): Alert {
+function boneAlert(o: OrganState, level: Level, name: string, day: number, a: number): Alert {
+  const pace = a >= 0.5 ? 'avec le plan' : 'au rythme actuel';
   const thr = BONE_THRESHOLD[o.id];
   const dens = get(o, 'densite_osseuse')?.value ?? NaN;
   const loss = get(o, 'perte_osseuse')?.value ?? NaN;
-  const end = 100 - (lossPct(o.id, DAY_END, 0) as number);
+  const end = 100 - (lossPct(o.id, DAY_END, a) as number);
+  const endLevel = end < thr ? '→ ROUGE' : '→ reste au-dessus du seuil';
   const message = level === 'ROUGE'
     ? `Densité estimée ${fr(dens, 2)} % du pré-vol (perte ${fr(loss, 2)} %) : sous le seuil NASA ≥ ${thr} %. Estimation du modèle [H], pas une mesure du scanner.`
-    : `Densité estimée ${fr(dens, 2)} % du pré-vol (perte ${fr(loss, 2)} %). Au rythme actuel, projection J${DAY_END} : ${fr(end, 2)} % → ROUGE (seuil NASA ≥ ${thr} %).`;
+    : `Projection J${DAY_END} ${pace} : ${fr(end, 2)} % ${endLevel} (seuil NASA ≥ ${thr} %). ${day > DAY_TODAY ? `À J${day}` : "Aujourd'hui"} : densité estimée ${fr(dens, 2)} % du pré-vol (perte ${fr(loss, 2)} %), modèle [H].`;
   return { id: `alert-${o.id}`, organId: o.id, level, title: `${name} — PERTE OSSEUSE ESTIMÉE`, message, rule: 'V1 4027' };
 }
 
@@ -31,20 +33,20 @@ function muscleAlert(o: OrganState, level: Level, name: string): Alert {
   };
 }
 
-function organAlert(o: OrganState, level: Level, day: number): Alert | null {
+function organAlert(o: OrganState, level: Level, day: number, a: number): Alert | null {
   switch (o.id) {
-    case 'hanche': return boneAlert(o, level, 'HANCHE');
-    case 'rachis': return boneAlert(o, level, 'RACHIS');
-    case 'femur': return boneAlert(o, level, 'COL DU FÉMUR');
+    case 'hanche': return boneAlert(o, level, 'HANCHE', day, a);
+    case 'rachis': return boneAlert(o, level, 'RACHIS', day, a);
+    case 'femur': return boneAlert(o, level, 'COL DU FÉMUR', day, a);
     case 'cuisse': return muscleAlert(o, level, 'CUISSE');
     case 'mollet': return muscleAlert(o, level, 'MOLLET');
     case 'paravertebraux': return muscleAlert(o, level, 'PARAVERTÉBRAUX');
     case 'coeur': {
       const v = get(o, 'vo2max')?.value ?? NaN;
       const pct = get(o, 'vo2_pct')?.value ?? NaN;
-      const sol0 = vo2max(DAY_SOL0, 0);
+      const sol0 = vo2max(DAY_SOL0, a);
       const tail = day < DAY_SOL0
-        ? ` Projection Sol 0 (J${DAY_SOL0}) au rythme actuel : ${fr(sol0, 1)} — à la limite du seuil ${fr(VO2_SOL0, 1)} [NASA V1 4002].`
+        ? ` Projection Sol 0 (J${DAY_SOL0}) ${a >= 0.5 ? 'avec le plan' : 'au rythme actuel'} : ${fr(sol0, 1)} — ${sol0 - VO2_SOL0 < 0.5 ? 'à la limite du' : 'au-dessus du'} seuil ${fr(VO2_SOL0, 1)} [NASA V1 4002].`
         : ` Seuils : ≥ 80 % du pré-vol [NASA V1 4003], ≥ ${fr(VO2_SOL0, 1)} [NASA V1 4002].`;
       return {
         id: 'alert-coeur', organId: 'coeur', level, title: 'CŒUR — VO₂MAX EN BAISSE',
@@ -92,22 +94,26 @@ function organAlert(o: OrganState, level: Level, day: number): Alert | null {
 }
 
 const ORDER: Level[] = ['ROUGE', 'ORANGE', 'AMBRE', 'DONNEES_INSUFFISANTES', 'VERT'];
-const cache = new Map<number, Alert[]>();
+const cache: [Map<number, Alert[]>, Map<number, Alert[]>] = [new Map(), new Map()];
 
-/** Alertes du jour (mesuré ou projeté au rythme actuel), les plus graves d'abord. */
-export function mockAlertsForDay(day: number): Alert[] {
-  const body = mockDayBody(day);
-  const hit = cache.get(body.day);
+/**
+ * Alertes du jour (mesuré ou projeté), les plus graves d'abord.
+ * adherence (ajout) : 0 = rythme actuel (défaut), 1 = avec le plan — ne change que les jours projetés.
+ */
+export function mockAlertsForDay(day: number, adherence = 0): Alert[] {
+  const body = mockDayBody(day, adherence);
+  const a = body.day > DAY_TODAY && adherence >= 0.5 ? 1 : 0;
+  const hit = cache[a].get(body.day);
   if (hit) return hit;
   const out: Alert[] = [];
   for (const o of body.organs) {
     const level = LEVEL[o.status];
     if (!level) continue;
-    const a = organAlert(o, level, body.day);
-    if (a) out.push(a);
+    const al = organAlert(o, level, body.day, a);
+    if (al) out.push(al);
   }
   out.sort((x, y) => ORDER.indexOf(x.level) - ORDER.indexOf(y.level));
-  cache.set(body.day, out);
+  cache[a].set(body.day, out);
   return out;
 }
 

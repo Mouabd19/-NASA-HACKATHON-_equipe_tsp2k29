@@ -49,7 +49,7 @@ export function createFloor(): THREE.Group {
     for (let cm = 0; cm <= 180; cm += 5) {
       const y = cm / 100;
       const len = cm % 50 === 0 ? 0.05 : cm % 10 === 0 ? 0.028 : 0.014;
-      ruler.push(x, y, 0, x + len, y, 0);
+      ruler.push(x, y, 0, x - Math.sign(x || 1) * len, y, 0); // graduations tournées vers le corps
     }
     g.add(lines(ruler, look.floor.rulerOpacity));
   }

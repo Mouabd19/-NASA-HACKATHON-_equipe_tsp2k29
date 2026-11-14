@@ -114,8 +114,8 @@
 }
 .w3d-plate__label {
   color: var(--sz-text);
-  font-size: 10px;
-  line-height: 14px;
+  font-size: 13px;
+  line-height: 16px;
   margin: -2px 0;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -126,7 +126,7 @@
 .w3d-plate__sub {
   display: flex;
   gap: 5px;
-  font-size: 8px;
+  font-size: 10px;
   line-height: 11px;
   margin: -1px 0;
   letter-spacing: 0.03em;
@@ -156,7 +156,7 @@
   right: 11px;
   top: -5px;
   padding: 1px 4px 1px 5px;
-  font-size: 7px;
+  font-size: 10px;
   line-height: 1;
   letter-spacing: 0.14em;
   color: var(--sz-text-dim);

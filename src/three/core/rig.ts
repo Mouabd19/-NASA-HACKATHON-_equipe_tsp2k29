@@ -20,6 +20,7 @@ interface Entry {
   modeled: boolean;
   tintTarget: THREE.Color;
   mixTarget: number;
+  tintWeight: number;
   opacityFactor: number;   // organes gris : plus éteints
   opacityFactorTarget: number;
 }
@@ -45,6 +46,8 @@ export interface BodyRig {
   startScan(): void;
   /** Avance l'animation. dt et t en secondes. */
   update(dt: number, t: number, s: RigFrameState): void;
+  /** Avancement du balayage (0..1), ou −1 s'il n'y en a pas, et hauteur du plan (m). */
+  scan(): { t: number; y: number };
   /** Fondu courant d'un calque (0..1). */
   layerFade(l: LayerId): number;
   /** Organe désigné par une liste d'intersections (la plus proche d'abord). */
@@ -70,16 +73,18 @@ export function createBodyRig(): BodyRig {
   // un matériau par groupe (organe × calque), partagé entre les pièces gauche/droite
   const entries = new Map<string, Entry>();
   const entryFor = (p: PartDef): Entry => {
-    const key = `${p.organId ?? 'contexte'}|${p.layer}|${p.fx ?? ''}`;
+    const key = `${p.organId ?? 'contexte'}|${p.layer}|${p.fx ?? ''}|${p.tintWeight ?? 1}`;
     let e = entries.get(key);
     if (!e) {
       const mat = createHologramMaterial({ layer: p.layer, fx: p.fx });
+      // pièces SUIVIES (porteuses d'un statut) : elles restent lisibles même à l'arrière du corps (mollet, paravertébraux)
+      if (p.organId && mat.uniforms.uDepthCue.value > 0) mat.uniforms.uDepthCue.value = Math.max(mat.uniforms.uDepthCue.value, look.depthCueTracked);
       mat.uniforms.uTime = shared.time;
       mat.uniforms.uScanY = shared.scanY;
       mat.uniforms.uGhost = shared.ghost;
       e = {
         mat, meshes: [], organId: p.organId, layer: p.layer, layers: partLayers(p), modeled: p.modeled,
-        tintTarget: neutral.clone(), mixTarget: 0, opacityFactor: 1, opacityFactorTarget: 1,
+        tintTarget: neutral.clone(), mixTarget: 0, tintWeight: p.tintWeight ?? 1, opacityFactor: 1, opacityFactorTarget: 1,
       };
       entries.set(key, e);
     }
@@ -122,8 +127,9 @@ export function createBodyRig(): BodyRig {
 
   const fade: Record<LayerId, number> = { squelette: 0, muscles: 0, organes: 0, cardio: 0, nerveux: 0, exposition: 0 };
   let fadeInit = false;
-  let inner = 0;
+  let inner = 0;        // 0 = aucun calque interne, 1 = un seul, 2 = trois ou plus (lissé)
   let scanT = -1; // < 0 : pas de balayage en cours
+  const scanInfo = { t: -1, y: 0 };
 
   const setStatuses = (statuses: Map<OrganId, Color>, immediate = false): void => {
     for (const e of list) {
@@ -131,7 +137,8 @@ export function createBodyRig(): BodyRig {
       // donnée absente ou pièce non modélisée → gris (jamais vert par défaut)
       const st: Color = e.modeled ? statuses.get(e.organId) ?? 'grey' : 'grey';
       e.tintTarget.copy(statusColors[st]);
-      e.mixTarget = look.status[st];
+      // gris (inconnu) : jamais atténué — une pièce périphérique grise doit rester grise, pas neutre
+      e.mixTarget = look.status[st] * (st === 'grey' ? 1 : e.tintWeight);
       e.opacityFactorTarget = st === 'grey' ? look.status.greyOpacity : 1;
       if (immediate) {
         (e.mat.uniforms.uTint.value as THREE.Color).copy(e.tintTarget);
@@ -150,12 +157,14 @@ export function createBodyRig(): BodyRig {
       scanT += dt / look.scan.duration;
       if (scanT >= 1) {
         scanT = -1;
+        scanInfo.t = -1;
         shared.scanY.value = SCAN_Y_IDLE;
         scanGroup.visible = false;
       } else {
         const k = scanT * scanT * (3 - 2 * scanT);
         const y = look.scan.yStart + (look.scan.yEnd - look.scan.yStart) * k;
         shared.scanY.value = y;
+        scanInfo.t = k; scanInfo.y = y;
         scanGroup.position.y = y;
         scanGroup.visible = true;
         const edge = Math.min(1, scanT * 8, (1 - scanT) * 8);
@@ -170,8 +179,9 @@ export function createBodyRig(): BodyRig {
     let innerTarget = 0;
     for (const l of LAYERS) {
       fade[l] += ((s.layers[l] ? 1 : 0) - fade[l]) * kf;
-      if (s.layers[l]) innerTarget = 1;
+      if (s.layers[l]) innerTarget += 1;
     }
+    innerTarget = innerTarget <= 1 ? innerTarget : Math.min(2, 1 + (innerTarget - 1) / 2);
     inner += (innerTarget - inner) * kf;
 
     const focusVisible = s.focus !== null && list.some((e) => e.organId === s.focus && e.layers.some((l) => s.layers[l]));
@@ -183,7 +193,11 @@ export function createBodyRig(): BodyRig {
       let f = 1;
       let base: number;
       if (e.layer === 'shell') {
-        base = look.layers.shell.opacity * (look.shell.opacityAlone + (look.shell.opacityWithLayers - look.shell.opacityAlone) * inner);
+        const sh = look.shell;
+        const o = inner <= 1
+          ? sh.opacityAlone + (sh.opacityOneLayer - sh.opacityAlone) * inner
+          : sh.opacityOneLayer + (sh.opacityWithLayers - sh.opacityOneLayer) * (inner - 1);
+        base = look.layers.shell.opacity * o;
       } else {
         f = 0;
         for (const l of e.layers) f = Math.max(f, fade[l]);
@@ -226,6 +240,7 @@ export function createBodyRig(): BodyRig {
     staticGroup, pickGroup, scanGroup, setStatuses, update, pick,
     startScan: () => { scanT = 0; shared.scanY.value = look.scan.yStart; },
     layerFade: (l) => fade[l],
+    scan: () => scanInfo,
     dispose: () => {
       for (const e of list) e.mat.dispose();
       ringGeo.dispose(); ringMat.dispose(); discGeo.dispose(); discMat.dispose();

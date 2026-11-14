@@ -115,7 +115,9 @@
   flex-direction: column;
   justify-content: center;
   gap: 1px;
-  min-width: 300px;
+  /* largeur FIXE : le bloc ne se recompose pas quand le jour change */
+  width: 384px;
+  flex: none;
   padding: 0 18px;
   border-left: 1px solid var(--sz-border);
   border-right: 1px solid var(--sz-border);
@@ -123,6 +125,8 @@
   cursor: pointer;
   transition: background-color 120ms;
 }
+.hdr__bio { overflow: hidden; }
+.hdr__bio-vs, .hdr__bio-vs > .sz-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .hdr__bio:hover,
 .hdr__bio[data-open='true'] { background: var(--sz-panel-hover); }
 .hdr__bio:focus-visible { outline-offset: -3px; }
@@ -157,9 +161,19 @@
   display: inline-flex;
   align-items: baseline;
   gap: 8px;
-  margin-left: auto;
   padding-left: 14px;
+  min-width: 0;
 }
+/* valeur factice (stub) : la formule est publiée, pas le chiffre affiché */
+.hdr__mock {
+  padding: 0 5px;
+  border: 1px dashed var(--sz-unknown);
+  color: var(--sz-text);
+}
+.hdr__status { min-width: 236px; }
+.hdr__src { min-width: 256px; }
+.hdr__left { overflow: hidden; }
+.hdr__counts [data-c='green'] { color: var(--sz-text); }
 .hdr__bio-delta {
   font-size: 16px;
   line-height: 32px;
@@ -210,14 +224,19 @@
 }
 
 /* Largeurs réduites : on retire le moins utile d'abord */
-@media (max-width: 1480px) {
+/* l'identité est déjà dans la barre du haut : on la retire dès que la bande est pleine */
+@media (max-width: 1720px) {
   .hdr__id { display: none; }
   .hdr__left > .hdr__rule { display: none; }
 }
 @media (max-width: 1400px) {
   .hdr__scan { width: 24px; padding: 0; font-size: 0; gap: 0; }
   .hdr__left, .hdr__right { gap: 10px; padding: 0 10px; }
-  .hdr__bio { min-width: 0; padding: 0 12px; }
+  .hdr__bio { width: 340px; padding: 0 12px; }
+  /* le bloc est étroit : on retire l'étiquette [Persona] de l'âge réel (elle reste dans la fenêtre « détail ») plutôt que de déborder */
+  .hdr__bio-vs .sz-tag { display: none; }
+  .hdr__bio-vs { padding-left: 8px; }
+  .hdr__status, .hdr__src { min-width: 0; }
   .hdr__daynum { font-size: 28px; }
 }
 @media (max-width: 1240px) {

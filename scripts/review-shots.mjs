@@ -51,6 +51,9 @@ const SHOTS = [
   { name: '19-warroom', url: '/warroom' },
   { name: '20-reasoning', url: `/reasoning/${FIRST_REASONING}` },
   { name: '21-body-1280x720', url: '/body?noscan=1', viewport: { width: 1280, height: 720 } },
+  { name: '22-j860-plan-corps', url: '/body?noscan=1&day=860&plan=1' },
+  { name: '23-window-global-1280x720', url: '/body?noscan=1&window=global', viewport: { width: 1280, height: 720 } },
+  { name: '24-selected-hanche-j300-plan', url: '/body?noscan=1&day=300&plan=1&organ=hanche', wait: 3500 },
 ];
 
 /** Avertissements de bibliothèques / du pilote GL logiciel : notés à part, pas comptés comme erreurs à nous. */
@@ -162,10 +165,38 @@ async function main() {
       } else {
         await sleep(shot.wait ?? SETTLE_MS);
       }
+      // carte de survol / épinglée : on attend qu'elle ait fini de glisser (2 lectures identiques)
+      if (/[?&](hover|organ)=/.test(shot.url)) {
+        let prev = '';
+        for (let i = 0; i < 20; i++) {
+          const cur = await page.evaluate(() => document.querySelector('.hvc__card')?.getAttribute('style') ?? '');
+          if (cur && cur === prev) break;
+          prev = cur;
+          await sleep(400);
+        }
+      }
       await page.screenshot({ path: join(OUT, `${shot.name}.png`) });
       const finalUrl = page.url().replace(BASE, '');
       report.push({ name: shot.name, url: shot.url, finalUrl, errors, ignoredThirdParty: ignored });
       console.log(`${errors.length ? '✗' : '✓'} ${shot.name}  ${shot.url}${errors.length ? `\n    ${errors.join('\n    ')}` : ''}`);
+      await ctx.close();
+    }
+
+    // Test clavier : maintenir → ne doit lever aucune exception (régression React #185 « Maximum update depth »)
+    if (filters.length === 0 || filters.includes('keys')) {
+      const ctx = await browser.newContext({ viewport: { width: 1600, height: 900 }, deviceScaleFactor: 1 });
+      const page = await ctx.newPage();
+      const errors = [];
+      page.on('pageerror', (e) => errors.push(`[pageerror] ${e.message}`));
+      page.on('console', (m) => { if (m.type() === 'error' && /Maximum update depth/.test(m.text())) errors.push(`[error] ${m.text().slice(0, 160)}`); });
+      await page.goto(`${BASE}/body?noscan=1`, { waitUntil: 'load' });
+      await page.waitForSelector('canvas', { timeout: 20_000 }).catch(() => {});
+      await sleep(1500);
+      for (let i = 0; i < 160; i++) await page.keyboard.press('ArrowRight');
+      await sleep(500);
+      const day = await page.evaluate(() => new URLSearchParams(location.search).get('day'));
+      report.push({ name: 'keys-160-arrowright', url: '/body?noscan=1', finalUrl: page.url().replace(BASE, ''), errors, ignoredThirdParty: [] });
+      console.log(`${errors.length ? '✗' : '✓'} 160 × ArrowRight → day=${day}${errors.length ? `\n    ${errors.join('\n    ')}` : ''}`);
       await ctx.close();
     }
 

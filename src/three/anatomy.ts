@@ -9,6 +9,7 @@ import type { LayerId, ModelManifest, OrganId } from '../types';
 import { ellipsoid, polygonise, roundCone, smax, smin, sphere } from './core/sdf';
 import { blob, fixWinding, fusiform, merge, taperTube, triangleCount } from './core/geo';
 import type { V3 } from './core/geo';
+import { look } from './look';
 
 export interface PartDef {
   key: string;
@@ -23,17 +24,19 @@ export interface PartDef {
   alsoLayers?: LayerId[];
   /** Ajout (optionnel) : 'flow' = vaisseau (tirets animés le long de uv.x), 'heat' = carte de dose. */
   fx?: 'flow' | 'heat';
+  /** Ajout (optionnel) : poids de la teinte de statut (défaut 1). < 1 = pièce périphérique d'un organe étendu. */
+  tintWeight?: number;
 }
 
 // ───────────────────────────── fabrique de pièces ─────────────────────────────
 
-interface PartOpts { modeled?: boolean; alsoLayers?: LayerId[]; fx?: 'flow' | 'heat'; position?: V3 }
+interface PartOpts { modeled?: boolean; alsoLayers?: LayerId[]; fx?: 'flow' | 'heat'; position?: V3; tintWeight?: number }
 
 function part(key: string, organId: OrganId | null, layer: PartDef['layer'], geometry: THREE.BufferGeometry, o: PartOpts = {}): PartDef {
   return {
     key, organId, layer, geometry,
     position: o.position ?? [0, 0, 0], rotation: [0, 0, 0], scale: [1, 1, 1],
-    modeled: o.modeled ?? true, alsoLayers: o.alsoLayers, fx: o.fx,
+    modeled: o.modeled ?? true, alsoLayers: o.alsoLayers, fx: o.fx, tintWeight: o.tintWeight,
   };
 }
 
@@ -187,16 +190,24 @@ function pelvisSdf(x: number, y: number, z: number): number {
   wing = smax(wing, 0.050 - ax, 0.012);
   wing = smax(wing, -sphere(ax, y, z, 0, 1.035, 0.095, 0.112), 0.02);            // ouverture antérieure
   wing = smax(wing, -sphere(ax, y, z, 0.03, 1.075, -0.075, 0.045), 0.015);       // échancrure postérieure
-  // sacrum + coccyx
-  let d = ellipsoid(ax, y, z, 0, 0.995, -0.066, 0.054, 0.050, 0.023);
-  d = smin(d, roundCone(ax, y, z, 0, 0.962, -0.074, 0, 0.925, -0.072, 0.017, 0.007), 0.015);
+  // sacrum : coin triangulaire aplati, basculé vers l'arrière (large en haut, pointe = coccyx) — pas une boule
+  const sy = (y - 0.985), sz = (z + 0.066) - sy * 0.22;                          // repère basculé de ~12°
+  const halfW = 0.008 + 0.050 * Math.min(1, Math.max(0, (y - 0.905) / 0.125));   // demi-largeur selon la hauteur
+  let d = Math.max(ax - halfW, Math.abs(sy + 0.012) - 0.062, Math.abs(sz) - 0.011) - 0.006;
+  d = smax(d, -sphere(ax, y, z, 0.022, 1.005, -0.050, 0.0065), 0.004);           // trous sacrés (évocation)
+  d = smax(d, -sphere(ax, y, z, 0.018, 0.975, -0.056, 0.0055), 0.004);
+  d = smin(d, roundCone(ax, y, z, 0.040, 1.012, -0.062, 0.078, 1.006, -0.050, 0.013, 0.012), 0.012); // aileron sacré → articulation sacro-iliaque
   d = smin(d, wing, 0.016);
-  // cotyle, branches pubiennes, ischion
-  d = smin(d, sphere(ax, y, z, 0.094, 0.927, 0.000, 0.033), 0.015);
-  d = smin(d, roundCone(ax, y, z, 0.086, 0.932, 0.022, 0.008, 0.900, 0.062, 0.013, 0.012), 0.012);
-  d = smin(d, roundCone(ax, y, z, 0.090, 0.915, -0.010, 0.060, 0.846, -0.026, 0.016, 0.014), 0.012);
-  d = smin(d, roundCone(ax, y, z, 0.060, 0.846, -0.026, 0.012, 0.886, 0.058, 0.009, 0.009), 0.01);
-  d = smax(d, -sphere(ax, y, z, 0.094, 0.925, 0.000, 0.0255), 0.004);            // creux du cotyle (la tête fémorale s'y loge)
+  // corps de l'ilion : relie l'aile au cotyle
+  d = smin(d, roundCone(ax, y, z, 0.108, 0.985, -0.010, 0.096, 0.940, -0.002, 0.014, 0.022), 0.014);
+  // cotyle (cupule), branches pubiennes, ischion, symphyse
+  d = smin(d, sphere(ax, y, z, 0.094, 0.927, 0.000, 0.031), 0.012);
+  d = smin(d, roundCone(ax, y, z, 0.082, 0.930, 0.024, 0.014, 0.898, 0.062, 0.0115, 0.0125), 0.012);  // branche supérieure du pubis
+  d = smin(d, ellipsoid(ax, y, z, 0.010, 0.888, 0.062, 0.013, 0.021, 0.011), 0.008);                   // corps du pubis / symphyse
+  d = smin(d, roundCone(ax, y, z, 0.088, 0.908, -0.016, 0.064, 0.850, -0.030, 0.015, 0.0125), 0.012); // corps de l'ischion
+  d = smin(d, ellipsoid(ax, y, z, 0.062, 0.842, -0.034, 0.014, 0.019, 0.018), 0.010);                  // tubérosité ischiatique
+  d = smin(d, roundCone(ax, y, z, 0.060, 0.846, -0.024, 0.016, 0.872, 0.056, 0.0085, 0.0095), 0.010); // branche ischio-pubienne (ferme le trou obturé)
+  d = smax(d, -sphere(ax, y, z, 0.094, 0.925, 0.004, 0.0245), 0.004);            // creux du cotyle (la tête fémorale s'y loge)
   return d;
 }
 
@@ -328,22 +339,28 @@ function buildMuscles(): PartDef[] {
 
   // paravertébraux : deux colonnes le long du rachis (érecteurs du rachis)
   const para: V3[] = [];
-  for (let y = 0.985; y <= 1.47; y += 0.04) para.push([0.033, y, spineZ(y) - 0.034 - (y < 1.2 ? 0.004 : 0)]);
+  // deux fuseaux continus (profil monotone de part et d'autre du ventre lombaire — pas de renflements)
+  for (let i = 0; i <= 24; i++) {
+    const y = 0.985 + (0.49 * i) / 24;
+    para.push([0.034, y, spineZ(y) - 0.036]);
+  }
   out.push(...pair('paravertebraux', 'paravertebraux', L, finish(taperTube(
-    para, (t) => 0.004 + 0.021 * Math.pow(Math.sin(Math.PI * Math.pow(t, 0.55)), 0.6) * (1 - 0.45 * t),
-    { segments: 30, radial: 10, flat: 0.62 },
+    para, (t) => 0.006 + 0.019 * Math.pow(Math.sin(Math.PI * Math.pow(t, 0.7)), 0.8),
+    { segments: 36, radial: 10, flat: 0.5 },
   ))));
 
   // muscles de contexte (non cliquables) : donnent la silhouette musculaire
   const abs: THREE.BufferGeometry[] = [];
-  for (const [y, z, w] of [[1.262, 0.088, 0.034], [1.190, 0.092, 0.034], [1.118, 0.093, 0.033], [1.030, 0.086, 0.030]] as const) {
-    abs.push(blob([0.036, y, z], [w, y < 1.05 ? 0.048 : 0.032, 0.011], [y < 1.05 ? 0.12 : 0, 0, 0], 10)); // grand droit (« tablettes »)
+  // grand droit : 3 tablettes + un panneau bas, en pavés arrondis (pas en disques : ils se lisaient comme des boutons)
+  for (const [y, z, w, h] of [[1.236, 0.090, 0.031, 0.027], [1.172, 0.093, 0.031, 0.027], [1.108, 0.093, 0.030, 0.027], [1.018, 0.086, 0.027, 0.052]] as const) {
+    abs.push(blob([0.034, y, z], [w, h, 0.010], [y < 1.05 ? 0.12 : 0, 0, 0], 16, 0.45));
   }
   out.push(...pair('contexte-muscles', null, L, finish([
     ...abs,
     fusiform([0.176, 1.452, -0.014], [0.226, 1.262, -0.014], 0.044, { mid: [0.228, 1.385, -0.014], peak: 0.36, ref: [0, 0, 1], flat: 0.62 }), // deltoïde
-    taperTube([[0.018, 1.335, 0.088], [0.095, 1.352, 0.078], [0.198, 1.385, 0.012]],
-      (t) => (0.058 - 0.036 * t) * Math.min(1, t * 7 + 0.3) * Math.min(1, (1 - t) * 6 + 0.25), { segments: 12, radial: 10, ref: [0, 1, 0], flat: 0.2 }), // grand pectoral (éventail)
+    // grand pectoral : masse arrondie sur le thorax + faisceau vers l'humérus (plus de plaque triangulaire « omoplate »)
+    blob([0.082, 1.342, 0.074], [0.072, 0.056, 0.022], [0.1, 0.42, -0.12], 16, 0.8),
+    fusiform([0.120, 1.352, 0.062], [0.205, 1.372, 0.006], 0.030, { peak: 0.3, ref: [0, 1, 0], flat: 0.35 }),
     fusiform([0.212, 1.360, 0.006], [0.258, 1.165, 0.002], 0.027, { peak: 0.42 }),                // biceps
     fusiform([0.208, 1.380, -0.036], [0.262, 1.165, -0.034], 0.026, { peak: 0.45 }),              // triceps
     fusiform([0.258, 1.165, 0.004], [0.318, 0.915, 0.034], 0.022, { peak: 0.26, flat: 0.8 }),     // fléchisseurs de l'avant-bras
@@ -419,6 +436,9 @@ function buildOrgans(): PartDef[] {
 // ───────────────────────────── cardio / sang ─────────────────────────────
 
 function buildCardio(): PartDef[] {
+  // Seule la crosse de l'aorte (où est posée l'ancre « sang ») porte la teinte de statut pleine :
+  // le reste du réseau reste neutre, sinon tout le corps vire à la couleur d'UN statut.
+  const PERIPHERAL = look.status.peripheral;
   const out: PartDef[] = [];
   const L: LayerId = 'cardio';
   const o = { segments: 40, radial: 6 };
@@ -452,14 +472,14 @@ function buildCardio(): PartDef[] {
     taperTube([[0.032, 1.61, -0.002], [0.046, 1.60, 0.040], [0.034, 1.575, 0.070]], 0.0012, { segments: 8, radial: 3 }),                         // faciale
     taperTube([[0.036, 1.665, 0.008], [0.050, 1.70, 0.020], [0.030, 1.735, 0.000]], 0.0012, { segments: 8, radial: 3 }),                         // temporale
   );
-  out.push(...pair('arteres', 'sang', L, finish(arteriesL), { fx: 'flow' }));
+  out.push(...pair('arteres', 'sang', L, finish(arteriesL), { fx: 'flow', tintWeight: PERIPHERAL }));
 
   // veines — trajets de la périphérie VERS le cœur, légèrement décalés des artères
   const shift = (pts: V3[], dx: number, dz: number): V3[] => pts.map(([x, y, z]) => [Math.max(0.004, x + dx), y, z + dz] as V3).reverse();
   out.push(part('veines-axe', 'sang', L, finish([
     taperTube([[-0.020, 1.07, aZ(1.07) + 0.004], [-0.022, 1.18, aZ(1.18) + 0.006], [-0.024, 1.27, 0.000], [-0.030, 1.325, 0.012]], 0.0088, { segments: 20, radial: 8 }), // veine cave inf.
     taperTube([[-0.022, 1.435, 0.012], [-0.026, 1.39, 0.012], [-0.032, 1.352, 0.012]], 0.0075, { segments: 8, radial: 8 }),                                              // veine cave sup.
-  ]), { fx: 'flow' }));
+  ]), { fx: 'flow', tintWeight: PERIPHERAL }));
   const veinsL = [
     taperTube(shift(iliacFemoral.slice(1), 0.011, -0.008), (t) => 0.0026 + 0.0034 * t, { segments: 56, radial: 6 }),
     taperTube(shift(carotid.slice(1), 0.012, -0.006), (t) => 0.0024 + 0.0024 * t, o),            // jugulaire
@@ -471,14 +491,14 @@ function buildCardio(): PartDef[] {
     taperTube([[0.350, 0.80, 0.050], [0.340, 0.90, 0.040], [0.300, 1.04, 0.030], [0.262, 1.20, 0.022], [0.226, 1.34, 0.016], [0.176, 1.412, 0.014], [0.090, 1.440, 0.012]],
       (t) => 0.0014 + 0.0012 * t, { segments: 36, radial: 4 }),                                    // veine céphalique
   );
-  out.push(...pair('veines', 'sang', L, finish(veinsL), { fx: 'flow' }));
+  out.push(...pair('veines', 'sang', L, finish(veinsL), { fx: 'flow', tintWeight: PERIPHERAL }));
   // raccords veineux vers l'axe (tronc brachio-céphalique, iliaques) — non symétriques
   out.push(part('veines-raccords', 'sang', L, finish([
     taperTube([[0.042, 1.47, 0.004], [0.020, 1.445, 0.010], [-0.022, 1.435, 0.012]], 0.0048, { segments: 8, radial: 6 }),
     taperTube([[-0.042, 1.47, 0.004], [-0.030, 1.452, 0.008], [-0.022, 1.435, 0.012]], 0.0048, { segments: 8, radial: 6 }),
     taperTube([[0.057, 0.995, -0.002], [0.016, 1.045, aZ(1.05)], [-0.020, 1.07, aZ(1.07) + 0.004]], 0.0058, { segments: 8, radial: 6 }),
     taperTube([[-0.057, 0.995, -0.002], [-0.036, 1.04, aZ(1.05)], [-0.020, 1.07, aZ(1.07) + 0.004]], 0.0058, { segments: 8, radial: 6 }),
-  ]), { fx: 'flow' }));
+  ]), { fx: 'flow', tintWeight: PERIPHERAL }));
   return out;
 }
 
@@ -499,25 +519,27 @@ function buildNervous(): PartDef[] {
     )),
   ])));
 
+  // rayons grossis : à DPR 1 un nerf de 1 mm disparaît (trait < 1 px)
+  const NERVE_K = 1.6;
   const nervesL: THREE.BufferGeometry[] = [
     // plexus brachial → nerf médian
     taperTube([[0.012, 1.495, -0.030], [0.075, 1.445, -0.014], [0.178, 1.402, -0.012], [0.224, 1.30, -0.016], [0.262, 1.16, -0.010], [0.302, 1.00, 0.008], [0.330, 0.872, 0.022], [0.346, 0.775, 0.030]],
-      (t) => 0.0034 - 0.0018 * t, { segments: 44, radial: 5 }),
-    taperTube([[0.012, 1.470, -0.036], [0.078, 1.436, -0.020], [0.176, 1.398, -0.020]], 0.0022, { segments: 12, radial: 4 }),
+      (t) => NERVE_K * (0.0034 - 0.0018 * t), { segments: 44, radial: 5 }),
+    taperTube([[0.012, 1.470, -0.036], [0.078, 1.436, -0.020], [0.176, 1.398, -0.020]], NERVE_K * 0.0022, { segments: 12, radial: 4 }),
     // nerf ulnaire
-    taperTube([[0.224, 1.30, -0.016], [0.250, 1.17, -0.034], [0.290, 1.00, -0.008], [0.322, 0.875, 0.008], [0.344, 0.79, 0.006]], (t) => 0.0020 - 0.0008 * t, { segments: 24, radial: 4 }),
+    taperTube([[0.224, 1.30, -0.016], [0.250, 1.17, -0.034], [0.290, 1.00, -0.008], [0.322, 0.875, 0.008], [0.344, 0.79, 0.006]], (t) => NERVE_K * (0.0020 - 0.0008 * t), { segments: 24, radial: 4 }),
     // nerf sciatique → tibial
     taperTube([[0.014, 1.000, -0.058], [0.068, 0.935, -0.052], [0.096, 0.80, -0.036], [0.090, 0.60, -0.030], [0.086, 0.50, -0.036], [0.084, 0.30, -0.030], [0.082, 0.09, -0.032], [0.084, 0.032, 0.050]],
-      (t) => 0.0046 - 0.0026 * t, { segments: 48, radial: 5 }),
+      (t) => NERVE_K * (0.0046 - 0.0026 * t), { segments: 48, radial: 5 }),
     // nerf fémoral
-    taperTube([[0.012, 1.085, -0.046], [0.068, 0.965, 0.018], [0.100, 0.80, 0.046], [0.094, 0.60, 0.040]], (t) => 0.0030 - 0.0016 * t, { segments: 24, radial: 5 }),
+    taperTube([[0.012, 1.085, -0.046], [0.068, 0.965, 0.018], [0.100, 0.80, 0.046], [0.094, 0.60, 0.040]], (t) => NERVE_K * (0.0030 - 0.0016 * t), { segments: 24, radial: 5 }),
     // nerf fibulaire
-    taperTube([[0.088, 0.52, -0.034], [0.116, 0.46, -0.014], [0.104, 0.25, 0.010], [0.096, 0.09, 0.014]], (t) => 0.0020 - 0.0008 * t, { segments: 16, radial: 4 }),
+    taperTube([[0.088, 0.52, -0.034], [0.116, 0.46, -0.014], [0.104, 0.25, 0.010], [0.096, 0.09, 0.014]], (t) => NERVE_K * (0.0020 - 0.0008 * t), { segments: 16, radial: 4 }),
     // nerf facial / trijumeau (évocation)
-    taperTube([[0.010, 1.618, -0.014], [0.042, 1.606, 0.020], [0.040, 1.585, 0.060]], 0.0013, { segments: 10, radial: 4 }),
+    taperTube([[0.010, 1.618, -0.014], [0.042, 1.606, 0.020], [0.040, 1.585, 0.060]], NERVE_K * 0.0013, { segments: 10, radial: 4 }),
   ];
-  for (let i = 0; i < 12; i++) nervesL.push(taperTube(ribPath(i, 0.006, 1.7), 0.0012, { segments: 10, radial: 3 })); // nerfs intercostaux
-  for (const y of [1.14, 1.105, 1.07, 1.035]) nervesL.push(taperTube([[0.004, y, spineZ(y) - 0.018], [0.040, y - 0.02, -0.040], [0.085, y - 0.05, -0.020]], 0.0012, { segments: 8, radial: 4 })); // racines lombaires
+  for (let i = 0; i < 12; i++) nervesL.push(taperTube(ribPath(i, 0.006, 1.7), NERVE_K * 0.0012, { segments: 10, radial: 3 })); // nerfs intercostaux
+  for (const y of [1.14, 1.105, 1.07, 1.035]) nervesL.push(taperTube([[0.004, y, spineZ(y) - 0.018], [0.040, y - 0.02, -0.040], [0.085, y - 0.05, -0.020]], NERVE_K * 0.0012, { segments: 8, radial: 4 })); // racines lombaires
   out.push(...pair('nerfs', null, L, finish(nervesL)));
 
   // yeux + nerfs optiques (gaine du nerf optique = mesure SANS)

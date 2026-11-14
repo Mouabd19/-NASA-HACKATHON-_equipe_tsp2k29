@@ -6,6 +6,9 @@
   inset: 0;
   z-index: 60;
   display: grid;
+  /* rangée et colonne BORNÉES : sans elles la rangée « auto » prend la hauteur du contenu et la fenêtre dépasse l'écran en 720p */
+  grid-template-rows: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   place-items: center;
   padding: 24px;
   background: color-mix(in srgb, var(--sz-bg) 78%, transparent);
@@ -20,6 +23,7 @@
   flex-direction: column;
   width: min(1200px, 100%);
   height: min(720px, 100%);
+  max-height: calc(100dvh - 48px);
   background: var(--sz-bg);
   border: 1px solid var(--sz-border-strong);
   outline: none;
@@ -147,7 +151,7 @@
   padding: 0 8px 5px 0;
   text-align: left;
   font-family: var(--sz-font-mono);
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 400;
   letter-spacing: var(--sz-tracking);
   color: var(--sz-text-dim);
@@ -173,14 +177,14 @@
 .ow__unit {
   margin-left: 4px;
   font-family: var(--sz-font-mono);
-  font-size: 9px;
+  font-size: 10px;
   color: var(--sz-text-dim);
   letter-spacing: 0.04em;
 }
 .ow__noise {
   display: block;
   font-family: var(--sz-font-mono);
-  font-size: 9px;
+  font-size: 10px;
   color: var(--sz-text-dim);
 }
 .ow__ref {
@@ -284,7 +288,7 @@ button.ow__scn:hover:not(:disabled) { background: var(--sz-panel-hover); border-
   gap: 8px;
   flex: none;
   margin-top: 10px;
-  font-size: 9px;
+  font-size: 10px;
   white-space: nowrap;
 }
 .ow__chart {
@@ -317,7 +321,7 @@ button.ow__scn:hover:not(:disabled) { background: var(--sz-panel-hover); border-
   gap: 4px 14px;
   flex: none;
   margin-top: 6px;
-  font-size: 9px;
+  font-size: 10px;
   color: var(--sz-text-dim);
 }
 .ow__legend li { display: inline-flex; align-items: center; gap: 6px; }
@@ -350,7 +354,7 @@ button.ow__scn:hover:not(:disabled) { background: var(--sz-panel-hover); border-
   padding: 7px 9px;
   border: 1px solid var(--sz-border-strong);
   background: color-mix(in srgb, var(--sz-bg) 94%, transparent);
-  font-size: 9px;
+  font-size: 10px;
   white-space: nowrap;
 }
 .ow__tip-head { padding-bottom: 3px; border-bottom: 1px solid var(--sz-border); }
@@ -362,4 +366,40 @@ button.ow__scn:hover:not(:disabled) { background: var(--sz-panel-hover); border-
 
 @media (prefers-reduced-motion: reduce) {
   .ow, .ow__win { animation: none; }
+}
+
+/* ── Honnêteté : seuil / valeur étiquetés séparément, lignes de projection, marqueurs « factice » ── */
+.ow__thr { white-space: nowrap; min-width: 64px; }
+/* valeur et seuil : le chiffre, puis SON étiquette dessous (deux lignes, colonnes étroites) */
+.ow__thr .sz-tag, .ow__num .sz-tag { display: block; margin-top: 2px; }
+.ow__table th { white-space: nowrap; }
+.ow__table tr[data-proj='true'] td { color: var(--sz-text-dim); }
+.ow__projtag {
+  flex: none;
+  padding: 0 4px;
+  border: 1px dashed var(--sz-border-strong);
+  color: var(--sz-text-dim);
+}
+.ow__source {
+  margin: 0 0 10px;
+  padding: 5px 8px;
+  border: 1px dashed var(--sz-border-strong);
+  color: var(--sz-text);
+  line-height: 1.6;
+  white-space: normal;
+}
+.ow__mock,
+.ow__synth-mock {
+  padding: 2px 6px;
+  border: 1px dashed var(--sz-unknown);
+  color: var(--sz-text);
+}
+.ow__synth-mock { white-space: normal; }
+.ow__gap-num small, .ow__gap-num[data-unknown='true'] small { letter-spacing: 0.08em; }
+
+/* Liste défilante : fondu bas de 16 px — une ligne coupée se lit comme « ça défile », pas comme un bug. */
+.ow__centre {
+  padding-bottom: 14px;
+  -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 16px), transparent);
+  mask-image: linear-gradient(to bottom, black calc(100% - 16px), transparent);
 }

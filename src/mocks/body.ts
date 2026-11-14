@@ -266,7 +266,8 @@ const memo: [Map<number, DayBody>, Map<number, DayBody>] = [new Map(), new Map()
  */
 export function mockDayBody(day: number, adherence = 0): DayBody {
   const d = clamp(Math.round(Number.isFinite(day) ? day : DAY_TODAY), 0, DAY_END);
-  const a = adherence >= 0.5 ? 1 : 0;
+  // un jour MESURÉ (≤ J94) est un fait : le scénario ne le change pas (sinon l'alerte du jour disparaîtrait en cochant « avec le plan »)
+  const a = d > DAY_TODAY && adherence >= 0.5 ? 1 : 0;
   const hit = memo[a].get(d);
   if (hit) return hit;
   const body = build(d, a);

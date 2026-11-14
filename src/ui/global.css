@@ -161,7 +161,7 @@ button:disabled { cursor: default; }
 .sz-tag {
   display: inline-block;
   font-family: var(--sz-font-mono);
-  font-size: 9px;
+  font-size: 10px;
   line-height: 1.4;
   letter-spacing: 0.06em;
   color: var(--sz-text-dim);
@@ -178,7 +178,7 @@ button:disabled { cursor: default; }
   padding: 0 5px;
   border: 1px solid var(--sz-border-strong);
   font-family: var(--sz-font-mono);
-  font-size: 9px;
+  font-size: 10px;
   line-height: 1;
   letter-spacing: var(--sz-tracking);
   text-transform: uppercase;

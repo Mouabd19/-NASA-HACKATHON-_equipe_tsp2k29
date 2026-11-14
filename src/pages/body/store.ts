@@ -1,8 +1,10 @@
 // État partagé de la page Body. Tous les composants de la page lisent/écrivent ici ;
 // aucun ne dépend directement d'un autre composant.
 import { create } from 'zustand';
-import type { LayerId, OrganId } from '../../types';
+import type { Alert, DayBody, LayerId, OrganId } from '../../types';
 import { DAY_TODAY } from '../../mocks/mission';
+import { getDayBodyPlan } from '../../sim/load';
+import { alertsForDayPlan } from '../../models/alerts';
 
 export const LAYER_ORDER: LayerId[] = ['squelette', 'muscles', 'organes', 'cardio', 'nerveux', 'exposition'];
 
@@ -68,3 +70,33 @@ export const useBody = create<BodyState>((set) => ({
  */
 export interface ScreenAnchor { x: number; y: number; visible: boolean }
 export const screenAnchors = new Map<OrganId, ScreenAnchor>();
+
+/**
+ * (ajout) Coordination carte de survol ↔ plaques de warning, hors React (même repère que screenAnchors) :
+ *  · hoverCardRect : boîte de la carte de survol, écrite par HoverCard — les plaques qu'elle recouvre s'effacent ;
+ *  · plateSides : côté de la plaque de chaque organe en alerte, écrit par Warnings3D — la carte se pose de l'autre côté.
+ */
+export const hoverCardRect = { on: false, x: 0, y: 0, w: 0, h: 0 };
+export const plateSides = new Map<OrganId, 1 | -1>();
+/** (ajout) Axe du corps à l'écran (px, même repère) et échelle px/mètre à sa profondeur — écrit par BodyScene à chaque frame. */
+export const bodyAxis = { x: Number.NaN, pxPerM: 0 };
+/** (ajout) Balayage en cours : avancement 0..1 (−1 = aucun) et position écran du bord droit de l'anneau — écrit par BodyScene. */
+export const scanState = { t: -1, x: 0, y: 0 };
+
+/**
+ * (ajout) SEUL point d'accès au corps et aux alertes pour la page Body : le scénario (rythme actuel /
+ * avec le plan) est appliqué partout de la même façon — corps 3D, plaques, calques, alertes, en-tête, carte.
+ * Avant J94 les deux scénarios sont identiques (données mesurées).
+ */
+export const scenarioBody = (day: number, adherence: number): DayBody => getDayBodyPlan(day, adherence);
+export const scenarioAlerts = (day: number, adherence: number): Alert[] => alertsForDayPlan(day, adherence);
+export function useDayBody(): DayBody {
+  const day = useBody((s) => s.day);
+  const adherence = useBody((s) => s.adherence);
+  return scenarioBody(day, adherence);
+}
+export function useDayAlerts(): Alert[] {
+  const day = useBody((s) => s.day);
+  const adherence = useBody((s) => s.adherence);
+  return scenarioAlerts(day, adherence);
+}

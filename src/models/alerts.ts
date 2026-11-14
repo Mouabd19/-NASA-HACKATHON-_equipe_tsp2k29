@@ -8,3 +8,10 @@ import { mockAlertsForDay } from '../mocks';
 export function alertsForDay(day: number): Alert[] {
   return mockAlertsForDay(day);
 }
+
+// --- Ajout hors contrat §7 (non cassant) -------------------------------------------------------
+
+/** Alertes du jour selon l'adhérence au plan (0 = rythme actuel, 1 = avec le plan ; ne diffère qu'après J94). */
+export function alertsForDayPlan(day: number, adherence: number): Alert[] {
+  return mockAlertsForDay(day, adherence);
+}
