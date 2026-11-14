@@ -1,7 +1,8 @@
 // SOL ZÉRO — Prototype santé mentale : fait tourner les 6 agents sur les jours clés, AVANT la démo.
 // Modèle local via Ollama (traitement « à bord » : rien ne part sur Internet).
 //
-//   ollama pull qwen2.5:7b
+//   Avec l'API Claude :  export ANTHROPIC_API_KEY=sk-ant-…   puis  node proto/mental/run.mjs
+//   Avec Ollama (local) : ollama pull qwen2.5:7b
 //   node proto/mental/generate.mjs
 //   node proto/mental/run.mjs                      # jours clés 65,74,78,85,94, scénarios drift + control
 //   DAYS=78 SCENARIOS=drift node proto/mental/run.mjs   # un seul jour pour tester
@@ -17,12 +18,43 @@ import { OBSERVERS, PSYCHOLOGISTS, observerPrompt, psychologistPrompt, consolida
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const DATA = path.join(HERE, 'data');
 const OUT = path.join(HERE, '..', '..', 'public', 'data', 'mental');
-const MODEL = process.env.SOLZERO_MODEL ?? 'qwen2.5:7b';
+// Deux moteurs : API Claude si ANTHROPIC_API_KEY est défini, sinon Ollama en local.
+const API_KEY = process.env.ANTHROPIC_API_KEY;
+const ENGINE = API_KEY ? 'claude' : 'ollama';
+const MODEL = process.env.SOLZERO_MODEL ?? (ENGINE === 'claude' ? 'claude-opus-5-5' : 'qwen2.5:7b');
 const OLLAMA = process.env.OLLAMA_URL ?? 'http://localhost:11434';
 const DAYS = (process.env.DAYS ?? '65,74,78,85,94').split(',').map(Number);
 const SCENARIOS = (process.env.SCENARIOS ?? 'drift,control').split(',');
 
+// Extrait le premier objet JSON d'une réponse (tolère un bloc ```json autour).
+function parseJson(text) {
+  const t = text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '');
+  const a = t.indexOf('{'), b = t.lastIndexOf('}');
+  return JSON.parse(a >= 0 && b > a ? t.slice(a, b + 1) : t);
+}
+
+async function chatClaude(messages, tries = 3) {
+  const system = messages.find((m) => m.role === 'system')?.content ?? '';
+  const rest = messages.filter((m) => m.role !== 'system');
+  for (let i = 1; i <= tries; i++) {
+    const t0 = Date.now();
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-api-key': API_KEY, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({ model: MODEL, max_tokens: 2000, temperature: 0.2, system, messages: rest }),
+    });
+    if (res.status === 429 || res.status >= 500) { console.warn(`  API ${res.status}, nouvel essai dans 10 s…`); await new Promise((r) => setTimeout(r, 10000)); continue; }
+    if (!res.ok) throw new Error(`API Claude HTTP ${res.status} : ${await res.text()}`);
+    const body = await res.json();
+    const text = body.content.filter((c) => c.type === 'text').map((c) => c.text).join('');
+    try { return { output: parseJson(text), seconds: +((Date.now() - t0) / 1000).toFixed(1) }; }
+    catch { console.warn(`  JSON invalide (essai ${i}/${tries}), on relance…`); }
+  }
+  return { output: null, error: 'échec après plusieurs essais' };
+}
+
 async function chat(messages, tries = 3) {
+  if (ENGINE === 'claude') return chatClaude(messages, tries);
   for (let i = 1; i <= tries; i++) {
     const t0 = Date.now();
     const res = await fetch(`${OLLAMA}/api/chat`, {
@@ -39,7 +71,8 @@ async function chat(messages, tries = 3) {
 
 const load = (scenario, day) => JSON.parse(fs.readFileSync(path.join(DATA, scenario, `J${day}.json`), 'utf8'));
 
-const summary = { model: MODEL, generatedAt: new Date().toISOString(), label: 'Prototype — données SIMULÉES — signal IA, pas un diagnostic', scenarios: {} };
+console.log(`Moteur : ${ENGINE} (${MODEL})`);
+const summary = { engine: ENGINE, model: MODEL, generatedAt: new Date().toISOString(), label: 'Prototype — données SIMULÉES — signal IA, pas un diagnostic', scenarios: {} };
 for (const scenario of SCENARIOS) {
   fs.mkdirSync(path.join(OUT, scenario), { recursive: true });
   const reference = JSON.parse(fs.readFileSync(path.join(DATA, scenario, 'reference.json'), 'utf8'));
