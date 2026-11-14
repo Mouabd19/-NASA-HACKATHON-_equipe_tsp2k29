@@ -11,10 +11,22 @@ import { WarRoom } from './pages/warroom/WarRoom';
 import { TagBadge, dayToDate, fmtDay } from './ui';
 import { syncDetailsAttr, usePrefs } from './ui/prefs';
 
+// da_dragon : navigation en barre d'onglets façon iPhone (en bas), icônes dessinées façon SF Symbols.
+const ICON: Record<string, JSX.Element> = {
+  body: (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="4.6" r="2.3" /><path d="M5 8.6c2.3.7 4.6 1 7 1s4.7-.3 7-1M12 9.6v5.2M12 14.8l-3 6.4M12 14.8l3 6.4" /></svg>
+  ),
+  warroom: (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3.5" width="14" height="17.5" rx="3" /><path d="M9 3.5h6v2.4H9zM8.6 11l1.6 1.6 2.8-3M8.6 16.4l1.6 1.6 2.8-3M14.6 11.3h1.8M14.6 16.7h1.8" /></svg>
+  ),
+  mental: (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 21v-3.2h2.6a1.9 1.9 0 0 0 1.9-1.9v-2.6l1.8-.6-1.8-3.6C18 5.6 15.3 3 11.6 3 7.6 3 4.6 6 4.6 9.9c0 2.3 1 4.1 2.6 5.3V21" /><path d="M9.6 9.2c.4-1.2 1.4-1.9 2.6-1.9 1.5 0 2.6 1.1 2.6 2.5 0 1.2-.8 1.8-1.8 2.2" /></svg>
+  ),
+};
 const TABS = [
-  { to: '/body', label: 'Corps' },
-  { to: '/warroom', label: 'War Room' },
-  { to: '/mental', label: 'Mental' },
+  { to: '/body', label: 'Corps', icon: 'body' },
+  { to: '/warroom', label: 'War Room', icon: 'warroom' },
+  { to: '/mental', label: 'Mental', icon: 'mental' },
 ] as const;
 
 function utcClock(d: Date): string {
@@ -56,13 +68,6 @@ function TopBar(): JSX.Element {
         <span className="sz-dim sz-topbar__opt sz-detail">Mission {ASTRONAUT.id}</span>
       </div>
 
-      <nav className="sz-nav" aria-label="Pages">
-        {TABS.map((t) => (
-          <NavLink key={t.to} to={t.to} className="sz-nav__tab">
-            {t.label}
-          </NavLink>
-        ))}
-      </nav>
 
       <div className="sz-topbar__right">
         <span className="sz-detail sz-topbar__opt"><Clock /></span>
@@ -87,6 +92,22 @@ function TopBar(): JSX.Element {
   );
 }
 
+/** Barre d'onglets du bas (façon iPhone) : mêmes pages, mêmes liens. */
+function TabBar(): JSX.Element {
+  return (
+    <nav className="dr-tabbar" aria-label="Pages">
+      <div className="dr-tabbar__glass">
+        {TABS.map((t) => (
+          <NavLink key={t.to} to={t.to} className="dr-tab">
+            <span className="dr-tab__icon">{ICON[t.icon]}</span>
+            <span className="dr-tab__label">{t.label}</span>
+          </NavLink>
+        ))}
+      </div>
+    </nav>
+  );
+}
+
 /** Bouton « Détails » : affiche ou masque les étiquettes de provenance et les textes secondaires. */
 function DetailsToggle(): JSX.Element {
   const details = usePrefs((s) => s.details);
@@ -99,6 +120,7 @@ function DetailsToggle(): JSX.Element {
       onClick={() => setDetails(!details)}
       title="Afficher les sources, la provenance de chaque chiffre et les textes d'aide (D)"
     >
+      <span className="dr-switch" aria-hidden="true"><span className="dr-switch__knob" /></span>
       Détails
     </button>
   );
@@ -138,6 +160,7 @@ export function App(): JSX.Element {
             <Route path="*" element={<Navigate to="/body" replace />} />
           </Routes>
         </main>
+        <TabBar />
       </div>
     </BrowserRouter>
   );

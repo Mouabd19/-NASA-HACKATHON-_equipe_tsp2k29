@@ -1,107 +1,241 @@
-/* DA ALTERNATIVE « Dragon » — habillage seul, chargé APRÈS global.css.
-   Aucune fonctionnalité ni aucun élément n'est retiré : on ne change que l'apparence.
-   Inspiration : écrans tactiles de cockpit (bleu nuit, jauges fines, cartes arrondies) + sobriété Apple. */
+/* da_dragon — DA alternative façon iPhone / apple.com, teintée bleu nuit. Chargée APRÈS global.css.
+   Habillage seulement : chaque bouton, panneau, raccourci et double-clic garde son comportement. */
 
 :root {
-  --sz-radius: 16px;
-  --sz-radius-sm: 10px;
-  --dr-glow: color-mix(in srgb, var(--sz-holo) 22%, transparent);
+  --sz-radius: 20px;
+  --sz-radius-sm: 12px;
+  --dr-on-status: #08101E;
+  --dr-glass: rgba(22, 32, 52, 0.72);
+  --dr-glass-border: rgba(190, 210, 255, 0.14);
+  --dr-fill: rgba(150, 175, 220, 0.12);        /* remplissage des contrôles (iOS « tertiary fill ») */
+  --dr-fill-strong: rgba(150, 175, 220, 0.2);
+  --dr-sep: rgba(160, 190, 240, 0.09);         /* séparateurs de liste */
+  --dr-ease: cubic-bezier(0.32, 0.72, 0, 1);   /* courbe des animations iOS */
 }
 
-/* Fond : bleu nuit avec un léger halo en haut, comme un écran rétroéclairé */
-.sz-shell {
-  background:
-    radial-gradient(120% 70% at 50% -10%, #16284A 0%, rgba(10, 20, 36, 0) 60%),
-    var(--sz-bg);
+body { font-size: 13px; letter-spacing: -0.005em; }
+.sz-shell { background: var(--sz-bg); }
+
+/* Plus de capitales espacées : casse de phrase, comme sur iOS */
+.sz-label, .sz-panel__head, .sz-panel__title, .sz-wordmark, .sz-prov, .sz-tag, .sz-chip, .sz-btn {
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+.sz-mono { font-family: var(--sz-font-mono); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+.sz-label { font-size: 12px; color: var(--sz-text-dim); font-weight: 400; }
+
+/* ── En-tête : infos de mission seulement, sans menu, sans filet ── */
+.sz-topbar {
+  display: flex !important;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  height: auto !important;
+  min-height: 52px;
+  padding: 0 20px;
+  border-bottom: 0;
+  background: transparent;
+}
+.sz-topbar__left, .sz-topbar__right { min-height: 52px; gap: 12px; }
+.sz-topbar__right { margin-left: auto; flex-wrap: wrap; }
+.sz-topbar__rule { display: inline-block; width: 4px; height: 4px; border-radius: 50%; background: var(--sz-text-dim); opacity: 0.5; }
+.sz-wordmark { font-size: 17px; font-weight: 600; letter-spacing: -0.02em !important; gap: 10px; }
+.sz-wordmark__glyph { width: 22px; height: 22px; padding: 5px; border-radius: 7px; background: var(--sz-holo); color: #fff; }
+.sz-topbar__day { font-family: var(--sz-font-mono); font-weight: 600; }
+.sz-topbar__sim {
+  border: 0;
+  background: var(--dr-fill);
+  border-radius: 999px;
+  padding: 0 10px;
+  height: 24px;
 }
 
-/* Chiffres et données : police DIN (Barlow), fine et tabulaire */
-.sz-mono, [class*='num'], [class*='__v'], [class*='val'], time {
-  font-family: var(--sz-font-mono);
-  font-feature-settings: 'tnum' 1, 'lnum' 1;
-  letter-spacing: 0.01em;
+/* Bouton « Détails » = interrupteur iOS */
+.sz-topbar__details {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 28px !important;
+  padding: 0 4px 0 2px;
+  border: 0 !important;
+  background: transparent !important;
+  font-size: 13px !important;
+  color: var(--sz-text) !important;
+}
+.dr-switch {
+  position: relative;
+  width: 38px;
+  height: 23px;
+  border-radius: 999px;
+  background: var(--dr-fill-strong);
+  transition: background-color 250ms var(--dr-ease);
+}
+.dr-switch__knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: transform 250ms var(--dr-ease);
+}
+.sz-topbar__details[aria-pressed='true'] .dr-switch { background: var(--sz-ok); }
+.sz-topbar__details[aria-pressed='true'] .dr-switch__knob { transform: translateX(15px); }
+
+/* ── Barre d'onglets du bas, verre dépoli flottant (iPhone) ── */
+.dr-tabbar {
+  flex: none;
+  display: flex;
+  justify-content: center;
+  padding: 8px 16px 12px;
+}
+.dr-tabbar__glass {
+  display: flex;
+  gap: 4px;
+  padding: 5px;
+  border-radius: 999px;
+  background: var(--dr-glass);
+  border: 1px solid var(--dr-glass-border);
+  backdrop-filter: blur(24px) saturate(160%);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+}
+.dr-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 92px;
+  height: 50px;
+  padding: 0 16px;
+  border-radius: 999px;
+  color: var(--sz-text-dim);
+  font-size: 11px;
+  font-weight: 500;
+  transition: color 200ms var(--dr-ease), background-color 200ms var(--dr-ease);
+}
+.dr-tab:hover { color: var(--sz-text); }
+.dr-tab.active { color: var(--sz-holo); background: var(--dr-fill); }
+.dr-tab__icon svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.dr-tab:focus-visible { outline: 2px solid var(--sz-holo); outline-offset: 0; }
+
+/* ── Panneaux : cartes iOS pleines, grands coins, aucun bord dur ── */
+.sz-panel {
+  background: var(--sz-panel);
+  border: 0;
+  box-shadow: none;
+}
+.sz-panel__head {
+  min-height: 44px;
+  padding: 0 10px 0 16px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.sz-panel__title { color: var(--sz-text); font-weight: 600; }
+.sz-panel__sys, .sz-panel__sep { font-weight: 400; color: var(--sz-text-dim); }
+.sz-panel__body { padding: 2px 16px 14px; }
+
+/* Bouton fermer = rond gris avec croix (iOS) */
+.sz-close {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--dr-fill);
+  opacity: 1;
+  color: var(--sz-text-dim);
+}
+.sz-close:hover, .sz-close:focus-visible { background: var(--dr-fill-strong); color: var(--sz-text); }
+.sz-close svg { width: 9px; height: 9px; stroke-width: 2; }
+
+/* ── Boutons : remplissage teinté, pilules ── */
+.sz-btn {
+  height: 30px;
+  padding: 0 14px;
+  border: 0 !important;
+  border-radius: 999px;
+  background: var(--dr-fill);
+  color: var(--sz-text);
+  font-size: 13px;
+  font-weight: 500;
+  transition: background-color 150ms var(--dr-ease), transform 120ms var(--dr-ease);
+}
+.sz-btn:hover { background: var(--dr-fill-strong); }
+.sz-btn:active { transform: scale(0.97); }
+.sz-btn[aria-pressed='true'], .sz-btn.is-active, .sz-btn[data-active='true'] {
+  background: var(--sz-holo);
+  color: #fff;
 }
 
-/* Étiquettes : capitales DIN espacées */
-.sz-label, .sz-panel__title, .sz-wordmark {
-  font-family: var(--sz-font-mono);
+/* Puces : texte simple + symbole SF, sans cadre */
+.sz-chip {
+  height: auto;
+  padding: 0;
+  gap: 5px;
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--sz-text);
+  font-size: 13px;
+  font-weight: 600;
+}
+.sz-dot, .sz-chip .sz-dot { width: auto; height: auto; background: none !important; border: 0 !important; clip-path: none !important; transform: none !important; border-radius: 0; }
+.dr-dot { display: inline-flex; line-height: 0; }
+.dr-glyph { flex: none; display: block; }
+.sz-prov, .sz-tag {
+  border: 0 !important;
+  border-radius: 6px;
+  background: var(--dr-fill);
+  padding: 2px 7px;
+  font-size: 11px;
   font-weight: 500;
 }
 
-/* ── Bandeau : barre de verre + navigation en contrôle segmenté ── */
-.sz-topbar {
-  background: rgba(10, 20, 36, 0.55);
-  backdrop-filter: blur(14px);
-  border-bottom-color: var(--sz-border);
-}
-.sz-nav {
-  align-self: center;
-  height: 32px !important;
-  padding: 3px;
-  gap: 2px;
-  border-radius: 999px;
-  background: var(--sz-panel);
-  border: 1px solid var(--sz-border);
-}
-.sz-nav__tab {
-  border-radius: 999px;
-  padding: 0 16px;
-  font-size: 13px;
-}
-.sz-nav__tab.active {
-  background: color-mix(in srgb, var(--sz-holo) 18%, transparent);
-  color: var(--sz-text);
-}
-.sz-nav__tab.active::after { display: none; }
-.sz-topbar__sim, .sz-topbar__details { border-radius: 999px; }
-
-/* ── Panneaux : cartes arrondies, verre bleuté ── */
-.sz-panel {
-  background: linear-gradient(180deg, rgba(130, 175, 240, 0.075), rgba(130, 175, 240, 0.035));
-  border-color: var(--sz-border);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 12px 32px -18px rgba(0, 0, 0, 0.6);
-}
-.sz-panel__head { border-bottom-color: transparent; }
-
-/* ── Boutons et puces : pilules douces ── */
-.sz-btn {
-  border-radius: 999px;
-  height: 28px;
-  padding: 0 14px;
-  font-size: 12px;
-  background: var(--sz-panel);
-}
-.sz-btn:hover { background: var(--sz-panel-hover); }
-.sz-btn[aria-pressed='true'], .sz-btn.is-active {
-  background: var(--sz-holo);
-  border-color: var(--sz-holo);
-  color: #071224;
-}
-.sz-chip, .sz-prov, .sz-tag { border-radius: 999px; }
-
-/* Focus : anneau bleu, comme sur un écran tactile */
-:focus-visible { outline: 2px solid var(--sz-holo); outline-offset: 2px; }
-::selection { background: var(--dr-glow); }
-
-/* ── Plaques d'organes sur le corps 3D : cartes arrondies au lieu de l'hexagone (mêmes clics, même double-clic) ── */
-.w3d-plate__hex { display: none; }
+/* ── Plaques d'organes : bulles iOS (même clic, même double-clic) ── */
+.w3d-plate__hex, .w3d-glyph { display: none !important; }
 .w3d-plate__inner {
-  border-radius: 12px;
-  background: rgba(12, 24, 44, 0.78);
-  border: 1px solid color-mix(in srgb, var(--w3d-c) 55%, transparent);
-  backdrop-filter: blur(8px);
-  padding: 0 12px;
+  gap: 10px;
+  padding: 0 14px 0 8px;
+  border-radius: 999px;
+  background: var(--dr-glass);
+  border: 1px solid var(--dr-glass-border);
+  backdrop-filter: blur(18px) saturate(160%);
+  box-shadow: 0 8px 24px -10px rgba(0, 0, 0, 0.7);
+  transition: transform 200ms var(--dr-ease), background-color 200ms var(--dr-ease);
 }
 .w3d-plate.is-hot .w3d-plate__inner,
-.w3d-plate:focus-visible .w3d-plate__inner {
-  border-color: var(--w3d-c);
-  background: rgba(18, 34, 60, 0.9);
-}
+.w3d-plate:focus-visible .w3d-plate__inner { background: rgba(34, 50, 80, 0.9); transform: scale(1.04); }
 .w3d-plate.is-projected .w3d-plate__inner { border-style: dashed; }
-.w3d-plate__label { font-weight: 500; letter-spacing: 0; }
+.w3d-plate__label { font-size: 14px; font-weight: 600; letter-spacing: -0.01em; }
+.w3d-plate__sub { font-size: 12px; letter-spacing: 0; }
+.w3d-plate__sub b { font-weight: 500; }
+.dr-plate-glyph { position: relative; display: inline-flex; flex: none; }
+.w3d-line { stroke-width: 1.5; stroke-linecap: round; }
 
-/* ── Petits éléments carrés du HUD : arrondis ── */
-.hdr__state { border-radius: 999px; padding-inline: 10px; }
+/* ── Chronologie : curseur iOS (pastille blanche) ── */
+.tl { background: var(--sz-panel); border: 0; border-radius: var(--sz-radius); }
+.tl__head-svg line { stroke: var(--sz-holo); stroke-width: 2; }
+.tl__head-svg path { fill: #fff; filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.45)); }
+.tl__readout {
+  border: 0 !important;
+  border-radius: 999px;
+  background: var(--sz-holo);
+  color: #fff;
+  font-weight: 600;
+}
+.tl__readout * { color: inherit !important; }
+.tl__play.sz-btn { width: 30px; border-radius: 50%; background: var(--sz-holo); color: #fff; }
+.hdr__state { border: 0; border-radius: 999px; background: var(--dr-fill); padding: 3px 10px; }
 .hdr__state-mark { border-radius: 50%; }
-.tl__readout, .tl__toggle, .tl__key { border-radius: 999px; }
 .body-corner, .ow__corner { opacity: 0; }
+
+/* Focus et sélection */
+:focus-visible { outline: 2px solid var(--sz-holo); outline-offset: 2px; }
+::selection { background: color-mix(in srgb, var(--sz-holo) 40%, transparent); }

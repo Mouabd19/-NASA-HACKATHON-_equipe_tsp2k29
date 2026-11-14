@@ -3,11 +3,12 @@ import type { JSX, KeyboardEvent, SyntheticEvent } from 'react';
 import { useBody } from '../../pages/body/store';
 import { warnKnobs } from './knobs';
 import type { WarnItem } from './model';
+import { StatusGlyph } from '../../ui';
 
 const stop = (e: SyntheticEvent): void => e.stopPropagation();
 
 /** Triangle d'avertissement dessiné en SVG (« ! » ou « ? » si les données manquent). */
-function WarnGlyph({ unknown }: { unknown: boolean }): JSX.Element {
+export function WarnGlyph({ unknown }: { unknown: boolean }): JSX.Element {
   return (
     <svg className="w3d-glyph" viewBox="0 0 22 20" width="22" height="20" aria-hidden="true">
       <path d="M11 1.5 L20.5 18.5 H1.5 Z" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="miter" />
@@ -68,7 +69,8 @@ export function Plate({ item, register }: { item: WarnItem; register: (el: HTMLD
           <polygon className="w3d-plate__fill" points={hex} />
           <polygon className="w3d-plate__stroke" points={hex} />
         </svg>
-        <WarnGlyph unknown={item.color === 'grey'} />
+        {/* da_dragon : symbole SF à la place du triangle (WarnGlyph conservé dans le fichier) */}
+        <span className="dr-plate-glyph"><StatusGlyph color={item.color} size={20} /></span>
         <div className="w3d-plate__text">
           <span className="w3d-plate__label">{item.label}</span>
           <span className="w3d-plate__sub">
