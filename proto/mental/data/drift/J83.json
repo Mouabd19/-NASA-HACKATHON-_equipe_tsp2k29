@@ -3,7 +3,7 @@
  "date": "2026-11-03",
  "scenario": "drift",
  "transcript": [
-  "06:52 — Réveil. Se lève directement.",
+  "06:52 — Réveil. Reste allongé plusieurs minutes avant de se lever.",
   "07:30 — Petit-déjeuner avec l'équipage. Haddad : « On est bien dans les temps sur la check-list. » Échange suivi avec Okafor (3 répliques). Rit à une blague d'Okafor.",
   "08:30 — Briefing avec la Terre (message différé). Haddad ne prend pas la parole. Coupe Ito : « Tu peux arrêter de me demander si ça va ? »",
   "10:00 — Maintenance du système de filtration d'air : terminée dans les temps.",
@@ -20,12 +20,12 @@
   "tempsAvecEquipageMin": 113,
   "repasSautes": 0,
   "pas": 2918,
-  "sommeilH": 6.1
+  "sommeilH": 5.8
  },
  "biomarkers": {
   "checkinHumeur": 3,
   "checkinFatigue": 3,
-  "vfcMs": 43,
+  "vfcMs": 44.4,
   "cortisolNmolL": null
  }
 }

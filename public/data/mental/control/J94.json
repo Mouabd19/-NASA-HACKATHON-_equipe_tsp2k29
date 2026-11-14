@@ -23,12 +23,12 @@
    "tempsAvecEquipageMin": 222,
    "repasSautes": 0,
    "pas": 4338,
-   "sommeilH": 7.2
+   "sommeilH": 6.7
   },
   "biomarkers": {
-   "checkinHumeur": 4,
+   "checkinHumeur": 3,
    "checkinFatigue": 2,
-   "vfcMs": 53,
+   "vfcMs": 57.3,
    "cortisolNmolL": null
   }
  },
@@ -40,38 +40,38 @@
     "faits": [
      {
       "heure": "06:38",
-      "fait": "Lever directement, sans rester au lit.",
+      "fait": "Se lève directement, sans délai après le réveil.",
       "citation": null
      },
      {
       "heure": "07:30",
-      "fait": "Petit-déjeuner pris avec l'équipage, avec un échange de trois répliques avec Okafor. Haddad annonce qu'il choisira le film du soir.",
-      "citation": "Ce soir film, c'est moi qui choisis."
+      "fait": "Prend le petit-déjeuner avec l'équipage et échange trois répliques avec Okafor.",
+      "citation": null
      },
      {
       "heure": "10:00",
-      "fait": "Maintenance du système de filtration d'air terminée dans les temps.",
+      "fait": "Termine la maintenance du système de filtration d'air dans les temps.",
       "citation": null
+     },
+     {
+      "heure": "12:40",
+      "fait": "Participe au déjeuner commun, sans repas sauté dans la journée.",
+      "citation": "Je verrai plus tard."
      },
      {
       "heure": "14:00",
-      "fait": "Séance d'exercice complète : 60 min d'ARED puis vélo.",
+      "fait": "Réalise la séance d'exercice complète (60 min ARED et vélo), sans écourtement.",
       "citation": null
      },
      {
-      "heure": "19:30",
-      "fait": "Dîner pris en commun. Haddad répond à l'invitation après un long silence.",
-      "citation": "Si vous voulez."
-     },
-     {
-      "heure": "23:00",
-      "fait": "Coucher, après une soirée film avec l'équipage. Sommeil enregistré : 7,2 h.",
-      "citation": null
+      "heure": "21:00",
+      "fait": "Participe à la soirée film avec l'équipage, dont il a choisi le film.",
+      "citation": "Ce soir film, c'est moi qui choisis."
      }
     ],
-    "resume": "Haddad s'est levé à 06:38 et couché à 23:00, avec 7,2 h de sommeil et 4 338 pas. Les repas ont tous été pris avec l'équipage, la séance d'exercice a été complète et la maintenance de filtration terminée dans les temps."
+    "resume": "Haddad a pris ses repas avec l'équipage, dont le dîner, et a terminé la maintenance et la séance d'exercice complète. Il s'est levé à 06:38 et s'est couché à 23:00, avec 6,7 h de sommeil."
    },
-   "seconds": 12.3
+   "seconds": 8.1
   },
   {
    "id": "obs-paroles",
@@ -80,27 +80,27 @@
     "faits": [
      {
       "heure": "07:30",
-      "fait": "Annonce qu'il choisira le film du soir. Échange de 3 répliques avec Okafor et rit à une blague de celui-ci.",
+      "fait": "Annonce qu'il choisit le film du soir, sans y être invité.",
       "citation": "Ce soir film, c'est moi qui choisis."
      },
      {
+      "heure": "07:30",
+      "fait": "Échange 3 répliques avec Okafor et rit à une blague d'Okafor.",
+      "citation": null
+     },
+     {
       "heure": "08:30",
-      "fait": "Pose deux questions sur le planning lors du briefing avec la Terre et propose une modification.",
+      "fait": "Pose deux questions sur le planning au briefing avec la Terre et propose une modification.",
       "citation": null
      },
      {
       "heure": "12:40",
-      "fait": "Répond à l'invitation au déjeuner commun en reportant sa décision.",
+      "fait": "Reporte sa réponse à l'invitation au déjeuner commun.",
       "citation": "Je verrai plus tard."
      },
      {
-      "heure": "16:00",
-      "fait": "Plaisante avec Okafor pendant l'expérience de biologie et propose une variante du protocole.",
-      "citation": null
-     },
-     {
       "heure": "17:30",
-      "fait": "Enregistre un message vidéo de 9 min pour sa famille et sourit pendant l'enregistrement.",
+      "fait": "Enregistre un message vidéo de 9 minutes pour sa famille, en souriant.",
       "citation": null
      },
      {
@@ -109,9 +109,9 @@
       "citation": "Si vous voulez."
      }
     ],
-    "resume": "Haddad prend l'initiative dans plusieurs échanges : il choisit le film du soir, pose des questions et propose une modification au briefing, et propose une variante au protocole de biologie. Il répond aux invitations du déjeuner et du dîner par des formules non engageantes, et envoie un message enregistré de 9 minutes à sa famille."
+    "resume": "Haddad a pris l'initiative au petit-déjeuner, au briefing avec la Terre et à 16:00 (proposition de variante avec Okafor), et il a répondu à l'équipage en différant le déjeuner et en acceptant le dîner après un long silence. Il a enregistré un message de 9 minutes à sa famille."
    },
-   "seconds": 7.3
+   "seconds": 7.4
   },
   {
    "id": "obs-corps",
@@ -120,7 +120,7 @@
     "faits": [
      {
       "heure": "06:38",
-      "fait": "Se lève directement au réveil, sans délai signalé.",
+      "fait": "Se lève directement au réveil, sans temps d'attente signalé.",
       "citation": null
      },
      {
@@ -129,29 +129,29 @@
       "citation": null
      },
      {
-      "heure": "12:40",
-      "fait": "Répond à l'invitation au déjeuner commun ; aucun repas n'est sauté dans la journée.",
-      "citation": "Je verrai plus tard."
-     },
-     {
       "heure": "14:00",
-      "fait": "Termine la séance d'exercice complète (60 min ARED et vélo) et déclare se sentir reposé.",
+      "fait": "Termine la séance d'exercice complète (60 min ARED et vélo) et indique se sentir reposé.",
       "citation": null
      },
      {
       "heure": "17:30",
-      "fait": "Sourit pendant la durée du message enregistré de 9 min destiné à sa famille.",
+      "fait": "Sourit pendant le message enregistré de 9 min destiné à sa famille.",
       "citation": null
      },
      {
       "heure": "19:30",
-      "fait": "Répond après un long silence à l'invitation au dîner commun.",
+      "fait": "Répond après un long silence lors du dîner commun.",
       "citation": "Si vous voulez."
+     },
+     {
+      "heure": "23:00",
+      "fait": "Se couche ; le capteur enregistre 6,7 h de sommeil pour la journée.",
+      "citation": null
      }
     ],
-    "resume": "Haddad se lève directement à 06:38, dort 7,2 h et enregistre 4 338 pas dans la journée. Il termine la séance d'exercice de 14:00 en déclarant se sentir reposé et sourit pendant le message enregistré de 17:30."
+    "resume": "Haddad se lève sans délai, termine l'exercice complet et indique se sentir reposé, avec 4 338 pas enregistrés. Son temps de parole est de 51 minutes et son sommeil capteur de 6,7 h."
    },
-   "seconds": 6.6
+   "seconds": 6.5
   }
  ],
  "psychologists": [
@@ -160,32 +160,45 @@
    "label": "Psychologue — état physico-psychique",
    "output": {
     "niveau": "rien",
-    "confiance": "elevee",
+    "confiance": "moyenne",
     "hypotheses": [
      {
-      "schema": "Réponses différées aux invitations à table, sans retrait global. Ce point est à observer, il ne constitue pas un schéma de repli.",
+      "schema": "Baisse de l'humeur déclarée sur deux jours, seul écart négatif net. Schéma à regarder, sans tendance établie.",
       "preuves": [
-       "Déjeuner (12:40) : réponse « Je verrai plus tard » et dîner (19:30) : « Si vous voulez » après un long silence.",
-       "Aucun repas sauté aujourd'hui et temps avec l'équipage à +23 % de la référence.",
-       "Haddad a pris l'initiative le matin (choix du film, questions au briefing, variante de protocole)."
+       "Humeur 3/5 sur J93 et J94, contre 4/5 de J88 à J92",
+       "Humeur du jour à -21 % vs référence (3 contre 3.8), moyenne 7 j à -5 %"
+      ]
+     },
+     {
+      "schema": "Mise à distance ponctuelle de l'équipage lors de deux repas, avec participation finale.",
+      "preuves": [
+       "12:40 : « Je verrai plus tard » pour le déjeuner commun",
+       "19:30 : réponse après un long silence, « Si vous voulez », puis présence au dîner",
+       "Repas sautés à 0 aujourd'hui"
+      ]
+     },
+     {
+      "schema": "Charge ou fatigue ponctuelle en J93, sans prolongement net à J94.",
+      "preuves": [
+       "J93 : parole 36 min (-26 % vs référence 48.4), 1 repas sauté, humeur 3/5, fatigue 3/5",
+       "J94 : fatigue 2/5 et sommeil 6.7 h, proches de la référence"
       ]
      }
     ],
     "ecartsReference": [
-     "Temps avec l'équipage : 222 min, soit +23 % vs référence 180.1 min.",
-     "Repas sautés : 0, soit -100 % vs référence 0.5 (écart d'un repas, sans portée clinique).",
-     "Humeur déclarée : 4/5, soit +11 % vs référence 3.6."
+     "Temps avec l'équipage : +23 % vs référence (222 contre 180.1 min), écart positif",
+     "Humeur déclarée : -21 % vs référence (3 contre 3.8), seul écart négatif du jour",
+     "Pas : +17 % vs référence (4338 contre 3695.9), sous le seuil de 20 %"
     ],
     "pointsRassurants": [
-     "Sommeil de 7,2 h, au-dessus de sa référence de 6,6 h, après une nuit courte en J93 (5,5 h).",
-     "VFC à 53 ms, soit +10 % vs référence, avec une moyenne 7 j stable.",
-     "Séance d'exercice complète et déclaration de se sentir reposé à 14:00.",
-     "Rires avec Okafor, sourire pendant le message de 9 min à sa famille.",
-     "Le dip de J93 (parole 36 min, fatigue 3/5) est isolé et suivi d'un retour aux valeurs habituelles."
+     "Lever sans délai à 06:38 et sommeil de 6.7 h, proche de la référence",
+     "Séance d'exercice complète et maintenance terminée dans les temps",
+     "Repas pris avec l'équipage, dont le dîner, et VFC stable à 57.3 ms (+1 %)",
+     "Initiative au briefing, rires avec Okafor et message de 9 min à la famille avec le sourire"
     ],
-    "noteAuPsy": "Journée positive, sans écart de 20 % sur plusieurs indicateurs : sommeil, humeur, VFC et temps d'équipage sont au-dessus de sa référence. Le seul point à observer est la réponse différée aux invitations à table, qui reste ponctuelle et sans effet sur les repas. Le cortisol n'est pas mesuré aujourd'hui."
+    "noteAuPsy": "Le signal négatif se limite à l'humeur déclarée, en baisse sur deux jours (J93 et J94), avec des réponses différées au déjeuner et au dîner. Les autres indicateurs restent proches de sa référence, et le temps passé avec l'équipage est au-dessus. Aucun schéma persistant sur quatre jours n'est établi ; un échange informel reste pertinent si la baisse d'humeur se prolonge."
    },
-   "seconds": 7
+   "seconds": 14.4
   },
   {
    "id": "psy-anxiete",
@@ -195,31 +208,35 @@
     "confiance": "moyenne",
     "hypotheses": [
      {
-      "schema": "Engagement social plutôt accru, avec quelques réponses évasives aux invitations de repas à surveiller.",
+      "schema": "Léger fléchissement de l'humeur déclarée sur deux jours (J93 et J94), sans autre indicateur qui s'écarte de façon persistante. Schéma à regarder, pas une alerte.",
       "preuves": [
-       "Temps avec l'équipage à 222 min, soit +23 % vs référence, dans le sens d'un contact plus fréquent",
-       "Aux repas de 12:40 et 19:30, réponses évasives (« Je verrai plus tard », « Si vous voulez ») après un long silence, mais présence effective et 0 repas sauté",
-       "Initiative visible : choix du film, questions et proposition de modification au briefing de 08:30"
+       "Humeur déclarée à 3/5 sur J93 et J94, soit -21 % vs référence personnelle (3.8)",
+       "Humeur à 4/5 sur J88, J90, J91 et J92, et moyenne 7 j à -5 %",
+       "Un seul indicateur (humeur) reste sous le seuil de 20 % sur plusieurs jours"
+      ]
+     },
+     {
+      "schema": "Retrait ponctuel lors des repas communs, possiblement lié à la fatigue. Épisode isolé à ce stade, à observer si la répétition apparaît.",
+      "preuves": [
+       "Reporte sa réponse à l'invitation au déjeuner avec la phrase « Je verrai plus tard » (12:40)",
+       "Répond au dîner après un long silence avec « Si vous voulez » (19:30)",
+       "Fatigue déclarée à 3/5 sur J93, puis 2/5 sur J94"
       ]
      }
     ],
     "ecartsReference": [
-     "Temps avec l'équipage : 222 min, +23 % vs référence 180.1 min (seul écart au-dessus de 20 %, dans le sens positif)",
-     "Pas : 4338, +17 % vs référence 3695.9",
-     "Sommeil : 7.2 h, +9 % vs référence 6.6 h",
-     "Humeur déclarée : 4/5, +11 % vs référence 3.6",
-     "VFC : 53 ms, +10 % vs référence 48.4 ms"
+     "Humeur déclarée : 3/5 aujourd'hui, soit -21 % vs référence (3.8)",
+     "Temps avec l'équipage : 222 min aujourd'hui, soit +23 % vs référence (180.1), en hausse de contacts et non en baisse",
+     "Repas sautés : 0 aujourd'hui, soit -100 % vs référence (0.5), écart favorable"
     ],
     "pointsRassurants": [
-     "Aucun repas sauté aujourd'hui, et seulement 1 repas sauté à J93 sur les 7 derniers jours",
-     "Sommeil de 7.2 h, en hausse après le 5.5 h de J93",
-     "Humeur 4/5 et rires avec Okafor au petit-déjeuner et pendant l'expérience de biologie",
-     "Message vidéo de 9 min à sa famille, avec sourire pendant l'enregistrement",
-     "Séance d'exercice complète et déclaration de se sentir reposé ; maintenance de filtration terminée dans les temps"
+     "Participe aux repas dont le dîner, sans repas sauté, et prend l'initiative au briefing avec la Terre",
+     "Termine la maintenance et la séance d'exercice complète, et indique se sentir reposé",
+     "Sourit et rit avec Okafor, et enregistre un message à sa famille. Sommeil à 6.7 h et VFC stable à 57.3 ms (+1 %)"
     ],
-    "noteAuPsy": "Un seul indicateur dépasse 20 % de la référence, et il est positif : aucun schéma d'anxiété n'apparaît sur la période. Les réponses évasives aux invitations de repas (J94, 12:40 et 19:30) sont un point d'attention léger, à remettre dans le contexte d'un engagement social global plutôt élevé. Aucune alerte, mais vérifier au prochain échange si ces réponses se répètent."
+    "noteAuPsy": "Haddad montre un léger recul d'humeur sur deux jours, sans signal corroboré par le sommeil, la VFC ou le comportement global. Les deux reports de réponse aux repas sont à noter, mais restent isolés pour l'instant. Aucun échange n'est recommandé à ce stade, une observation des prochains jours suffit."
    },
-   "seconds": 7.6
+   "seconds": 11
   },
   {
    "id": "psy-social",
@@ -229,36 +246,37 @@
     "confiance": "moyenne",
     "hypotheses": [
      {
-      "schema": "Réponses différées aux invitations du déjeuner et du dîner, à garder en vue sans signal d'isolement.",
+      "schema": "Baisse ponctuelle de l'humeur déclarée, sans retrait social associé",
       "preuves": [
-       "Déjeuner : « Je verrai plus tard » (12:40), mais le repas a finalement été pris avec l'équipage.",
-       "Dîner : réponse « Si vous voulez » après un long silence (19:30), suivie de la présence au repas.",
-       "Temps avec l'équipage à +23 % aujourd'hui et +25 % sur 7 jours, donc pas de retrait observé."
+       "Humeur déclarée à 3/5 sur J93 et J94, soit -21 % vs référence 3.8",
+       "Temps avec l'équipage à 222 min aujourd'hui, soit +23 % vs référence",
+       "Humeur à 4/5 de J88 à J92, donc baisse récente et non installée"
       ]
      },
      {
-      "schema": "Baisse isolée de J93 à relier à un contexte ponctuel, non à une tendance.",
+      "schema": "Hésitations face aux invitations de l'équipage, à surveiller si elles se répètent",
       "preuves": [
-       "J93 : équipage 167 min, parole 36 min, sommeil 5,5 h, fatigue 3/5 et un repas sauté, soit un seul jour dérogeant.",
-       "J94 revient aux valeurs habituelles : équipage 222 min, parole 51 min, sommeil 7,2 h, repas sautés 0."
+       "Reporte l'invitation au déjeuner : « Je verrai plus tard. »",
+       "Répond au dîner après un long silence : « Si vous voulez. »",
+       "Malgré ces hésitations, il participe au déjeuner et au dîner et prend l'initiative au briefing"
       ]
      }
     ],
     "ecartsReference": [
-     "Temps avec l'équipage : 222 min aujourd'hui, +23 % vs référence 180,1 min.",
-     "Pas : 4 338 aujourd'hui, +17 % vs référence 3 695,9.",
-     "Humeur déclarée : 4/5 aujourd'hui, +11 % vs référence 3,6."
+     "Humeur déclarée : 3/5 aujourd'hui, -21 % vs référence 3.8 (moyenne 7 j : -5 %)",
+     "Temps avec l'équipage : 222 min, +23 % vs référence 180.1 (moyenne 7 j : +25 %)",
+     "Repas sautés : 0, -100 % vs référence 0.5 (écart favorable)"
     ],
     "pointsRassurants": [
-     "Temps avec l'équipage au-dessus de la référence sur 7 jours (+25 %).",
-     "Tous les repas pris en commun, aucun repas sauté aujourd'hui.",
-     "Initiatives : choix du film, questions et modification proposée au briefing, variante du protocole de biologie.",
-     "Message vidéo de 9 min envoyé à sa famille avec sourire, et déclaration de se sentir reposé après l'exercice.",
-     "Sommeil de 7,2 h, VFC à 53 ms (+10 %) et humeur stable ou en hausse."
+     "Temps avec l'équipage au-dessus de la référence depuis 7 jours (+25 % en moyenne)",
+     "Prend l'initiative : choix du film, proposition de modification du planning, variante proposée à 16:00",
+     "Rit à une blague d'Okafor, sourit pendant le message de 9 min à sa famille",
+     "Aucun repas sauté, séance d'exercice complète, se dit reposé",
+     "Sommeil (6.7 h) et VFC (57.3 ms) stables par rapport à la référence"
     ],
-    "noteAuPsy": "Journée sans écart préoccupant : le lien social reste au-dessus de la référence de Haddad et il prend des initiatives. Les réponses différées aux invitations du déjeuner et du dîner valent une question informelle, sans en faire un signal. Le cortisol n'est pas mesuré aujourd'hui, ce qui limite la confiance de l'analyse."
+    "noteAuPsy": "Une seule variable s'écarte de plus de 20 % (humeur déclarée à 3/5 sur deux jours), alors que le lien social reste au-dessus de la référence. Les réponses « Je verrai plus tard » et « Si vous voulez » méritent d'être observées dans les prochains jours, sans conclure sur une seule journée. Le cortisol du jour est absent, donc aucun biomarqueur de stress n'est disponible pour J94."
    },
-   "seconds": 9.5
+   "seconds": 8.4
   }
  ],
  "dossierPourLePsyHumain": {

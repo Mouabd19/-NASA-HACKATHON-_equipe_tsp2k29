@@ -23,12 +23,12 @@
    "tempsAvecEquipageMin": 104,
    "repasSautes": 1,
    "pas": 4186,
-   "sommeilH": 7.3
+   "sommeilH": 7
   },
   "biomarkers": {
-   "checkinHumeur": 4,
-   "checkinFatigue": 2,
-   "vfcMs": 53,
+   "checkinHumeur": 5,
+   "checkinFatigue": 3,
+   "vfcMs": 54.7,
    "cortisolNmolL": null
   }
  },
@@ -45,33 +45,33 @@
      },
      {
       "heure": "10:00",
-      "fait": "Abandonne en cours la maintenance du système de filtration d'air et la reporte à demain.",
+      "fait": "Abandonne en cours la maintenance du système de filtration d'air et la reporte au lendemain.",
       "citation": "C'est bon, j'ai pas besoin d'aide."
      },
      {
       "heure": "12:40",
-      "fait": "Mange seul dans sa cabine, ration à moitié entamée.",
+      "fait": "Prend son repas seul dans sa cabine et ne consomme qu'à moitié sa ration.",
       "citation": null
      },
      {
       "heure": "14:00",
-      "fait": "Réalise la séance d'exercice complète (60 min ARED + vélo).",
+      "fait": "Effectue la séance d'exercice complète (60 min ARED et vélo).",
       "citation": null
      },
      {
       "heure": "21:00",
-      "fait": "Décline la soirée film proposée par Ito et ne participe pas à l'activité collective.",
+      "fait": "Décline la soirée film proposée par Ito.",
       "citation": "Faites sans moi ce soir."
      },
      {
       "heure": "23:50",
-      "fait": "Se couche après une journée de 7,3 h de sommeil signalé par les capteurs.",
+      "fait": "Se couche.",
       "citation": null
      }
     ],
-    "resume": "Haddad s'est levé à 06:41 et couché à 23:50, avec 104 minutes passées avec l'équipage et un repas signalé comme sauté par les capteurs. Il a abandonné une tâche de maintenance reportée à demain, mangé seul à midi et décliné la soirée film du soir."
+    "resume": "Haddad s'est levé à 06:41 et s'est couché à 23:50, avec une séance d'exercice complète dans l'après-midi. Il a abandonné une maintenance en cours, pris un repas seul avec une ration à moitié consommée et décliné la soirée film de l'équipage."
    },
-   "seconds": 6.2
+   "seconds": 4.4
   },
   {
    "id": "obs-paroles",
@@ -80,27 +80,27 @@
     "faits": [
      {
       "heure": "07:30",
-      "fait": "Prend l'initiative d'proposer de commencer le module 3 après le café, en s'adressant à l'équipage ; échange de trois répliques avec Okafor.",
+      "fait": "Prend l'initiative d'un échange avec l'équipage au petit-déjeuner, puis échange avec Okafor sur trois répliques.",
       "citation": "On attaque le module 3 après le café ?"
      },
      {
       "heure": "10:00",
-      "fait": "Refuse l'aide proposée pendant la maintenance du système de filtration d'air, qui est reportée au lendemain.",
+      "fait": "Refuse l'aide proposée pour la maintenance du système de filtration d'air, qui est abandonnée et reportée.",
       "citation": "C'est bon, j'ai pas besoin d'aide."
      },
      {
       "heure": "12:40",
-      "fait": "Prend son repas seul dans sa cabine, sans participer au repas commun.",
+      "fait": "Prend son repas seul dans sa cabine.",
       "citation": null
      },
      {
       "heure": "17:30",
-      "fait": "Enregistre un message de 9 minutes pour sa famille lors de l'appel vidéo différé.",
+      "fait": "Enregistre un message vidéo de 9 min pour sa famille lors de l'appel différé.",
       "citation": null
      },
      {
       "heure": "19:30",
-      "fait": "Prend l'initiative de choisir le film de la soirée lors du dîner commun.",
+      "fait": "Propose au dîner commun de choisir le film de la soirée.",
       "citation": "Ce soir film, c'est moi qui choisis."
      },
      {
@@ -109,9 +109,9 @@
       "citation": "Faites sans moi ce soir."
      }
     ],
-    "resume": "Haddad a parlé 52 minutes dans la journée, dont 104 minutes passées avec l'équipage, et a pris l'initiative dans plusieurs échanges. Il a refusé une aide proposée et une soirée collective, et a pris un repas seul."
+    "resume": "Haddad prend l'initiative dans plusieurs échanges avec l'équipage (petit-déjeuner, dîner) mais refuse une aide et la soirée film proposée. Il mange seul à midi, enregistre un message de 9 min pour sa famille, et son temps de parole mesuré sur la journée est de 52 min."
    },
-   "seconds": 6.1
+   "seconds": 7.1
   },
   {
    "id": "obs-corps",
@@ -120,38 +120,38 @@
     "faits": [
      {
       "heure": "06:41",
-      "fait": "Se lève directement au réveil, après une durée de sommeil mesurée de 7,3 h.",
+      "fait": "Se lève directement après le réveil.",
       "citation": null
      },
      {
-      "heure": "07:30",
-      "fait": "Rit à une blague d'Okafor pendant le petit-déjeuner.",
-      "citation": null
+      "heure": "10:00",
+      "fait": "Interrompt la maintenance du système de filtration d'air en cours et la reporte au lendemain.",
+      "citation": "C'est bon, j'ai pas besoin d'aide."
      },
      {
       "heure": "12:40",
-      "fait": "Mange seul dans sa cabine ; la ration n'est qu'à moitié entamée.",
+      "fait": "Mange seul dans sa cabine, avec une ration à moitié entamée.",
       "citation": null
      },
      {
       "heure": "14:00",
-      "fait": "Réalise la séance d'exercice complète (60 min ARED et vélo) et déclare se sentir reposé.",
+      "fait": "Réalise la séance d'exercice complète (60 min ARED et vélo) et indique se sentir reposé.",
       "citation": null
      },
      {
       "heure": "17:30",
-      "fait": "Sourit pendant le visionnage de son message enregistré de 9 min destiné à sa famille.",
+      "fait": "Sourit pendant un message vidéo enregistré de 9 minutes.",
       "citation": null
      },
      {
       "heure": "23:50",
-      "fait": "Se couche ; 4 186 pas enregistrés dans la journée, temps de parole mesuré à 52 min.",
+      "fait": "Se couche après 7 heures de sommeil enregistrées dans la journée précédente selon les capteurs.",
       "citation": null
      }
     ],
-    "resume": "Haddad se lève directement, rit et sourit à plusieurs reprises, et déclare se sentir reposé après l'exercice. Il mange seul à midi avec une ration à moitié entamée, et la journée compte 4 186 pas et 52 min de parole."
+    "resume": "Haddad a effectué la séance d'exercice complète et déclare se sentir reposé, avec 4186 pas et 1 repas sauté selon les capteurs. Il a mangé seul à midi, ration à moitié entamée, et a sourit pendant le message enregistré de 17:30."
    },
-   "seconds": 6.5
+   "seconds": 5.7
   }
  ],
  "psychologists": [
@@ -163,36 +163,37 @@
     "confiance": "moyenne",
     "hypotheses": [
      {
-      "schema": "Repli social ponctuel à surveiller : retrait marqué de la vie collective sur J85, sans signal biologique concordant. À revoir si le retrait se répète les jours suivants.",
+      "schema": "Repli social ponctuel en fin de journée, à regarder au prochain jour. Il est concentré sur les repas et les moments communs, sans signal sur la parole ni sur l'humeur.",
       "preuves": [
-       "Temps avec l'équipage à 104 min, soit -42 % vs référence 180.1 (J81 à J84 étaient autour de 220 min)",
-       "Refus d'aide à 10:00 (« C'est bon, j'ai pas besoin d'aide »), repas pris seul à 12:40, soirée film déclinée à 21:00 (« Faites sans moi ce soir »)",
-       "Humeur déclarée stable à 4/5 et VFC à 53 ms, soit +10 % vs référence"
+       "Temps avec l'équipage à 104 min, soit -42 % vs référence 180.1 min, alors que la moyenne 7 j est stable (179.7 min)",
+       "Repas pris seul en cabine à 12:40, ration à moitié consommée, repas sauté compté à 1 (+100 % vs 0.5)",
+       "Refus de la soirée film (« Faites sans moi ce soir ») après une proposition d'Ito à 21:00"
       ]
      },
      {
-      "schema": "Besoin de récupération personnelle plutôt qu'épuisement : la journée semble centrée sur le repos et l'activité individuelle.",
+      "schema": "Possible frustration liée à la maintenance technique, à vérifier. Le refus d'aide et l'abandon de la tâche sont observés le même matin.",
       "preuves": [
-       "Déclare se sentir reposé après la séance d'exercice complète à 14:00",
-       "Fatigue déclarée à 2/5, stable depuis J82, sommeil de 7.3 h (+11 % vs référence)"
+       "Maintenance du système de filtration d'air abandonnée à 10:00 et reportée au lendemain",
+       "Refus d'aide : « C'est bon, j'ai pas besoin d'aide. »",
+       "Les trois observateurs relèvent cet épisode, sans panne ni incident signalé"
       ]
      }
     ],
     "ecartsReference": [
-     "Temps avec l'équipage : 104 min, -42 % vs référence 180.1 (seul écart marqué de la journée dans le sens d'un retrait)",
-     "Repas sautés : 1 vs référence 0.5 (+100 %), mais effectif très faible et moyenne 7 j à 0.3 (-40 %)",
-     "Pas, sommeil, humeur, VFC et temps de parole : tous au-dessus de la référence (+7 % à +13 %)"
+     "Temps avec l'équipage : 104 min aujourd'hui, -42 % vs référence 180.1 min (moyenne 7 j stable à 179.7 min)",
+     "Repas sautés : 1 aujourd'hui, +100 % vs référence 0.5 (moyenne 7 j à 0.3, soit -40 %)",
+     "Humeur déclarée : 5/5 aujourd'hui, +32 % vs référence 3.8 (moyenne 7 j à 3.9, soit +3 %)"
     ],
     "pointsRassurants": [
-     "Humeur déclarée à 4/5 et check-in humeur à 4, stable depuis J79",
-     "Sommeil de 7.3 h, fatigue à 2/5, VFC en hausse de 10 % vs référence",
-     "Initiative prise au module 3 (07:30) et au choix du film (19:30), rires et sourires observés",
-     "Message de 9 min enregistré pour la famille à 17:30, avec sourires pendant le visionnage",
-     "Temps de parole de 52 min, dans la variation habituelle"
+     "Sommeil de 7 h, dans la référence (+1 %), stable sur 7 jours",
+     "VFC à 54.7 ms, -4 % vs référence, moyenne 7 j à -2 % : pas de dérive",
+     "Prise d'initiative au petit-déjeuner et au dîner, temps de parole à 52 min (+7 %)",
+     "Séance d'exercice complète à 14:00 et message vidéo de 9 min pour la famille à 17:30",
+     "Écart sur le temps avec l'équipage isolé à J85 : J83 à -26 %, J84 revenu à +23 %"
     ],
-    "noteAuPsy": "Une seule journée marquée par un retrait social (104 min avec l'équipage contre une moyenne de 180 min), sans dégradation concordante de l'humeur, du sommeil ou des biomarqueurs. Le repas sauté ne porte que sur une ration et l'effectif est trop faible pour être interprété. Il serait utile de vérifier à J86 si le retrait se répète, en particulier après le refus d'aide."
+    "noteAuPsy": "Journée isolée où le temps avec l'équipage et les repas sautés s'écartent, mais la veille (J84) était dans la norme et la tendance sur 7 jours reste stable. Le déclaratif (humeur 5/5, « reposé ») est en décalage avec le retrait observé et la fatigue à 3/5, à explorer lors d'un échange informel. Un point au prochain jour suffira si le repli sur les repas ou les temps communs se répète."
    },
-   "seconds": 14.3
+   "seconds": 12.9
   },
   {
    "id": "psy-anxiete",
@@ -202,80 +203,85 @@
     "confiance": "moyenne",
     "hypotheses": [
      {
-      "schema": "Retrait ponctuel de la vie collective le J85, sans schéma établi sur les 7 derniers jours.",
+      "schema": "Retrait social marqué aujourd'hui, sans persistance sur les 7 derniers jours. À regarder au prochain jour.",
       "preuves": [
-       "Temps avec l'équipage à 104 min contre une référence de 180,1 min (-42 %).",
-       "Refus de la soirée film proposée par Ito : « Faites sans moi ce soir. »",
-       "Repas pris seul dans la cabine à 12:40, ration à moitié entamée."
+       "Temps avec l'équipage à 104 min, soit -42 % vs référence 180.1 min (moyenne 7 j : 0 %)",
+       "Repas pris seul en cabine à 12:40, ration à moitié consommée",
+       "Décline la soirée film à 21:00 : «Faites sans moi ce soir.»"
       ]
      },
      {
-      "schema": "Tension possible autour de la maintenance du système de filtration d'air, sans trace de tension sur les autres indicateurs.",
+      "schema": "Refus d'aide et autonomie affirmée, possible signe de tension à surveiller. Non confirmé : aucun emportement rapporté.",
       "preuves": [
-       "Refus d'aide à 10:00 : « C'est bon, j'ai pas besoin d'aide. »",
-       "Maintenance abandonnée en cours puis reportée au lendemain.",
-       "Humeur déclarée à 4/5, au-dessus de la référence (+11 %), et VFC en hausse (+10 %)."
+       "Refuse l'aide à 10:00 : «C'est bon, j'ai pas besoin d'aide.»",
+       "Maintenance du filtre d'air abandonnée et reportée au lendemain",
+       "Aucun fait d'irritabilité ou d'emportement rapporté par les trois observateurs"
+      ]
+     },
+     {
+      "schema": "Écart entre humeur déclarée haute et comportement de retrait : incongruence à regarder.",
+      "preuves": [
+       "Humeur déclarée à 5/5, contre 4/5 les jours précédents (J79 à J84)",
+       "Sourit pendant le message vidéo de 9 min à 17:30",
+       "Propose lui-même le choix du film au dîner à 19:30"
       ]
      }
     ],
     "ecartsReference": [
-     "Temps avec l'équipage : 104 min aujourd'hui, -42 % vs référence 180.1 (moyenne 7 j à 0 %).",
-     "Repas sautés : 1 aujourd'hui, +100 % vs référence 0.5 (moyenne 7 j à -40 %).",
-     "Temps avec l'équipage bas aussi à J83 (133 min), mais un seul indicateur écarté ces jours-là."
+     "Temps avec l'équipage : 104 min, -42 % vs référence 180.1 min",
+     "Repas sautés : 1, +100 % vs référence 0.5 (moyenne 7 j : -40 %)",
+     "Humeur déclarée : 5/5, +32 % vs référence 3.8 (écart positif, à lire avec le retrait)"
     ],
     "pointsRassurants": [
-     "Sommeil de 7,3 h, au-dessus de la référence (+11 %), avec lever spontané à 06:41.",
-     "Séance d'exercice complète à 14:00, déclarée « reposé » par Haddad.",
-     "Rires et sourires observés (petit-déjeuner, visionnage du message à sa famille), et initiative prise au dîner pour choisir le film."
+     "Prend l'initiative d'un échange au petit-déjeuner, avec trois répliques avec Okafor",
+     "Séance d'exercice complète à 14:00, se dit reposé",
+     "Sommeil de 7 h, stable (moyenne 7 j : 6.9 h, écart 0 %)",
+     "VFC à 54.7 ms, seulement -4 % vs référence, moyenne 7 j -2 %",
+     "Temps de parole à 52 min, +7 % vs référence, et message de 9 min pour sa famille"
     ],
-    "noteAuPsy": "Le temps passé avec l'équipage est nettement plus bas que la référence aujourd'hui, avec un refus de soirée collective et un repas seul. Les autres indicateurs (sommeil, humeur, VFC, activité) restent dans la variation habituelle, et l'écart n'apparaît pas de façon persistante sur les 7 derniers jours. À observer lors des prochains jours : si le retrait social se répète avec d'autres indicateurs qui s'écartent, un échange pourra être envisagé."
+    "noteAuPsy": "Retrait social et repas seul marqués sur J85 seulement : l'écart n'est pas persistant, donc niveau rien, les seuils (2 indicateurs sur au moins 2 des 3 derniers jours) n'étant pas atteints. Le refus d'aide et l'incongruence entre humeur haute et retrait sont à regarder au prochain jour, notamment J86. Le cortisol n'est pas mesuré aujourd'hui, ce qui limite la lecture."
    },
-   "seconds": 13.4
+   "seconds": 14.3
   },
   {
    "id": "psy-social",
    "label": "Psychologue — lien social et isolement",
    "output": {
-    "niveau": "a_surveiller",
+    "niveau": "rien",
     "confiance": "moyenne",
     "hypotheses": [
      {
-      "schema": "Retrait social marqué sur la journée J85 : moins de temps avec l'équipage, refus d'aide, refus de la soirée collective et repas pris seul.",
+      "schema": "Retrait social ponctuel sur J85 : temps avec l'équipage nettement sous la référence, sans persistance sur les jours précédents.",
       "preuves": [
-       "Temps avec l'équipage à 104 min, soit -42 % par rapport à la référence de 180,1 min.",
-       "Refus à 10:00 : « C'est bon, j'ai pas besoin d'aide ». Maintenance reportée au lendemain.",
-       "Refus à 21:00 de la soirée film : « Faites sans moi ce soir ». Repas pris seul à 12:40."
+       "Temps avec l'équipage de 104 min, soit -42 % par rapport à la référence de 180,1 min",
+       "Refus de la soirée film proposée par Ito avec la phrase « Faites sans moi ce soir »",
+       "Repas pris seul dans sa cabine à 12:40, ration à moitié consommée"
       ]
      },
      {
-      "schema": "Alternance à regarder sur les 3 derniers jours : des journées très sociales alternent avec des journées de retrait, et le retrait revient sur J83 et J85.",
+      "schema": "Concentration sur la tâche et refus d'aide à surveiller : maintenance abandonnée et fatigue déclarée un peu plus élevée ces deux derniers jours.",
       "preuves": [
-       "Temps avec l'équipage : 133 min sur J83 (-26 %), 222 min sur J84, 104 min sur J85.",
-       "Repas sautés : 0 sur J83 et J84, 1 sur J85, pour une référence de 0,5.",
-       "Deux indicateurs au-delà de 20 % d'écart sur chacun des 3 derniers jours."
-      ]
-     },
-     {
-      "schema": "Besoin de temps seul possiblement lié à la charge collective, sans signe de détresse déclarée.",
-      "preuves": [
-       "Haddad déclare se sentir reposé après la séance de 14:00, et la fatigue reste à 2/5.",
-       "Il prend malgré tout des initiatives sociales à 07:30 et à 19:30 et enregistre un message de 9 min pour sa famille."
+       "Maintenance du filtre d'air interrompue à 10:00 après le refus « C'est bon, j'ai pas besoin d'aide »",
+       "Fatigue déclarée de 3/5 sur J84 et J85, contre 1 à 2/5 les jours précédents",
+       "Sommeil stable à 7 h et VFC à 54,7 ms (-4 %), sans signe de dégradation physiologique"
       ]
      }
     ],
     "ecartsReference": [
-     "Temps avec l'équipage : -42 % (104 min contre une référence de 180,1 min).",
-     "Repas sautés : +100 % (1 contre 0,5 de référence, effectifs très faibles).",
-     "Temps de parole : +7 % (52 min contre 48,4 min)."
+     "Temps avec l'équipage : -42 % aujourd'hui (104 min contre 180,1 min de référence), moyenne 7 j stable à 0 %",
+     "Repas sautés : +100 % aujourd'hui (1 contre 0,5 de référence), mais moyenne 7 j à -40 %",
+     "Humeur déclarée : +32 % aujourd'hui (5 contre 3,8 de référence), écart positif"
     ],
     "pointsRassurants": [
-     "Humeur déclarée stable à 4/5 sur 7 jours, soit +11 % par rapport à la référence.",
-     "Sommeil de 7,3 h, VFC à 53 ms (+10 %) et pas à 4 186 (+13 %) : pas de signal physiologique défavorable.",
-     "Rit avec Okafor au petit-déjeuner, prend des initiatives sociales et fait l'exercice complet."
+     "Humeur déclarée à 5/5, la plus haute de l'historique récent, et sourire pendant le message à la famille",
+     "Initiative prise au petit-déjeuner (« On attaque le module 3 après le café ? ») et échanges avec Okafor",
+     "Séance d'exercice complète, 9 min de message vidéo pour la famille, sommeil stable à 7 h",
+     "Temps avec l'équipage de 222 min à J84, retour à un niveau proche de la référence après J83",
+     "VFC proche de la référence (-4 %) et temps de parole au-dessus de la référence (+7 %)"
     ],
-    "noteAuPsy": "Le signal repose surtout sur le temps avec l'équipage et les refus observés ce jour, avec un retrait qui revient sur J83 et J85. L'humeur, le sommeil et la VFC restent dans la norme personnelle, et le signal n'est pas durable (4 jours) ni cohérent avec l'humeur déclarée. L'écart sur les repas sautés repose sur des effectifs très faibles et doit être relativisé."
+    "noteAuPsy": "Un seul jour (J85) présente un retrait social marqué : temps avec l'équipage à -42 % et repas pris seul, alors que les jours J79 à J84 restent dans la variation habituelle. Le critère de persistance n'est pas atteint, et l'humeur déclarée et les échanges de la journée sont plutôt positifs. À surveiller lors des prochains jours : si le temps avec l'équipage reste bas ou si les refus sociaux se répètent, un suivi sera pertinent."
    },
-   "seconds": 16.5
+   "seconds": 12.6
   }
  ],
  "dossierPourLePsyHumain": {
@@ -292,7 +298,7 @@
    },
    {
     "psy": "psy-social",
-    "niveau": "a_surveiller"
+    "niveau": "rien"
    }
   ]
  }
