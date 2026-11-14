@@ -3,6 +3,7 @@
 > **À lire par chaque membre ET par son Claude avant de toucher au code.**
 > v3 (sam. 12:40) : nouvelle interface en **2 pages** (War Room + Body Overview 3D), décidée au tableau blanc. Elle remplace les écrans de la fiche `sol-zero-fiche-v3` (silhouettes 2D, §3). Les **normes NASA, modèles et chiffres** de la fiche restent la référence.
 > v3.1 (sam. 12:50) : scénario du scanner (module rotatif) et chaîne de données bord → Terre (§1).
+> v3.2 (sam. 13:20, revue mentor) : le scanner ne mesure **que ce que l'échographie sait mesurer** (muscle, fluides, reins, nerf optique, cœur) ; la densité osseuse vient du **sol + modèle + marqueurs** ; module rotatif → **centrifugeuse à bras court** ; âge biologique global = **PhenoAge [Publié]** ; alertes sur **tendance 7 j** ; **check-in humeur** + santé mentale (§1, §8, §11) ; démo recentrée sur **aujourd'hui** (§9). Les types (§6) ne changent **que par ajout**.
 > **Début du travail : sam. 13:30.** Temps disponible : **~29 h** (sam. 13:30 → dim. 18:30).
 
 **Repo :** https://github.com/Mouabd19/-NASA-HACKATHON-_equipe_tsp2k29
@@ -26,25 +27,52 @@ cd sol-zero
 
 ## 1. Le produit (version tableau blanc)
 
+**Phrase signature :** « L'astronaute sait **ce matin** dans quel état il est et **quoi faire**, sans attendre la Terre, et peut vérifier **pourquoi** jusqu'à la norme NASA. »
+
 **Entrées :**
-- **Scan corps entier type Midjourney Medical** (SIMULÉ). Un « corps du jour » est enregistré chaque jour (voir « Le scanner à bord » ci-dessous).
+- **Scan corps entier type Midjourney Medical** (SIMULÉ). Un « corps du jour » est enregistré chaque jour, avec **uniquement les métriques que l'échographie sait mesurer** (voir « Le scanner à bord » ci-dessous).
 - **Apple Watch** (RÉEL, présentateur) : FC de repos, VFC, VO₂max estimé, **SpO₂ (% O₂ dans le sang)**, température du poignet, sommeil.
-- **Prise de sang quotidienne** (SIMULÉ).
+- **Analyses biologiques** (SIMULÉ) : **urine quotidienne** (calcium, marqueurs de résorption osseuse) + **micro-prélèvement capillaire hebdomadaire** (hémoglobine, CRP, glucose, créatinine, albumine, cortisol…). Une prise de sang veineuse quotidienne serait invasive et irréaliste en vol.
+- **Check-in du matin** (RÉEL, saisi en démo) : humeur, fatigue, douleur, sommeil ressenti, en **2 taps** chacun.
 - **Normes NASA-STD-3001 Rev C** (RÉEL) pour tous les seuils rouges.
+
+**Couverture des mesures citées par le défi** (un juré compte) :
+
+| Citée par le défi | Où dans SOL ZÉRO |
+| :-- | :-- |
+| Fréquence cardiaque | Apple Watch (RÉEL) |
+| Tension artérielle | Calque cardio (SIMULÉ) |
+| Glycémie | Prélèvement capillaire (SIMULÉ) |
+| Température | Poignet Apple Watch (RÉEL) |
+| Sommeil | Apple Watch (RÉEL) + check-in |
+| Humeur | Check-in du matin (RÉEL) + indicateurs de santé mentale (§11) |
 
 ### Le scanner à bord (scénario de mission [Persona] / [H])
 
 - **Problème :** le scanner (tomographie par ultrasons) plonge l'astronaute dans une cuve d'eau. En apesanteur, l'eau ne reste pas au fond de la cuve.
-- **Solution retenue :** le vaisseau a un **module rotatif** de gravité artificielle, qui sert d'abord de **contre-mesure au déconditionnement**. Le scanner y est installé et profite de sa gravité.
-  - Pas besoin de 1 g : il suffit que l'eau reste au fond. Le module tourne à **0,38 g, la gravité de Mars** : l'astronaute s'entraîne à l'arrivée, et le scanner fonctionne. Ordre de grandeur : a = ω²r, soit environ 21 m de rayon à 4 tours/min.
-  - Patient **allongé**, corps parallèle à l'axe de rotation (pas de gradient de gravité tête/pieds) ; pas de scan pendant les manœuvres (ballottement).
-  - Le même scanner sert ensuite **à la base martienne** (0,38 g naturels). Avant le départ et au retour : scan complet au sol.
+- **Solution retenue :** le scanner est installé dans une **centrifugeuse à bras court**. Ce type d'équipement existe **au sol** (ESA/DLR, Cologne), où on l'étudie comme **contre-mesure au déconditionnement**, et son embarquement fait partie des pistes publiées. Aucun équipement de ce type ne vole aujourd'hui : c'est notre **hypothèse de mission [H]**.
+  - **Pas besoin de beaucoup de gravité :** il suffit que l'eau reste au fond et que les bulles d'air remontent. Avec a = ω²r et un rayon de 3 m : **≈ 0,1 g à ~5,5 tr/min** suffit pour le scan. On peut monter à **0,38 g (gravité de Mars) à ~10,6 tr/min** pour les séances d'entraînement.
+  - Patient **allongé et immobile** (les mouvements de tête en centrifugeuse donnent le mal des transports), corps parallèle à l'axe de rotation (pas de gradient de gravité tête/pieds) ; pas de scan pendant les manœuvres (ballottement).
+  - Le scan est couplé à la séance de centrifugeuse : **pas de temps d'équipage en plus**.
+  - Le même scanner sert ensuite **à la base martienne** (0,38 g naturels). Avant le départ et au retour : bilan complet au sol, **densitométrie osseuse comprise**.
+- **Ce que le scanner mesure (et ne mesure pas) :**
+
+| Mesure | Rythme | Pourquoi |
+| :-- | :-- | :-- |
+| Volume des muscles posturaux (cuisse, mollet, paravertébraux) | quotidien, alerte sur tendance 7 j | L'atrophie musculaire est le point fort de l'échographie et un risque spatial majeur |
+| **Déplacement des fluides** (volume des jambes, œdème visage/cou) | **quotidien** | En apesanteur, les fluides montent vers la tête ; ça varie d'un jour à l'autre |
+| Reins : présence et taille de **calculs** | hebdo (quotidien si alerte calcium) | Le calcium libéré par les os augmente le risque de calculs ; l'échographie les détecte bien |
+| **Diamètre de la gaine du nerf optique** | quotidien | Reflet de la pression intracrânienne → risque oculaire SANS. Cette mesure se fait **déjà par échographie sur l'ISS** |
+| Cœur : taille, fraction d'éjection | hebdo | Atrophie cardiaque en apesanteur |
+| ✗ **Densité osseuse** | — | L'os renvoie presque toute l'onde ultrasonore : Midjourney ne publie aucune précision sur l'os. La densité vient du **bilan au sol** (avant/après), du **modèle `bone`** et des **marqueurs urinaires** quotidiens |
+
+- **Bruit de mesure :** un scan quotidien coûte peu en stockage (« qui peut le plus peut le moins »), mais une valeur du jour peut être bruitée. On **affiche** le point du jour, on **alerte** seulement sur la **tendance des 7 derniers jours**, avec la bande de bruit de mesure.
 - **Chaîne de données (le calcul qui compte) :** un scan produit environ 17 Go/s, soit **~20 To pour 20 min**. Le lien Mars–Terre fait quelques Mb/s : envoyer un seul scan brut prendrait **plus de 2 ans**. Donc :
   1. reconstruction et segmentation des organes **à bord** ;
   2. seules les **métriques par organe** (volumes, densités : quelques Ko) partent vers la Terre ;
-  3. la Terre renvoie la **synthèse IA par organe** et l'avis médical, avec le délai radio réel.
-- **Phrase de pitch :** « Notre module rotatif garde les astronautes en forme et fait tenir l'eau du scanner. Et vers la Terre, on n'envoie pas 20 téraoctets : on envoie 4 kilooctets. »
-- **Honnêteté :** aucun vaisseau actuel n'a de module rotatif (seulement des concepts étudiés). C'est une hypothèse de mission, affichée comme telle.
+  3. la Terre renvoie la **synthèse IA par organe** et l'avis médical, avec le délai radio réel. Cette synthèse arrive dans **ENSUITE**, jamais dans MAINTENANT, qui se calcule **à bord** à partir des seuils NASA. (Vision : IA embarquée.)
+- **Phrase de pitch :** « Notre centrifugeuse garde les astronautes en forme et fait tenir l'eau du scanner. Et vers la Terre, on n'envoie pas 20 téraoctets : on envoie 4 kilooctets. »
+- **Honnêteté :** aucun vaisseau actuel n'a de centrifugeuse pour l'équipage (seulement des prototypes au sol et des concepts). Le scanner Midjourney n'a **pas encore de données de précision publiées**. Les deux sont des hypothèses de mission, affichées comme telles.
 
 ### Page 1 — BODY (Overview Health)
 
@@ -52,15 +80,16 @@ cd sol-zero
 
 | Calque | Ce qu'on y voit | Métriques principales |
 | :-- | :-- | :-- |
-| **Squelette** | Os, avec la hanche, le rachis et le col du fémur en évidence | Densité osseuse vs pré-vol (≥ 95 %, col ≥ 90 % [NASA V1 4027]) |
-| **Muscles** | Muscles posturaux : cuisse, mollet, paravertébraux | Volume / atrophie vs J0 (scan) |
-| **Organes** | Cœur, poumons, foie, reins, cerveau, yeux | Par organe (volume, métriques du scan, marqueurs sanguins associés) |
-| **Cardiovasculaire / sang** | Cœur + réseau sanguin | VO₂max (≥ 80 % pré-vol, ≥ 36,5 ml/kg/min [NASA V1 4003/4002]), FC, **SpO₂**, tension, hémoglobine (anémie spatiale) |
-| **Nerveux + yeux** | Cerveau, moelle, nerfs, nerf optique | Vigilance (PVT), sommeil, risque oculaire lié à la pression (fiche §2) |
+| **Squelette** | Os, avec la hanche, le rachis et le col du fémur en évidence | Densité osseuse **estimée** vs pré-vol (≥ 95 %, col ≥ 90 % [NASA V1 4027]) : modèle `bone` recalé sur le bilan au sol + marqueurs urinaires (**pas** mesurée par le scanner) |
+| **Muscles** | Muscles posturaux : cuisse, mollet, paravertébraux | Volume / atrophie vs J0 (scan, tendance 7 j) |
+| **Organes** | Cœur, reins (+ poumons, foie, cerveau en gris « non modélisé ») | Cœur : taille, fraction d'éjection (scan) ; reins : calculs (scan) + calcium urinaire |
+| **Cardiovasculaire / sang** | Cœur + réseau sanguin + fluides | VO₂max (≥ 80 % pré-vol, ≥ 36,5 ml/kg/min [NASA V1 4003/4002]), FC, **SpO₂**, tension, hémoglobine (anémie spatiale), **déplacement des fluides** (volume des jambes, scan) |
+| **Nerveux + yeux** | Cerveau, moelle, nerfs, nerf optique | **Diamètre de la gaine du nerf optique** (scan) → risque SANS ; vigilance (PVT), sommeil, humeur (check-in) |
 | **Exposition** | Carte de chaleur des radiations sur le corps | Dose du jour vs prévu (1,84 mSv/j en croisière [Publié RAD]) |
 
 - **Warnings sur le corps :** un panneau ⚠ (triangle + point d'exclamation) est **ancré en 3D** sur la zone en danger. Il pulse en ambre ou en rouge.
-- **Survol d'un élément :** overlay avec le récap santé (statut, 2–3 métriques, norme NASA appliquée, **âge biologique** de l'organe vs âge réel).
+- **Survol d'un élément :** overlay avec le récap santé **du jour** (statut, 2–3 métriques, norme NASA appliquée, tendance 7 j, **écart d'âge** de l'organe [H]).
+- **En tête de page :** l'**âge biologique global** (PhenoAge [Publié], calculé sur le dernier prélèvement) vs l'âge réel, et le **statut du jour**. La page s'ouvre sur **aujourd'hui** ; la projection n'arrive qu'en faisant défiler la timeline.
 - **Clic sur l'âge biologique → fenêtre organe :**
   - modèle 3D de l'organe seul, que l'on peut faire tourner ;
   - **synthèse IA** de l'état de l'organe (générée au sol, étiquetée « Synthèse IA — à valider par le CMO ») ;
@@ -71,7 +100,8 @@ cd sol-zero
 
 ### Page 2 — WAR ROOM (to-do du jour)
 
-- **En tête :** consigne du jour **MAINTENANT / ENSUITE** et délai radio du jour (fiche §6).
+- **En tête :** consigne du jour **MAINTENANT / ENSUITE** et délai radio du jour (fiche §6). MAINTENANT se calcule à bord ; la synthèse IA de la Terre et l'avis du médical au sol vont dans ENSUITE (« reçu à HH:MM, délai X min »).
+- **Check-in du matin** (premier écran de la journée, ≤ 30 s) : humeur, fatigue, douleur, sommeil ressenti. C'est **l'auto-évaluation**, et elle alimente le triage du jour.
 - **To-do list du jour**, fixée le matin (« le protocole décide, pas le moi du soir », fiche §9) :
   - **exercices** (ARED, vélo, tapis : durée, intensité) ;
   - **repas** du jour (menu, protéines, calcium, vitamine D, kcal) ;
@@ -97,9 +127,10 @@ Inspiration **Evangelion (interfaces NERV)** et **Cyberpunk 2077 (écran Cyberwa
 ### Honnêteté (ce que le jury verra)
 
 - Chaque écran porte **RÉEL**, **SIMULÉ** ou **[H]**.
-- **Âge biologique = modèle de l'équipe [H]** (§8), construit sur des vitesses de perte publiées. La fiche §10 refusait l'« âge d'organe » non validé : on l'affiche donc comme **« âge biologique estimé [H] »**, avec sa formule visible dans Raisonnement.
+- **Âge biologique global = PhenoAge [Publié]** (Levine et al., 2018), calculé à partir de la prise de sang. **Écart d'âge par organe = indicateur de l'équipe [H]** (§8), affiché comme **« écart d'âge estimé [H] »**, avec sa formule et sa limite visibles dans Raisonnement : la perte osseuse ou musculaire spatiale est en partie réversible ; ce n'est pas du vieillissement, mais un équivalent en années.
+- **Bénéfice sur Terre :** le même suivi (muscle, fluides, os) sert aux patients alités, à la sarcopénie des personnes âgées et aux sites isolés (bases polaires comme Concordia). **Métrique d'impact :** perte de la hanche à J860 de 8,70 % au rythme actuel contre 4,22 % avec le plan suivi [H].
 - **Synthèse IA** : générée **hors ligne** à partir des chiffres traçables (pas d'appel réseau pendant la démo), étiquetée, jamais utilisée pour un seuil.
-- **Scan Midjourney** : aucune donnée publique (fiche §10). Tous les scans sont simulés, et le pitch le dit. Le module rotatif est une hypothèse de mission [H].
+- **Scan Midjourney** : aucune donnée publique (fiche §10). Tous les scans sont simulés, et le pitch le dit. Aucune métrique osseuse n'est attribuée au scanner. La centrifugeuse embarquée est une hypothèse de mission [H].
 - **Synthèse IA « générée au sol »** : cohérent avec la chaîne bord → Terre ci-dessus. Dans l'app, la fenêtre organe affiche « reçue de la Terre à HH:MM, délai X min ».
 
 ---
@@ -139,7 +170,7 @@ Repères des orgas : déjeuner sam. 13:00 · dîner sam. 19:30 · déjeuner dim.
 | Livré avant | Quoi |
 | :-- | :-- |
 | sam. 16:00 | **`parseHealthExport`** en flux (y compris `OxygenSaturation`) sur le vrai export + `baseline30d` |
-| sam. 20:00 | **Page War Room** sur mocks : carte MAINTENANT/ENSUITE, to-do groupée (exercices / repas / tests / médical), cases à cocher, lien « Pourquoi ? » |
+| sam. 20:00 | **Page War Room** sur mocks : **check-in du matin** (humeur, fatigue, douleur, sommeil ressenti, 2 taps chacun → `CheckIn`), carte MAINTENANT/ENSUITE, to-do groupée (exercices / repas / tests / médical), cases à cocher, lien « Pourquoi ? » |
 | dim. 00:00 | **Page Raisonnement** : chaîne donnée → modèle → norme → décision, sources cliquables, étiquettes |
 | **dim. 03:00** | **`server/api.ts`** : `GET /api/todo`, `POST /api/todo/:id/done`, `POST /ingest`, `GET /ingest/latest` ; **Raccourci iOS exécutable sur l'Apple Watch** qui affiche la to-do et coche un item (timebox : s'il ne marche pas à **dim. 09:00**, on coupe) |
 | dim. 08:00 | Mesure en direct (FC / SpO₂) via Raccourci + mode secours (« dernière mesure enregistrée », saisie manuelle) ; War Room branchée sur le planificateur de Mouad |
@@ -149,9 +180,9 @@ Repères des orgas : déjeuner sam. 13:00 · dîner sam. 19:30 · déjeuner dim.
 | Livré avant | Quoi |
 | :-- | :-- |
 | sam. 13:45 | Réglages GitHub (collaborateurs, app Claude, protection de `main`) |
-| sam. 16:00 | **`scripts/generate-sim.ts`** (graine fixe) → `public/data/sim/` : 95 `DayBody` (J0 → J94), prises de sang quotidiennes, données montre simulées de Haddad. Cohérent avec la fiche §7 |
-| sam. 19:00 | Modèles de la fiche (`aerobic`, `bone`, `band`, `radiation`) + **`bioAge`** (§8) : série mesurée + prédite jusqu'à J860 avec bande ; tests d'or |
-| sam. 23:00 | **`alerts`** (une alerte par organe en danger, avec niveau et règle) ; `triage` (+ Sol-routine) ; `router` + tests d'invariance |
+| sam. 16:00 | **`scripts/generate-sim.ts`** (graine fixe) → `public/data/sim/` : 95 `DayBody` (J0 → J94) avec **uniquement les métriques du scanner** (§1 : muscle, fluides, reins, nerf optique, cœur) **+ bruit de mesure**, urine quotidienne, prélèvement capillaire hebdo, check-ins simulés, données montre simulées de Haddad. Cohérent avec la fiche §7 |
+| sam. 19:00 | Modèles de la fiche (`aerobic`, `bone`, `band`, `radiation`) + **`phenoAge`** (PhenoAge, §8) + **`bioAge`** (écart par organe [H]) : série mesurée + prédite jusqu'à J860 avec bande ; tests d'or |
+| sam. 23:00 | **`trend7d`** ; **`alerts`** (une alerte par organe en danger, **sur la tendance 7 j**, avec niveau et règle) ; `triage` (+ check-in + Sol-routine) ; `router` + tests d'invariance |
 | dim. 03:00 | **`planDay`** : la to-do du jour (exercices, repas, tests, actions médicales) tirée des alertes ; **`explain`** : la chaîne de raisonnement de chaque item |
 | dim. 08:00 | Cas limites (donnée expirée → `DONNEES_INSUFFISANTES`) ; fusion des vraies données montre du présentateur |
 
@@ -160,10 +191,10 @@ Repères des orgas : déjeuner sam. 13:00 · dîner sam. 19:30 · déjeuner dim.
 | :-- | :-- |
 | sam. 17:00 | **Modèles 3D** depuis **Z-Anatomy** (CC BY-SA 4.0, FBX/Blender, calques squelette / muscles / vaisseaux / nerfs / organes) : export **un .glb par calque**, décimé (< 8 Mo chacun), noms de nœuds → `organId` ; `public/models/manifest.json` (calque, fichier, organes, **position d'ancrage des warnings**) |
 | sam. 20:00 | `.glb` des **organes isolés** pour la fenêtre organe (cœur, poumons, foie, reins, cerveau, œil, fémur/hanche, cuisse) |
-| sam. 23:00 | `public/data/nasa/standards.json` (Rev C) ; références à vérifier (§8 : vitesses de vieillissement terrestres, normes sanguines, anémie spatiale, risque de calculs rénaux) ; `fetch-horizons` → `horizons.json` |
+| sam. 23:00 | `public/data/nasa/standards.json` (Rev C) ; références à vérifier (§8 : **PhenoAge, Levine 2018** (coefficients exacts) ; **âges d'organes à partir du plasma, Oh et al., Nature 2023** ; vitesses de vieillissement terrestres ; normes sanguines ; anémie spatiale ; calculs rénaux ; **échographie du nerf optique sur l'ISS** ; centrifugeuse à bras court ESA/DLR ; **limites de l'échographie sur l'os**) ; `fetch-horizons` → `horizons.json` |
 | dim. 02:00 | Contenus : bibliothèque d'**exercices** et de **menus** (`src/content/`) ; textes « Pourquoi ? » |
 | dim. 06:00 | **Synthèses IA** par organe pour les jours clés (J0, J30, J60, J94, Sol 0, J860), générées à partir de `public/data/sim/` → `public/data/summaries/<organId>.json` |
-| dim. 10:00 | Storyboard + diapos v1 (5 max) ; **vidéo de secours n° 1** dès le jalon MVP |
+| dim. 10:00 | Storyboard + diapos v1 (5 max, dont **1 slide Vision** : IA embarquée + compagnon santé mentale §11) ; **vidéo de secours n° 1** dès le jalon MVP |
 | dim. 13:00 | Script v2 chronométré ; test avec 2 personnes extérieures |
 
 ### Fin commune (dimanche, seule partie synchrone)
@@ -184,20 +215,21 @@ Repères des orgas : déjeuner sam. 13:00 · dîner sam. 19:30 · déjeuner dim.
 **MVP :**
 1. Page Body : corps 3D, au moins 4 calques (squelette, muscles, organes, cardiovasculaire), survol avec récap.
 2. Warnings 3D sur les zones en danger (au moins : hanche, cuisse, cœur/VO₂).
-3. Fenêtre organe : synthèse + graphe âge biologique mesuré / **prédit en pointillé**.
+3. Fenêtre organe : synthèse + graphe écart d'âge mesuré / **prédit en pointillé** ; âge PhenoAge global en tête de page.
 4. Timeline J0 → J94 → projection Sol 0 / J860.
 5. Résultats sanguins + SpO₂ avec courbes.
-6. Page War Room : MAINTENANT/ENSUITE, to-do (exercices, repas, tests, médical), lien « Pourquoi ? » → Raisonnement.
+6. Page War Room : **check-in du matin**, MAINTENANT/ENSUITE, to-do (exercices, repas, tests, médical), lien « Pourquoi ? » → Raisonnement.
 7. Vraies données Apple Watch du présentateur (import `export.xml`).
 8. Normes NASA Rev C sur tous les seuils rouges.
 
-**Hors MVP, dans l'ordre :** to-do sur l'Apple Watch → mesure en direct → calque Nerveux + yeux → calque Exposition → 3D de l'organe dans la fenêtre (sinon image fixe) → curseur lien Terre → message du moi futur → animations.
+**Hors MVP, dans l'ordre :** to-do sur l'Apple Watch → mesure en direct → calque Nerveux + yeux → prototype multi-agents santé mentale (§11, piste parallèle, sorties pré-calculées) → calque Exposition → 3D de l'organe dans la fenêtre (sinon image fixe) → curseur lien Terre → message du moi futur → animations.
 
 **Règles de coupe :**
 - Z-Anatomy pas exploitable à **dim. 04:00** → on garde le corps de secours stylisé (il colle au style hologramme).
 - Raccourci Apple Watch pas fiable à **dim. 09:00** → to-do montrée sur l'iPhone, mesure via `export.xml` uniquement.
 - Une page à plus de 30 FPS est obligatoire en démo : si la 3D rame, on réduit les polygones avant d'ajouter quoi que ce soit.
 - Rien de pas fini à **dim. 14:00** ne part en démo. Un module en retard = l'interface garde le mock, étiqueté SIMULÉ.
+- Prototype multi-agents (§11) pas convaincant à **dim. 06:00** → il reste en slide Vision, avec un exemple de sortie figé.
 
 ---
 
@@ -295,6 +327,26 @@ export interface Metric {
   color: Color;
   tag: Tag;
   provenance: Provenance;
+  trend7d?: number;             // v3.2 (ajout) : pente sur 7 j, en %/semaine — c'est elle qui déclenche l'alerte
+  noise?: number;               // v3.2 (ajout) : bruit de mesure (± même unité que value)
+}
+
+export interface CheckIn {      // v3.2 (ajout) : auto-évaluation du matin, 2 taps par ligne
+  day: number;
+  mood: 1 | 2 | 3 | 4 | 5;
+  fatigue: 1 | 2 | 3 | 4 | 5;
+  pain: 0 | 1 | 2 | 3;          // 0 = aucune
+  painZone?: OrganId;
+  sleepFelt: 1 | 2 | 3 | 4 | 5;
+  source: 'manual' | 'simulated';
+}
+
+export interface PhenoAgeResult { // v3.2 (ajout) : âge biologique global [Publié]
+  day: number;                  // jour du prélèvement utilisé
+  phenoAge: number;
+  chronoAge: number;
+  inputs: Record<string, number>; // marqueurs utilisés, visibles dans Raisonnement
+  tag: 'Publié';
 }
 
 export interface BioAgePoint {
@@ -401,7 +453,10 @@ Chaque fichier existe dès le bootstrap avec sa signature et un retour factice. 
 | `src/models/bioAge.ts` | Mouad | `bioAgeSeries(organId: OrganId, adherence: number): BioAgePoint[]` (mesuré J0–J94 + prédit jusqu'à J860) |
 | `src/models/band.ts` | Mouad | `colorWithBand(value: number, band: [number, number], t: { amber: number; red: number }): { color: Color; worst: Color }` |
 | `src/models/aerobic.ts`, `bone.ts`, `radiation.ts` | Mouad | Modèles de la fiche §7 (signatures libres, internes à Mouad) |
-| `src/models/alerts.ts` | Mouad | `alertsForDay(day: number): Alert[]` |
+| `src/models/phenoAge.ts` | Mouad | *(v3.2, ajout)* `phenoAge(day: number): PhenoAgeResult \| null` (dernier prélèvement ≤ `day`) |
+| `src/models/trend.ts` | Mouad | *(v3.2, ajout)* `trend7d(organId: OrganId, metricKey: string, day: number): number \| null` |
+| `src/sim/load.ts` (ajout) | Mouad | *(v3.2)* `getCheckIn(day: number): CheckIn \| null` |
+| `src/models/alerts.ts` | Mouad | `alertsForDay(day: number): Alert[]` (sur la tendance 7 j, jamais sur un point isolé) |
 | `src/models/triage.ts` | Mouad | `triage(day: number): TriageResult` |
 | `src/models/router.ts` | Mouad | `router(t: TriageResult, pos: LinkPos, delayMin: number): RouterOutput` |
 | `src/models/planDay.ts` | Mouad | `planDay(day: number): TodoItem[]` |
@@ -410,6 +465,7 @@ Chaque fichier existe dès le bootstrap avec sa signature et un retour factice. 
 | `src/ingest/baseline30d.ts` | Ahmed | `baseline30d(ms: Measurement[], type: Measurement['type']): Baseline` |
 | `src/ingest/live.ts` | Ahmed | `latestLive(type: Measurement['type']): Promise<Measurement \| null>` |
 | `src/ingest/todoSync.ts` | Ahmed | `pushTodo(items: TodoItem[]): Promise<void>` · `pullDone(): Promise<string[]>` |
+| `src/ingest/checkin.ts` | Ahmed | *(v3.2, ajout)* `saveCheckIn(c: CheckIn): void` · `todayCheckIn(): CheckIn \| null` (le check-in saisi en démo remplace le simulé du jour) |
 | `server/api.ts` | Ahmed | Plugin Vite : `GET /api/todo`, `POST /api/todo/:id/done`, `POST /ingest` (objet plat `{type, value, unit, date}`), `GET /ingest/latest` |
 | `src/pages/warroom/WarRoom.tsx` | Ahmed | `export function WarRoom(): JSX.Element` |
 | `src/pages/reasoning/Reasoning.tsx` | Ahmed | `export function ReasoningPage(): JSX.Element` (lit `:id` dans l'URL) |
@@ -425,13 +481,18 @@ Chaque fichier existe dès le bootstrap avec sa signature et un retour factice. 
 - Hanche : perte 1,99 % à J94 ; J860 : 8,70 % (rythme) / 4,22 % (plan).
 - Alertes J94 : hanche AMBRE (projection J860 rouge), cuisse AMBRE, cœur/VO₂ AMBRE (Sol 0 à la limite 36,5).
 - SpO₂ 97–99 %, hémoglobine en légère baisse (anémie spatiale).
+- *(v3.2)* Check-in J94 : humeur 3/5, fatigue 3/5, douleur 1 (bas du dos). PhenoAge J91 (dernier prélèvement) : 43,1 ans pour 42 ans réels [mock]. Gaine du nerf optique en légère hausse (AMBRE), calcium urinaire en hausse.
 
 ---
 
 ## 8. Modèles nouveaux (Mouad), à sourcer (Steve)
 
-### Âge biologique estimé [H]
-Idée : « combien d'années de vieillissement terrestre représente la perte subie en vol ».
+### Âge biologique global : PhenoAge [Publié]
+Formule publiée (Levine et al., *Aging*, 2018) à partir d'une prise de sang standard : albumine, créatinine, glucose, CRP, % de lymphocytes, VGM, IDR, phosphatases alcalines, leucocytes + âge réel. **Steve vérifie les coefficients exacts** avant que Mouad les code. On ajoute donc ces marqueurs au prélèvement capillaire simulé. Affiché en tête de la page Body.
+
+### Écart d'âge par organe [H]
+Idée : « combien d'années de vieillissement terrestre représente la perte subie en vol ». Cette idée s'appuie sur des travaux publiés qui estiment un âge par organe (Oh et al., *Nature*, 2023, à partir des protéines du plasma). Notre calcul, lui, est **un indicateur de l'équipe**, plus simple.
+**Limite à afficher dans Raisonnement :** la perte spatiale est en partie réversible au retour ; c'est un *équivalent en années*, pas un vieillissement réel.
 
 ```
 bioAge(organe, jour) = âgeRéel(jour) + perteCumulée%(organe, jour) / vitesseVieillissementTerre%/an(organe)
@@ -439,36 +500,52 @@ bioAge(organe, jour) = âgeRéel(jour) + perteCumulée%(organe, jour) / vitesseV
 
 | Organe | Perte en vol (source) | Vitesse de vieillissement terrestre [H, à sourcer par Steve] |
 | :-- | :-- | :-- |
-| Hanche | Modèle `bone` (fiche §7) | ≈ 1 %/an |
-| Cuisse / mollet | Volume au scan vs J0 | ≈ 1 %/an |
+| Hanche | Modèle `bone` (fiche §7), recalé sur le bilan au sol + marqueurs urinaires | ≈ 1 %/an |
+| Cuisse / mollet | Volume au scan vs J0 (tendance 7 j) | ≈ 1 %/an |
 | Cœur (VO₂max) | Modèle `aerobic` (fiche §7) | ≈ 1 %/an (≈ 10 %/décennie) |
 | Autres organes | Pas de modèle → `bioAge = âgeRéel`, statut **gris** (« non modélisé ») | — |
 
 Exemple : hanche à J94, perte 1,99 % → **+2,0 ans** ; à J860 au rythme actuel, 8,70 % → **+8,7 ans** ; avec le plan, 4,22 % → **+4,2 ans**. La **prédiction** (pointillé) prolonge `bone`/`aerobic` avec leur bande.
 
-### Prise de sang quotidienne (SIMULÉ)
-Analytes : hémoglobine, hématocrite, leucocytes, CRP, calcium, vitamine D, créatinine, glucose, cortisol. Valeurs de référence terrestres + tendances spatiales connues (baisse de l'hémoglobine liée à l'anémie spatiale, hausse du calcium liée à la perte osseuse → risque de calculs rénaux). **Steve vérifie les sources** et les met dans `standards.json` / Raisonnement.
+### Analyses biologiques (SIMULÉ)
+- **Urine quotidienne :** calcium, marqueurs de résorption osseuse. Ils servent de suivi **quotidien** de l'os, que le scanner ne mesure pas.
+- **Micro-prélèvement capillaire hebdomadaire :** hémoglobine, hématocrite, leucocytes, % de lymphocytes, VGM, IDR, CRP, calcium, vitamine D, créatinine, albumine, phosphatases alcalines, glucose, cortisol (les entrées de PhenoAge sont incluses).
+- Valeurs de référence terrestres + tendances spatiales connues (baisse de l'hémoglobine liée à l'anémie spatiale, hausse du calcium liée à la perte osseuse → risque de calculs rénaux, à recouper avec le scan des reins). **Steve vérifie les sources** et les met dans `standards.json` / Raisonnement.
+
+### Alertes sur tendance 7 j
+Une alerte se déclenche sur la **pente des 7 derniers jours** (régression simple), **jamais sur un point isolé**, et seulement si la pente sort de la bande de bruit de mesure (`noise`). Exception : un seuil rouge NASA franchi sur 2 mesures consécutives donne une alerte immédiate. Le point du jour reste **affiché**.
 
 ### Planificateur de la to-do (`planDay`)
 Chaque alerte produit des items, chaque item garde son `reasoningId` :
 - hanche AMBRE → ARED charge lourde (squat, soulevé de terre) + repas riche en calcium / vitamine D + point Sol-routine (bisphosphonates, fiche §6) ;
 - VO₂ AMBRE → vélo / tapis par intervalles ;
-- donnée manquante ou expirée → test à faire (prise de sang, check-in, PVT) ;
+- donnée manquante ou expirée → test à faire (prélèvement, check-in, PVT) ;
+- nerf optique AMBRE → test de vision + point Sol-routine (risque SANS) ;
+- calcium urinaire en hausse ou calcul au scan → hydratation renforcée + scan des reins le lendemain ;
+- check-in : humeur ≤ 2 pendant 3 jours, ou humeur basse + cortisol en hausse + sommeil dégradé → item « point psy » (proposé à l'astronaute, **jamais imposé**) ;
 - signes d'alerte (fiche R13) → item médical **en tête**, prévenir le CMO.
 
 ---
 
 ## 9. Démo de 3 minutes (à affiner par Steve)
 
+Fil rouge : **aujourd'hui d'abord** (auto-évaluation), la projection ensuite (« est-ce que ce que je fais suffit ? »).
+
 | Temps | Ce qu'on montre |
 | :-- | :-- |
 | 0:00–0:15 | Accroche : « Pourrez-vous marcher en sortant du vaisseau ? » + délai radio du jour |
-| 0:15–0:45 | **Body** : le corps 3D de Haddad à J94 (scan du matin dans le module rotatif, métriques envoyées à la Terre, synthèse reçue), calques, un ⚠ sur la hanche |
-| 0:45–1:20 | Survol → récap ; clic → fenêtre organe : synthèse IA, âge biologique +2 ans, **pointillé** vers +8,7 ans au retour |
-| 1:20–1:45 | **Timeline** J0 → J94 → Sol 0 : le corps fantôme se dégrade ; on active le plan → il se dégrade moins |
-| 1:45–2:10 | **RÉEL** : SpO₂ et FC du présentateur depuis sa montre, comparés à sa référence |
-| 2:10–2:45 | **War Room** : la to-do du jour, « Pourquoi ? » → la chaîne jusqu'à la norme NASA ; la même to-do sur la montre |
-| 2:45–3:00 | Conclusion |
+| 0:15–0:35 | **War Room** : le présentateur fait **le check-in du matin en direct** (humeur, fatigue, douleur) → MAINTENANT s'affiche, calculé à bord |
+| 0:35–1:10 | **Body, J94 aujourd'hui** : scan du matin (centrifugeuse), calques, ⚠ sur la hanche (estimée) et sur la cuisse (tendance 7 j) ; **RÉEL** : SpO₂ et FC du présentateur comparées à sa référence 30 j |
+| 1:10–1:35 | Clic sur un item de la to-do → « Pourquoi ? » : donnée → modèle → **norme NASA V1 4027**, chaque maillon avec sa source |
+| 1:35–2:05 | **Timeline** J94 → Sol 0 → J860 : sans le plan, hanche à 8,7 % de perte ; avec le plan, 4,2 % (**métrique d'impact**). Fenêtre organe : écart d'âge [H] en pointillé |
+| 2:05–2:30 | « Vers la Terre, on n'envoie pas 20 To, on envoie 4 Ko. » La synthèse IA arrive dans **ENSUITE**, 11 min plus tard |
+| 2:30–3:00 | Slide Vision (compagnon santé mentale, IA embarquée) + **bénéfice sur Terre** (patients alités, sarcopénie, bases polaires) + phrase signature |
+
+**Réponses prêtes (20 s chacune) :**
+- « Prédiction ou auto-évaluation ? » → « Le corps du jour et le check-in, c'est l'auto-évaluation. La projection sert à vérifier si le plan d'aujourd'hui suffit. »
+- « Le scanner mesure la densité osseuse ? » → « Non : l'échographie ne voit pas bien l'os. L'os vient du bilan au sol, du modèle et des marqueurs urinaires ; le scanner fait le muscle, les fluides, les reins, le nerf optique et le cœur. »
+- « Pourquoi un scan par jour ? » → « Les fluides et le nerf optique bougent chaque jour, et le scan ne coûte pas de temps puisqu'il se fait pendant la séance de centrifugeuse. Pour le reste, on alerte sur la tendance 7 j, pas sur le bruit. »
+- « Ça existe, la centrifugeuse ? » → « Au sol oui (ESA/DLR) ; en vol, non : c'est notre hypothèse de mission, et elle n'a besoin que de ~0,1 g pour le scanner. »
 
 ---
 
@@ -490,3 +567,37 @@ Chaque alerte produit des items, chaque item garde son `reasoningId` :
 - [ ] Vidéos de secours n° 1 et n° 2 sur 2 ordinateurs + une clé USB.
 - [ ] Diapos (5 max) + script chronométré à 3:00.
 - [ ] Soumission Space Apps faite.
+
+---
+
+## 11. Santé mentale : compagnon (Vision) et prototype multi-agents (hors MVP)
+
+### Dans le MVP (déjà ci-dessus)
+Check-in du matin (humeur, fatigue, sommeil ressenti) + **cortisol** (prélèvement), **sommeil et VFC** (montre), **PVT**. Règle `planDay` : humeur basse persistante ou combinaison humeur + cortisol + sommeil → item « point psy » **proposé**, jamais imposé (§8).
+
+### Vision : le compagnon (slide, pas codé dans l'app)
+Des lunettes connectées portées en mission. L'IA en déduit des **indicateurs** (débit de parole, minutes d'interaction sociale, rythme d'activité, isolement) pour détecter tôt des schémas typiques d'un épisode dépressif. Le bénéfice : en séance, l'astronaute n'a plus à tout réexpliquer, le psy a déjà le contexte, et la séance est plus efficace.
+
+**Garde-fous (à afficher sur la slide, c'est ce qui gagne le critère éthique) :**
+1. **Tout l'équipage porte les lunettes et y consent**, avant le départ, avec le droit de revenir sur ce consentement.
+2. **Mode privé** activable à tout moment (appels avec la famille, intimité). Les personnes **hors équipage** (famille, interlocuteurs au sol) ne sont jamais analysées.
+3. Traitement **à bord, sur l'appareil**. La vidéo et le son bruts sont effacés après extraction des indicateurs ; ils ne partent jamais vers la Terre (cohérent avec « 20 To → 4 Ko »).
+4. **Pare-feu :** utilisé **uniquement pendant la mission, pour aider**. Jamais en phase de sélection, jamais pour une décision d'affectation ou de retrait de mission. Ça enlève la raison de cacher ses symptômes.
+5. **L'astronaute voit ses indicateurs en premier** et décide de les partager avec le psy. C'est de l'auto-évaluation, pas de la surveillance.
+6. Sortie = **« signal à regarder »**, jamais un diagnostic.
+
+### Prototype multi-agents (piste parallèle, timebox dim. 06:00)
+- **But :** montrer sur un exemple que l'analyse hiérarchique produit des signaux utiles et argumentés. Il illustre la slide Vision (une capture ou 20 s de vidéo) et n'entre pas dans le parcours de démo principal.
+- **Propriétaire :** volontaire, le premier qui a livré ses jalons de sam. 23:00 (à défaut, ça reste une slide). Dossiers **à lui seul** : `proto/mental/` (scripts, hors de `src/`) et `public/data/mental/` (sorties).
+- **Entrées (100 % SIMULÉ, aucune personne réelle) :** journal d'activité et transcriptions synthétiques de Haddad sur J60 → J94, avec un glissement dépressif progressif injecté à partir de J75 (vérité connue → on peut mesurer si le système le voit, et quand), + check-ins, cortisol, sommeil, VFC du générateur de Mouad.
+- **Hiérarchie des agents :**
+
+| Agent | Rôle | Sortie |
+| :-- | :-- | :-- |
+| **Observateur** | Lit la journée, extrait des **faits** sans les interpréter (interactions, durée de parole, tâches abandonnées, mots d'irritabilité, repas sautés) | Indicateurs du jour + citations sources |
+| **Psychologue** | Compare à la **référence personnelle** de l'astronaute (pas à une norme), formule des hypothèses de schéma (retrait social, anhédonie, troubles du sommeil), chacune avec ses preuves | Hypothèses + niveau de confiance |
+| **Chef psychologue** | Contre-expertise : rejette ce qui manque de preuves, recoupe avec les biomarqueurs, choisit le niveau (*rien* / *à surveiller* / *proposer un échange*), **rédige le message à l'astronaute** | Signal final, message, raisonnement |
+
+- **Exécution :** lancé **avant** la démo via l'API Claude (`claude-opus-5-5`), résultats figés dans `public/data/mental/J<n>.json`. **Aucun appel réseau pendant la démo** (règle 7 du §5).
+- **Métrique à montrer :** jour de détection vs J75 (début injecté) et nombre de fausses alertes sur J60 → J74.
+- **Étiquette :** « Prototype — données SIMULÉES — signal IA, pas un diagnostic ».
