@@ -4,6 +4,7 @@
 import { Component, useEffect, useRef } from 'react';
 import type { ErrorInfo, JSX, ReactNode } from 'react';
 import { DAY_TODAY } from '../../mocks/mission';
+import { useNavigate } from 'react-router-dom';
 import { BodyScene } from '../../three/BodyScene';
 import { look } from '../../three/look';
 import { Label, PanelCloseContext, ProvenanceBadge, TagBadge, fmt, fmtDay } from '../../ui';
@@ -168,8 +169,20 @@ function Closable({ id, children }: { id: BodyPanelId; children: ReactNode }): J
   return <PanelCloseContext.Provider value={() => closePanel(id)}>{children}</PanelCloseContext.Provider>;
 }
 
+/** (Steve) Double-clic sur le cerveau → page Santé mentale (prototype §11) au lieu de la fenêtre organe. */
+function useBrainToMental(): void {
+  const navigate = useNavigate();
+  const organWindow = useBody((s) => s.organWindow);
+  useEffect(() => {
+    if (organWindow !== 'cerveau') return;
+    useBody.getState().openOrganWindow(null);
+    navigate('/mental');
+  }, [organWindow, navigate]);
+}
+
 export function Body(): JSX.Element {
   useUrlState();
+  useBrainToMental();
   // En quittant la page, la lecture de la timeline s'arrête (sinon le jour avance hors écran).
   useEffect(() => () => useBody.getState().setPlaying(false), []);
   const closed = usePrefs((s) => s.closed);

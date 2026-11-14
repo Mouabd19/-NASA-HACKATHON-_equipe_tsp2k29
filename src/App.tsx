@@ -5,14 +5,16 @@ import type { JSX } from 'react';
 import { BrowserRouter, Navigate, NavLink, Route, Routes } from 'react-router-dom';
 import { ASTRONAUT, DAY_TODAY } from './mocks/mission';
 import { Body } from './pages/body/Body';
+import { Mental } from './pages/mental/Mental';
 import { ReasoningPage } from './pages/reasoning/Reasoning';
 import { WarRoom } from './pages/warroom/WarRoom';
 import { TagBadge, dayToDate, fmtDay } from './ui';
 import { syncDetailsAttr, usePrefs } from './ui/prefs';
 
 const TABS = [
-  { to: '/body', label: 'Body' },
+  { to: '/body', label: 'Body Health' },
   { to: '/warroom', label: 'War Room' },
+  { to: '/mental', label: 'Mental Health' },
 ] as const;
 
 function utcClock(d: Date): string {
@@ -131,6 +133,7 @@ export function App(): JSX.Element {
             <Route path="/" element={<Navigate to="/body" replace />} />
             <Route path="/body" element={<Body />} />
             <Route path="/warroom" element={<Scroll><WarRoom /></Scroll>} />
+            <Route path="/mental" element={<Scroll><Mental /></Scroll>} />
             <Route path="/reasoning/:id" element={<Scroll><ReasoningPage /></Scroll>} />
             <Route path="*" element={<Navigate to="/body" replace />} />
           </Routes>

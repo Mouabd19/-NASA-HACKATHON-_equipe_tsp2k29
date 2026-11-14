@@ -210,4 +210,18 @@ for (const scenario of ['drift', 'control']) {
   for (const k of [65, 74, 78, 85, 94]) console.log(`[${scenario}]`, tag(days.find((x) => x.day === k)));
 }
 fs.writeFileSync(path.join(OUT, 'truth.json'), JSON.stringify(truth, null, 1));
+// Séries compactes pour la page Mental Health (frise) : public/data/mental/series.json (aucune transcription, aucune vérité).
+{
+  const series = { note: 'Données SIMULÉES, une valeur par jour. Généré par proto/mental/generate.mjs.', onsetDay: ONSET, scenarios: {} };
+  for (const scenario of ['drift', 'control']) {
+    series.scenarios[scenario] = [];
+    for (let day = FIRST; day <= LAST; day++) {
+      const x = JSON.parse(fs.readFileSync(path.join(OUT, scenario, `J${day}.json`), 'utf8'));
+      series.scenarios[scenario].push({ day, humeur: x.biomarkers.checkinHumeur, sommeilH: x.sensors.sommeilH, vfcMs: x.biomarkers.vfcMs, equipageMin: x.sensors.tempsAvecEquipageMin, paroleMin: x.sensors.tempsDeParoleMin });
+    }
+  }
+  const PUB = path.join(HERE, '..', '..', 'public', 'data', 'mental');
+  fs.mkdirSync(PUB, { recursive: true });
+  fs.writeFileSync(path.join(PUB, 'series.json'), JSON.stringify(series));
+}
 console.log('OK →', OUT);
