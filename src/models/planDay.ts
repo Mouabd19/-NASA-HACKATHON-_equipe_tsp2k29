@@ -10,7 +10,7 @@
 // Un seul menu par jour (le plus prioritaire). Toujours renvoyer une copie : cocher n'altère pas le plan.
 import type { Alert, CheckIn, TodoItem } from '../types.ts';
 import { getExercise, getMeal, getTest } from '../content/library.ts';
-import { getCheckIn, getDayBody } from '../sim/load.ts';
+import { getCheckIn, getDayBody, getEnteredCheckIn } from '../sim/load.ts';
 import { DAY_END, DAY_TODAY } from '../sim/persona.ts';
 import { alertsForDay } from './alerts.ts';
 import { BLOOD_MAX_AGE_DAYS, bloodAgeDays, checkInLevel, triage } from './triage.ts';
@@ -123,7 +123,8 @@ export function planDay(day: number): TodoItem[] {
   let items = cacheable ? cache.get(d) : undefined;
   if (!items) {
     const t = triage(d);
-    const ci = d <= DAY_TODAY ? getCheckIn(d) : null;
+    // aujourd'hui : seulement le check-in saisi (avant la saisie, rien n'est tiré d'un check-in simulé)
+    const ci = d === DAY_TODAY ? getEnteredCheckIn(d) : d < DAY_TODAY ? getCheckIn(d) : null;
     const psy = t.groundRoutine.some(g => /point psy/.test(g));
     const seen = new Set<string>();
     items = drafts(d, alertsForDay(d), ci, psy)

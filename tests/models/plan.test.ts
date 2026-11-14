@@ -84,3 +84,11 @@ describe('cas limites + vraies données montre', () => {
     expect(triage(94).reasons.some(r => /Montre RÉELLE/.test(r))).toBe(true);
   });
 });
+
+describe('to-do du jour : on attend le check-in du présentateur', () => {
+  it('avant la saisie, rien n\'est tiré du check-in simulé de J94 (pas de « mobilité du dos ») et le check-in passe en priorité 1', () => {
+    const items = planDay(94);
+    expect(items.some(i => i.id === 'mobilite-dos')).toBe(false);
+    expect(items.find(i => i.id === 'test-checkin')!.priority).toBe(1);
+  });
+});

@@ -21,7 +21,6 @@ import { lightTimeMin, lightTimeSource } from '../../../content/horizons';
 import {
   CloseButton, ProvenanceBadge, StatusChip, StatusDot, TAG_TEXT, dayToDate, fmt, fmtDay, sentenceCase, statusVar, tokens,
 } from '../../../ui';
-import { usePrefs } from '../../../ui/prefs';
 import { OrganViewer } from '../../../three/OrganViewer';
 import { useBody } from '../store';
 import { isProjectionMetric, metricLabel } from './HoverCard';
@@ -518,9 +517,9 @@ function Legend({ pheno, ml }: { pheno?: boolean; ml?: boolean }): JSX.Element {
 function OrganRight({ organ, day }: { organ: OrganState; day: number }): JSX.Element {
   const adherence = useBody((s) => s.adherence);
   const setAdherence = useBody((s) => s.setAdherence);
-  // la prévision du modèle d'IA double la projection : elle n'entre dans le graphe (et dans l'échelle) qu'en mode Détails
-  const details = usePrefs((s) => s.details);
-  const chart = useMemo(() => buildGapChart(organ.id, details), [organ.id, details]);
+  // la prévision du modèle d'IA B (médiane + P10–P90) est toujours tracée : c'est elle que le jury doit voir ;
+  // le détail chiffré sous le graphe reste réservé au mode Détails
+  const chart = useMemo(() => buildGapChart(organ.id, true), [organ.id]);
   const hasMl = chart.modeled && chart.ml[adherence].length > 0;
   const btn = (a: 0 | 1, label: string): JSX.Element => {
     const v = chart.end[a];
