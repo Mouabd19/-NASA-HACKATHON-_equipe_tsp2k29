@@ -1,5 +1,5 @@
 # Status — Walid (A)
-_Mis à jour : sam. 14 nov. 19:55_
+_Mis à jour : sam. 14 nov. 21:00_
 
 ## Prêt en local — PAS ENCORE POUSSÉ sur origin/develop
 > Tout ce qui suit est sur la branche `develop` LOCALE (commits WIP + arbre de travail). `origin/develop` n'existe pas encore : rien n'est « livré » au sens de la
@@ -135,18 +135,17 @@ npm run build    # typecheck + build de prod
 
 ## En cours
 - Itérations visuelles sur la page Body après revue des captures.
-- Vrais modèles Z-Anatomy (`.glb`) à la place du corps procédural (dépend de Steve).
+- ~~Vrais modèles Z-Anatomy~~ ✅ branchés par Steve (`src/three/zanatomy.ts`), repli sur le corps procédural.
 
 ## Bloqué / risques
-- **`DAY_SOL0 = 210` est PROVISOIRE** (`src/mocks/mission.ts`) : à confirmer avec la fiche `sol-zero-fiche-v3`.
-  Les courbes VO₂ et dose des mocks suivent cette constante.
-- VO₂max pré-vol fixé à **45,0 ml/kg/min** dans les mocks (cohérent avec −10,84 % et 36,5 à Sol 0) : à confirmer avec la fiche.
-- Normes `V1 4027 / 4003 / 4002` : `verified: false`, le texte est un **résumé**, pas une citation du PDF.
+- ✅ **`DAY_SOL0 = 210` confirmé** par Mouad (fiche alignée par Steve).
+- VO₂max pré-vol : **44 ml/kg/min** dans le simulateur de Mouad (référence) ; les mocks gardent 45,0 mais ne sont plus lus par les pages.
+- ✅ Normes vérifiées par Steve dans la Rév. C (`public/data/nasa/standards.json`, `verified: true`).
 - Repères [H] inventés pour les mocks, à sourcer : muscle (ambre −4 % ou pente ≤ −0,8 %/sem, rouge −10 %),
   gaine du nerf optique (ambre 5,5 mm, rouge 6,0 mm), calcium urinaire (ambre 280, rouge 350 mg/24 h), dose (ambre 450, rouge 600 mSv).
 - **FPS non vérifié sur un vrai GPU** : ~3,5 img/s en rendu logiciel (SwiftShader, sans GPU) dans les captures ;
   ~147 000 triangles, bloom actif. À mesurer sur le portable de démo ; leviers dans `look.ts` (`bloom.enabled`, `maxDpr`).
-- **Corps procédural** : stylisé, pas anatomiquement exact ; crédit Z-Anatomy affiché « à venir ».
+- Crédits Z-Anatomy affichés dans la page Body et dans le README (licence CC BY-NC-SA 4.0, usage hackathon).
 - **Délai radio** : `lightTimeMin` n'est exact que pour le 2026-11-14 (11,01 min) ; les autres dates sont une approximation
   d'orbite circulaire — désormais affichée `≈ … [H] APPROX.` (voir `lightTimeSource`). Reste à brancher `horizons.json` (Steve).
 - **PhenoAge** : interpolation factice, pas encore la formule de Levine 2018 — affiché « FACTICE » à l'écran (`mock: true`).
@@ -174,3 +173,17 @@ npm run build    # typecheck + build de prod
 - **Fenêtre organe hanche / cuisse / cœur** : barre p10–p90 + médiane du modèle B (`organForecast`) à Sol 0 (J210) et J860, pour le scénario affiché,
   convertie en âge équivalent (`lossToYears`) sur le graphe ; valeurs en % de perte sous le graphe.
 
+
+## Réponses aux demandes — sam. 21:00 (branche `feature/walid-requests`)
+- **@Steve** ✅ `ModelManifest` : ajout de `avatar?: string` et `extraNodes?: Record<string, string[] | string>` dans `src/types.ts` (non cassant).
+  `ZAnatomyManifest` peut maintenant être remplacé par `ModelManifest` (laissé tel quel, il reste compatible).
+- **@Steve** ✅ crédits : README mis à jour avec la liste complète de `public/models/CREDITS.md` (modifiés, CC BY-NC-SA 4.0, non commercial).
+- **@Steve** ⏳ `npx tsx scripts/fetch-horizons.ts` : pas lancé (pas de Node sur ce poste) — à faire sur le portable de démo.
+- **@Mouad** ✅ panneau sang vérifié avec `getAnalyteMeta` : unités SI lues dans tes données. Correction : `urine_ctx` (quotidien)
+  était rangé dans les prélèvements capillaires et faussait le jour du « prélèvement » → la cadence vient maintenant de `getAnalyteMeta().cadence`,
+  libellé « CTX urin. », repli sur ton libellé et tes décimales pour tout nouvel analyte.
+- **@Ahmed** ✅ `painZones?: OrganId[]` ajouté à `CheckIn` (`src/types.ts`) : tu peux remplacer `CheckInZones` par `CheckIn`.
+- **@Ahmed** ❌ échelle 0–5 (`Score05`) : **refusée pour l'instant** — elle changerait le sens des règles R13 du triage de Mouad, le générateur
+  de check-ins et les tests à quelques heures du gel. On garde humeur / fatigue / sommeil 1–5 et douleur 0–3.
+- **@Ahmed** ❌ direction « Apple + SpaceX » : **refusée** — la War Room garde les tokens communs (`src/ui/tokens.ts`) pour une seule identité visuelle.
+- **@Ahmed** ✅ noté : bloc « ingest » des tests de contrat sur les mocks, et les 4 lignes de `.gitignore`.
