@@ -1,8 +1,8 @@
 # SOL ZÉRO — Roadmap hackathon (NASA Space Apps, Grand Palais)
 
 > **À lire par chaque membre ET par son Claude avant de toucher au code.**
-> Ce fichier remplace le planning « 48 h / H0–H48 » de la fiche `sol-zero-fiche-v3` (§12) : on a en réalité **~30 h** (sam. 12:00 → dim. 18:30).
-> Le contenu fonctionnel (modèles, seuils, démo, pitch) reste celui de la fiche v3.
+> v3 (sam. 12:40) : nouvelle interface en **2 pages** (War Room + Body Overview 3D), décidée au tableau blanc. Elle remplace les écrans de la fiche `sol-zero-fiche-v3` (silhouettes 2D, §3). Les **normes NASA, modèles et chiffres** de la fiche restent la référence.
+> Temps réel disponible : **~30 h** (sam. 12:40 → dim. 18:30).
 
 **Repo :** https://github.com/Mouabd19/-NASA-HACKATHON-_equipe_tsp2k29
 ```bash
@@ -14,357 +14,463 @@ cd sol-zero
 
 ## 0. Principe : on travaille en asynchrone
 
-- **Personne n'attend personne.** Chaque module a un **contrat fixé dans ce fichier** (types §5, signatures §6). On code contre le contrat, pas contre le code des autres.
-- **Des stubs dès le départ.** Le premier commit de Walid crée tous les fichiers de §6 avec des fonctions qui renvoient des **données factices** (mocks tirés de la fiche §7). L'interface marche donc tout de suite, et chacun remplace ensuite le stub de **ses propres** fichiers par la vraie implémentation.
-- **Pas de réunion, des échéances.** Le planning (§2) donne pour chacun des livrables à pousser sur `develop` avant une heure donnée. Chacun gère ses repas et son sommeil.
-- **Communication écrite.** Chacun tient `status/<prénom>.md` (§4). C'est là que les Claude des autres vont voir ce qui est fait, ce qui bloque et ce qui a changé.
-- **Seuls moments synchrones :** les filages de dimanche après-midi (§2) et le passage devant le jury.
+- **Personne n'attend personne.** Chaque module a un **contrat fixé dans ce fichier** (types §6, signatures §7). On code contre le contrat, pas contre le code des autres.
+- **Des stubs dès le départ.** Le bootstrap de Walid crée tous les fichiers de §7 avec des **données factices** (mocks). Les pages marchent tout de suite ; chacun remplace ensuite les stubs de **ses propres** fichiers.
+- **Des échéances, pas de réunions.** Chacun a ses livrables (§3). Repas et sommeil libres.
+- **Communication écrite** dans `status/<prénom>.md` (§5). Les Claude des autres y lisent ce qui est fait, ce qui bloque, ce qui est demandé.
+- **Seuls moments synchrones :** les filages de dimanche après-midi et le jury.
+- **Avant le bootstrap**, personne n'est bloqué : Mouad écrit son générateur en TS pur, Steve prépare les modèles 3D, Ahmed le parseur et le Raccourci. On recopie ensuite sur une branche `feature/*` partie de `develop`.
 
 ---
 
-## 1. Qui fait quoi
+## 1. Le produit (version tableau blanc)
+
+**Entrées :**
+- **Scan corps entier type Midjourney Medical** (SIMULÉ) : traité **sur Terre**, renvoyé au vaisseau avec une **synthèse IA par organe**. Un « corps du jour » est enregistré chaque jour.
+- **Apple Watch** (RÉEL, présentateur) : FC de repos, VFC, VO₂max estimé, **SpO₂ (% O₂ dans le sang)**, température du poignet, sommeil.
+- **Prise de sang quotidienne** (SIMULÉ).
+- **Normes NASA-STD-3001 Rev C** (RÉEL) pour tous les seuils rouges.
+
+### Page 1 — BODY (Overview Health)
+
+- **Au centre :** reconstitution 3D du corps de l'astronaute, en **calques** activables :
+
+| Calque | Ce qu'on y voit | Métriques principales |
+| :-- | :-- | :-- |
+| **Squelette** | Os, avec la hanche, le rachis et le col du fémur en évidence | Densité osseuse vs pré-vol (≥ 95 %, col ≥ 90 % [NASA V1 4027]) |
+| **Muscles** | Muscles posturaux : cuisse, mollet, paravertébraux | Volume / atrophie vs J0 (scan) |
+| **Organes** | Cœur, poumons, foie, reins, cerveau, yeux | Par organe (volume, métriques du scan, marqueurs sanguins associés) |
+| **Cardiovasculaire / sang** | Cœur + réseau sanguin | VO₂max (≥ 80 % pré-vol, ≥ 36,5 ml/kg/min [NASA V1 4003/4002]), FC, **SpO₂**, tension, hémoglobine (anémie spatiale) |
+| **Nerveux + yeux** | Cerveau, moelle, nerfs, nerf optique | Vigilance (PVT), sommeil, risque oculaire lié à la pression (fiche §2) |
+| **Exposition** | Carte de chaleur des radiations sur le corps | Dose du jour vs prévu (1,84 mSv/j en croisière [Publié RAD]) |
+
+- **Warnings sur le corps :** un panneau ⚠ (triangle + point d'exclamation) est **ancré en 3D** sur la zone en danger. Il pulse en ambre ou en rouge.
+- **Survol d'un élément :** overlay avec le récap santé (statut, 2–3 métriques, norme NASA appliquée, **âge biologique** de l'organe vs âge réel).
+- **Clic sur l'âge biologique → fenêtre organe :**
+  - modèle 3D de l'organe seul, que l'on peut faire tourner ;
+  - **synthèse IA** de l'état de l'organe (générée au sol, étiquetée « Synthèse IA — à valider par le CMO ») ;
+  - **graphe de l'âge biologique dans le temps** : trait plein = mesuré (J0 → aujourd'hui), **pointillé = prédiction du modèle** (jusqu'à Sol 0 et J860), avec la bande d'incertitude.
+- **Panneau gauche :** **résultats sanguins** du jour, chaque ligne cliquable → courbe dans le temps.
+- **Widget SpO₂** (Apple Watch) avec sa courbe.
+- **Timeline en bas :** on fait défiler les jours (J0 → aujourd'hui = corps enregistrés ; au-delà, jusqu'à Sol 0 / J860 = corps **projeté**, affiché en « fantôme »). Le corps change de couleur, les warnings apparaissent et disparaissent.
+
+### Page 2 — WAR ROOM (to-do du jour)
+
+- **En tête :** consigne du jour **MAINTENANT / ENSUITE** et délai radio du jour (fiche §6).
+- **To-do list du jour**, fixée le matin (« le protocole décide, pas le moi du soir », fiche §9) :
+  - **exercices** (ARED, vélo, tapis : durée, intensité) ;
+  - **repas** du jour (menu, protéines, calcium, vitamine D, kcal) ;
+  - **tests** à faire (prise de sang, check-in, PVT) ;
+  - **actions médicales** (prévenir le CMO, point « Sol-routine » avec le médecin au sol).
+- **Chaque item a un lien « Pourquoi ? » → page Raisonnement** : la chaîne **donnée → modèle → norme NASA → décision**, chaque maillon avec sa source et son étiquette.
+- **To-do accessible depuis l'Apple Watch** (Raccourci iOS qui tourne sur la montre, §3 Ahmed).
+
+### Direction artistique
+
+Inspiration **Evangelion (interfaces NERV)** et **Cyberpunk 2077 (écran Cyberware : corps au centre, panneaux de systèmes à gauche et à droite reliés au corps par des traits fins)**, mais **sobre comme Apple / SpaceX** : noir, blanc, gris, et la couleur réservée aux statuts.
+
+| Élément | Règle |
+| :-- | :-- |
+| Fond | `#050607` presque noir ; panneaux `rgba(255,255,255,0.03)`, bordure 1 px `rgba(255,255,255,0.12)`, coins en équerre (pas d'arrondis) |
+| Texte | `#E8E8E6` ; secondaire `#8A8F98` |
+| Corps 3D | Hologramme blanc-bleuté désaturé (`#9FB4C7`), matériau translucide avec effet fresnel, léger bloom |
+| Statuts (seules couleurs vives) | OK `#30D158` · Ambre `#FF9F0A` · Rouge `#FF453A` · Inconnu `#636366` (gris = inconnu, **jamais vert par défaut**) |
+| Typo | Inter pour le texte ; **JetBrains Mono en MAJUSCULES espacées** pour les labels et les données (`SYS-02 / SQUELETTE`) |
+| Codes sci-fi | Traits de liaison panneau → corps, numéros de système, bandes hachurées en diagonale sur les alertes rouges, horodatage partout, panneaux hexagonaux pour les warnings |
+| Interdit | Logos, polices ou éléments visuels copiés des œuvres citées. On reprend l'esprit, pas les éléments |
+
+### Honnêteté (ce que le jury verra)
+
+- Chaque écran porte **RÉEL**, **SIMULÉ** ou **[H]**.
+- **Âge biologique = modèle de l'équipe [H]** (§8), construit sur des vitesses de perte publiées. La fiche §10 refusait l'« âge d'organe » non validé : on l'affiche donc comme **« âge biologique estimé [H] »**, avec sa formule visible dans Raisonnement.
+- **Synthèse IA** : générée **hors ligne** à partir des chiffres traçables (pas d'appel réseau pendant la démo), étiquetée, jamais utilisée pour un seuil.
+- **Scan Midjourney** : aucune donnée publique (fiche §10). Tous les scans sont simulés, et le pitch le dit.
+
+---
+
+## 2. Qui fait quoi
 
 | Rôle | Qui | Périmètre | Dossiers dont il/elle est **seul propriétaire** |
 | :-- | :-- | :-- | :-- |
-| **A — Interface + intégration + release** (le plus gros morceau) | **Walid** (Claude Max) | Scaffold, types, stubs, mocks ; 4 écrans ; silhouettes SVG + hachures + gris ; curseur de temps ; carte MAINTENANT/ENSUITE ; curseur lien Terre + compte à rebours ; carte d'organes + « Comparer à… » ; branchement des vrais modules à la place des mocks ; branches `release/*` et tag final | `src/App.tsx`, `src/screens/`, `src/components/`, `src/styles/`, `src/mocks/`, `src/types.ts`, `package.json`, `vite.config.ts` |
-| **B — Check-in + Apple Watch** | **Ahmed** | Formulaires check-in, PVT-B, Dexie, parseur `export.xml`, référence 30 j, Raccourci iOS + `POST /ingest`, mode secours (dernière mesure / saisie manuelle) | `src/checkin/`, `src/db/`, `src/ingest/`, `server/` |
-| **C — Modèles + règles + tests** | **Mouad** | `aerobic`, `bone`, `tscore`, `radiation`, `fatigue`, `baseline`, `band`, `triage` (+ Sol-routine), `router`, `gain`, `scanFit`, `coefficients.json`, générateur Haddad, **tests d'or** (fiche §11). Gère aussi les réglages du repo (collaborateurs, protection de `main`) | `src/models/`, `src/data/haddad/`, `tests/models/` |
-| **D — Science, données NASA, contenus, pitch** | **Steve** | `fetch-horizons` + `lightTime`, `standards.json` (Rev C), `environments/*.json`, `organScan.json` Haddad, fiches protocole, textes « Pourquoi ? », gabarits + rendu du moi futur, jeu Inspiration4 (OSDR), diapos, script, vidéos de secours, soumission Space Apps | `scripts/`, `public/data/`, `src/nasa/`, `src/content/`, `docs/`, `pitch/` |
+| **A — Body Overview 3D + intégration + release** (le plus gros morceau) | **Walid** (Claude Max) | Bootstrap, types, stubs, mocks, design system, routing ; **page Body** : scène 3D (react-three-fiber), calques, warnings 3D, survol, fenêtre organe (3D + synthèse + graphe pointillé), panneau sang, widget SpO₂, timeline ; branchement des vrais modules ; release | `src/App.tsx`, `src/types.ts`, `src/ui/` (design system), `src/pages/body/`, `src/three/`, `src/mocks/`, `package.json`, `vite.config.ts` |
+| **B — War Room + Apple Watch** | **Ahmed** | **Page War Room** + **page Raisonnement** ; parseur `export.xml` (avec SpO₂) + référence 30 j ; API locale (`/api/todo`, `/ingest`) ; **Raccourci iOS sur la montre** (to-do + mesure en direct) ; mode secours | `src/pages/warroom/`, `src/pages/reasoning/`, `src/ingest/`, `server/` |
+| **C — Données simulées + modèles + règles** | **Mouad** | Générateur Haddad J0 → J94 (scans, prise de sang, données montre) ; projections jusqu'à J860 ; **âge biologique** (mesuré + prédit + bande) ; alertes par organe ; triage + router ; **planificateur de la to-do** (exercices, repas, tests) ; chaînes de raisonnement ; tests d'or. Réglages du repo | `src/models/`, `src/sim/`, `scripts/generate-sim.ts`, `public/data/sim/`, `tests/models/` |
+| **D — Assets 3D, science, contenus, pitch** | **Steve** | **Modèles 3D** (calques du corps + organes isolés, en `.glb`) + `manifest.json` ; normes et sources ; contenus (menus, exercices, textes) ; **synthèses IA** par organe ; `fetch-horizons` ; diapos, script, vidéos, soumission | `public/models/`, `scripts/fetch-horizons.ts`, `public/data/nasa/`, `public/data/summaries/`, `src/content/`, `docs/`, `pitch/` |
 
-**Règle d'or :** on ne modifie **jamais** un fichier hors de son périmètre. Si tu as besoin d'un changement chez quelqu'un d'autre, tu l'écris dans la section « Demandes aux autres » de ton `status/<prénom>.md`, et tu continues avec le stub en attendant.
+**Règle d'or :** on ne modifie **jamais** un fichier hors de son périmètre. Besoin d'un changement ailleurs → section « Demandes aux autres » de son `status/<prénom>.md`, et on continue avec le stub.
 
-**Apple Watch :** la personne qui porte la montre pendant la démo (= le présentateur) fait l'export Santé de son iPhone (app Santé → photo de profil → Exporter toutes les données) et dépose `export.zip` dans le drive de l'équipe **avant sam. 15:00**. Ahmed travaille avec ce fichier ; en attendant, il utilise un petit `export.xml` d'exemple qu'il fabrique lui-même.
+**Apple Watch :** le présentateur (= celui qui porte la montre) dépose son `export.zip` (app Santé → photo de profil → Exporter toutes les données) dans le drive de l'équipe **avant sam. 15:00**, avec la mesure **Oxygène sanguin** activée sur la montre.
 
 ---
 
-## 2. Échéances (heure de Paris)
+## 3. Échéances (heure de Paris)
 
 Repères des orgas : déjeuner sam. 13:00 · dîner sam. 19:30 · déjeuner dim. 13:00 · **1re présentation dim. 18:30** · fin des jurys 21:30.
+« Livré » = mergé dans `develop`, tests verts.
 
-« Livré » = mergé dans `develop` avec les tests qui passent.
-
-### Walid (A)
+### Walid (A) — Body Overview 3D
 | Livré avant | Quoi |
 | :-- | :-- |
-| **sam. 12:45** | **Bootstrap** (§4) : scaffold Vite, `src/types.ts` copié de §5, **tous les stubs de §6**, `src/mocks/haddad.ts` (chiffres de la fiche §7), `status/` créé. **Les autres en dépendent : priorité absolue.** |
-| sam. 17:00 | Les 4 écrans branchés sur les mocks ; silhouettes SVG, hachures, gris = inconnu |
-| sam. 21:00 | Curseur de temps J94 → Sol 0 → J860 ; carte MAINTENANT / ENSUITE |
-| dim. 02:00 | Curseur lien Terre (5 positions) + compte à rebours ; écran message au médecin (aperçu, humeur décochée) |
-| dim. 08:00 | Carte d'organes (bande avant/après scan) + « Comparer à… » ; tous les modules livrés par les autres branchés à la place des mocks |
-| **dim. 10:00** | **Jalon MVP** (§3) : le parcours de démo de 3 min tourne sans mock. Création de `release/1.0` |
-| dim. 13:00 | Bonus selon l'ordre de §3, puis accessibilité |
+| **sam. 14:00** | **Bootstrap** (§5) : scaffold, `src/types.ts` (§6), **tous les stubs** (§7), `src/mocks/`, design system de base (§1), routes `/body`, `/warroom`, `/reasoning/:id`, `status/`. **Priorité absolue.** |
+| sam. 18:00 | Scène 3D avec un **corps de secours** (mannequin low-poly + organes en primitives positionnées), calques activables, survol → overlay récap (sur mocks) |
+| sam. 22:00 | **Warnings 3D** ancrés (⚠ qui pulsent) ; **fenêtre organe** : 3D de l'organe + synthèse + graphe âge biologique (plein = mesuré, **pointillé = prédit**, bande) |
+| dim. 02:00 | **Timeline** (J0 → aujourd'hui → Sol 0 → J860, corps fantôme dans le futur) ; panneau sang (courbes) ; widget SpO₂ |
+| dim. 08:00 | Remplace le corps de secours par les **vrais .glb** de Steve ; branche les données de Mouad et d'Ahmed à la place des mocks |
+| **dim. 10:00** | **Jalon MVP** (§4) : le parcours de démo tourne sans mock. Création de `release/1.0` |
+| dim. 13:00 | Finitions visuelles (bloom, transitions, bandes hachurées), performances |
 
-### Mouad (C)
+### Ahmed (B) — War Room + Apple Watch
 | Livré avant | Quoi |
 | :-- | :-- |
-| sam. 13:00 | Avant le bootstrap : réglages GitHub (collaborateurs, app Claude, protection de `main`) |
-| sam. 16:00 | `coefficients.json`, `band`, `colorWithBand`, `aerobic`, `bone`, `tscore` + tests d'or correspondants |
-| sam. 20:00 | `radiation`, `fatigue`, `baseline`, générateur Haddad (graine fixe) |
-| dim. 00:00 | `triage` (+ Sol-routine), **`router`** + tests d'invariance (MAINTENANT identique aux 5 positions ; la distance ne baisse jamais le niveau) |
-| dim. 04:00 | `gain` (vitesse de déconditionnement), `scanFit` (recalage de la bande par scan) |
-| dim. 13:00 | Cas limites : donnée obligatoire expirée → `DONNEES_INSUFFISANTES`, jamais VERT |
+| sam. 16:00 | **`parseHealthExport`** en flux (y compris `OxygenSaturation`) sur le vrai export + `baseline30d` |
+| sam. 20:00 | **Page War Room** sur mocks : carte MAINTENANT/ENSUITE, to-do groupée (exercices / repas / tests / médical), cases à cocher, lien « Pourquoi ? » |
+| dim. 00:00 | **Page Raisonnement** : chaîne donnée → modèle → norme → décision, sources cliquables, étiquettes |
+| **dim. 03:00** | **`server/api.ts`** : `GET /api/todo`, `POST /api/todo/:id/done`, `POST /ingest`, `GET /ingest/latest` ; **Raccourci iOS exécutable sur l'Apple Watch** qui affiche la to-do et coche un item (timebox : s'il ne marche pas à **dim. 09:00**, on coupe) |
+| dim. 08:00 | Mesure en direct (FC / SpO₂) via Raccourci + mode secours (« dernière mesure enregistrée », saisie manuelle) ; War Room branchée sur le planificateur de Mouad |
+| dim. 13:00 | Finitions, cas vides (« données insuffisantes », jamais vert) |
 
-### Ahmed (B)
+### Mouad (C) — Données simulées + modèles
 | Livré avant | Quoi |
 | :-- | :-- |
-| sam. 16:00 | Formulaires check-in (`CheckinForm`), stockage Dexie |
-| sam. 20:00 | **`parseHealthExport`** en flux sur le vrai `export.xml` du présentateur + `baseline30d` |
-| dim. 00:00 | PVT-B (test de réflexes) |
-| **dim. 02:00** | **Raccourci iOS + `POST /ingest` + `latestLive`** (timebox : s'il ne marche pas à **dim. 09:00**, on coupe) |
-| dim. 08:00 | Mode secours : bouton « dernière mesure enregistrée » + saisie manuelle |
-| dim. 13:00 | Bonus : ECG joint au message au médecin, FC au coucher |
+| sam. 13:00 | Réglages GitHub (collaborateurs, app Claude, protection de `main`) |
+| sam. 16:00 | **`scripts/generate-sim.ts`** (graine fixe) → `public/data/sim/` : 95 `DayBody` (J0 → J94), prises de sang quotidiennes, données montre simulées de Haddad. Cohérent avec la fiche §7 |
+| sam. 19:00 | Modèles de la fiche (`aerobic`, `bone`, `band`, `radiation`) + **`bioAge`** (§8) : série mesurée + prédite jusqu'à J860 avec bande ; tests d'or |
+| sam. 23:00 | **`alerts`** (une alerte par organe en danger, avec niveau et règle) ; `triage` (+ Sol-routine) ; `router` + tests d'invariance |
+| dim. 03:00 | **`planDay`** : la to-do du jour (exercices, repas, tests, actions médicales) tirée des alertes ; **`explain`** : la chaîne de raisonnement de chaque item |
+| dim. 08:00 | Cas limites (donnée expirée → `DONNEES_INSUFFISANTES`) ; fusion des vraies données montre du présentateur |
 
-### Steve (D)
+### Steve (D) — Assets 3D, science, contenus, pitch
 | Livré avant | Quoi |
 | :-- | :-- |
-| sam. 15:00 | `scripts/fetch-horizons.ts` → `public/data/horizons.json` ; `lightTime(date)` (test : 11,01 min le 14/11/2026) |
-| sam. 18:00 | `standards.json` (Rev C : id, citation, lien, `verified`) ; `environments/*.json` (1,84 / 0,64 mSv/j) |
-| sam. 22:00 | Fiches protocole (MAINTENANT de chaque niveau) + textes « Pourquoi ? » |
-| dim. 02:00 | Gabarits + `renderFutureSelf` ; `organScan.json` Haddad (J0 + écho cuisse J60) |
-| dim. 10:00 | Storyboard + diapos v1 (5 max) ; jeu Inspiration4 trouvé (ou retiré du pitch) |
-| dim. 13:00 | Script v2 chronométré ; test de l'app avec 2 personnes extérieures ; **vidéo de secours n° 1** (dès que le jalon MVP est atteint) |
+| sam. 17:00 | **Modèles 3D** depuis **Z-Anatomy** (CC BY-SA 4.0, FBX/Blender, calques squelette / muscles / vaisseaux / nerfs / organes) : export **un .glb par calque**, décimé (< 8 Mo chacun), noms de nœuds → `organId` ; `public/models/manifest.json` (calque, fichier, organes, **position d'ancrage des warnings**) |
+| sam. 20:00 | `.glb` des **organes isolés** pour la fenêtre organe (cœur, poumons, foie, reins, cerveau, œil, fémur/hanche, cuisse) |
+| sam. 23:00 | `public/data/nasa/standards.json` (Rev C) ; références à vérifier (§8 : vitesses de vieillissement terrestres, normes sanguines, anémie spatiale, risque de calculs rénaux) ; `fetch-horizons` → `horizons.json` |
+| dim. 02:00 | Contenus : bibliothèque d'**exercices** et de **menus** (`src/content/`) ; textes « Pourquoi ? » |
+| dim. 06:00 | **Synthèses IA** par organe pour les jours clés (J0, J30, J60, J94, Sol 0, J860), générées à partir de `public/data/sim/` → `public/data/summaries/<organId>.json` |
+| dim. 10:00 | Storyboard + diapos v1 (5 max) ; **vidéo de secours n° 1** dès le jalon MVP |
+| dim. 13:00 | Script v2 chronométré ; test avec 2 personnes extérieures |
 
 ### Fin commune (dimanche, seule partie synchrone)
-
 | Heure | Quoi |
 | :-- | :-- |
 | **14:00** | **🧊 Gel des fonctionnalités.** Plus que des `hotfix/*` sur `release/1.0` |
-| 14:00–16:30 | **10 filages en mode avion, dont 3 avec la montre.** Chacun corrige ce qui casse dans son périmètre |
-| 16:30 | Walid merge `release/1.0` → `main` + tag `v1.0-demo`. Steve : **vidéo n° 2** + **soumission Space Apps** (vérifier la deadline exacte auprès des orgas dès samedi) |
+| 14:00–16:30 | **10 filages en mode avion, dont 3 avec la montre.** Chacun corrige son périmètre |
+| 16:30 | Walid : merge `release/1.0` → `main` + tag `v1.0-demo`. Steve : **vidéo n° 2** + **soumission Space Apps** (deadline à vérifier auprès des orgas dès samedi) |
 | 17:00–18:00 | 2 derniers filages, build de prod local (`npm run build && npm run preview`), chargeurs |
-| **18:00** | **Prêts** (on ne connaît pas notre ordre de passage) |
+| **18:00** | **Prêts** |
 
-**Sommeil :** libre, au moins 4 h chacun. Avant de dormir : push + `status/<prénom>.md` à jour. Si les locaux ferment la nuit, on continue de chez soi.
+**Sommeil :** libre, 4 h minimum. Avant de dormir : push + `status/<prénom>.md` à jour.
 
 ---
 
-## 3. MVP gelé
+## 4. MVP gelé et règles de coupe
 
-1. Check-in du jour.
-2. Modèles corrigés (Rev C) : VO₂ (80 % / 36,5), hanche (95 %), radiation, avec bandes d'incertitude.
-3. Silhouettes + curseur de temps (J94 → Sol 0 → J860), gris = inconnu.
-4. Carte MAINTENANT / ENSUITE + curseur lien Terre (5 positions) + compte à rebours.
-5. Import `export.xml` Apple Watch (vraie donnée du présentateur).
-6. Paquet sol / message au médecin (aperçu, humeur décochée par défaut).
-7. Message du moi futur (gabarits uniquement).
-8. Carte d'organes avec recalage par scan (`organScan.json`).
+**MVP :**
+1. Page Body : corps 3D, au moins 4 calques (squelette, muscles, organes, cardiovasculaire), survol avec récap.
+2. Warnings 3D sur les zones en danger (au moins : hanche, cuisse, cœur/VO₂).
+3. Fenêtre organe : synthèse + graphe âge biologique mesuré / **prédit en pointillé**.
+4. Timeline J0 → J94 → projection Sol 0 / J860.
+5. Résultats sanguins + SpO₂ avec courbes.
+6. Page War Room : MAINTENANT/ENSUITE, to-do (exercices, repas, tests, médical), lien « Pourquoi ? » → Raisonnement.
+7. Vraies données Apple Watch du présentateur (import `export.xml`).
+8. Normes NASA Rev C sur tous les seuils rouges.
 
-**Hors MVP, dans l'ordre :** mesure Watch en direct → FC au coucher + corrélation → ECG joint → écran scindé → vue 3D des organes → animations.
+**Hors MVP, dans l'ordre :** to-do sur l'Apple Watch → mesure en direct → calque Nerveux + yeux → calque Exposition → 3D de l'organe dans la fenêtre (sinon image fixe) → curseur lien Terre → message du moi futur → animations.
 
 **Règles de coupe :**
-- Raccourci iOS pas fiable à **dim. 09:00** → on garde seulement l'import `export.xml`.
-- Vue 3D : seulement si tout le reste est fini avant **dim. 11:00**. Par défaut : coupée.
-- Rien de pas fini à **dim. 14:00** ne part en démo.
-- Si un module n'est pas livré à temps, **l'interface garde le mock** et Walid affiche l'étiquette SIMULÉ : la démo ne casse jamais.
+- Z-Anatomy pas exploitable à **dim. 04:00** → on garde le corps de secours stylisé (il colle au style hologramme).
+- Raccourci Apple Watch pas fiable à **dim. 09:00** → to-do montrée sur l'iPhone, mesure via `export.xml` uniquement.
+- Une page à plus de 30 FPS est obligatoire en démo : si la 3D rame, on réduit les polygones avant d'ajouter quoi que ce soit.
+- Rien de pas fini à **dim. 14:00** ne part en démo. Un module en retard = l'interface garde le mock, étiqueté SIMULÉ.
 
 ---
 
-## 4. Gitflow et règles pour les Claude
+## 5. Gitflow et règles pour les Claude
 
 ### Branches
-
 | Branche | Rôle | Qui y écrit |
 | :-- | :-- | :-- |
-| `main` | Ce qui part en démo. Tag `v1.0-demo` | Personne directement. Merge de `release/*` ou `hotfix/*` uniquement (Walid) |
+| `main` | Ce qui part en démo, tag `v1.0-demo` | Personne directement (sauf docs). Merge de `release/*` / `hotfix/*` par Walid |
 | `develop` | Intégration continue | Via PR depuis `feature/*` |
 | `feature/<prénom>-<sujet>` | Une feature = une branche, partie de `develop` | Son propriétaire |
 | `release/1.0` | Créée au jalon MVP (dim. 10:00) | Walid (+ hotfix) |
-| `hotfix/<sujet>` | Correction après le gel | Le propriétaire du fichier, PR vers `release/1.0` |
+| `hotfix/<sujet>` | Après le gel | Le propriétaire du fichier, PR vers `release/1.0` |
 
-### Bootstrap (Walid, une seule fois, avant sam. 12:45)
-
+### Bootstrap (Walid, avant sam. 14:00)
 ```bash
 git checkout main && git pull
 git checkout -b develop
-npm create vite@latest . -- --template react-ts   # garder README.md, ROADMAP.md et la fiche
-npm i recharts dexie zustand
-npm i -D vitest
-# créer src/types.ts (§5), tous les stubs (§6), src/mocks/haddad.ts, status/{walid,mouad,ahmed,steve}.md
+npm create vite@latest . -- --template react-ts      # garder README.md et ROADMAP.md
+npm i three @react-three/fiber @react-three/drei @react-three/postprocessing recharts zustand react-router-dom
+npm i -D vitest @types/three
+# src/types.ts (§6), stubs (§7), src/mocks/, src/ui/tokens.ts (§1), routes, status/{walid,mouad,ahmed,steve}.md
 npm test && npm run build
-git add . && git commit -m "chore: bootstrap (scaffold, types, stubs, mocks)"
+git add . && git commit -m "chore: bootstrap (scaffold, types, stubs, mocks, design system)"
 git push -u origin develop
 ```
-
-**Avant le bootstrap**, les autres ne restent pas bloqués : ils lisent la fiche et commencent leur code dans un dossier local, puis le recopient sur une branche `feature/*` partie de `develop` dès que celle-ci existe.
+Puis sur GitHub : `develop` en branche par défaut.
 
 ### Workflow d'une feature
-
 ```bash
 git checkout develop && git pull origin develop
-git checkout -b feature/mouad-bone-model
+git checkout -b feature/mouad-bioage
 # ... remplacer le stub par la vraie implémentation, dans SON périmètre ...
 npm test
-git add -A && git commit -m "feat(models): bone loss + seuils Rev C 95 %"
+git add -A && git commit -m "feat(models): âge biologique mesuré + prédit"
 git pull --rebase origin develop
-git push -u origin feature/mouad-bone-model
+git push -u origin feature/mouad-bioage
 gh pr create --base develop --fill
 ```
+- Chacun **merge sa propre PR** vers `develop` quand les tests passent et qu'il reste dans son périmètre.
+- **Changer le contrat** (§6, §7) : uniquement par **ajout** (champ optionnel, nouvelle fonction). Demande à Walid via ton status ; il fait la PR.
+- **Commits** : `feat(scope): …`, `fix(scope): …`, `test(scope): …`, `docs: …`, `chore: …`. Scopes : `body`, `three`, `warroom`, `reasoning`, `ingest`, `api`, `sim`, `models`, `assets`, `content`, `pitch`.
+- **Gros fichiers** : `.glb` < 8 Mo chacun. Rien au-dessus de 50 Mo dans le repo (pas de `.blend`, pas d'`export.xml` : ils vont dans le drive).
+- **Petites PR, souvent** (une toutes les 1–2 h). Push avant chaque repas et avant de dormir.
 
-- **Merge** : chacun merge **sa propre PR** vers `develop` dès que les tests passent et qu'il ne touche que son périmètre. Pas besoin d'attendre une relecture.
-- **Changer le contrat** (`src/types.ts` ou une signature de §6) : seulement par **ajout** (nouveau champ optionnel, nouvelle fonction), jamais en cassant l'existant. Demande à Walid via ton status ; il fait la PR.
-- **Commits** : `feat(scope): …`, `fix(scope): …`, `test(scope): …`, `docs: …`, `chore: …`. Scopes : `ui`, `ingest`, `models`, `nasa`, `content`, `pitch`.
-- **Petites PR, souvent** : une toutes les 1 à 2 h.
-
-### Le fichier `status/<prénom>.md`
-
-Chacun ne modifie **que le sien**, à chaque push :
-
+### Le fichier `status/<prénom>.md` (chacun le sien uniquement)
 ```md
 # Status — Mouad (C)
 _Mis à jour : dim. 01:40_
-
 ## Livré sur develop
-- aerobic, bone, band (tests d'or OK)
-
+- generate-sim (J0–J94), bioAge (tests OK)
 ## En cours
-- router (invariance OK, reste la conjonction)
-
+- planDay (reste les repas)
 ## Bloqué / risques
 - rien
-
 ## Demandes aux autres
-- @Walid : ajouter `groundRoutine?: string[]` à TriageResult (ajout, non cassant)
+- @Walid : ajouter `trend?: number` à OrganState (ajout, non cassant)
 ```
 
 ### Consignes pour les Claude de l'équipe
-
-1. Lire ce fichier, la fiche `sol-zero-fiche-v3` (seuils, modèles, tests d'or §11) et les fichiers `status/*.md` avant de coder.
-2. **Ne jamais pousser directement sur `main` ni sur `develop`.** Toujours `feature/<prénom>-<sujet>` partie de `develop`, puis une PR vers `develop`.
-3. Ne modifier **que** les fichiers du périmètre de ton humain (§1). Pour un autre périmètre : écrire la demande dans son status et continuer avec le stub.
-4. Respecter **exactement** les types (§5) et les signatures (§6). Les autres codent contre elles en parallèle.
-5. Chaque implémentation garde les mêmes exports que son stub. Ajouter des tests unitaires dans son propre dossier.
-6. `git pull --rebase origin develop` puis `npm test` avant chaque push. Mettre à jour `status/<prénom>.md` dans la même PR.
-7. Tout chiffre affiché porte une étiquette `[NASA]`, `[Publié]`, `[H]` ou `[Persona]` et, pour `[NASA]`, son identifiant (ex. `V1 4003`).
-8. Aucun appel réseau pendant la démo : tout est pré-téléchargé dans `public/data/`.
-9. Pas d'IA générative dans l'app (le moi futur = gabarits).
-10. Après le gel (dim. 14:00) : uniquement des `hotfix/*`.
+1. Lire ce fichier et les `status/*.md` avant de coder. Pour les seuils et modèles, la référence est la fiche `sol-zero-fiche-v3` (§7, tests d'or §11).
+2. **Ne jamais pousser directement sur `main` ni `develop`** : branche `feature/<prénom>-<sujet>` partie de `develop`, puis PR vers `develop`.
+3. Ne modifier **que** le périmètre de ton humain (§2). Sinon : demande dans le status de l'autre, et continue avec le stub.
+4. Respecter **exactement** les types (§6) et signatures (§7) : les autres codent contre en parallèle.
+5. `git pull --rebase origin develop` puis `npm test` avant chaque push ; mettre à jour `status/<prénom>.md` dans la même PR.
+6. Chaque chiffre affiché porte `[NASA]` (+ identifiant, ex. `V1 4027`), `[Publié]`, `[H]` ou `[Persona]` ; chaque écran porte RÉEL / SIMULÉ / [H].
+7. **Aucun appel réseau pendant la démo** : tout est pré-calculé dans `public/`. Pas d'appel à une API d'IA depuis l'app.
+8. Respecter la direction artistique (§1) : `src/ui/tokens.ts` est la seule source des couleurs et typos.
+9. Après le gel (dim. 14:00) : uniquement des `hotfix/*`.
 
 ---
 
-## 5. Contrat de types (`src/types.ts`, recopié tel quel au bootstrap)
+## 6. Contrat de types (`src/types.ts`)
 
 ```ts
 export type Color = 'green' | 'amber' | 'red' | 'grey';
 export type Tag = 'NASA' | 'Publié' | 'H' | 'Persona';
 export type Provenance = 'RÉEL' | 'SIMULÉ' | 'H';
-export type LinkPos = 'ISS' | 'Lune' | 'MarsProche' | 'MarsScenario' | 'Conjonction';
 export type Level = 'VERT' | 'AMBRE' | 'ORANGE' | 'ROUGE' | 'DONNEES_INSUFFISANTES';
-export type Organ = 'coeur' | 'hanche' | 'cuisse' | 'mollet' | string;
+export type LinkPos = 'ISS' | 'Lune' | 'MarsProche' | 'MarsScenario' | 'Conjonction';
+export type LayerId = 'squelette' | 'muscles' | 'organes' | 'cardio' | 'nerveux' | 'exposition';
+export type OrganId =
+  | 'hanche' | 'rachis' | 'femur'                 // squelette
+  | 'cuisse' | 'mollet' | 'paravertebraux'        // muscles
+  | 'coeur' | 'poumons' | 'foie' | 'reins' | 'cerveau' | 'yeux'  // organes
+  | 'sang'                                        // cardio
+  | string;
 
-export interface Thresholds { amber: number; red: number }
-
-export interface Projection {
-  system: 'vo2' | 'hip' | 'radiation' | string;
-  day: number;                  // 94, 180 (Sol 0), 860
+export interface Metric {
+  key: string;                  // 'densite_osseuse', 'volume', 'vo2max', 'spo2'...
+  label: string;
   value: number;
-  band: [number, number];
+  unit: string;
+  ref?: { low?: number; high?: number; standardId?: string };
   color: Color;
-  worst: Color;                 // couleur du pire cas de la bande
-  standardId?: string;          // ex. 'V1 4003'
+  tag: Tag;
+  provenance: Provenance;
+}
+
+export interface BioAgePoint {
+  day: number;
+  bioAge: number;
+  band?: [number, number];
+  predicted: boolean;           // true → tracé en pointillé
+}
+
+export interface OrganState {
+  id: OrganId;
+  layer: LayerId;
+  name: string;
+  status: Color;
+  metrics: Metric[];
+  chronoAge: number;
+  bioAge: number;
+  bioAgeTag: 'H';
+}
+
+export interface DayBody {      // le « corps du jour » (un par jour)
+  day: number;                  // J0..J94 mesuré ; > 94 = projeté
+  date: string;
+  projected: boolean;
+  organs: OrganState[];
+  source: 'scan-midjourney-sim' | 'echo-bord-sim' | 'projection';
+}
+
+export interface Alert {
+  id: string;
+  organId: OrganId;
+  level: Level;
+  title: string;                // 'HANCHE — PERTE OSSEUSE'
+  message: string;
+  rule: string;                 // 'V1 4027' ou 'R13'
+}
+
+export interface BloodTest {
+  day: number;
+  analyte: 'hemoglobine' | 'hematocrite' | 'leucocytes' | 'crp' | 'calcium'
+         | 'vitamine_d' | 'creatinine' | 'glucose' | 'cortisol' | string;
+  value: number;
+  unit: string;
+  refLow: number;
+  refHigh: number;
   tag: Tag;
 }
 
 export interface Measurement {
-  type: 'RestingHeartRate' | 'HeartRateVariabilitySDNN' | 'VO2Max'
+  type: 'RestingHeartRate' | 'HeartRateVariabilitySDNN' | 'VO2Max' | 'OxygenSaturation'
       | 'AppleSleepingWristTemperature' | 'SleepAnalysis' | 'HeartRate';
   value: number;
   unit: string;
-  date: string;                 // ISO 8601
+  date: string;
   source: 'apple-watch-export' | 'apple-watch-live' | 'manual' | 'simulated';
 }
 
 export interface Baseline { type: Measurement['type']; mean: number; sd: number; n: number }
 
-export interface Checkin {
-  date: string;
-  day: number;                  // jour de mission
-  sleepHours?: number;
-  pvtMeanMs?: number;
-  phq2?: number;                // 0–6
-  systolic?: number; diastolic?: number;
-  tempDelta?: number;           // écart à la référence de vol, °C
-  symptoms: ('douleur_thoracique' | 'essoufflement' | 'malaise' | 'palpitations')[];
-  exerciseDone: boolean;
+export interface TodoItem {
+  id: string;
+  kind: 'exercice' | 'repas' | 'test' | 'medical';
+  title: string;                // 'ARED — squat 4×8'
+  detail: string;
+  time?: string;                // '07:30'
+  done: boolean;
+  reasoningId: string;
+  priority: 1 | 2 | 3;
 }
 
-export interface MissionState {
-  persona: 'haddad' | 'presentateur';
-  day: number;
-  preVO2: number;
-  adherence: number;            // 0..1
-  checkins: Checkin[];
-  measurements: Measurement[];
-  doseLog: { date: string; mSv: number }[];
-  scans: OrganScan[];
+export interface ReasoningStep {
+  kind: 'donnee' | 'modele' | 'norme' | 'decision';
+  text: string;
+  source?: { label: string; url?: string };
+  tag: Tag;
 }
-
-export interface TriageResult {
-  level: Level;
-  reasons: string[];            // règles déclenchées, ex. 'R13'
-  groundRoutine: string[];      // ex. ['hipJ860'] → niveau « Sol-routine »
-}
+export interface Reasoning { id: string; title: string; steps: ReasoningStep[] }
 
 export interface RouterOutput {
-  maintenant: string;           // NE DÉPEND JAMAIS de LinkPos
+  maintenant: string;           // NE DÉPEND JAMAIS du lien Terre
   ensuite: { decideur: 'moi' | 'CMO' | 'sol' | 'equipage'; reponseMin?: number; texte: string };
-  echeance?: string;
 }
 
-export interface OrganScan {
-  organ: Organ; volume?: number; composition?: Record<string, number>;
-  date: string; day: number; device: string; uncertainty: number;
-}
+export interface TriageResult { level: Level; reasons: string[]; groundRoutine: string[] }
 
-export interface Standard { id: string; title: string; quote: string; url: string; verified: boolean }
+export interface OrganSummary { organId: OrganId; day: number; text: string; generatedBy: 'IA-sol'; reviewed: false }
 
-export interface GroundPacket {
-  createdAt: string; level: Level; rule: string;
-  measurements: Measurement[]; trend?: string; ecgAttached: boolean;
-  includeMood: boolean;         // false par défaut
-  arrivalAt: string; earliestReplyAt: string;
+export interface ModelManifest {
+  layers: { id: LayerId; file: string; organs: OrganId[] }[];
+  organs: { id: OrganId; file?: string; anchor: [number, number, number] }[];  // anchor = position du warning ⚠
+  credits: string;              // 'Z-Anatomy — CC BY-SA 4.0'
 }
 ```
 
 ---
 
-## 6. Signatures des modules (les stubs du bootstrap)
+## 7. Signatures des modules (les stubs du bootstrap)
 
-Chaque fichier existe dès le bootstrap avec cette signature et un retour factice. Son propriétaire le remplace par la vraie implémentation **sans changer la signature**.
+Chaque fichier existe dès le bootstrap avec sa signature et un retour factice. Son propriétaire remplace l'implémentation **sans changer la signature**.
 
 | Fichier | Propriétaire | Export(s) |
 | :-- | :-- | :-- |
-| `src/models/band.ts` | Mouad | `colorWithBand(value: number, band: [number, number], t: Thresholds): { color: Color; worst: Color }` |
-| `src/models/aerobic.ts` | Mouad | `projectVO2(s: MissionState, day: number): Projection` · `vo2Absolute(p: { pre: number; deficit: number }): number` |
-| `src/models/bone.ts` | Mouad | `projectHip(s: MissionState, day: number): Projection` · `boneLossColor(loss: number, band: [number, number], t: Thresholds): { color: Color; worst: Color }` |
-| `src/models/tscore.ts` | Mouad | `tScore(lossPct: number): number` |
-| `src/models/radiation.ts` | Mouad | `radiationStatus(s: MissionState): Projection` · `missionDose(): number` |
-| `src/models/fatigue.ts` | Mouad | `fatigueLevel(checkins: Checkin[]): Level` |
-| `src/models/baseline.ts` | Mouad | `flightBaseline(ms: Measurement[], type: Measurement['type']): Baseline` |
-| `src/models/triage.ts` | Mouad | `triage(s: MissionState): TriageResult` |
+| `src/sim/load.ts` | Mouad | `getDayBody(day: number): DayBody` · `getDays(): number[]` · `getBloodTests(analyte?: string): BloodTest[]` · `getWatchSeries(type: Measurement['type']): Measurement[]` |
+| `src/models/bioAge.ts` | Mouad | `bioAgeSeries(organId: OrganId, adherence: number): BioAgePoint[]` (mesuré J0–J94 + prédit jusqu'à J860) |
+| `src/models/band.ts` | Mouad | `colorWithBand(value: number, band: [number, number], t: { amber: number; red: number }): { color: Color; worst: Color }` |
+| `src/models/aerobic.ts`, `bone.ts`, `radiation.ts` | Mouad | Modèles de la fiche §7 (signatures libres, internes à Mouad) |
+| `src/models/alerts.ts` | Mouad | `alertsForDay(day: number): Alert[]` |
+| `src/models/triage.ts` | Mouad | `triage(day: number): TriageResult` |
 | `src/models/router.ts` | Mouad | `router(t: TriageResult, pos: LinkPos, delayMin: number): RouterOutput` |
-| `src/models/gain.ts` | Mouad | `decondSpeed(organ: Organ, adherence: number): number` |
-| `src/models/scanFit.ts` | Mouad | `fitScan(p: Projection, scan: OrganScan): Projection` |
-| `src/data/haddad/generate.ts` | Mouad | `haddadState(day?: number): MissionState` |
+| `src/models/planDay.ts` | Mouad | `planDay(day: number): TodoItem[]` |
+| `src/models/explain.ts` | Mouad | `explain(reasoningId: string): Reasoning` |
 | `src/ingest/healthExport.ts` | Ahmed | `parseHealthExport(file: File, onProgress?: (pct: number) => void): Promise<Measurement[]>` |
 | `src/ingest/baseline30d.ts` | Ahmed | `baseline30d(ms: Measurement[], type: Measurement['type']): Baseline` |
-| `src/ingest/live.ts` | Ahmed | `latestLive(): Promise<Measurement | null>` (lit ce que `server/ingest.ts` a reçu) |
-| `src/db/index.ts` | Ahmed | `saveCheckin(c: Checkin): Promise<void>` · `listCheckins(): Promise<Checkin[]>` · `saveMeasurements(ms: Measurement[]): Promise<void>` |
-| `src/checkin/CheckinForm.tsx` | Ahmed | `export function CheckinForm(p: { onSubmit: (c: Checkin) => void }): JSX.Element` |
-| `src/checkin/PvtB.tsx` | Ahmed | `export function PvtB(p: { onDone: (meanMs: number) => void }): JSX.Element` |
-| `server/ingest.ts` | Ahmed | Plugin Vite : `POST /ingest` (objet plat `{type, value, unit, date}`) et `GET /ingest/latest` |
-| `src/nasa/horizons.ts` | Steve | `lightTimeMin(date: string): number` (lit `public/data/horizons.json`) · `conjunctionPeriods(): { start: string; end: string }[]` |
-| `src/content/standards.ts` | Steve | `getStandard(id: string): Standard` (lit `standards.json`) |
-| `src/content/protocols.ts` | Steve | `maintenantFor(level: Level, reasons: string[]): string` |
-| `src/content/futureSelf.ts` | Steve | `renderFutureSelf(ps: Projection[], delayMin: number): string` |
-| `src/content/packet.ts` | Steve | `buildGroundPacket(s: MissionState, t: TriageResult, delayMin: number, opts: { includeMood: boolean; ecg: boolean }): GroundPacket` |
+| `src/ingest/live.ts` | Ahmed | `latestLive(type: Measurement['type']): Promise<Measurement \| null>` |
+| `src/ingest/todoSync.ts` | Ahmed | `pushTodo(items: TodoItem[]): Promise<void>` · `pullDone(): Promise<string[]>` |
+| `server/api.ts` | Ahmed | Plugin Vite : `GET /api/todo`, `POST /api/todo/:id/done`, `POST /ingest` (objet plat `{type, value, unit, date}`), `GET /ingest/latest` |
+| `src/pages/warroom/WarRoom.tsx` | Ahmed | `export function WarRoom(): JSX.Element` |
+| `src/pages/reasoning/Reasoning.tsx` | Ahmed | `export function ReasoningPage(): JSX.Element` (lit `:id` dans l'URL) |
+| `src/pages/body/Body.tsx` | Walid | `export function Body(): JSX.Element` |
+| `src/content/library.ts` | Steve | `getExercise(id: string)` · `getMeal(id: string)` · `whyText(rule: string): string` |
+| `src/content/summaries.ts` | Steve | `getSummary(organId: OrganId, day: number): OrganSummary \| null` (jour clé le plus proche) |
+| `src/content/standards.ts` | Steve | `getStandard(id: string): { id: string; title: string; quote: string; url: string; verified: boolean }` |
+| `src/content/horizons.ts` | Steve | `lightTimeMin(date: string): number` (test : 11,01 le 2026-11-14) |
+| `public/models/manifest.json` | Steve | Format `ModelManifest` (§6) |
 
-**Note :** `router` (Mouad) appelle `maintenantFor` (Steve) pour le texte de MAINTENANT. Les deux codent contre la signature : pas besoin de se coordonner.
-
-### Mocks (`src/mocks/haddad.ts`, Walid)
-
-Valeurs de la fiche §7, pour que l'interface soit juste avant même que les modèles existent :
-- VO₂ Sol 0 : 36,5 (35,0–38,1) au rythme actuel, 37,3 (35,9–38,8) avec le plan.
-- Hanche J860 : perte 8,70 % (6,84–10,36) au rythme actuel, 4,22 % (3,32–5,02) avec le plan.
-- Délai radio J94 : 7,2 min [Persona] ; 14/11/2026 : 11,01 min [NASA].
-- Triage J94 : ORANGE, `groundRoutine: ['hipJ860']`.
+**Mocks (Walid, `src/mocks/`)** — chiffres de la fiche §7, pour que tout s'affiche avant les vrais modules :
+- Haddad, 42 ans [Persona], J94. VO₂ : déficit 10,84 % à J94 ; Sol 0 : 36,5 (rythme actuel) / 37,3 (avec le plan).
+- Hanche : perte 1,99 % à J94 ; J860 : 8,70 % (rythme) / 4,22 % (plan).
+- Alertes J94 : hanche AMBRE (projection J860 rouge), cuisse AMBRE, cœur/VO₂ AMBRE (Sol 0 à la limite 36,5).
+- SpO₂ 97–99 %, hémoglobine en légère baisse (anémie spatiale).
 
 ---
 
-## 7. Arborescence
+## 8. Modèles nouveaux (Mouad), à sourcer (Steve)
+
+### Âge biologique estimé [H]
+Idée : « combien d'années de vieillissement terrestre représente la perte subie en vol ».
 
 ```
-src/
-  types.ts, App.tsx, screens/, components/, styles/, mocks/   # Walid
-  models/, data/haddad/                                        # Mouad
-  checkin/, db/, ingest/                                       # Ahmed
-  nasa/, content/ (standards.json, templates/, protocols/)     # Steve
-server/ingest.ts                                               # Ahmed
-scripts/fetch-horizons.ts                                      # Steve
-public/data/ horizons.json, environments/*.json, organScan.json  # Steve
-tests/models/ (Mouad) · tests/ingest/ (Ahmed) · tests/content/ (Steve) · tests/ui/ (Walid)
-status/walid.md, mouad.md, ahmed.md, steve.md                  # chacun le sien
-docs/ (fiche, ROADMAP.md) · pitch/                             # Steve
+bioAge(organe, jour) = âgeRéel(jour) + perteCumulée%(organe, jour) / vitesseVieillissementTerre%/an(organe)
 ```
+
+| Organe | Perte en vol (source) | Vitesse de vieillissement terrestre [H, à sourcer par Steve] |
+| :-- | :-- | :-- |
+| Hanche | Modèle `bone` (fiche §7) | ≈ 1 %/an |
+| Cuisse / mollet | Volume au scan vs J0 | ≈ 1 %/an |
+| Cœur (VO₂max) | Modèle `aerobic` (fiche §7) | ≈ 1 %/an (≈ 10 %/décennie) |
+| Autres organes | Pas de modèle → `bioAge = âgeRéel`, statut **gris** (« non modélisé ») | — |
+
+Exemple : hanche à J94, perte 1,99 % → **+2,0 ans** ; à J860 au rythme actuel, 8,70 % → **+8,7 ans** ; avec le plan, 4,22 % → **+4,2 ans**. La **prédiction** (pointillé) prolonge `bone`/`aerobic` avec leur bande.
+
+### Prise de sang quotidienne (SIMULÉ)
+Analytes : hémoglobine, hématocrite, leucocytes, CRP, calcium, vitamine D, créatinine, glucose, cortisol. Valeurs de référence terrestres + tendances spatiales connues (baisse de l'hémoglobine liée à l'anémie spatiale, hausse du calcium liée à la perte osseuse → risque de calculs rénaux). **Steve vérifie les sources** et les met dans `standards.json` / Raisonnement.
+
+### Planificateur de la to-do (`planDay`)
+Chaque alerte produit des items, chaque item garde son `reasoningId` :
+- hanche AMBRE → ARED charge lourde (squat, soulevé de terre) + repas riche en calcium / vitamine D + point Sol-routine (bisphosphonates, fiche §6) ;
+- VO₂ AMBRE → vélo / tapis par intervalles ;
+- donnée manquante ou expirée → test à faire (prise de sang, check-in, PVT) ;
+- signes d'alerte (fiche R13) → item médical **en tête**, prévenir le CMO.
 
 ---
 
-## 8. Définition de « fini » (avant de merger dans `develop`)
+## 9. Démo de 3 minutes (à affiner par Steve)
 
-- [ ] Signature identique au stub de §6.
-- [ ] Les tests d'or de la fiche §11 qui concernent ta feature passent.
-- [ ] Les chiffres correspondent à la fiche §7 (VO₂ Sol 0 : 36,5 / 37,3 ; hanche J860 : 8,70 % / 4,22 %).
+| Temps | Ce qu'on montre |
+| :-- | :-- |
+| 0:00–0:15 | Accroche : « Pourrez-vous marcher en sortant du vaisseau ? » + délai radio du jour |
+| 0:15–0:45 | **Body** : le corps 3D de Haddad à J94, calques, un ⚠ sur la hanche |
+| 0:45–1:20 | Survol → récap ; clic → fenêtre organe : synthèse IA, âge biologique +2 ans, **pointillé** vers +8,7 ans au retour |
+| 1:20–1:45 | **Timeline** J0 → J94 → Sol 0 : le corps fantôme se dégrade ; on active le plan → il se dégrade moins |
+| 1:45–2:10 | **RÉEL** : SpO₂ et FC du présentateur depuis sa montre, comparés à sa référence |
+| 2:10–2:45 | **War Room** : la to-do du jour, « Pourquoi ? » → la chaîne jusqu'à la norme NASA ; la même to-do sur la montre |
+| 2:45–3:00 | Conclusion |
+
+---
+
+## 10. Définition de « fini » et checklist démo
+
+**Avant de merger dans `develop` :**
+- [ ] Signature identique au stub (§7).
+- [ ] Tests verts (dont les tests d'or de la fiche §11 pour les modèles).
 - [ ] Marche **sans réseau**.
 - [ ] Aucun vert par défaut quand la donnée manque.
+- [ ] Étiquettes RÉEL / SIMULÉ / [H] présentes.
 - [ ] `status/<prénom>.md` à jour.
 
----
-
-## 9. Checklist démo (dimanche 17:00)
-
-- [ ] `main` taggé `v1.0-demo`, build de prod local qui tourne en mode avion.
-- [ ] Export Santé du présentateur chargé ; plan B « dernière mesure enregistrée » testé.
-- [ ] App Fréquence cardiaque ouverte sur la montre juste avant le passage.
+**Checklist démo (dim. 17:00) :**
+- [ ] `main` taggé `v1.0-demo`, build de prod local qui tourne en mode avion, > 30 FPS sur la page Body.
+- [ ] Export Santé du présentateur chargé ; plan B « dernière mesure » testé.
+- [ ] Raccourci to-do testé sur la montre (ou retiré du script).
+- [ ] Crédit Z-Anatomy (CC BY-SA 4.0) visible dans l'app et le README.
 - [ ] Vidéos de secours n° 1 et n° 2 sur 2 ordinateurs + une clé USB.
 - [ ] Diapos (5 max) + script chronométré à 3:00.
-- [ ] Soumission Space Apps faite (lien du repo + vidéo).
-- [ ] Chargeurs, adaptateur HDMI/USB-C testés.
+- [ ] Soumission Space Apps faite.
