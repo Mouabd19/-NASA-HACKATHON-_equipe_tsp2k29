@@ -34,7 +34,9 @@
       "file": "cardio.glb",
       "organs": [
         "coeur",
-        "aorte"
+        "arteres",
+        "aorte",
+        "veines"
       ]
     },
     {
@@ -161,6 +163,22 @@
         0.011,
         1.197,
         0.074
+      ]
+    },
+    {
+      "id": "arteres",
+      "anchor": [
+        0.164,
+        0.854,
+        0.162
+      ]
+    },
+    {
+      "id": "veines",
+      "anchor": [
+        0.153,
+        0.838,
+        0.166
       ]
     },
     {

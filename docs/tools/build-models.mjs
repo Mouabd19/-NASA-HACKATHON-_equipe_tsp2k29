@@ -43,6 +43,9 @@ const ORGANS = [
   { id: 'cerveau', sys: 'nervous', re: /(gyrus|gyri|cerebell|Midbrain|Pons|Medulla|Insula|Cingulate|Cuneus|lobule|Thalamus|Hippocamp|Corpus callosum|Precuneus|pole)/i, not: /spinal|optic|eyeball|nerve|Falx|Tentorium|conus|filum|cauda|terminal|tract/i },
   { id: 'yeux', sys: 'nervous', re: /^((Anterior|Posterior) segment of eyeball|Retina|Optic nerve \(II\)|Lens)\.[lr]$/ },
   { id: 'aorte', sys: 'cardiovascular', re: /^(Ascending|Thoracic|Abdominal) aorta$|^Arch of aorta$/ },
+  // Réseau vasculaire (après coeur et aorte : le premier motif qui correspond gagne).
+  { id: 'arteres', sys: 'cardiovascular', re: /arter|arteriol|trunk|arch|aorta|branch|anastomos/i },
+  { id: 'veines', sys: 'cardiovascular', re: /vein|vena|venous|sinus|plexus|venule/i },
 ];
 
 // --- Calques : sources, filtres et décimation -------------------------------------------------
@@ -59,7 +62,7 @@ const LAYERS = [
     ],
     ratio: 0.25, organs: ['coeur', 'poumons', 'foie', 'reins', 'cerveau'],
   },
-  { id: 'cardio', parts: [{ sys: 'cardiovascular' }], ratio: 0.045, organs: ['coeur', 'aorte'] },
+  { id: 'cardio', parts: [{ sys: 'cardiovascular' }], ratio: 0.045, organs: ['coeur', 'aorte', 'arteres', 'veines'] },
   { id: 'nerveux', parts: [{ sys: 'nervous', drop: /Falx|Tentorium|ventricle|Aqueduct|cochlea|vestib|canal|duct|sac/i }], ratio: 0.07, organs: ['cerveau', 'yeux'] },
 ];
 
@@ -218,7 +221,7 @@ for (const [id, budget] of Object.entries(ISOLATED)) {
 }
 
 // 'sang' : pas de mesh propre ; ancré sur l'aorte (calque cardio).
-for (const o of [...Object.keys(ISOLATED), 'aorte']) manifest.organs.push({ id: o, file: o in ISOLATED ? `organs/${o}.glb` : undefined, anchor: anchors[o] });
+for (const o of [...Object.keys(ISOLATED), 'aorte', 'arteres', 'veines']) manifest.organs.push({ id: o, file: o in ISOLATED ? `organs/${o}.glb` : undefined, anchor: anchors[o] });
 manifest.organs.push({ id: 'sang', anchor: anchors.aorte });
 manifest.credits = 'Z-Anatomy - The open source atlas of anatomy - CC-BY-SA 4.0 · BodyParts3D - The Database Center for Life Science - CC-BY-SA 2.1 Japan · Kidney - by lissiecowley - CC-BY-NC 4.0 · Anatomy of the Inner Ear / Cranial Nerves and Foramina - University of Dundee · export glTF : nqwrc/3d-anatomy · ensemble distribué sous CC BY-NC-SA 4.0';
 fs.writeFileSync(path.join(OUT, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
