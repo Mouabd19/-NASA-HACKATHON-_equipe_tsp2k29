@@ -1,7 +1,7 @@
 # Status — Steve (D)
-_Mis à jour : sam. 14:55_
+_Mis à jour : sam. 14:43_
 
-## Livré (branche `feature/steve-models`, PR vers `develop` dès que la branche existe)
+## Livré (poussé sur `feature/steve-models` ; PR vers `develop` dès que Walid aura créé la branche)
 - **Modèles 3D** (jalon 17:00, en avance) : `public/models/{squelette,muscles,organes,cardio,nerveux}.glb` (170–260 k triangles chacun, 1,2–2,9 Mo, ~1 M triangles si tout est affiché) + `manifest.json` (ancres des ⚠) + `CREDITS.md`.
 - **Organes isolés** (jalon 20:00, en avance) : `public/models/organs/<organId>.glb` pour coeur, poumons, foie, reins, cerveau, yeux, hanche, femur, rachis, cuisse, mollet, paravertebraux. Centrés à l'origine.
 - **PhenoAge** : coefficients vérifiés + vecteurs de test → `docs/sources/phenoage.md`.
