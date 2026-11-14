@@ -1,0 +1,50 @@
+{
+ "organId": "yeux",
+ "generatedBy": "IA-sol",
+ "model": "Claude (Anthropic), rédigé hors ligne",
+ "generatedAt": "2026-11-14",
+ "reviewed": false,
+ "note": "Synthèse IA rédigée au sol à partir des seuls chiffres du simulateur (src/sim, données de Mouad). À valider par le CMO. N'est jamais utilisée pour décider d'une alerte.",
+ "days": [
+  {
+   "day": 0,
+   "adherence": 0,
+   "text": "Bilan de référence (J0) : gaine du nerf optique de 4,84 mm à l'échographie. Temps de réaction (PVT) de 262 ms. Statut nominal."
+  },
+  {
+   "day": 30,
+   "adherence": 0,
+   "text": "Gaine du nerf optique à 5,16 mm, en hausse : les fluides montent vers la tête en apesanteur. Vigilance stable (PVT 269 ms). Statut nominal."
+  },
+  {
+   "day": 60,
+   "adherence": 0,
+   "text": "Gaine du nerf optique à 5,33 mm : la hausse ralentit. Vigilance stable (PVT 269 ms). Statut nominal."
+  },
+  {
+   "day": 94,
+   "adherence": 0,
+   "text": "Gaine du nerf optique à 5,65 mm, en hausse sur 7 jours : statut à surveiller. C'est un indicateur indirect de la pression dans le crâne, liée aux troubles de la vision en vol (SANS). Conduite proposée : test de vision et nouvelle mesure, à transmettre au médecin au sol."
+  },
+  {
+   "day": 210,
+   "adherence": 0,
+   "text": "Le modèle ne projette pas l'œil au-delà d'aujourd'hui. Dernière mesure (J94) : gaine du nerf optique à 5,65 mm, à surveiller. Le suivi par échographie continue jusqu'à Sol 0."
+  },
+  {
+   "day": 210,
+   "adherence": 1,
+   "text": "Le modèle ne projette pas l'œil au-delà d'aujourd'hui. Dernière mesure (J94) : gaine du nerf optique à 5,65 mm, à surveiller. Le suivi par échographie continue jusqu'à Sol 0."
+  },
+  {
+   "day": 860,
+   "adherence": 0,
+   "text": "Le modèle ne projette pas l'œil jusqu'au retour. Dernière mesure (J94) : gaine du nerf optique à 5,65 mm, à surveiller. Un bilan ophtalmologique complet est prévu au retour."
+  },
+  {
+   "day": 860,
+   "adherence": 1,
+   "text": "Le modèle ne projette pas l'œil jusqu'au retour. Dernière mesure (J94) : gaine du nerf optique à 5,65 mm, à surveiller. Un bilan ophtalmologique complet est prévu au retour."
+  }
+ ]
+}

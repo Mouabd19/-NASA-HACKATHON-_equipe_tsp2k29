@@ -1,0 +1,50 @@
+{
+ "organId": "hanche",
+ "generatedBy": "IA-sol",
+ "model": "Claude (Anthropic), rédigé hors ligne",
+ "generatedAt": "2026-11-14",
+ "reviewed": false,
+ "note": "Synthèse IA rédigée au sol à partir des seuls chiffres du simulateur (src/sim, données de Mouad). À valider par le CMO. N'est jamais utilisée pour décider d'une alerte.",
+ "days": [
+  {
+   "day": 0,
+   "adherence": 0,
+   "text": "Bilan de référence au sol (J0) : densité osseuse de la hanche à 100 % de la valeur pré-vol. C'est le point de départ de toutes les comparaisons. Le seuil NASA est de 95 % du pré-vol [V1 4027]."
+  },
+  {
+   "day": 30,
+   "adherence": 0,
+   "text": "Densité estimée à 99,32 % du pré-vol, soit une perte de 0,68 %. La perte suit la pente attendue en apesanteur (−0,16 point par semaine). Statut nominal, au-dessus du seuil NASA de 95 % [V1 4027]."
+  },
+  {
+   "day": 60,
+   "adherence": 0,
+   "text": "Densité estimée à 98,68 % du pré-vol (perte de 1,32 %), tendance −0,15 point par semaine. Toujours au-dessus du seuil de 95 % [V1 4027]. Mais au rythme actuel, la perte atteindrait 8,7 % au retour (J860), hors norme."
+  },
+  {
+   "day": 94,
+   "adherence": 0,
+   "text": "Densité estimée à 98,01 % du pré-vol (perte de 1,99 %), statut à surveiller. Le problème n'est pas aujourd'hui mais la trajectoire : au rythme actuel, 8,7 % de perte au retour (J860), sous le seuil NASA de 95 % [V1 4027]. Conduite proposée : ARED en charge lourde, calcium et vitamine D, et question des bisphosphonates au médecin au sol."
+  },
+  {
+   "day": 210,
+   "adherence": 0,
+   "text": "Projection à l'arrivée sur Mars (Sol 0, J210) au rythme actuel : 96,09 % du pré-vol, soit une perte de 3,91 %. Encore dans la norme mais à surveiller, et la pente mène à 8,7 % de perte au retour. Projection du modèle, pas une mesure."
+  },
+  {
+   "day": 210,
+   "adherence": 1,
+   "text": "Projection à Sol 0 (J210) avec le plan suivi : 97,37 % du pré-vol, soit une perte de 2,63 %, statut nominal. Le plan ralentit nettement la perte par rapport au rythme actuel (3,91 %). Projection du modèle, pas une mesure."
+  },
+  {
+   "day": 860,
+   "adherence": 0,
+   "text": "Projection au retour (J860) au rythme actuel : 91,30 % du pré-vol, soit une perte de 8,70 %. C'est sous le seuil NASA de 95 % [V1 4027] : statut hors seuil. Ce scénario justifie d'en parler dès maintenant avec le médecin au sol."
+  },
+  {
+   "day": 860,
+   "adherence": 1,
+   "text": "Projection au retour (J860) avec le plan suivi : 95,78 % du pré-vol, soit une perte de 4,22 %. C'est juste au-dessus du seuil NASA de 95 % [V1 4027] : statut à surveiller. Le plan divise la perte par deux, mais la marge reste mince (bisphosphonates : LeBlanc 2013)."
+  }
+ ]
+}
