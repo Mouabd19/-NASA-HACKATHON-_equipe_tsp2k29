@@ -29,8 +29,10 @@ const TABS = [
   { to: '/mental', label: 'Mental', icon: 'mental' },
 ] as const;
 
+/** Format des horloges de bord de l'ISS : jour de l'année / heure GMT (ex. 318/22:47:05). */
 function utcClock(d: Date): string {
-  return d.toISOString().slice(11, 19);
+  const doy = Math.floor((Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) - Date.UTC(d.getUTCFullYear(), 0, 0)) / 86400000);
+  return `${String(doy).padStart(3, '0')}/${d.toISOString().slice(11, 19)}`;
 }
 
 /** Horloge UTC, recalée sur le début de chaque seconde. */
@@ -48,7 +50,7 @@ function Clock(): JSX.Element {
   }, []);
   return (
     <time className="sz-topbar__clock" dateTime={now.toISOString()}>
-      {utcClock(now)} <span className="sz-dim">UTC</span>
+      <span className="sz-dim">GMT</span> {utcClock(now)}
     </time>
   );
 }
@@ -63,6 +65,7 @@ function TopBar(): JSX.Element {
             <line x1="2" y1="10" x2="10" y2="2" stroke="currentColor" />
           </svg>
           SOL ZÉRO
+          <span className="dr-wordmark__sub">Santé équipage</span>
         </span>
         <span className="sz-topbar__rule sz-topbar__opt sz-detail" />
         <span className="sz-dim sz-topbar__opt sz-detail">Mission {ASTRONAUT.id}</span>

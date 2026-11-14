@@ -4,7 +4,7 @@
 import type { Color, Level } from '../types';
 
 export const tokens = {
-  // da_dragon (branche feature/mouad-da-dragon) : mode sombre façon iOS, teinté bleu nuit.
+  // da_dragon (branche feature/mouad-da-dragon) : écran de santé d'équipage NASA, fond bleu nuit.
   color: {
     bg: '#070B14',
     panel: '#111A2A',
@@ -20,8 +20,9 @@ export const tokens = {
     unknown: '#6E7A90',
   },
   font: {
-    text: "-apple-system, 'SF Pro Text', 'Inter Variable', system-ui, sans-serif",
-    mono: "-apple-system, 'SF Pro Display', 'Inter Variable', system-ui, sans-serif",
+    // codes des écrans de santé d'équipage NASA : texte en sans, valeurs en chasse fixe (consoles)
+    text: "'Inter Variable', Inter, -apple-system, system-ui, sans-serif",
+    mono: "'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, monospace",
   },
   // = --sz-fs-* (global.css) : label 11 · small 12 · data 13 · body 14 · title 16 · num 22 · display 34
   size: { xs: 11, sm: 12, data: 13, md: 14, lg: 16, xl: 22, xxl: 34 },
@@ -39,9 +40,9 @@ export const statusColor: Record<Color, string> = {
 
 export const statusLabel: Record<Color, string> = {
   green: 'Nominal',
-  amber: 'Ambre',
-  red: 'Rouge',
-  grey: 'Inconnu',
+  amber: 'Caution',
+  red: 'Warning',
+  grey: 'Sans donnée',
 };
 
 export const levelColor: Record<Level, Color> = {

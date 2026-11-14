@@ -259,3 +259,68 @@ body { font-size: 13px; letter-spacing: -0.005em; }
   text-transform: none !important;
   letter-spacing: 0 !important;
 }
+
+/* ══ Codes des écrans de santé d'équipage NASA (affichages de bord ISS / Orion) ══ */
+
+/* Nom du système sous la marque, comme en tête d'un écran de bord */
+.dr-wordmark__sub {
+  margin-left: 2px;
+  padding-left: 10px;
+  border-left: 1px solid var(--sz-border-strong);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--sz-text-dim);
+  letter-spacing: 0.02em;
+}
+
+/* Valeurs en chasse fixe, comme sur les consoles : horloge, jour, codes, chiffres */
+.sz-topbar__clock, .sz-topbar__day, .sz-panel__sys, .alr__count, .alr__v, .sz-tag {
+  font-family: var(--sz-font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0 !important;
+}
+.sz-topbar__clock { font-size: 12px; }
+.sz-topbar__day { font-size: 13px; }
+
+/* En-tête de panneau = barre de titre d'affichage : bandeau plein, code d'affichage à gauche */
+.sz-panel__head {
+  min-height: 36px;
+  padding: 0 8px 0 12px;
+  background: color-mix(in srgb, var(--sz-panel-hover) 85%, var(--sz-bg));
+  border-bottom: 1px solid var(--sz-border);
+  border-radius: calc(var(--sz-radius) - 1px) calc(var(--sz-radius) - 1px) 0 0;
+  gap: 8px;
+}
+.sw .sz-panel__title { text-transform: none !important; } /* « SpO₂ » garde sa casse */
+.sz-panel__sys {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--sz-holo);
+}
+.sz-panel__sep { opacity: 0.5; }
+.sz-panel__body { padding-top: 10px; }
+
+/* Alarmes : bandeau plein Warning / Caution, le repère C&W que l'équipage connaît */
+.alr__top .sz-chip {
+  height: 18px !important;
+  padding: 0 7px !important;
+  border-radius: 3px;
+  font-size: 11px !important;
+  font-weight: 700;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+}
+.alr__top .sz-chip .dr-glyph { display: none; }
+.alr__top .sz-chip[data-color='red'] { background: var(--sz-red) !important; color: var(--dr-on-status); }
+.alr__top .sz-chip[data-color='amber'] { background: var(--sz-amber) !important; color: var(--dr-on-status); }
+.alr__top .sz-chip[data-color='green'] { background: color-mix(in srgb, var(--sz-ok) 22%, transparent) !important; color: var(--sz-ok); }
+.alr__top .sz-chip[data-color='grey'] { background: var(--dr-fill) !important; color: var(--sz-text-dim); }
+.alr__count {
+  min-width: 26px;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: var(--dr-fill);
+  text-align: center;
+  font-size: 12px;
+}
+.alr__count[data-red='true'] { background: var(--sz-red); color: var(--dr-on-status); }

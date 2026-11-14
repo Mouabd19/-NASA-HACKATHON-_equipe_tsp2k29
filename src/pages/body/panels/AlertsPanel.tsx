@@ -11,9 +11,10 @@ import './AlertsPanel.css';
 
 const LEVEL_RANK: Record<Level, number> = { ROUGE: 0, ORANGE: 1, AMBRE: 2, DONNEES_INSUFFISANTES: 3, VERT: 4 };
 const LEVEL_LABEL: Record<Level, string> = {
-  ROUGE: 'Rouge',
-  ORANGE: 'Orange',
-  AMBRE: 'Ambre',
+  // vocabulaire NASA des alarmes de bord (C&W) : Warning = rouge, Caution = ambre
+  ROUGE: 'Warning',
+  ORANGE: 'Caution +',
+  AMBRE: 'Caution',
   DONNEES_INSUFFISANTES: 'Données insuffisantes',
   VERT: 'Nominal',
 };
