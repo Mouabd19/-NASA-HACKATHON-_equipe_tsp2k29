@@ -212,3 +212,11 @@
 @media (max-height: 760px) {
   .body-page { --body-gap: 6px; }
 }
+
+/* ── Écran de base épuré (Steve) : la scène occupe toute la page, les fenêtres flottent au-dessus ── */
+.body-page--clean { display: block; position: relative; padding: 0; }
+.body-page--clean .body-scene { position: absolute; inset: 0; border: 0; }
+.body-page--clean .body-corner { display: none; }
+.body-page--clean .body-tag { top: auto; bottom: 22px; left: 24px; opacity: 0.75; }
+.body-page--clean .body-help { right: 24px; bottom: 20px; left: auto; width: 26px; height: 26px; display: grid; place-items: center; border: 1px solid var(--sz-border); border-radius: 50%; pointer-events: auto; cursor: help; }
+.body-page--clean .body-credit { right: 62px; bottom: 26px; opacity: 0.6; }

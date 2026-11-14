@@ -1,5 +1,5 @@
-// Page 1 — BODY (ROADMAP §1) : composition « Cyberware ».
-// En-tête · [sang + SpO₂] | corps 3D | [calques + alertes] · timeline. La fenêtre organe est
+// Page 1 — BODY (ROADMAP §1). Écran de base : le corps scanné seul, avec ses ⚠ ;
+// bilan, analyses, montre, calques, alertes et chronologie s'ouvrent en fenêtres (menu AFFICHAGE). La fenêtre organe est
 // montée à la racine. Aucun composant ne dépend d'un autre : tout passe par le store useBody.
 import { Component, useEffect, useRef } from 'react';
 import type { ErrorInfo, JSX, ReactNode } from 'react';
@@ -20,6 +20,7 @@ import { Timeline } from './panels/Timeline';
 import { OrganWindow } from './panels/OrganWindow';
 import './Body.css';
 import { anatomySource } from '../../three/anatomy';
+import { FloatingWindow, ViewMenu } from './Windows';
 
 /** Si la 3D tombe (pas de WebGL, erreur de shader), la page reste utilisable : panneau gris, pas d'écran blanc. */
 class SceneBoundary extends Component<{ children: ReactNode }, { error: string | null }> {
@@ -147,7 +148,7 @@ function SceneChrome(): JSX.Element {
 
       <ScanLabel />
       <div className="body-help" title="Glisser : orbite · Molette : zoom · Clic : épingler · Double-clic : fenêtre organe · Espace : lecture · ← → : jour">
-        <Label dim>GLISSER : ORBITE · MOLETTE : ZOOM · CLIC : ÉPINGLER · 2× CLIC : FENÊTRE · ESPACE : LECTURE</Label>
+        <Label dim>?</Label>
       </div>
       {anatomySource() === 'z-anatomy' ? (
         <div className="body-credit" title="Z-Anatomy — CC BY-SA 4.0 · BodyParts3D — CC BY-SA 2.1 JP · rein et oreille interne CC BY-NC · usage hackathon non commercial (public/models/CREDITS.md)">
@@ -166,15 +167,9 @@ export function Body(): JSX.Element {
   useUrlState();
   // En quittant la page, la lecture de la timeline s'arrête (sinon le jour avance hors écran).
   useEffect(() => () => useBody.getState().setPlaying(false), []);
+  // Écran de base épuré (Steve) : le corps scanné et ses ⚠ ; le reste s'ouvre depuis le menu AFFICHAGE.
   return (
-    <div className="body-page">
-      <div className="body-top"><Header /></div>
-
-      <aside className="body-col body-col--left" aria-label="Analyses et montre">
-        <div className="body-slot body-slot--grow"><BloodPanel /></div>
-        <div className="body-slot"><Spo2Widget /></div>
-      </aside>
-
+    <div className="body-page body-page--clean">
       <section className="body-scene" aria-label="Corps 3D">
         <SceneBoundary><BodyScene /></SceneBoundary>
         <LeaderLines />
@@ -182,12 +177,13 @@ export function Body(): JSX.Element {
         <HoverCard />
       </section>
 
-      <aside className="body-col body-col--right" aria-label="Calques et alertes">
-        <div className="body-slot body-slot--layers"><LayersPanel /></div>
-        <div className="body-slot body-slot--grow"><AlertsPanel /></div>
-      </aside>
-
-      <div className="body-bottom"><Timeline /></div>
+      <ViewMenu />
+      <FloatingWindow id="bilan" title="Bilan du jour" className="bw--bilan"><Header /></FloatingWindow>
+      <FloatingWindow id="analyses" title="Analyses" className="bw--analyses"><BloodPanel /></FloatingWindow>
+      <FloatingWindow id="montre" title="Montre" className="bw--montre"><Spo2Widget /></FloatingWindow>
+      <FloatingWindow id="calques" title="Calques" className="bw--calques"><LayersPanel /></FloatingWindow>
+      <FloatingWindow id="alertes" title="Alertes du jour" className="bw--alertes"><AlertsPanel /></FloatingWindow>
+      <FloatingWindow id="chronologie" title="Chronologie" className="bw--chronologie"><Timeline /></FloatingWindow>
 
       <OrganWindow />
     </div>

@@ -1,7 +1,8 @@
 # Status — Steve (D)
-_Mis à jour : sam. 18:55_
+_Mis à jour : sam. 19:25_
 
 ## Livré (PR `feature/steve-models` → `develop`)
+- **Page Body épurée** (branche `feature/steve-body-ui`, accord de Walid) : écran de base = corps scanné + ⚠ seulement ; barre minimale (menu AFFICHAGE, jour, statut, délai radio) ; menu horizontal qui ouvre/ferme 6 fenêtres déplaçables avec ✕ (Bilan du jour, Analyses, Montre, Calques, Alertes du jour, Chronologie) ; Échap ferme tout. Fichiers : `src/pages/body/{windows.ts,Windows.tsx,Windows.css}` + `Body.tsx`/`Body.css`. 121 tests verts.
 - **Z-Anatomy branché dans la page Body** (avec l'accord de Walid) : `src/three/zanatomy.ts` charge les calques + l'avatar et produit la même liste `PartDef[]` que le corps procédural ; chargement dans `main.tsx` avant le premier rendu (repli automatique sur le corps procédural si échec ou > 15 s) ; ancres des ⚠ lues dans le manifeste (`activeAnchors()`) ; crédits Z-Anatomy affichés. Réseau vasculaire (`arteres`, `veines`, `aorte`) → organe `sang` du calque cardio. 94 tests verts, build OK.
 - **Modèles 3D** (jalon 17:00, en avance) : `public/models/{squelette,muscles,organes,cardio,nerveux}.glb` (170–260 k triangles chacun, 1,2–2,9 Mo, ~1 M triangles si tout est affiché) + `manifest.json` (ancres des ⚠) + `CREDITS.md`.
 - **Avatar de Haddad** : `public/models/avatar.glb` (60 k triangles, doigts séparés, meshopt) — enveloppe lisse dérivée des muscles + squelette Z-Anatomy, **même repère que les calques** (alignement exact avec les organes). Nœud `avatar`, `userData.layer = 'shell'`. Sert de silhouette (aucun calque actif) et de surface pour la carte de dose (calque `exposition` du manifeste). Scripts : `docs/tools/build-avatar.py` + `build-avatar.mjs`.
@@ -17,6 +18,7 @@ _Mis à jour : sam. 18:55_
 - Jalons 23:00 et 02:00 **livrés**. Suite : script des synthèses IA par organe (06:00), dès que `public/data/sim/` de Mouad est poussé.
 
 ## Bloqué / risques
+- ⚠ **Sol 0** : `src/mocks/mission.ts` met `DAY_SOL0 = 210`, alors que la fiche (180 j d'aller) et ma réponse à Mouad disent **J180**. À trancher par l'équipe (Walid + Mouad).
 - `horizons.json` est **PROVISOIRE** (calcul local, `provisional: true`, étiquette [H]) : mon environnement ne joint pas ssd.jpl.nasa.gov. **Quelqu'un doit lancer `npx tsx scripts/fetch-horizons.ts` sur son portable** (30 s) avant le gel pour avoir la vraie donnée [NASA]. Écart attendu < 0,01 min.
 - ⚠ **Correction de la fiche** : la dose de carrière 600 mSv est **[V1 4030]**. Et la Rev C ne contient **pas** l'affirmation « bisphosphonates → perte ~0 % » ni « < 5 % de perte à la hanche avec l'ARED » (attribuées à la justification de V1 4027) : les bisphosphonates n'y sont que dans le glossaire. Ne pas afficher ces chiffres en [NASA] tant que je n'ai pas trouvé la vraie source (étape 3).
 - Licence des modèles : **CC BY-NC-SA 4.0** (rein + oreille interne NC). OK pour le hackathon uniquement ; crédit visible obligatoire dans l'app et le README.
