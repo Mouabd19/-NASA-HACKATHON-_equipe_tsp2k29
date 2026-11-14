@@ -1,5 +1,5 @@
 # Status — Steve (D)
-_Mis à jour : sam. 16:15_
+_Mis à jour : sam. 16:18_
 
 ## Livré (poussé sur `feature/steve-models` ; PR vers `develop` dès que Walid aura créé la branche)
 - **Modèles 3D** (jalon 17:00, en avance) : `public/models/{squelette,muscles,organes,cardio,nerveux}.glb` (170–260 k triangles chacun, 1,2–2,9 Mo, ~1 M triangles si tout est affiché) + `manifest.json` (ancres des ⚠) + `CREDITS.md`.
@@ -10,7 +10,7 @@ _Mis à jour : sam. 16:15_
 - **PhenoAge** : coefficients vérifiés + vecteurs de test → `docs/sources/phenoage.md`.
 
 ## En cours
-- **Prototype santé mentale (§11)**, dossiers `proto/mental/` + `public/data/mental/` : générateur de journées simulées (glissement à J75 + témoin) ✅, 3 observateurs + 3 psychologues + dossier pour le psy humain ✅ (testé à blanc). Moteur : **API Claude** (`claude-opus-5-5`, comme prévu au §11) si `ANTHROPIC_API_KEY` est défini, sinon Ollama local (testé : J78 → « à surveiller » 3/3, mais trop lent et le Mac chauffe). Passage complet à relancer avec l'API. Page de visualisation pour la capture : `node proto/mental/build-viewer.mjs` → `proto/mental/viewer.html` (autonome, hors ligne). Biomarqueurs provisoires dans le proto : à brancher sur ceux de Mouad quand `public/data/sim/` existe.
+- **Prototype santé mentale (§11)**, dossiers `proto/mental/` + `public/data/mental/` : générateur de journées simulées (glissement à J75 + témoin) ✅, 3 observateurs + 3 psychologues + dossier pour le psy humain ✅ (testé à blanc). Moteur : **API Claude** (`claude-sonnet-5-5` par défaut, moins cher qu'Opus prévu au §11) si `ANTHROPIC_API_KEY` est défini, sinon Ollama local (testé : J78 → « à surveiller » 3/3, mais trop lent et le Mac chauffe). Passage complet à relancer avec l'API. Page de visualisation pour la capture : `node proto/mental/build-viewer.mjs` → `proto/mental/viewer.html` (autonome, hors ligne). Biomarqueurs provisoires dans le proto : à brancher sur ceux de Mouad quand `public/data/sim/` existe.
 - Jalon 23:00 **livré**. Suite : contenus (exercices, menus, textes « Pourquoi ? ») pour dim. 02:00.
 
 ## Bloqué / risques

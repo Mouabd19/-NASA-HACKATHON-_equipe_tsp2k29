@@ -21,7 +21,7 @@ const OUT = path.join(HERE, '..', '..', 'public', 'data', 'mental');
 // Deux moteurs : API Claude si ANTHROPIC_API_KEY est défini, sinon Ollama en local.
 const API_KEY = process.env.ANTHROPIC_API_KEY;
 const ENGINE = API_KEY ? 'claude' : 'ollama';
-const MODEL = process.env.SOLZERO_MODEL ?? (ENGINE === 'claude' ? 'claude-opus-5-5' : 'qwen2.5:7b');
+const MODEL = process.env.SOLZERO_MODEL ?? (ENGINE === 'claude' ? 'claude-sonnet-5-5' : 'qwen2.5:7b');
 const OLLAMA = process.env.OLLAMA_URL ?? 'http://localhost:11434';
 const DAYS = (process.env.DAYS ?? '65,74,78,85,94').split(',').map(Number);
 const SCENARIOS = (process.env.SCENARIOS ?? 'drift,control').split(',');
@@ -41,7 +41,7 @@ async function chatClaude(messages, tries = 3) {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-api-key': API_KEY, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({ model: MODEL, max_tokens: 2000, temperature: 0.2, system, messages: rest }),
+      body: JSON.stringify({ model: MODEL, max_tokens: 2000, system, messages: rest }),
     });
     if (res.status === 429 || res.status >= 500) { console.warn(`  API ${res.status}, nouvel essai dans 10 s…`); await new Promise((r) => setTimeout(r, 10000)); continue; }
     if (!res.ok) throw new Error(`API Claude HTTP ${res.status} : ${await res.text()}`);
