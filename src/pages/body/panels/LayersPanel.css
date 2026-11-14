@@ -1,0 +1,179 @@
+/* Panneau CALQUES — préfixe .lyr. Couleurs : variables --sz-* uniquement. */
+
+.lyr {
+  width: 100%;
+  max-height: 100%;
+}
+.lyr > .sz-panel__body {
+  padding: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.lyr__list { display: block; }
+
+.lyr__layer { border-bottom: 1px solid var(--sz-border); }
+.lyr__layer:last-child { border-bottom: 0; }
+
+/* ── Ligne de calque ── */
+
+.lyr__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 28px;
+  padding: 0 10px;
+  font-family: var(--sz-font-mono);
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: var(--sz-tracking);
+  text-transform: uppercase;
+  text-align: left;
+  white-space: nowrap;
+  color: var(--sz-text-dim);
+  user-select: none;
+  transition: background-color 120ms, color 120ms;
+}
+.lyr__head:hover { background: var(--sz-panel-hover); }
+.lyr__head:focus-visible { outline-offset: -2px; }
+.lyr__layer[data-active='true'] > .lyr__head { color: var(--sz-text); }
+
+.lyr__box {
+  position: relative;
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border: 1px solid var(--sz-border-strong);
+}
+.lyr__layer[data-active='true'] .lyr__box { border-color: var(--sz-text); }
+.lyr__layer[data-active='true'] .lyr__box::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  background: var(--sz-text);
+}
+
+.lyr__sys {
+  flex: none;
+  color: var(--sz-text-dim);
+}
+.lyr__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lyr__beta {
+  flex: none;
+  padding: 1px 3px;
+  border: 1px dashed var(--sz-border-strong);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  color: var(--sz-text-dim);
+}
+.lyr__fill { flex: 1; min-width: 0; }
+.lyr__alerts {
+  flex: none;
+  min-width: 34px;
+  text-align: right;
+  color: var(--sz-text);
+}
+.lyr__alerts[data-zero='true'] { color: var(--sz-unknown); }
+
+/* ── Organes du calque ── */
+
+.lyr__organs {
+  padding: 0 0 4px;
+}
+
+.lyr__organ {
+  position: relative;
+  display: grid;
+  grid-template-columns: 6px minmax(0, 1fr) auto 56px;
+  align-items: center;
+  column-gap: 8px;
+  height: 22px;
+  padding: 0 10px 0 28px;
+  font-family: var(--sz-font-mono);
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--sz-text-dim);
+  cursor: pointer;
+  user-select: none;
+}
+/* Filet vertical qui rattache l'organe à son calque */
+.lyr__organ::before {
+  content: '';
+  position: absolute;
+  left: 14px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--sz-border);
+}
+.lyr__organ:focus-visible { outline-offset: -2px; }
+
+.lyr__oname {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--sz-text);
+}
+.lyr__val {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'zero' 1;
+  color: var(--sz-text);
+}
+.lyr__unit {
+  margin-left: 4px;
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--sz-text-dim);
+}
+.lyr__organ .sz-tag {
+  justify-self: end;
+  line-height: 1;
+}
+.lyr__none {
+  grid-column: 3 / 5;
+  justify-self: end;
+  font-size: 9px;
+  color: var(--sz-unknown);
+}
+.lyr__organ[data-status='grey'] .lyr__oname { color: var(--sz-text-dim); }
+
+/* Survol (liste ou 3D) et épinglage */
+.lyr__organ[data-hovered='true'] { background: var(--sz-panel-hover); }
+.lyr__organ[data-hovered='true']::before,
+.lyr__organ[data-selected='true']::before { background: var(--sz-text); }
+.lyr__organ[data-selected='true'] {
+  background: var(--sz-panel-hover);
+  box-shadow: inset 0 0 0 1px var(--sz-border-strong);
+}
+.lyr__organ[data-selected='true']::before { width: 2px; }
+
+.lyr__empty {
+  padding: 2px 10px 8px 28px;
+  font-family: var(--sz-font-mono);
+  font-size: 9px;
+  letter-spacing: var(--sz-tracking);
+  color: var(--sz-unknown);
+}
+
+.lyr__foot {
+  padding: 6px 10px;
+  border-top: 1px solid var(--sz-border);
+  font-family: var(--sz-font-mono);
+  font-size: 8px;
+  line-height: 1.4;
+  letter-spacing: 0.1em;
+  color: var(--sz-unknown);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

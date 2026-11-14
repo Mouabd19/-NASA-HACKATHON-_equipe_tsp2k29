@@ -1,0 +1,197 @@
+{
+  "generatedAt": "2026-11-14T14:21:19.139Z",
+  "viewport": "1600x900",
+  "deviceScaleFactor": 1,
+  "webgl": "défaut",
+  "fpsBody": 3.5,
+  "fpsNote": "requestAnimationFrame sur 3 s ; rendu logiciel (SwiftShader) en CI, indicatif seulement",
+  "shots": [
+    {
+      "name": "01-body-today",
+      "url": "/body?noscan=1",
+      "finalUrl": "/body?noscan=1",
+      "errors": [],
+      "ignoredThirdParty": [
+        "[warning] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
+        "[warning] [.WebGL-0x2ebc001a9000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+        "[warning] [.WebGL-0x2ebc001a9000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+      ]
+    },
+    {
+      "name": "02-scan-sweep",
+      "url": "/body",
+      "finalUrl": "/body",
+      "errors": [],
+      "ignoredThirdParty": [
+        "[warning] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+      ]
+    },
+    {
+      "name": "03-layer-squelette",
+      "url": "/body?noscan=1&layers=squelette",
+      "finalUrl": "/body?noscan=1&layers=squelette",
+      "errors": [],
+      "ignoredThirdParty": [
+        "[warning] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+      ]
+    },
+    {
+      "name": "04-layer-muscles",
+      "url": "/body?noscan=1&layers=muscles",
+      "finalUrl": "/body?noscan=1&layers=muscles",
+      "errors": [],
+      "ignoredThirdParty": [
+        "[warning] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+      ]
+    },
+    {
+      "name": "05-layer-organes",
+      "url": "/body?noscan=1&layers=organes",
+      "finalUrl": "/body?noscan=1&layers=organes",
+      "errors": [],
+      "ignoredThirdParty": [
+        "[warning] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+      ]
+    },
+    {
+      "name": "06-layer-cardio",
+      "url": "/body?noscan=1&layers=cardio",
+      "finalUrl": "/body?noscan=1&layers=cardio",
+      "errors": [],
+      "ignoredThirdParty": [
+        "[warning] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+      ]
+    },
+    {
+      "name": "07-layer-nerveux",
+      "url": "/body?noscan=1&layers=nerveux",
+      "finalUrl": "/body?noscan=1&layers=nerveux",
+      "errors": [],
+      "ignoredThirdParty": [
+        "[warning] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+      ]
+    },
+    {
+      "name": "08-layer-exposition",
+      "url": "/body?noscan=1&layers=exposition",
+      "finalUrl": "/body?noscan=1&layers=exposition",
+      "errors": [],
+      "ignoredThirdParty": [
+        "[warning] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+      ]
+    },
+    {
+      "name": "09-all-layers",
+      "url": "/body?noscan=1&layers=all",
+      "finalUrl": "/body?noscan=1&layers=all",
+      "errors": [],
+      "ignoredThirdParty": [
+        "[warning] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+      ]
+    },
+    {
+      "name": "10-hover-hanche",
+      "url": "/body?noscan=1&hover=hanche",
+      "finalUrl": "/body?noscan=1&hover=hanche",
+      "errors": [],
+      "ignoredThirdParty": [
+        "[warning] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+      ]
+    },
+    {
+      "name": "11-selected-coeur",
+      "url": "/body?noscan=1&organ=coeur",
+      "finalUrl": "/body?noscan=1&organ=coeur",
+      "errors": [],
+      "ignoredThirdParty": [
+        "[warning] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+      ]
+    },
+    {
+      "name": "12-window-hanche",
+      "url": "/body?noscan=1&window=hanche",
+      "finalUrl": "/body?noscan=1&window=hanche",
+      "errors": [],
+      "ignoredThirdParty": [
+        "[warning] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+      ]
+    },
+    {
+      "name": "13-window-global",
+      "url": "/body?noscan=1&window=global",
+      "finalUrl": "/body?noscan=1&window=global",
+      "errors": [],
+      "ignoredThirdParty": [
+        "[warning] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+      ]
+    },
+    {
+      "name": "14-blood-hemoglobine",
+      "url": "/body?noscan=1&blood=hemoglobine",
+      "finalUrl": "/body?noscan=1&blood=hemoglobine",
+      "errors": [],
+      "ignoredThirdParty": [
+        "[warning] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+      ]
+    },
+    {
+      "name": "15-day-0",
+      "url": "/body?noscan=1&day=0",
+      "finalUrl": "/body?noscan=1&day=0",
+      "errors": [],
+      "ignoredThirdParty": [
+        "[warning] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+      ]
+    },
+    {
+      "name": "16-sol0",
+      "url": "/body?noscan=1&day=sol0",
+      "finalUrl": "/body?noscan=1&day=210",
+      "errors": [],
+      "ignoredThirdParty": [
+        "[warning] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+      ]
+    },
+    {
+      "name": "17-j860-rythme",
+      "url": "/body?noscan=1&day=860&plan=0",
+      "finalUrl": "/body?noscan=1&day=860",
+      "errors": [],
+      "ignoredThirdParty": [
+        "[warning] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+      ]
+    },
+    {
+      "name": "18-j860-plan",
+      "url": "/body?noscan=1&day=860&plan=1&window=hanche",
+      "finalUrl": "/body?noscan=1&day=860&window=hanche&plan=1",
+      "errors": [],
+      "ignoredThirdParty": [
+        "[warning] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+      ]
+    },
+    {
+      "name": "19-warroom",
+      "url": "/warroom",
+      "finalUrl": "/warroom",
+      "errors": [],
+      "ignoredThirdParty": []
+    },
+    {
+      "name": "20-reasoning",
+      "url": "/reasoning/r-hanche-ared",
+      "finalUrl": "/reasoning/r-hanche-ared",
+      "errors": [],
+      "ignoredThirdParty": []
+    },
+    {
+      "name": "21-body-1280x720",
+      "url": "/body?noscan=1",
+      "finalUrl": "/body?noscan=1",
+      "errors": [],
+      "ignoredThirdParty": [
+        "[warning] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+      ]
+    }
+  ]
+}

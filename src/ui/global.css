@@ -1,0 +1,408 @@
+/* SOL ZÉRO — styles globaux. Couleurs et typos : uniquement les variables --sz-* injectées par tokens.ts. */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  border-radius: 0;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+html {
+  background: var(--sz-bg);
+  color-scheme: dark;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--sz-bg);
+  color: var(--sz-text);
+  font-family: var(--sz-font-text);
+  font-size: 13px;
+  line-height: 1.45;
+  font-feature-settings: 'tnum' 1, 'cv11' 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow: hidden;
+}
+
+h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd { margin: 0; }
+h1, h2, h3, h4, h5, h6 { font-size: inherit; font-weight: 500; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+img, svg, canvas, video { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+table { border-collapse: collapse; border-spacing: 0; }
+button, input, select, textarea { font: inherit; color: inherit; letter-spacing: inherit; }
+button { background: none; border: 0; padding: 0; cursor: pointer; }
+button:disabled { cursor: default; }
+
+::selection {
+  background: color-mix(in srgb, var(--sz-holo) 35%, transparent);
+  color: var(--sz-text);
+}
+
+:focus { outline: none; }
+:focus-visible {
+  outline: 1px solid var(--sz-text);
+  outline-offset: 2px;
+}
+
+/* Barres de défilement fines (partout ; .sz-scroll rend le conteneur défilant) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--sz-border-strong) transparent;
+}
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--sz-border-strong); }
+::-webkit-scrollbar-thumb:hover { background: var(--sz-text-dim); }
+::-webkit-scrollbar-corner { background: transparent; }
+
+.sz-scroll {
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+/* ── Typo utilitaire ─────────────────────────────────────────────────── */
+
+.sz-mono {
+  font-family: var(--sz-font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'zero' 1;
+}
+
+.sz-label {
+  font-family: var(--sz-font-mono);
+  font-size: 10px;
+  line-height: 1.4;
+  font-weight: 400;
+  letter-spacing: var(--sz-tracking);
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+.sz-dim { color: var(--sz-text-dim); }
+
+/* ── Panneau ─────────────────────────────────────────────────────────── */
+
+.sz-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--sz-panel);
+  border: 1px solid var(--sz-border);
+}
+
+/* Repères d'angle : deux équerres de 5 px, haut-gauche et bas-droit */
+.sz-panel::before,
+.sz-panel::after {
+  content: '';
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  pointer-events: none;
+}
+.sz-panel::before {
+  top: -1px;
+  left: -1px;
+  border-top: 1px solid var(--sz-text-dim);
+  border-left: 1px solid var(--sz-text-dim);
+}
+.sz-panel::after {
+  right: -1px;
+  bottom: -1px;
+  border-right: 1px solid var(--sz-text-dim);
+  border-bottom: 1px solid var(--sz-text-dim);
+}
+
+.sz-panel__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  min-height: 28px;
+  padding: 0 10px;
+  border-bottom: 1px solid var(--sz-border);
+  font-family: var(--sz-font-mono);
+  font-size: 10px;
+  letter-spacing: var(--sz-tracking);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.sz-panel__sys,
+.sz-panel__sep { color: var(--sz-text-dim); flex: none; }
+.sz-panel__title {
+  font: inherit;
+  letter-spacing: inherit;
+  color: var(--sz-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.sz-panel__fill { flex: 1; min-width: 0; }
+.sz-panel__right {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+.sz-panel__body {
+  flex: 1;
+  min-height: 0;
+  padding: 10px;
+}
+
+/* ── Étiquettes d'honnêteté ──────────────────────────────────────────── */
+
+.sz-tag {
+  display: inline-block;
+  font-family: var(--sz-font-mono);
+  font-size: 9px;
+  line-height: 1.4;
+  letter-spacing: 0.06em;
+  color: var(--sz-text-dim);
+  white-space: nowrap;
+  vertical-align: baseline;
+}
+.sz-tag[data-tag='NASA'] { color: var(--sz-text); }
+
+.sz-prov {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  height: 16px;
+  padding: 0 5px;
+  border: 1px solid var(--sz-border-strong);
+  font-family: var(--sz-font-mono);
+  font-size: 9px;
+  line-height: 1;
+  letter-spacing: var(--sz-tracking);
+  text-transform: uppercase;
+  color: var(--sz-text-dim);
+  white-space: nowrap;
+}
+.sz-prov[data-prov='RÉEL'] {
+  color: var(--sz-text);
+  border-color: var(--sz-text-dim);
+}
+.sz-prov[data-prov='H'] { border-style: dashed; }
+
+/* ── Statuts (seules couleurs vives) ─────────────────────────────────── */
+
+.sz-dot {
+  display: inline-block;
+  flex: none;
+  width: 6px;
+  height: 6px;
+  background: var(--sz-status, var(--sz-unknown));
+  vertical-align: middle;
+}
+/* Inconnu : pastille creuse, pour ne jamais passer pour un état mesuré */
+.sz-dot[data-color='grey'],
+.sz-chip[data-color='grey'] .sz-dot {
+  background: transparent;
+  border: 1px solid var(--sz-unknown);
+}
+.sz-dot--pulse { animation: sz-pulse 1.6s ease-in-out infinite; }
+
+.sz-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  height: 18px;
+  padding: 0 6px;
+  border: 1px solid color-mix(in srgb, var(--sz-status, var(--sz-unknown)) 55%, transparent);
+  background: color-mix(in srgb, var(--sz-status, var(--sz-unknown)) 10%, transparent);
+  color: var(--sz-status, var(--sz-unknown));
+  font-family: var(--sz-font-mono);
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: var(--sz-tracking);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.sz-chip[data-color='grey'] {
+  color: var(--sz-text-dim);
+  background: transparent;
+  border-style: dashed;
+}
+
+@keyframes sz-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+/* ── Hachures d'alerte ───────────────────────────────────────────────── */
+
+.sz-hatch-red,
+.sz-hatch-amber {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--sz-hatch) 0,
+    var(--sz-hatch) 3px,
+    transparent 3px,
+    transparent 8px
+  );
+  background-color: color-mix(in srgb, var(--sz-hatch) 8%, transparent);
+}
+.sz-hatch-red { --sz-hatch: var(--sz-red); }
+.sz-hatch-amber { --sz-hatch: var(--sz-amber); }
+
+/* ── Bouton fantôme ──────────────────────────────────────────────────── */
+
+.sz-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 10px;
+  border: 1px solid var(--sz-border);
+  background: transparent;
+  color: var(--sz-text);
+  font-family: var(--sz-font-mono);
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: var(--sz-tracking);
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 120ms, border-color 120ms, color 120ms;
+}
+.sz-btn:hover {
+  background: var(--sz-panel-hover);
+  border-color: var(--sz-border-strong);
+}
+.sz-btn:active { background: var(--sz-border); }
+.sz-btn[aria-pressed='true'],
+.sz-btn[data-active='true'] {
+  border-color: var(--sz-text);
+  background: var(--sz-panel-hover);
+}
+.sz-btn:disabled,
+.sz-btn[aria-disabled='true'] {
+  color: var(--sz-unknown);
+  border-color: var(--sz-border);
+  background: transparent;
+  cursor: default;
+}
+
+/* ── Coquille de l'application (App.tsx) ─────────────────────────────── */
+
+.sz-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.sz-topbar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: stretch;
+  flex: none;
+  height: 36px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--sz-border);
+  font-family: var(--sz-font-mono);
+  font-size: 10px;
+  letter-spacing: var(--sz-tracking);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.sz-topbar__left,
+.sz-topbar__right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.sz-topbar__right { justify-content: flex-end; }
+
+.sz-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  color: var(--sz-text);
+}
+.sz-wordmark__glyph { width: 12px; height: 12px; flex: none; }
+.sz-topbar__rule {
+  width: 1px;
+  height: 12px;
+  background: var(--sz-border-strong);
+  flex: none;
+}
+.sz-topbar__clock { color: var(--sz-text); font-variant-numeric: tabular-nums; }
+.sz-topbar__day {
+  display: inline-flex;
+  align-items: center;
+  height: 16px;
+  padding: 0 5px;
+  border: 1px solid var(--sz-border-strong);
+  color: var(--sz-text);
+}
+
+.sz-nav {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+}
+.sz-nav__tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+  color: var(--sz-text-dim);
+  transition: color 120ms, background-color 120ms;
+}
+.sz-nav__tab:hover { color: var(--sz-text); background: var(--sz-panel); }
+.sz-nav__tab:focus-visible { outline-offset: -3px; }
+.sz-nav__num { color: var(--sz-unknown); }
+.sz-nav__tab.active { color: var(--sz-text); }
+.sz-nav__tab.active .sz-nav__num { color: var(--sz-text-dim); }
+/* Onglet actif : filet de 1 px posé sur la bordure basse de la barre */
+.sz-nav__tab.active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: var(--sz-text);
+}
+
+.sz-main {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+.sz-main > * { flex: 1 1 auto; min-height: 0; }
+/* Pages qui ne gèrent pas encore leur défilement (War Room, Raisonnement) */
+.sz-main__scroll { height: 100%; }
+
+@media (max-width: 760px) {
+  .sz-topbar__opt { display: none; }
+  .sz-nav__tab { padding: 0 8px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

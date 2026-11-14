@@ -1,0 +1,293 @@
+/* Carte de survol — préfixe .hvc. Couleurs : variables --sz-* uniquement. */
+
+.hvc {
+  --hvc-w: 280px;
+  --hvc-status: var(--sz-unknown);
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 6;
+}
+
+.hvc__wire {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  overflow: visible;
+  animation: hvc-fade 120ms ease-out both;
+}
+.hvc__line {
+  stroke: var(--sz-text);
+  stroke-width: 1;
+  opacity: 0.6;
+  shape-rendering: crispEdges;
+}
+.hvc__tick {
+  stroke: var(--sz-text);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+.hvc__node {
+  fill: var(--sz-bg);
+  stroke: var(--hvc-status);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+.hvc[data-projected='true'] .hvc__line { stroke-dasharray: 3 3; }
+
+.hvc__card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--hvc-w);
+  will-change: transform;
+}
+
+.hvc__in {
+  position: relative;
+  border: 1px solid var(--sz-border-strong);
+  background: var(--sz-bg);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: hvc-in 120ms ease-out both;
+}
+/* liseré de statut, côté ancre */
+.hvc__in::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  bottom: -1px;
+  left: -1px;
+  width: 2px;
+  background: var(--hvc-status);
+}
+.hvc__card[data-side='left'] .hvc__in::before { left: auto; right: -1px; }
+.hvc[data-projected='true'] .hvc__in { border-style: dashed; }
+
+@keyframes hvc-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes hvc-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hvc__in, .hvc__wire { animation: none; }
+}
+
+/* ── en-tête ── */
+.hvc__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  height: 24px;
+  padding: 0 10px 0 12px;
+  border-bottom: 1px solid var(--sz-border);
+  font-family: var(--sz-font-mono);
+  font-size: 9px;
+  letter-spacing: var(--sz-tracking);
+  text-transform: uppercase;
+  color: var(--sz-text-dim);
+  white-space: nowrap;
+}
+.hvc__pin {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--sz-text);
+}
+.hvc__pin i {
+  width: 5px;
+  height: 5px;
+  background: var(--sz-text);
+}
+
+.hvc__title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 10px 8px 12px;
+}
+.hvc__name {
+  min-width: 0;
+  font-family: var(--sz-font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sz-text);
+}
+
+.hvc__recap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px 0 12px;
+  height: 20px;
+  border-top: 1px solid var(--sz-border);
+  border-bottom: 1px solid var(--sz-border);
+  background: var(--sz-panel);
+}
+.hvc__recap-k,
+.hvc__k {
+  font-family: var(--sz-font-mono);
+  font-size: 9px;
+  letter-spacing: var(--sz-tracking);
+  text-transform: uppercase;
+  color: var(--sz-text-dim);
+  white-space: nowrap;
+}
+.hvc[data-projected='true'] .hvc__recap-k { color: var(--sz-holo); }
+
+/* ── métriques ── */
+.hvc__metrics { padding: 2px 0; }
+.hvc__m {
+  --hvc-m: var(--sz-unknown);
+  padding: 6px 10px 6px 12px;
+}
+.hvc__m + .hvc__m { border-top: 1px solid var(--sz-border); }
+.hvc__m-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+.hvc__m-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--sz-font-text);
+  font-size: 12px;
+  color: var(--sz-text);
+}
+.hvc__m-val {
+  flex: none;
+  font-family: var(--sz-font-mono);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  color: var(--hvc-m);
+  white-space: nowrap;
+}
+.hvc__m-unit {
+  margin-left: 4px;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  color: var(--sz-text-dim);
+}
+.hvc__m-sub {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 3px;
+  min-height: 16px;
+  flex-wrap: wrap;
+  row-gap: 2px;
+}
+.hvc__m-sub .sz-prov { margin-left: auto; }
+.hvc__m-th {
+  font-family: var(--sz-font-mono);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  color: var(--sz-text-dim);
+  white-space: nowrap;
+}
+
+.hvc__none {
+  padding: 10px 10px 10px 12px;
+  font-family: var(--sz-font-mono);
+  font-size: 9px;
+  line-height: 1.6;
+  letter-spacing: 0.08em;
+  color: var(--sz-text-dim);
+}
+
+/* ── tendance ── */
+.hvc__trend {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 7px 10px 7px 12px;
+  border-top: 1px solid var(--sz-border);
+}
+.hvc__trend-txt {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.hvc__trend-v {
+  font-family: var(--sz-font-mono);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  color: var(--sz-text);
+  white-space: nowrap;
+}
+.hvc__trend-v[data-none='true'] { font-size: 10px; color: var(--sz-unknown); letter-spacing: var(--sz-tracking); }
+.hvc__trend-of {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--sz-font-mono);
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sz-text-dim);
+}
+
+/* ── écart d'âge ── */
+.hvc__age {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 7px 10px 7px 12px;
+  border-top: 1px solid var(--sz-border);
+}
+.hvc__age-v {
+  font-family: var(--sz-font-mono);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  color: var(--sz-text);
+  white-space: nowrap;
+}
+.hvc__age-v--none { color: var(--sz-unknown); }
+.hvc__age-v--none small {
+  font-size: 9px;
+  letter-spacing: var(--sz-tracking);
+}
+
+.hvc__foot {
+  padding: 5px 10px 5px 12px;
+  border-top: 1px solid var(--sz-border);
+  font-family: var(--sz-font-mono);
+  font-size: 8px;
+  letter-spacing: var(--sz-tracking);
+  color: var(--sz-text-dim);
+  background: var(--sz-panel);
+}
+
+.hvc__trend-plot {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+.hvc__trend-noise {
+  font-family: var(--sz-font-mono);
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  color: var(--sz-text-dim);
+  white-space: nowrap;
+}

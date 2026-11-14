@@ -1,0 +1,193 @@
+/* Page Body — préfixe .body-. Couleurs : variables --sz-* uniquement. */
+
+.body-page {
+  --body-gap: 8px;
+  --body-left: 300px;
+  --body-right: 320px;
+  display: grid;
+  grid-template-columns: var(--body-left) minmax(0, 1fr) var(--body-right);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    'top top top'
+    'left scene right'
+    'bottom bottom bottom';
+  gap: var(--body-gap);
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: var(--body-gap);
+  overflow: hidden;
+}
+
+.body-top { grid-area: top; min-width: 0; }
+.body-bottom { grid-area: bottom; min-width: 0; }
+
+/* ── Colonnes latérales ── */
+
+.body-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--body-gap);
+  min-width: 0;
+  min-height: 0;
+}
+.body-col--left { grid-area: left; }
+.body-col--right { grid-area: right; }
+
+.body-slot { flex: none; min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+.body-slot > * { min-height: 0; }
+.body-slot--grow { flex: 1 1 0; }
+/* Colonne gauche : le sang prend sa hauteur naturelle (il défile s'il manque de place), la montre suit */
+.body-col--left .body-slot--grow { flex: 0 1 auto; }
+/* Les calques prennent leur hauteur naturelle, sans jamais étouffer les alertes */
+.body-slot--layers { flex: 0 1 auto; max-height: 58%; }
+
+/* ── Scène ── */
+
+.body-scene {
+  grid-area: scene;
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--sz-border);
+  background: var(--sz-bg);
+}
+
+.body-chrome {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.body-corner {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 0 solid var(--sz-text);
+  opacity: 0.8;
+}
+.body-corner--tl { top: 6px; left: 6px; border-top-width: 1px; border-left-width: 1px; }
+.body-corner--tr { top: 6px; right: 6px; border-top-width: 1px; border-right-width: 1px; }
+.body-corner--bl { bottom: 6px; left: 6px; border-bottom-width: 1px; border-left-width: 1px; }
+.body-corner--br { bottom: 6px; right: 6px; border-bottom-width: 1px; border-right-width: 1px; }
+
+.body-tag {
+  position: absolute;
+  top: 14px;
+  left: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.body-tag__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 14px;
+  white-space: nowrap;
+}
+
+.body-help,
+.body-credit {
+  position: absolute;
+  bottom: 10px;
+  white-space: nowrap;
+}
+.body-help { left: 24px; }
+.body-credit { right: 24px; text-align: right; }
+.body-help .sz-label,
+.body-credit .sz-label {
+  padding: 2px 4px;
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  background: color-mix(in srgb, var(--sz-bg) 72%, transparent);
+}
+
+/* Bandeau « projection » : hachures diagonales sur toute la largeur, impossible à confondre
+   avec un corps mesuré. L'étiquette de provenance descend d'un cran pour lui laisser la place. */
+.body-ribbon {
+  position: absolute;
+  top: 6px;
+  left: 28px;
+  right: 28px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 0 12px;
+  overflow: hidden;
+  white-space: nowrap;
+  border: 1px solid var(--sz-border-strong);
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      color-mix(in srgb, var(--sz-text) 14%, transparent) 0 6px,
+      transparent 6px 12px
+    ),
+    color-mix(in srgb, var(--sz-bg) 80%, transparent);
+  font-family: var(--sz-font-mono);
+  text-transform: uppercase;
+}
+.body-ribbon__text {
+  flex: none;
+  font-size: 10px;
+  letter-spacing: var(--sz-tracking);
+  color: var(--sz-text);
+}
+.body-ribbon__sub {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--sz-text-dim);
+  font-variant-numeric: tabular-nums;
+}
+.body-chrome[data-projected='true'] .body-tag { top: 40px; }
+
+/* ── 3D indisponible ── */
+
+.body-noscene {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      color-mix(in srgb, var(--sz-unknown) 14%, transparent) 0 1px,
+      transparent 1px 10px
+    );
+}
+.body-noscene__box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 360px;
+  padding: 16px;
+  border: 1px dashed var(--sz-unknown);
+  background: var(--sz-bg);
+  pointer-events: auto;
+}
+.body-noscene__text {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--sz-text-dim);
+}
+.body-noscene__err { word-break: break-word; white-space: normal; }
+
+/* ── Petits écrans : aide et crédit ne se chevauchent pas ── */
+
+@container (max-width: 760px) {
+  .body-help { bottom: 22px; }
+}
+.body-scene { container-type: size; }
+
+@media (max-height: 760px) {
+  .body-page { --body-gap: 6px; }
+}
