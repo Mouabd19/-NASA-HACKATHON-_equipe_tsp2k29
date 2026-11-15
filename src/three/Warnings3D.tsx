@@ -233,8 +233,8 @@ export function Warnings3D(): JSX.Element | null {
       // sauf celle de l'organe survolé — la carte se pose toujours du côté opposé à cette étiquette.
       const pl = it.side > 0 ? r.x : r.x - r.w, pt = r.y - K.plateH / 2;
       const hc = hoverCardRect;
-      // Organe épinglé : sa carte porte déjà nom + statut → sa propre étiquette s'efface (le point reste sur l'organe).
-      const covered = it.organId === pinned || (hc.on && it.organId !== focus
+      // Organe épinglé : son étiquette reste, avec son numéro de repère (sinon la scène se lit « 2, 3 » sans le 1).
+      const covered = (hc.on && it.organId !== focus && it.organId !== pinned
         && pl < hc.x + hc.w + 6 && pl + r.w > hc.x - 6 && pt < hc.y + hc.h + 4 && pt + K.plateH > hc.y - 4);
       r.cover += ((covered ? 1 : 0) - r.cover) * kFade;
       if (r.cover < 0.002) r.cover = 0;

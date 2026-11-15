@@ -52,18 +52,7 @@ function forecastText(organ: 'hanche' | 'cuisse' | 'coeur', horizon: 210 | 860):
   if (!cur || !plan) return null;
   return `Modèle d'IA B (régression quantile, entraîné sur 2 000 astronautes virtuels calibrés NASA), à partir des mesures J0–J${DAY_TODAY} : à J${horizon}, ` +
     `${fr(cur.p50, 1)} % ${cur.unit.replace(/^% /, '')} au rythme actuel (fourchette 10–90 % : ${fr(cur.p10, 1)}–${fr(cur.p90, 1)}), ` +
-    `${fr(plan.p50, 1)} % avec le plan.` + boneCrossCheck(organ, horizon);
-}
-
-/**
- * Hanche : la chronologie et la carte de survol affichent le modèle physique (formule calée), le texte ci-dessus le
- * modèle d'IA B. Les deux diffèrent d'un dixième de point : on donne les deux chiffres pour que l'écart soit expliqué
- * au lieu d'avoir l'air d'une erreur (8,6 % ici, 8,7 % dans la chronologie).
- */
-function boneCrossCheck(organ: 'hanche' | 'cuisse' | 'coeur', horizon: number): string {
-  if (organ !== 'hanche') return '';
-  return ` La chronologie affiche la courbe de l’équipe (formule calée, hypothèse) : ${fr(boneLossPct('hanche', horizon, 0), 1)} % ` +
-    `et ${fr(boneLossPct('hanche', horizon, 1), 1)} %. Deux méthodes, même ordre de grandeur.`;
+    `${fr(plan.p50, 1)} % avec le plan.`;
 }
 
 type Builder = (day: number) => Omit<Reasoning, 'id'>;

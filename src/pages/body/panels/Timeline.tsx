@@ -8,6 +8,7 @@ import type { Color, Level } from '../../../types';
 import { DAY_END, DAY_SOL0, DAY_TODAY } from '../../../mocks/mission';
 import { alertsForDayPlan } from '../../../models/alerts';
 import { boneLossPct } from '../../../models/bone';
+import { organForecast } from '../../../models/ml';
 import { PanelClose, ProvenanceBadge, dayToDate, fmt, fmtDay, levelColor, statusLabel, statusVar } from '../../../ui';
 import { useBody } from '../store';
 import './Timeline.css';
@@ -122,7 +123,7 @@ function fitLandmarks(x: (d: number) => number): FittedMark[] {
 
 // ── Frise statique (ne se redessine que si la largeur ou le scénario change) ──
 /** `hidden` : clés des jalons dont le libellé est masqué (l'étiquette du curseur occupe leur place). */
-const Ruler = memo(function Ruler({ width, runs, marks, hidden }: { width: number; runs: Run[]; marks: FittedMark[]; hidden: string }): JSX.Element {
+const Ruler = memo(function Ruler({ width, runs, marks, hidden, cursorX }: { width: number; runs: Run[]; marks: FittedMark[]; hidden: string; cursorX: number }): JSX.Element {
   const inner = Math.max(1, width - 2 * PAD);
   const x = (d: number): number => PAD + (d / DAY_END) * inner;
   const px = (v: number): number => Math.round(v) + 0.5; // traits nets de 1 px
@@ -156,7 +157,9 @@ const Ruler = memo(function Ruler({ width, runs, marks, hidden }: { width: numbe
   const hide = hidden.split(',');
   // Libellé du filet, posé juste avant son premier segment (omis s'il n'y a pas la place).
   const ribbonStart = segs.length > 0 ? x(segs[0].from) : 0;
-  const ribbonLabel = segs.length > 0 && ribbonStart - 6 - RIBBON_LABEL.length * MARK_CHAR >= PAD + 12;
+  const ribbonFrom = ribbonStart - 6 - RIBBON_LABEL.length * MARK_CHAR;
+  // masqué aussi quand le curseur passe dessus (jours J0 à J50) : le trait du curseur et « J40 » restent lisibles
+  const ribbonLabel = segs.length > 0 && ribbonFrom >= PAD + 12 && !(cursorX > ribbonFrom - 8 && cursorX < ribbonStart + 2);
 
   return (
     <svg className="tl__svg" width={width} height={H} viewBox={`0 0 ${width} ${H}`} aria-hidden="true">
@@ -246,6 +249,12 @@ export function Timeline(): JSX.Element {
 
   const runs = useMemo(() => computeRuns(adherence), [adherence]);
   const impact = useMemo(() => ({ rythme: hipLossAtEnd(0), plan: hipLossAtEnd(1) }), []);
+  // chiffres du modèle d'IA B (page « Pourquoi ? ») : donnés en infobulle pour que l'écart d'un dixième s'explique
+  const iaB = useMemo(() => {
+    const cur = organForecast('hanche', DAY_END as 860, 0);
+    const plan = organForecast('hanche', DAY_END as 860, 1);
+    return cur && plan ? `${lossText(cur.p50)} et ${lossText(plan.p50)}` : null;
+  }, []);
 
   // Lecture : J0 → J860 en ~PLAY_SECONDS s, arrêt en fin de mission.
   useEffect(() => {
@@ -379,7 +388,8 @@ export function Timeline(): JSX.Element {
           <button type="button" className="sz-btn sz-btn--sm" aria-pressed={day === DAY_END} onClick={() => jump(DAY_END)} title="Fin de mission (Fin)">
             J{DAY_END}
           </button>
-          <span className="sz-detail"><ProvenanceBadge value="SIMULÉ" /></span>
+          {/* place réservée même hors Détails : la frise ne se décale pas quand on presse D */}
+          <span className="tl__prov"><ProvenanceBadge value="SIMULÉ" /></span>
         </div>
       </div>
 
@@ -404,7 +414,7 @@ export function Timeline(): JSX.Element {
       >
         {width > 0 && (
           <>
-            <Ruler width={width} runs={runs} marks={marks} hidden={hidden} />
+            <Ruler width={width} runs={runs} marks={marks} hidden={hidden} cursorX={Math.round(headX)} />
             <div className="tl__cursor-knob" style={{ transform: `translate3d(${headX}px,0,0)` }} />
             {showReadout ? (
               <div className="tl__readout" style={{ transform: `translate3d(${labelX}px,0,0) translateX(-50%)` }}>
@@ -432,9 +442,9 @@ export function Timeline(): JSX.Element {
         </div>
         <p
           className="tl__note tl__impact sz-detail"
-          title={`Perte de densité de la hanche projetée à J${DAY_END} par le modèle osseux (hypothèse) : ${lossText(impact.rythme)} au rythme actuel, ${lossText(impact.plan)} avec le plan`}
+          title={`Perte de densité de la hanche projetée à J${DAY_END} par la courbe de l'équipe (formule calée, hypothèse) : ${lossText(impact.rythme)} au rythme actuel, ${lossText(impact.plan)} avec le plan.${iaB ? ` Le modèle d'IA B, cité dans « Pourquoi ? », donne ${iaB}. Deux méthodes, même ordre de grandeur.` : ''}`}
         >
-          <span className="tl__impact-label">Perte hanche estimée J{DAY_END}</span>
+          <span className="tl__impact-label">Hanche J{DAY_END}, courbe de l'équipe</span>
           <span className="tl__impact-val" data-on={adherence === 0}>rythme {lossText(impact.rythme)}</span>
           <span className="tl__impact-val" data-on={adherence === 1}>plan {lossText(impact.plan)}</span>
         </p>

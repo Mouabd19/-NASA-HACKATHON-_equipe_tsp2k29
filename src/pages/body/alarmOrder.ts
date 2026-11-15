@@ -2,11 +2,13 @@
 // Comme un radiologue numérote ses repères sur le cliché et les reprend dans le compte rendu,
 // l'alarme n° 2 de la liste est le repère n° 2 sur le corps.
 //
-// Deux règles :
-// - seuls les repères visibles sur la scène sont numérotés (calque affiché, ancre 3D connue, niveau non nominal).
-//   Une alerte dont le calque est masqué reste dans la liste, grisée, sans numéro, en fin de liste ;
-// - les numéros suivent le corps de haut en bas, donc ils se lisent toujours dans l'ordre sur la scène
-//   (les étiquettes de la colonne sont rangées par hauteur d'ancre).
+// Règles :
+// - les numéros sont fixés une fois pour la journée : ils ne dépendent pas des calques cochés. Le présentateur
+//   peut dire « repère 2, la hanche » puis afficher tous les calques, le 2 reste la hanche ;
+// - toute alerte non nominale qui a une ancre 3D reçoit un numéro. D'abord celles des calques affichés par défaut
+//   (squelette, muscles, organes), de haut en bas, puis les autres, de haut en bas. Avec les calques par défaut,
+//   la scène se lit donc 1, 2, 3… ;
+// - une alerte dont le calque est masqué garde son numéro, en gris, en fin de liste, avec « Calque masqué ».
 import type { Alert, DayBody, LayerId, Level, OrganId } from '../../types';
 import { getAnchor, organLayers } from '../../three/anatomy';
 
@@ -34,16 +36,32 @@ export function isOnBody(alert: Alert, layers: Record<LayerId, boolean>, body?: 
 }
 
 /**
- * Tri de la liste. Jour mesuré : gravité d'abord (comme le champ d'alarme d'un moniteur), puis de haut en bas.
- * Jour projeté : une prévision n'est pas une alarme, la liste suit le corps de haut en bas.
+ * Tri de la liste. Jour mesuré : gravité d'abord (comme le champ d'alarme d'un moniteur), puis numéro de repère.
+ * Jour projeté : une prévision n'est pas une alarme, la liste suit les numéros de repère.
  * Avec `visible`, les alertes absentes de la scène passent en fin de liste.
  */
-export function sortAlarms(alerts: readonly Alert[], projected = false, visible?: (a: Alert) => boolean): Alert[] {
+export function sortAlarms(alerts: readonly Alert[], projected = false, visible?: (a: Alert) => boolean, body?: DayBody): Alert[] {
   const hidden = (a: Alert): number => (visible && !visible(a) ? 1 : 0);
-  return [...alerts].sort((a, b) => hidden(a) - hidden(b) || (projected ? 0 : byLevel(a, b)) || byHeight(a, b));
+  const nums = alarmNumbers(alerts, body);
+  const num = (a: Alert): number => nums.get(a.id) ?? Number.POSITIVE_INFINITY;
+  return [...alerts].sort((a, b) => hidden(a) - hidden(b) || (projected ? 0 : byLevel(a, b)) || (num(a) - num(b)) || byHeight(a, b));
 }
 
-/** Numéro de repère (1, 2, 3…) des alertes visibles sur le corps, de haut en bas. Les autres n'ont pas de numéro. */
-export function alarmNumbers(alerts: readonly Alert[], visible: (a: Alert) => boolean): Map<string, number> {
-  return new Map([...alerts].filter(visible).sort(byHeight).map((a, i) => [a.id, i + 1]));
+/** Calques affichés à l'ouverture de la page Corps (même valeur que le store). */
+export const DEFAULT_LAYERS: Record<LayerId, boolean> = {
+  squelette: true, muscles: true, organes: true, cardio: false, nerveux: false, exposition: false,
+};
+
+/**
+ * Numéro de repère (1, 2, 3…) de chaque alerte non nominale qui a une ancre 3D, stable pour la journée :
+ * calques par défaut d'abord, puis les autres, chaque groupe de haut en bas. Indépendant des calques cochés.
+ */
+export function alarmNumbers(alerts: readonly Alert[], body?: DayBody): Map<string, number> {
+  const group = (a: Alert): number => (isOnBody(a, DEFAULT_LAYERS, body) ? 0 : 1);
+  return new Map(
+    alerts
+      .filter((a) => a.level !== 'VERT' && getAnchor(a.organId))
+      .sort((a, b) => group(a) - group(b) || byHeight(a, b))
+      .map((a, i) => [a.id, i + 1]),
+  );
 }

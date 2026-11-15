@@ -40,6 +40,9 @@
 .tl__side--left .tl__row { gap: 4px; }
 .tl__side--left .tl__row .sz-detail { margin-left: 4px; }
 .tl__row .sz-detail { display: inline-flex; }
+.tl__prov { display: inline-flex; margin-left: 4px; }
+html[data-details='off'] .tl__prov { visibility: hidden; }
+html[data-details='off'] .tl__prov .sz-prov { display: inline-block !important; }
 
 .tl__play.sz-btn {
   width: 24px;

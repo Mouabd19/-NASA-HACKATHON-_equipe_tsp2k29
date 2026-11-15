@@ -100,6 +100,8 @@ export const look = {
     opacity: 0.6,
     /** Part du remplissage conservée (0 = contour seul). */
     fill: 0.3,
+    /** Part de la teinte de statut conservée en projection (0 = neutre) : la couleur d'alarme reste réservée aux jours mesurés. */
+    tint: 0.28,
     /** Vitesse de la transition mesuré ↔ projeté (1/s). */
     lerpSpeed: 5,
   },

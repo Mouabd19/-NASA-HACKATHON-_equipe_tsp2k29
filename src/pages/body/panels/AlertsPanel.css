@@ -15,6 +15,7 @@
 .alr > .sz-panel__head > .sz-panel__fill { order: 1; }
 .alr > .sz-panel__head > .sz-prov,
 .alr > .sz-panel__head > .sz-close { order: 2; }
+.alr__head { display: inline-flex; align-items: center; gap: 12px; }
 .alr__count {
   font-size: var(--sz-fs-data);
   font-variant-numeric: tabular-nums;
@@ -98,10 +99,15 @@
   font-weight: 400;
   color: var(--sz-text);
 }
-.alr__card[data-selected='true'] .alr__title { font-weight: 500; }
+.alr__organ { font-weight: 500; }
+.alr__finding { color: var(--sz-text-dim); }
+.alr__card[data-hovered='true'] .alr__finding,
+.alr__card[data-selected='true'] .alr__finding { color: var(--sz-text); }
 .alr__card[data-level='ROUGE']:not([data-projected='true']):not([data-masked='true']) .alr__title { color: var(--sz-red); }
-/* Calque masqué : ligne grisée, sans numéro ni couleur */
-.alr__card[data-masked='true'] .alr__title { color: var(--sz-text-muted); }
+.alr__card[data-level='ROUGE']:not([data-projected='true']):not([data-masked='true']) .alr__finding { color: inherit; }
+/* Calque masqué : ligne grisée, sans couleur ; le numéro reste (il est fixé pour la journée) */
+.alr__card[data-masked='true'] .alr__title,
+.alr__card[data-masked='true'] .alr__finding { color: var(--sz-text-muted); }
 .alr__word {
   display: inline-flex;
   align-items: center;

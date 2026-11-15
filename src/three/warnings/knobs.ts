@@ -8,7 +8,7 @@ export const warnKnobs = {
   /** Distance axe du corps → bord intérieur des étiquettes, en mètres (suit le zoom). */
   columnOffsetM: 0.43,
   /** Marge minimale entre une étiquette et le bord de la scène (px). */
-  edgeMargin: 12,
+  edgeMargin: 16,
   /** Marge haute / basse réservée (px) — laisse la place aux contrôles de la scène. */
   topMargin: 40,
   bottomMargin: 40,

@@ -52,10 +52,10 @@ const countLabel = (color: Color, n: number): string =>
   color === 'green' ? (n > 1 ? 'nominaux' : 'nominal') : { red: 'en alerte', amber: 'en attention', grey: 'sans donnée' }[color];
 
 /** Décompte d'un statut ; rien si aucun organe n'est dans ce statut. */
-function Count({ color, n }: { color: Color; n: number }): JSX.Element | null {
+function Count({ color, n, projected }: { color: Color; n: number; projected?: boolean }): JSX.Element | null {
   if (n <= 0) return null;
   return (
-    <span className="hdr__count">
+    <span className="hdr__count" data-projected={projected || undefined}>
       <StatusDot color={color} size={6} />
       <span>{n} {countLabel(color, n)}</span>
     </span>
@@ -88,6 +88,7 @@ export function Header(): JSX.Element {
   const worst = worstStatus(counts);
 
   const mode: 'today' | 'past' | 'projection' = day === DAY_TODAY ? 'today' : day < DAY_TODAY ? 'past' : 'projection';
+  const projected = mode === 'projection';
 
   const delta = pheno ? pheno.phenoAge - pheno.chronoAge : null;
   const dStatus: Color = delta === null ? 'grey' : deltaStatus(delta);
@@ -134,10 +135,9 @@ export function Header(): JSX.Element {
             <span className="hdr__valunit">
               <span className="sz-value">{fmt(pheno.phenoAge, 1)}</span> <span className="sz-unit">ans</span>
             </span>
-            <span className="hdr__delta">
+            <span className="hdr__delta" title={`Âge réel ${fmt(pheno.chronoAge, Number.isInteger(pheno.chronoAge) ? 0 : 1)} ans`}>
               <span className="hdr__delta-num">{signed(delta, 1)}</span>
               <span className="hdr__sub"> vs âge réel</span>
-              <span className="hdr__sub sz-detail"> {fmt(pheno.chronoAge, Number.isInteger(pheno.chronoAge) ? 0 : 1)}</span>
             </span>
             {mode === 'projection' ? (
               // Jour futur : l'âge biologique n'est pas projeté, c'est celui du dernier prélèvement — dit en clair.
@@ -148,7 +148,6 @@ export function Header(): JSX.Element {
                 title={`Âge sanguin estimé par régression entraînée sur NHANES 2015–2018 (hypothèse), prélèvement ${fmtDay(blood.day)} — âge réel ${fmt(blood.chronoAge, 1)} ans`}
               >
                 Âge sanguin estimé <span className="hdr__strong">{fmt(blood.bloodAge, 1)} ans</span>
-                <span className="sz-detail"> · NHANES</span>
               </span>
             ) : null}
           </span>
@@ -160,17 +159,22 @@ export function Header(): JSX.Element {
       </button>
 
       {/* ── Statut du jour ── */}
-      <div className="hdr__block hdr__block--status">
+      {/* Jour futur : même règle que les marqueurs d'alarme. Une prévision n'est pas une alarme, la couleur passe en contour. */}
+      <div
+        className="hdr__block hdr__block--status"
+        data-projected={projected || undefined}
+        title={projected ? 'Statut projeté par le modèle : projection, pas une alarme' : undefined}
+      >
         <span className="hdr__label">
-          <span className="sz-label">Statut du jour</span>
+          <span className="sz-label">{projected ? 'Statut projeté' : 'Statut du jour'}</span>
           <span className="hdr__meta sz-detail">{tracked} suivis · {unmodeled} non modélisés</span>
         </span>
         <span className="hdr__line">
           <StatusChip color={worst} />
           <span className="hdr__counts">
-            <Count color="red" n={counts.red} />
-            <Count color="amber" n={counts.amber} />
-            <Count color="green" n={counts.green} />
+            <Count color="red" n={counts.red} projected={projected} />
+            <Count color="amber" n={counts.amber} projected={projected} />
+            <Count color="green" n={counts.green} projected={projected} />
             <Count color="grey" n={unknownTracked} />
           </span>
         </span>

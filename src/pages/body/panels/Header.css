@@ -119,6 +119,13 @@
   align-items: center;
   gap: 6px;
 }
+/* Projection : pastilles creuses de la couleur, mot en texte normal (une prévision n'est pas une alarme). */
+.hdr__block--status[data-projected] .sz-chip { color: var(--sz-text); }
+.hdr__block--status[data-projected] .sz-dot {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--sz-status, var(--sz-unknown));
+}
+
 /* ── Fin de bandeau ── */
 
 .hdr__fill { flex: 1 1 0; min-width: 0; }

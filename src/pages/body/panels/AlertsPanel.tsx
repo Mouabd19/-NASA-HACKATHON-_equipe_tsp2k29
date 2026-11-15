@@ -1,15 +1,15 @@
 // Alertes du jour : alertsForDay(day), triées par gravité puis de haut en bas du corps (même ordre que les
 // étiquettes de la scène). Chaque ligne porte data-organ-id (lu par les traits de liaison) et met l'organe
 // en évidence en 3D au survol.
-import { useLayoutEffect, useMemo, useRef, useState } from 'react';
-import type { CSSProperties, JSX, KeyboardEvent, RefObject } from 'react';
+import { useMemo, useRef } from 'react';
+import type { CSSProperties, JSX, KeyboardEvent } from 'react';
 import type { Alert, Color, DayBody, Level } from '../../../types';
 import { trend7d } from '../../../models/trend';
 import { getStandard } from '../../../content/standards';
 import { AlarmMark, Panel, TagBadge, alarmText, fmt, levelColor, levelLabel, sentenceCase, statusVar } from '../../../ui';
 import { getAnchor } from '../../../three/anatomy';
 import { alarmNumbers, alertLayers, isOnBody, sortAlarms } from '../alarmOrder';
-import { LAYER_META, LAYER_ORDER, useBody, useDayAlerts, useDayBody, useRowClip } from '../store';
+import { LAYER_META, LAYER_ORDER, useBody, useDayAlerts, useDayBody, useRowClip, useRowsBelow } from '../store';
 import './AlertsPanel.css';
 
 const LEVEL_LABEL: Record<Level, string> = levelLabel;
@@ -57,27 +57,6 @@ function signed(n: number, digits: number): string {
   return `${r === 0 ? '±' : n < 0 ? '−' : '+'}${fmt(r, digits)}`;
 }
 
-/** Nombre de lignes `[data-row]` cachées sous le bas de la liste (point 7.3 : le défilement doit se voir). */
-function useRowsBelow(ref: RefObject<HTMLElement | null>, count: number): number {
-  const [below, setBelow] = useState(0);
-  useLayoutEffect(() => {
-    const el = ref.current;
-    if (!el) { setBelow(0); return; }
-    const apply = (): void => {
-      const bottom = el.getBoundingClientRect().top + el.clientTop + el.clientHeight + 0.5; // même seuil que useRowClip
-      let n = 0;
-      for (const row of el.querySelectorAll<HTMLElement>('[data-row]')) if (row.getBoundingClientRect().bottom > bottom) n++;
-      setBelow(n);
-    };
-    const ro = new ResizeObserver(apply);
-    ro.observe(el);
-    el.addEventListener('scroll', apply, { passive: true });
-    apply();
-    return () => { ro.disconnect(); el.removeEventListener('scroll', apply); };
-  }, [ref, count]);
-  return below;
-}
-
 export function AlertsPanel(): JSX.Element {
   const day = useBody((s) => s.day);
   const hovered = useBody((s) => s.hovered);
@@ -91,26 +70,30 @@ export function AlertsPanel(): JSX.Element {
   const body = useDayBody();
   const raw = useDayAlerts();
   const projected = body.projected;
-  // mêmes numéros que les repères posés sur le corps 3D : seuls les repères visibles sont numérotés
+  // mêmes numéros que les repères posés sur le corps 3D, fixés pour la journée (indépendants des calques cochés)
   const { alerts, nums } = useMemo(() => {
     const visible = (a: Alert): boolean => isOnBody(a, layers, body);
-    return { alerts: sortAlarms(raw, projected, visible), nums: alarmNumbers(raw, visible) };
+    return { alerts: sortAlarms(raw, projected, visible, body), nums: alarmNumbers(raw, body) };
   }, [raw, layers, body, projected]);
   // Jamais de demi-ligne en bas de liste.
   const listRef = useRef<HTMLUListElement>(null);
   useRowClip(listRef);
-  const below = useRowsBelow(listRef, alerts.length);
+  const below = useRowsBelow(listRef, alerts.length).length;
   const cards = useMemo(
     () => alerts.map((a) => {
       const num = nums.get(a.id);
-      // calque masqué : nom du premier calque de l'organe, pour le dire en clair sur la ligne
-      const hiddenLayer = num === undefined && a.level !== 'VERT' && getAnchor(a.organId)
+      // calque masqué : nom du premier calque de l'organe, pour le dire en clair sur la ligne (le numéro reste, en gris)
+      const hiddenLayer = a.level !== 'VERT' && getAnchor(a.organId) && !isOnBody(a, layers, body)
         ? LAYER_ORDER.find((l) => alertLayers(a, body).includes(l))
         : undefined;
       return { a, num, hiddenLayer, trend: alertTrend(a, body, day), std: isNasaRule(a.rule) ? getStandard(a.rule) : null };
     }),
-    [alerts, nums, body, day],
+    [alerts, nums, body, day, layers],
   );
+  // Toutes les alarmes affichées ont le même niveau : le marqueur et le mot sont dits une fois, dans l'en-tête,
+  // au lieu d'être répétés sur chaque ligne. Le niveau reste dans l'infobulle et le texte lu de chaque ligne.
+  const shown = cards.filter((c) => c.hiddenLayer === undefined && levelColor[c.a.level] !== 'grey');
+  const uniform = shown.length > 1 && shown.every((c) => c.a.level === shown[0].a.level) ? shown[0].a.level : null;
 
   return (
     <Panel
@@ -118,7 +101,10 @@ export function AlertsPanel(): JSX.Element {
       provenance="SIMULÉ"
       className="alr"
       right={alerts.length > 0 ? (
-        <span className="alr__count" aria-label={`${alerts.length} alerte${alerts.length > 1 ? 's' : ''}`}>{alerts.length}</span>
+        <span className="alr__head">
+          {uniform ? <AlarmMark level={uniform} projected={projected} withLabel /> : null}
+          <span className="alr__count" aria-label={`${alerts.length} alerte${alerts.length > 1 ? 's' : ''}`}>{alerts.length}</span>
+        </span>
       ) : undefined}
     >
       {body.projected ? (
@@ -137,6 +123,8 @@ export function AlertsPanel(): JSX.Element {
             const color: Color = levelColor[a.level] ?? 'grey';
             const level = LEVEL_LABEL[a.level] ?? sentenceCase(a.level);
             const title = sentenceCase(a.title);
+            // « Cœur — VO₂max en baisse » : l'organe en gras court, puis le constat
+            const [organ, finding] = title.includes(' — ') ? [title.split(' — ')[0], sentenceCase(title.split(' — ').slice(1).join(' — '))] : [title, ''];
             const message = cleanMessage(a.message);
             const isSelected = selected === a.organId;
             const masked = hiddenLayer !== undefined;
@@ -169,9 +157,11 @@ export function AlertsPanel(): JSX.Element {
                 >
                   <span className="alr__num" aria-hidden="true">{num ?? ''}</span>
                   <h3 className="alr__title" title={`${alarmText(a.level, projected)} : ${title}`}>
-{title}</h3>
+                    <strong className="alr__organ">{organ}</strong>{finding ? <span className="alr__finding"> {finding}</span> : null}
+                    {uniform && !masked ? <span className="sz-sr"> · {alarmText(a.level, projected)}</span> : null}
+                  </h3>
                   <span className="alr__prio">
-                    {masked ? (
+                    {uniform && !masked ? null : masked ? (
                       // repère absent de la scène : pas de numéro, pas de couleur, la raison en clair
                       <span className="alr__word alr__word--masked" title={`Calque ${LAYER_META[hiddenLayer].label} masqué : repère absent de la scène`}>Calque masqué</span>
                     ) : color === 'grey' ? (

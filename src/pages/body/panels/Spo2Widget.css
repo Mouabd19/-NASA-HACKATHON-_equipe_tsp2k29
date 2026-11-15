@@ -101,9 +101,11 @@
 }
 .sw-vital__val--none { color: var(--sz-text-muted); }
 
-/* Écran bas : la courbe cède sa hauteur au tableau d'analyses (la valeur et l'intervalle sur 7 jours restent) */
+/* Écran bas (vidéoprojecteur 1280 × 720) : tout se resserre, mais la courbe 30 j et sa ligne 95 % restent */
 @media (max-height: 760px) {
-  .sw-chart { display: none; }
+  .sw .sz-readout { font-size: 34px; line-height: 1; }
+  .sw-chart { height: 48px; margin-top: 8px; }
+  .sw-vitals { margin-top: 8px; padding-top: 8px; }
 }
 
 /* Série d'un seul point : Recharts trace un disque, ramené à un point discret */

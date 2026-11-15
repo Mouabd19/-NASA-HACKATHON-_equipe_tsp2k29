@@ -46,8 +46,8 @@ export function warnItems(day: number, layers: Record<LayerId, boolean>, adheren
   const out: WarnItem[] = [];
   let right = 0;
   const all = alertsForDayPlan(day, adherence);
-  // numéros : seulement les repères visibles, de haut en bas (ils se lisent dans l'ordre dans la colonne)
-  const nums = alarmNumbers(all, (a) => isOnBody(a, layers, body));
+  // numéros fixés pour la journée, les mêmes que dans la liste « Alertes » (indépendants des calques cochés)
+  const nums = alarmNumbers(all, body);
   for (const alert of all) {
     if (!isOnBody(alert, layers, body)) continue;
     const anchor = anatomy.getAnchor(alert.organId)!;

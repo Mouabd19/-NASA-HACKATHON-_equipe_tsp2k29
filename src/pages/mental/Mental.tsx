@@ -142,9 +142,10 @@ function Frise({ sel, onSel, mlAlert }: { sel: { sc: Sc; day: number }; onSel: (
                 return (
                   <g key={dd.day} className="mt-verdict" role="button" tabIndex={0} aria-pressed={on} aria-label={`${SC_LABEL[t.sc]}, J${dd.day} : ${NIV_LABEL[n]}`}
                     onClick={() => onSel(t.sc, dd.day)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSel(t.sc, dd.day); } }}>
-                    <circle className="mt-verdict__hit" cx={x(dd.day)} cy={t.y} r={13} />
-                    <circle className="mt-verdict__ring" cx={x(dd.day)} cy={t.y} r={9} />
-                    <circle className="mt-verdict__dot" data-color={color} cx={x(dd.day)} cy={t.y} r={5} fill={statusVar[color]} stroke={statusVar[color]} />
+                    {/* voyant carré, comme partout dans l'app ; sélection = filet carré autour */}
+                    <rect className="mt-verdict__hit" x={x(dd.day) - 13} y={t.y - 13} width={26} height={26} />
+                    <rect className="mt-verdict__ring" x={x(dd.day) - 8.5} y={t.y - 8.5} width={17} height={17} />
+                    <rect className="mt-verdict__dot" data-color={color} x={x(dd.day) - 4.5} y={t.y - 4.5} width={9} height={9} rx={1} fill={statusVar[color]} stroke={statusVar[color]} />
                   </g>
                 );
               })}
@@ -173,6 +174,7 @@ function Frise({ sel, onSel, mlAlert }: { sel: { sc: Sc; day: number }; onSel: (
           ))}
         </svg>
       </div></div>
+      {measured < 520 ? <p className="mt-chart__hint">La frise est plus large que l’écran : faire défiler →</p> : null}
       <ul className="mt-legend">
         <li><svg width="20" height="4" aria-hidden="true"><line className="mt-frise__line" x1="0" x2="20" y1="2" y2="2" /></svg>Avec trouble</li>
         <li><svg width="20" height="4" aria-hidden="true"><line className="mt-frise__line mt-frise__line--ctrl" x1="0" x2="20" y1="2" y2="2" /></svg>Témoin</li>

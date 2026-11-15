@@ -4,7 +4,7 @@ import { useMemo, useRef } from 'react';
 import type { JSX, KeyboardEvent, MouseEvent } from 'react';
 import type { Color, LayerId, Metric, OrganState } from '../../../types';
 import { Panel, StatusDot, TagBadge, fmt, sentenceCase } from '../../../ui';
-import { LAYER_META, LAYER_ORDER, useBody, useDayAlerts, useDayBody, useRowClip } from '../store';
+import { LAYER_META, LAYER_ORDER, useBody, useDayAlerts, useDayBody, useRowClip, useRowsBelow } from '../store';
 import './LayersPanel.css';
 
 const SEVERITY: Record<Color, number> = { red: 3, amber: 2, green: 1, grey: 0 };
@@ -96,6 +96,9 @@ export function LayersPanel(): JSX.Element {
   // Jamais de demi-ligne ni de titre de section orphelin en bas de liste.
   const listRef = useRef<HTMLUListElement>(null);
   useRowClip(listRef);
+  // calques dont des lignes sont cachées sous le bas de la liste (petits écrans, vidéoprojecteur 1280 × 720)
+  const below = useRowsBelow(listRef, activeLayers.join(','));
+  const projected = body.projected;
 
   const onLayerClick = (l: LayerId) => (e: MouseEvent) => {
     if (e.altKey) soloLayer(l);
@@ -109,7 +112,7 @@ export function LayersPanel(): JSX.Element {
   };
 
   return (
-    <Panel title="Calques" provenance="SIMULÉ" className="lyr">
+    <Panel title="Calques" provenance="SIMULÉ" className={projected ? 'lyr lyr--projected' : 'lyr'}>
       {/* Les six cases restent toujours visibles ; le détail des calques affichés défile dessous. */}
       <div className="lyr__grid" role="group" aria-label="Calques">
         {LAYER_ORDER.map((l) => {
@@ -147,6 +150,9 @@ export function LayersPanel(): JSX.Element {
           const note = LAYER_NOTE[l];
           const withData = organs.filter((o) => o.metrics.length > 0);
           const withoutData = organs.filter((o) => o.metrics.length === 0);
+          // une seule étiquette de source par groupe quand toutes les lignes ont la même (Détails)
+          const tags = new Set(withData.map((o) => headline(o)?.tag).filter(Boolean));
+          const groupTag = tags.size === 1 ? [...tags][0] : undefined;
           return (
             <li key={l} className="lyr__layer" data-active="true">
               <button
@@ -161,6 +167,7 @@ export function LayersPanel(): JSX.Element {
                 {!meta.mvp ? <span className="lyr__beta sz-detail" title="Calque en cours de développement : données partielles">Bêta</span> : null}
                 <span className="lyr__fill" />
                 {n > 0 ? <span className="lyr__alerts sz-detail">{alertsText(n)}</span> : null}
+                {groupTag ? <span className="lyr__gtag sz-detail"><TagBadge tag={groupTag} /></span> : null}
               </button>
 
               {note ? (
@@ -182,6 +189,7 @@ export function LayersPanel(): JSX.Element {
                           className={m ? 'lyr__organ' : 'lyr__organ lyr__organ--plain'}
                           data-organ-row={o.id}
                           data-row
+                          data-below={sentenceCase(meta.label)}
                           data-hovered={hovered === o.id}
                           data-selected={selected === o.id}
                           data-status={o.status}
@@ -198,9 +206,10 @@ export function LayersPanel(): JSX.Element {
                           <span className="lyr__oname">{shortName(o.name)}</span>
                           {m ? (
                             <>
-                              <span className="lyr__val" data-color={m.color === o.status ? m.color : undefined}>{fmt(m.value, digitsFor(m.value))}</span>
+                              {/* projection : la valeur reste en texte normal, la couleur passe à la pastille creuse */}
+                              <span className="lyr__val" data-color={!projected && m.color === o.status ? m.color : undefined}>{fmt(m.value, digitsFor(m.value))}</span>
                               <span className="lyr__unit sz-unit">{m.unit}</span>
-                              <TagBadge tag={m.tag} />
+                              {groupTag ? <span /> : <TagBadge tag={m.tag} />}
                             </>
                           ) : (
                             <span className="lyr__none">Non modélisé</span>
@@ -212,7 +221,7 @@ export function LayersPanel(): JSX.Element {
                   {/* organes sans aucun chiffre : une seule ligne grise (rien n'est caché) */}
                   {withoutData.length > 0 ? (
                     <li>
-                      <div className="lyr__organ lyr__organ--plain lyr__organ--static" data-row data-status="grey" title="Aucune mesure ni modèle : statut inconnu">
+                      <div className="lyr__organ lyr__organ--plain lyr__organ--static" data-row data-below={sentenceCase(meta.label)} data-status="grey" title="Aucune mesure ni modèle : statut inconnu">
                         <StatusDot color="grey" />
                         <span className="lyr__oname">{withoutData.map((o, i) => (i === 0 ? shortName(o.name) : lowerFirst(shortName(o.name)))).join(', ')}</span>
                         <span className="lyr__none">Non modélisé</span>
@@ -221,12 +230,21 @@ export function LayersPanel(): JSX.Element {
                   ) : null}
                 </ul>
               ) : (
-                <div className="lyr__empty" data-row>Aucune donnée ce jour</div>
+                <div className="lyr__empty" data-row data-below={sentenceCase(meta.label)}>Aucune donnée ce jour</div>
               )}
             </li>
           );
         })}
       </ul>
+      {below.length > 0 ? (
+        <button
+          type="button"
+          className="lyr__below"
+          onClick={() => listRef.current?.scrollBy({ top: listRef.current.clientHeight * 0.8, behavior: 'smooth' })}
+        >
+          Plus bas : {below.map((b, i) => (i === 0 ? b : b.toLowerCase())).join(', ')}
+        </button>
+      ) : null}
     </Panel>
   );
 }

@@ -64,13 +64,15 @@ function SceneCorners(): JSX.Element {
   const layers = useBody((s) => s.layers);
   const date = dayToDate(day);
   const shown = LAYER_ORDER.filter((l) => layers[l]).map((l) => LAYER_META[l].label.toLowerCase());
-  // Au-delà de trois calques, la liste déborderait sur les pieds du modèle : un décompte suffit (le panneau Calques détaille).
-  const legend = shown.length === 0 ? 'aucun' : shown.length <= 3 ? shown.join(', ') : `${shown.length} sur ${LAYER_ORDER.length}`;
+  // Une seule ligne, quelle que soit la largeur : elle ne doit jamais passer sur les pieds du modèle.
+  // La liste des calques et la nature de l'image sont dans l'infobulle ; la nature de l'image aussi en mode Détails.
+  const count = shown.length === 0 ? 'aucun calque' : `${shown.length} calque${shown.length > 1 ? 's' : ''}`;
+  const tip = `Atlas anatomique Z-Anatomy, pas une image du patient. Calques affichés : ${shown.join(', ') || 'aucun'}.`;
   return (
     <>
-      <div className="body-corner body-corner--bl sz-mono" aria-hidden="true">
-        <span title={shown.join(', ')}>Calques · {legend}</span>
-        <span>Atlas Z-Anatomy, pas une image du patient</span>
+      <div className="body-corner body-corner--bl sz-mono">
+        <span className="body-corner__atlas" title={tip}>Atlas Z-Anatomy · {count}</span>
+        <span className="sz-detail">Pas une image du patient</span>
       </div>
       <div className="body-corner body-corner--br sz-mono" aria-hidden="true">
         <span>Délai Terre {fmt(lightTimeMin(date), 1)} min</span>
@@ -94,7 +96,7 @@ function SceneChrome(): JSX.Element {
     <div className="body-chrome" data-projected={projected}>
       <div className="body-id sz-mono">
         {/* le nom est déjà dans la barre haute ; il ne revient ici que sur téléphone, où la barre le masque */}
-        <span className="body-id__name">{sentenceCase(ASTRONAUT.name)} · {ASTRONAUT.id}</span>
+        <span className="body-id__name">Cdt {sentenceCase(ASTRONAUT.name)}</span>
         <span title="Jour de mission sur trois chiffres, comme l'incrustation d'un cliché">{fmtDayLong(day)} · {frDate(dayToDate(day))}</span>
       </div>
       {projected && (

@@ -1,6 +1,6 @@
 // État partagé de la page Body. Tous les composants de la page lisent/écrivent ici ;
 // aucun ne dépend directement d'un autre composant.
-import { useLayoutEffect } from 'react';
+import { useLayoutEffect, useState } from 'react';
 import type { RefObject } from 'react';
 import { create } from 'zustand';
 import type { Alert, DayBody, LayerId, OrganId } from '../../types';
@@ -142,4 +142,32 @@ export function useRowClip(ref: RefObject<HTMLElement | null>, maxRow = Number.P
       el.removeEventListener('scroll', apply);
     };
   });
+}
+
+/**
+ * Lignes `[data-row]` cachées sous le bas d'une liste qui défile (point 7.3 : le défilement doit se voir).
+ * Rend la clé `data-below` de chaque ligne cachée (sans doublon, dans l'ordre), ou son rang si elle n'en a pas.
+ */
+export function useRowsBelow(ref: RefObject<HTMLElement | null>, dep: unknown): string[] {
+  const [below, setBelow] = useState<string[]>([]);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) { setBelow([]); return; }
+    const apply = (): void => {
+      const bottom = el.getBoundingClientRect().top + el.clientTop + el.clientHeight + 0.5; // même seuil que useRowClip
+      const keys: string[] = [];
+      el.querySelectorAll<HTMLElement>('[data-row]').forEach((row, i) => {
+        if (row.getBoundingClientRect().bottom <= bottom) return;
+        const k = row.dataset.below ?? String(i);
+        if (!keys.includes(k)) keys.push(k);
+      });
+      setBelow((prev) => (prev.join('|') === keys.join('|') ? prev : keys));
+    };
+    const ro = new ResizeObserver(apply);
+    ro.observe(el);
+    el.addEventListener('scroll', apply, { passive: true });
+    apply();
+    return () => { ro.disconnect(); el.removeEventListener('scroll', apply); };
+  }, [ref, dep]);
+  return below;
 }

@@ -131,11 +131,14 @@
   color: var(--sz-text-muted);
   pointer-events: none;
 }
-.body-corner--bl { left: 12px; max-width: calc(50% - 160px); min-width: 200px; }
+.body-corner--bl { left: 12px; }
 .body-corner--br { right: 12px; text-align: right; }
+.body-corner span { white-space: nowrap; }
+/* l'infobulle (liste des calques, « pas une image du patient ») doit rester accessible au survol */
+.body-corner__atlas { pointer-events: auto; cursor: help; }
 .body-page--clean .body-corner--br { display: none; }
+/* Scène étroite (téléphone) : le délai Terre est déjà dans « Ensuite », la légende reste seule */
 @container (max-width: 520px) {
-  .body-corner--bl span:last-child,
   .body-corner--br { display: none; }
 }
 

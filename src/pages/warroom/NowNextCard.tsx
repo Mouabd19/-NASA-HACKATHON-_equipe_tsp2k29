@@ -2,12 +2,12 @@
 // « Maintenant » porte la consigne du jour : le seul texte en 24 px de la page, avec la puce de statut.
 // Le délai Terre n'est affiché qu'une fois, dans l'en-tête de « Ensuite ».
 // Avant le check-in du jour, aucune consigne n'est affichée : l'inconnu se voit (gris).
+import { useState } from 'react';
 import type { OrganSummary, RouterOutput, Tag, TriageResult } from '../../types';
 import { AlarmMark, Panel, StatusChip, TagBadge, fmt, levelColor, levelPriority, sentenceCase } from '../../ui';
 import { alertsForDay } from '../../models/alerts';
 import { DAY_TODAY } from '../../mocks/mission';
-import { alarmNumbers, isOnBody, sortAlarms } from '../body/alarmOrder';
-import { useBody } from '../body/store';
+import { alarmNumbers, sortAlarms } from '../body/alarmOrder';
 import { usePrefs } from '../../ui/prefs';
 import { Btn, LEVEL_LABEL, hhmm } from './ui';
 
@@ -25,11 +25,14 @@ export const NOW_TITLE_ID = 'wr-now-title';
  * puis les alertes du corps dans l'ordre de la liste « Alertes » de la page Corps (gravité, puis de haut en bas),
  * puis le reste (résumé du check-in, prélèvement…).
  */
-function orderReasons(reasons: readonly string[], layers: Parameters<typeof isOnBody>[1]): { r: string; num?: number }[] {
+function orderReasons(reasons: readonly string[]): { r: string; num?: number }[] {
   const alerts = alertsForDay(DAY_TODAY);
-  const visible = (a: (typeof alerts)[number]): boolean => isOnBody(a, layers);
-  const nums = alarmNumbers(alerts, visible);
-  const order = sortAlarms(alerts, false, visible).map((a) => ({ text: `${a.title} [${a.rule}]`, num: nums.get(a.id) }));
+  // numéros fixés pour la journée : les mêmes que sur la page Corps, quels que soient les calques affichés
+  const nums = alarmNumbers(alerts);
+  // alertes dans l'ordre des repères (1, 2, 3…), puis celles qui n'en ont pas
+  const order = sortAlarms(alerts, false)
+    .sort((a, b) => (nums.get(a.id) ?? 999) - (nums.get(b.id) ?? 999))
+    .map((a) => ({ text: `${a.title} [${a.rule}]`, num: nums.get(a.id) }));
   const rank = (r: string): number => {
     if (/\[R13\]$/.test(r)) return -1;
     const i = order.findIndex((o) => o.text === r);
@@ -40,6 +43,16 @@ function orderReasons(reasons: readonly string[], layers: Parameters<typeof isOn
     .sort((a, b) => a.k - b.k || a.i - b.i)
     .map(({ r, k }) => ({ r, num: k >= 0 && k < 1000 ? order[k].num : undefined }));
 }
+
+/**
+ * Raisons affichées sous la consigne : toujours les déclencheurs du check-in et toutes les alertes qui portent un
+ * numéro de repère (un repère cité sur le Corps ne doit jamais manquer ici). Le reste tient sur une ligne qui
+ * renvoie à la page Corps.
+ */
+const keepReason = (x: { r: string; num?: number }): boolean => x.num !== undefined || /\[R13\]$/.test(x.r);
+
+/** « le CMO de bord décide… » → « Le CMO de bord décide… » (texte du routeur, en minuscule initiale). */
+const capFirst = (s: string): string => s.charAt(0).toLocaleUpperCase('fr-FR') + s.slice(1);
 
 /** Amène l'utilisateur sur la première note du check-in (panneau .wr-checkin). */
 function goToCheckIn() {
@@ -63,21 +76,27 @@ export function NowNextCard(props: {
   const grey = pending || insufficient; // l'inconnu se voit : puce grise, consigne atténuée
   const red = !pending && t.level === 'ROUGE';
   const details = usePrefs((s) => s.details);
-  // calques de la page Corps (état partagé) : mêmes numéros de repère que la liste « Alertes »
-  const layers = useBody((s) => s.layers);
+  const reasons = pending ? [] : orderReasons(t.reasons);
+  const kept = reasons.filter(keepReason);
+  const [allReasons, setAllReasons] = useState(false);
+  // une seule raison en plus : on l'affiche plutôt que « + 1 autre raison »
+  const shownReasons = allReasons || reasons.length - kept.length <= 1 ? reasons : kept;
+  const moreReasons = reasons.length - shownReasons.length;
   const reply = out.ensuite.reponseMin != null ? new Date(props.missionNow.getTime() + out.ensuite.reponseMin * 60_000) : null;
   const levelText = pending ? 'En attente' : LEVEL_LABEL[t.level];
 
   return (
     <div className="wr-now">
-      <section className="sz-panel" aria-labelledby={NOW_TITLE_ID}>
+      {/* ROUGE : un filet rouge en haut du secteur, visible de loin (rien ne clignote) */}
+      <section className="sz-panel wr-now__main" data-red={red || undefined} aria-labelledby={NOW_TITLE_ID}>
         <header className="sz-panel__head">
           <h2 id={NOW_TITLE_ID} tabIndex={-1} className="sz-panel__title">Maintenant</h2>
           <span className="sz-panel__fill" />
           <span className="sz-panel__right">
             <span className="sz-detail">Calculé à bord</span>
             {/* niveau codé une seule fois : marqueur + mot pour une alarme, voyant + mot sinon */}
-            {!grey && levelPriority[t.level]
+            {/* en ROUGE, le marqueur et le mot passent devant la consigne, à sa taille */}
+            {red ? null : !grey && levelPriority[t.level]
               ? <span aria-hidden><AlarmMark level={t.level} withLabel /></span>
               : <span aria-hidden><StatusChip color={grey ? 'grey' : levelColor[t.level]} label={levelText} /></span>}
           </span>
@@ -87,12 +106,22 @@ export function NowNextCard(props: {
             <span className="wr-sr-only">{levelText}. </span>
             {pending
               ? <p className="wr-order" data-muted="true">Aucune consigne avant le check-in</p>
-              : <p className="wr-order" data-muted={grey}>{out.maintenant}</p>}
+              : (
+                <p className="wr-order" data-muted={grey}>
+                  {red ? (
+                    <span className="wr-order__alarm" aria-hidden>
+                      <AlarmMark level={t.level} className="wr-order__mark" />
+                      <span className="wr-order__word">{LEVEL_LABEL[t.level]}</span>
+                    </span>
+                  ) : null}
+                  {out.maintenant}
+                </p>
+              )}
           </div>
           {pending && <div><Btn kind="primary" onClick={goToCheckIn}>Faire le check-in</Btn></div>}
-          {!pending && t.reasons.length > 0 && (
+          {shownReasons.length > 0 && (
             <ul className="wr-reasons">
-              {orderReasons(t.reasons, layers).slice(0, 4).map(({ r, num }) => {
+              {shownReasons.map(({ r, num }) => {
                 // « HANCHE — PERTE OSSEUSE ESTIMÉE [V1 4027] » : casse de phrase ; la règle citée passe en mode Détails.
                 const m = /^(.*?)\s*\[([^\]]+)\]$/.exec(r);
                 return (
@@ -102,6 +131,14 @@ export function NowNextCard(props: {
                   </li>
                 );
               })}
+              {moreReasons > 0 ? (
+                <li>
+                  <span className="wr-reasons__num" />
+                  <button type="button" className="wr-reasons__more" onClick={() => setAllReasons(true)}>
+                    + {moreReasons} autres raisons
+                  </button>
+                </li>
+              ) : null}
             </ul>
           )}
         </div>
@@ -120,7 +157,7 @@ export function NowNextCard(props: {
               <span className="sz-label">Décide</span>
               <strong>{DECIDEUR[out.ensuite.decideur]}</strong>
             </div>
-            <p className="wr-text">{out.ensuite.texte}</p>
+            <p className="wr-text">{capFirst(out.ensuite.texte)}</p>
             {reply && <div className="wr-note">Réponse vers {hhmm(reply)}</div>}
             {t.groundRoutine.length > 0 && (
               <div className="wr-note">Suivi par le sol : {t.groundRoutine.join(' · ')}</div>
@@ -132,8 +169,8 @@ export function NowNextCard(props: {
           <details className="wr-fold" open={details}>
             <summary>
               <span>
-                Synthèse IA · {ZONE[props.summary.organId] ?? props.summary.organId} · reçue à {hhmm(props.summaryReceivedAt)}
-                <span className="sz-detail"> · à valider par le médecin de bord</span>
+                <span className="wr-fold__line">Synthèse IA · {ZONE[props.summary.organId] ?? props.summary.organId} · reçue à {hhmm(props.summaryReceivedAt)}</span>
+                <span className="wr-fold__line wr-fold__sub sz-detail">À valider par le médecin de bord</span>
               </span>
             </summary>
             <p>{props.summary.text}</p>

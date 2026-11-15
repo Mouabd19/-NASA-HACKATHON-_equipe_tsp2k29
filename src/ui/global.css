@@ -555,20 +555,18 @@ html[data-details='off'] .sz-detail { display: none !important; }
   font-weight: 600;
   color: var(--sz-text);
 }
-/* Marque : un trait de tracé (une onde de pouls), dessiné, pas une icône de bibliothèque. */
-.sz-wordmark svg { width: 20px; height: 12px; color: var(--sz-text); }
-/* Bandeau patient, comme l'identification d'un moniteur : nom, rôle, mention de simulation. */
+/* Bandeau patient : grade et nom de la persona. */
 .sz-patient {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: 6px;
   height: 100%;
   padding-left: 16px;
   border-left: 1px solid var(--sz-border);
   font-size: var(--sz-fs-small);
   color: var(--sz-text-dim);
 }
-.sz-patient__name { font-family: var(--sz-font-mono); font-size: var(--sz-fs-small); color: var(--sz-text); letter-spacing: 0.02em; }
+.sz-patient__name { font-size: var(--sz-fs-small); color: var(--sz-text); }
 .sz-topbar__sim {
   display: inline-flex;
   align-items: center;

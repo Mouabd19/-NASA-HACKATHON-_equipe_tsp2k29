@@ -50,7 +50,7 @@ uniform float uHeat;
 uniform float uBackFace;
 uniform vec2 uTintLook;   // (inutilisé), remplissage
 uniform vec3 uHoverLook;  // gain au survol, atténuation, aplat de la pièce mise en avant
-uniform vec2 uGhostLook;  // opacité, part du remplissage conservée
+uniform vec3 uGhostLook;  // opacité, part du remplissage conservée, part de la teinte de statut conservée
 uniform vec3 uFlowLook;   // densité, vitesse, surbrillance
 uniform vec3 uHeatLook;   // paliers, luminosité par palier, lignes de niveau
 uniform float uAlphaMax;
@@ -117,6 +117,8 @@ void main() {
   if (uGhost > 0.001) {
     float ga = (uCore * uGhostLook.y + uRim * fres + tintMix * uTintLook.y * uGhostLook.y) * uGhostLook.x;
     a = mix(a, ga, uGhost);
+    // une prévision n'est pas une alarme : la teinte de statut ne subsiste qu'en trace, comme les marqueurs en contour
+    col = mix(col, mix(uColor, uTint, tintMix * uGhostLook.z), uGhost);
   }
 
   // survol / sélection : renfort d'opacité + aplat mat de la pièce (elle se détache même en nominal) ; la couleur ne change pas
@@ -158,7 +160,7 @@ export function createHologramMaterial(opts: HologramOpts = {}): THREE.ShaderMat
       uBackFace: { value: h.backFace },
       uTintLook: { value: new THREE.Vector2(0, h.tintCore) },
       uHoverLook: { value: new THREE.Vector3(h.highlightBoost, h.dimFactor, h.highlightFill) },
-      uGhostLook: { value: new THREE.Vector2(look.ghost.opacity, look.ghost.fill) },
+      uGhostLook: { value: new THREE.Vector3(look.ghost.opacity, look.ghost.fill, look.ghost.tint) },
       uFlowLook: { value: new THREE.Vector3(look.flow.density, look.flow.speed, look.flow.boost) },
       uHeatLook: { value: new THREE.Vector3(look.heat.levels, look.heat.gain, look.heat.contour) },
       uAlphaMax: { value: h.alphaMax },

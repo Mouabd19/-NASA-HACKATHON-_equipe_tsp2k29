@@ -73,6 +73,7 @@
 }
 /* Le SVG est dessiné à la largeur mesurée de ce conteneur (échelle 1). */
 .mt-chart__in { min-width: 0; }
+.mt-chart__hint { margin: 4px 12px 0; font-size: var(--sz-fs-small); color: var(--sz-text-dim); }
 .mt-frise { max-width: none; overflow: visible; }
 .mt-frise text {
   font-size: var(--sz-fs-label);
