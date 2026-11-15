@@ -1,8 +1,9 @@
-// Propriétaire : Ahmed (B). Page War Room — ROADMAP §1 (page 2) et §3.
+// Propriétaire : Ahmed (B). Page « Plan du jour » (route /warroom) — ROADMAP §1 (page 2) et §3.
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Tag, TodoItem } from '../../types';
+import { TagBadge } from '../../ui';
 import { MISSION_TODAY, clearCheckIn, onCheckInChange, todayCheckIn } from '../../ingest/checkin';
-import { loadRealData, onRealDataChange, getRealSeries } from '../../ingest/realData';
+import { loadRealData, onRealDataChange } from '../../ingest/realData';
 import { pullDone, pushTodo, setDone } from '../../ingest/todoSync';
 import { triage } from '../../models/triage';
 import { router } from '../../models/router';
@@ -13,8 +14,8 @@ import { CheckInCard } from './CheckInCard';
 import { NowNextCard } from './NowNextCard';
 import { TodoList } from './TodoList';
 import { MoodCard } from './MoodCard';
-import { LiveWidget, WatchImport } from './LiveWidget';
-import { Btn, Dot, T, fr } from './ui';
+import { LiveWidget } from './LiveWidget';
+import { Btn } from './ui';
 import './warroom.css';
 
 const DAY = MISSION_TODAY;
@@ -25,8 +26,8 @@ const LOCAL_WINDOW_MS = 5000; // une coche locale récente prime sur le serveur 
 const STORE_KEY = `todo:J${DAY}`;
 const HEALTH_TIMEOUT_MS = 2000;
 
-// TEMPORAIRE (répétitions de la démo) : bouton « Réinitialiser » visible en dev ou avec ?demo. À retirer avant le rendu.
-const DEMO = import.meta.env.DEV || new URLSearchParams(location.search).has('demo');
+// Répétitions de la démo : le bouton « Réinitialiser » n'apparaît qu'avec ?demo dans l'URL.
+const DEMO = new URLSearchParams(location.search).has('demo');
 
 // Horloge de mission unique : la démo se joue le J94 à 07:00, jamais l'heure réelle.
 const MISSION_NOW = new Date(DATE + 'T07:00:00');
@@ -63,7 +64,7 @@ export function WarRoom() {
   // dataVersion : l'arrivée des vraies données montre recalcule le triage et le plan (fusion RÉEL de Mouad).
   const t = useMemo(() => triage(DAY), [version, dataVersion]);
   const delay = lightTimeMin(DATE);
-  // Valeur tabulée (JPL Horizons / test ROADMAP) → [Publié] ; approximation orbite circulaire → [H].
+  // Valeur tabulée (JPL Horizons / test ROADMAP) → Publié ; approximation orbite circulaire → Hypothèse.
   const delayTag: Tag = lightTimeSource(DATE) === 'table' ? 'Publié' : 'H';
   const out = useMemo(() => router(t, POS, delay), [t, delay]);
   const plan = useMemo(() => planDay(DAY), [version, dataVersion]);
@@ -114,7 +115,7 @@ export function WarRoom() {
     setDone(id, d);
   };
 
-  // TEMPORAIRE : efface check-in, coches (écran et montre) et import, puis recharge la page.
+  // Démo : efface check-in, coches (écran et montre) et import, puis recharge la page.
   const resetDemo = async () => {
     clearCheckIn(DAY);
     await Promise.all([...doneRef.current].map((id) => setDone(id, false)));
@@ -123,50 +124,39 @@ export function WarRoom() {
     location.reload();
   };
 
-  const hasReal = getRealSeries('RestingHeartRate').length + getRealSeries('HeartRate').length > 0;
-
   const dateLabel = new Date(DATE + 'T12:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
 
   return (
-    <main style={{ background: T.bg, color: T.text, fontFamily: T.fontText, minHeight: '100vh', WebkitFontSmoothing: 'antialiased' }}>
-      <div style={{ maxWidth: 1440, margin: '0 auto', padding: '32px clamp(16px, 3vw, 32px) 48px', boxSizing: 'border-box' }}>
-        <header style={{ display: 'flex', flexWrap: 'wrap', gap: '16px 32px', alignItems: 'flex-end', marginBottom: 32 }}>
-          <div>
-            <h1 style={{ fontFamily: T.fontDisplay, fontSize: 'clamp(24px, 2.4vw, 30px)', fontWeight: 600, letterSpacing: '-0.015em', lineHeight: 1.1, margin: 0 }}>
-              Jour {DAY} · {dateLabel}
-            </h1>
-            <div style={{ fontSize: T.fs.md, color: T.textDim, marginTop: 8 }}>Haddad <span className="sz-tag">[Persona]</span> · en route vers Mars</div>
-          </div>
-          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', borderRadius: T.radius.pill, border: `1px solid ${T.border}`, background: T.panel }}>
-            <Dot color={T.holo} size={6} />
-            <span style={{ fontSize: T.fs.sm, color: T.textDim }}>Lien Terre</span>
-            <span style={{ fontSize: T.fs.md, fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>{fr(delay)} min</span>
-            <span className="sz-tag" style={{ fontSize: T.fs.sm, color: T.textMuted }}>[{delayTag}]</span>
-          </div>
-        </header>
+    <div className="sz-page wr-page">
+      {/* La barre haute porte déjà le nom de l'onglet : le titre reste pour les lecteurs d'écran. */}
+      <header className="wr-head">
+        <h1 className="wr-sr-only">Plan du jour</h1>
+        <span className="wr-head__day">Jour {DAY} · {dateLabel}</span>
+        <span className="wr-head__clock sz-mono">Heure de bord 07:00</span>
+        <span className="sz-detail"> · Haddad <TagBadge tag="Persona" /> · en route vers Mars</span>
+      </header>
 
-        <div style={{ display: 'grid', gap: 16 }}>
-          {/* 1. La consigne d'abord (Maintenant puis Ensuite), toujours en haut. */}
-          <NowNextCard triage={t} out={out} delayMin={delay} delayTag={delayTag} summary={summary} summaryReceivedAt={summaryAt} pending={!checkin} missionNow={MISSION_NOW} />
-          {/* 2. Colonne gauche : check-in et montre. Colonne droite : la journée. */}
-          <div className="wr-main">
-            <div className="wr-side">
-              <CheckInCard day={DAY} done={checkin} />
-              <LiveWidget dataVersion={dataVersion} />
-              <MoodCard key={version} />
-              <WatchImport hasData={hasReal} onImported={() => setDataVersion((v) => v + 1)} />
-            </div>
+      <div className="wr-grid">
+        {/* 1. La consigne d'abord (Maintenant puis Ensuite), toujours en haut. */}
+        <NowNextCard triage={t} out={out} delayMin={delay} delayTag={delayTag} summary={summary} summaryReceivedAt={summaryAt} pending={!checkin} missionNow={MISSION_NOW} />
+        {/* 2. Colonne gauche : check-in et montre. Colonne droite : la journée, puis le signal d'humeur. */}
+        <div className="wr-main">
+          <div className="wr-side">
+            <CheckInCard day={DAY} done={checkin} />
+            <LiveWidget dataVersion={dataVersion} onImported={() => setDataVersion((v) => v + 1)} />
+          </div>
+          <div className="wr-side">
             <TodoList items={items} onToggle={toggle} synced={synced} level={t.level} />
+            <MoodCard key={version} />
           </div>
         </div>
-        {DEMO && (
-          <Btn kind="secondary" onClick={resetDemo} style={{ position: 'fixed', right: 16, bottom: 16, zIndex: 10, border: `1px solid ${T.borderStrong}` }}>
-            Réinitialiser la démo
-          </Btn>
-        )}
-        <footer className="sz-detail" style={{ marginTop: 32, fontSize: T.fs.sm, color: T.textMuted }}>Mission simulée · check-in et montre réels</footer>
       </div>
-    </main>
+      {DEMO && (
+        <footer className="wr-foot">
+          <Btn kind="quiet" size="sm" onClick={resetDemo}>Réinitialiser la démo</Btn>
+        </footer>
+      )}
+    </div>
   );
 }
 

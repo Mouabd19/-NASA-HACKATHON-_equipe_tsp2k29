@@ -1,8 +1,9 @@
-// Propriétaire : Ahmed (B). To-do du jour : une seule liste, priorité 1 médicale en tête puis l'ordre de la journée.
-// Chaque ligne : case, titre en grand, ligne de contexte (type · détail), heure dans une pastille, lien « Pourquoi ».
+// Propriétaire : Ahmed (B). Liste du jour : une seule liste, priorité 1 médicale en tête puis l'ordre de la journée.
+// Chaque ligne : case, heure, titre (détail en mode Détails), catégorie, chevron « Pourquoi » (comme les alertes de Corps).
 import { Link } from 'react-router-dom';
 import type { Level, TodoItem } from '../../types';
-import { Dot, Panel, Prov, T, mono } from './ui';
+import { Panel } from '../../ui';
+import { Dot } from './ui';
 
 const KIND: Record<TodoItem['kind'], string> = {
   exercice: 'Exercice', repas: 'Repas', test: 'Test', medical: 'Médical',
@@ -21,8 +22,8 @@ const order = (a: TodoItem, b: TodoItem) =>
 export function TodoList({ items, onToggle, synced, level }: { items: TodoItem[]; onToggle: (id: string, done: boolean) => void; synced: boolean; level: Level }) {
   if (items.length === 0) {
     return (
-      <Panel title="Aujourd'hui" prov={<Prov p="SIMULÉ" />}>
-        <p style={{ color: T.textDim, margin: 0, fontSize: T.fs.md }}>Aucune tâche prévue aujourd'hui</p>
+      <Panel title="Aujourd'hui" provenance="SIMULÉ">
+        <p className="sz-dim">Aucune tâche prévue aujourd'hui</p>
       </Panel>
     );
   }
@@ -32,18 +33,18 @@ export function TodoList({ items, onToggle, synced, level }: { items: TodoItem[]
   return (
     <Panel
       title="Aujourd'hui"
-      prov={
+      className="wr-flush"
+      provenance="SIMULÉ"
+      right={
         <>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: T.fs.sm, color: T.textMuted }}>
-            <Dot color={synced ? T.holo : T.status.grey} size={6} />
-            {synced ? 'Montre synchronisée' : 'Montre non reliée · coches gardées sur cet écran'}
-          </span>
-          <span style={{ ...mono, color: T.textDim }}>{doneCount}/{items.length}</span>
-          <Prov p="SIMULÉ" />
+          {synced
+            ? <span className="sz-detail">Liste synchronisée</span>
+            : <span title="Les coches sont gardées sur cet écran">Liste non synchronisée</span>}
+          <span className="sz-num" aria-label={`${doneCount} tâches faites sur ${items.length}`}>{doneCount} / {items.length}</span>
         </>
       }
     >
-      <ul className="wr-todo" style={{ listStyle: 'none', margin: '-8px 0 -16px', padding: 0 }}>
+      <ul className="wr-todo">
         {list.map((t) => <Row key={t.id} t={t} onToggle={onToggle} suspended={isSuspended(t, level)} />)}
       </ul>
     </Panel>
@@ -52,10 +53,9 @@ export function TodoList({ items, onToggle, synced, level }: { items: TodoItem[]
 
 function Row({ t, onToggle, suspended }: { t: TodoItem; onToggle: (id: string, done: boolean) => void; suspended: boolean }) {
   const urgent = isUrgent(t);
-  const dim = suspended ? 0.45 : t.done ? 0.55 : 1;
   return (
-    <li className="wr-todo-row" style={{ display: 'grid', gridTemplateColumns: '44px minmax(0, 1fr)', columnGap: 12, alignItems: 'center' }}>
-      <label style={{ display: 'grid', placeItems: 'center', width: 44, height: 44, cursor: suspended ? 'not-allowed' : 'pointer' }}>
+    <li className="wr-todo-row" data-state={suspended ? 'suspended' : t.done ? 'done' : undefined}>
+      <label className="wr-todo__check">
         <input
           type="checkbox"
           className="wr-check"
@@ -65,47 +65,23 @@ function Row({ t, onToggle, suspended }: { t: TodoItem; onToggle: (id: string, d
           onChange={(e) => onToggle(t.id, e.target.checked)}
         />
       </label>
-      {/* Le filet part du titre, pas de la case : la colonne des cases reste d'un seul tenant. */}
-      <div className="wr-todo-body" style={{ padding: '18px 0', borderBottom: `1px solid ${T.border}` }}>
-        <div style={{ minWidth: 0 }}>
-          <div style={{
-            fontSize: T.fs.lg, fontWeight: 500, lineHeight: 1.3, letterSpacing: '-0.01em', color: T.text,
-            opacity: dim, textDecoration: t.done || suspended ? 'line-through' : 'none',
-            textDecorationColor: T.textMuted, transition: `opacity 150ms ${T.ease}`,
-          }}>
-            {t.title}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4, fontSize: T.fs.md, lineHeight: 1.4, color: T.textMuted, minWidth: 0 }}>
-            {suspended ? (
-              <span style={{ color: T.status.amber }}>Suspendu · voir Maintenant</span>
-            ) : urgent ? (
-              <>
-                <Dot color={T.status.red} size={6} />
-                <span style={{ color: T.status.red, whiteSpace: 'nowrap' }}>Priorité 1</span>
-                {t.detail && <span className="sz-detail" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', opacity: dim }}>· {t.detail}</span>}
-              </>
-            ) : (
-              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', opacity: dim }}>
-                {KIND[t.kind]}{t.detail ? <span className="sz-detail"> · {t.detail}</span> : null}
-              </span>
-            )}
-          </div>
-        </div>
-        <div className="wr-todo-side">
-        {t.time && (
-          <span style={{
-            ...mono, fontSize: T.fs.md, color: T.text, opacity: dim, padding: '4px 8px',
-            border: `1px solid ${T.borderStrong}`, borderRadius: T.radius.control - 2, lineHeight: 1.2, flexShrink: 0,
-          }}>
-            <span className="wr-sr-only">à </span>{t.time}
-          </span>
-        )}
-        <Link className="wr-link" to={`/reasoning/${encodeURIComponent(t.reasoningId)}`} style={{ fontSize: T.fs.md, whiteSpace: 'nowrap', flexShrink: 0 }}
-          aria-label={`Pourquoi : ${t.title}`}>
-          Pourquoi
-        </Link>
-        </div>
+      <span className="wr-todo__time">{t.time && <><span className="wr-sr-only">à </span>{t.time}</>}</span>
+      <div className="wr-todo__main">
+        <div className="wr-todo__title">{t.title}</div>
+        {t.detail && !suspended && <div className="wr-todo__detail sz-detail">{t.detail}</div>}
       </div>
+      <span className="wr-todo__kind" data-flag={suspended || urgent || undefined}>
+        {suspended ? (
+          <><Dot color="amber" size={6} /><span title="Voir la consigne « Maintenant »">Suspendu</span></>
+        ) : urgent ? (
+          <><Dot color="red" size={6} />Urgent</>
+        ) : (
+          KIND[t.kind]
+        )}
+      </span>
+      <Link className="wr-todo__why" to={`/reasoning/${encodeURIComponent(t.reasoningId)}`} aria-label={`Pourquoi : ${t.title}`} title="Pourquoi">
+        <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5L8 6l-3.5 3.5" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+      </Link>
     </li>
   );
 }

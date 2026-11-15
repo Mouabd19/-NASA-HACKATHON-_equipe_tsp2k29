@@ -1,50 +1,60 @@
-// Fenêtre organe (ROADMAP §1 « Clic sur l'âge biologique → fenêtre organe »).
-// Modale centrée sur toute la page Body, affichée quand useBody.organWindow !== null.
-// 3 colonnes : modèle 3D seul · métriques du jour + synthèse IA · graphe de l'écart d'âge [H]
-// (trait plein = mesuré, pointillé = prédit, bande d'incertitude). 'global' → PhenoAge [Publié].
+// Fenêtre organe : modale centrée sur toute la page Corps, affichée quand useBody.organWindow !== null.
+// 3 colonnes : modèle 3D · métriques du jour + synthèse · graphe de l'écart d'âge
+// (trait plein = mesuré, pointillé = projection, bande d'incertitude). 'global' → PhenoAge + écart par organe.
+// Provenance, normes, prévision du modèle d'IA, formule et limites : visibles en mode Détails seulement,
+// une seule fois par bloc (une puce dans l'en-tête de section, pas une par ligne).
 import { useEffect, useMemo, useRef } from 'react';
 import type { CSSProperties, JSX, ReactNode } from 'react';
 import {
-  Area, CartesianGrid, ComposedChart, Line, ReferenceArea, ReferenceDot, ReferenceLine,
+  Area, CartesianGrid, ComposedChart, Line, ReferenceDot, ReferenceLine,
   ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from 'recharts';
-import type { BioAgePoint, Metric, OrganId, OrganState, PhenoAgeResult } from '../../../types';
+import type { BioAgePoint, Metric, OrganId, OrganState, PhenoAgeResult, Tag } from '../../../types';
 import { CHRONO_AGE_J0, DAY_END, DAY_SOL0, DAY_TODAY } from '../../../mocks/mission';
 import { getAnalyteMeta, getBloodTests, getDayBodyPlan } from '../../../sim/load';
 import { bioAgeSeries, hasBioAgeModel } from '../../../models/bioAge';
 import { phenoAge } from '../../../models/phenoAge';
+import { computePhenoAge, type PhenoAgeMarkers } from '../../../models/phenoAgeFormula';
 import { lossToYears } from '../../../models/agingRates';
 import { organForecast, type Forecast, type ForecastOrgan } from '../../../models/ml';
 import { SUMMARY_SOURCE, getSummaryPlan } from '../../../content/summaries';
 import { lightTimeMin, lightTimeSource } from '../../../content/horizons';
 import {
-  ProvenanceBadge, StatusChip, StatusDot, TagBadge, dayToDate, fmt, fmtDay, statusVar, tokens,
+  CloseButton, ProvenanceBadge, StatusChip, StatusDot, TAG_TEXT, dayToDate, fmt, fmtDay, sentenceCase, statusVar, tokens,
 } from '../../../ui';
+import { usePrefs } from '../../../ui/prefs';
 import { OrganViewer } from '../../../three/OrganViewer';
-import { LAYER_META, useBody } from '../store';
+import { useBody } from '../store';
+import { isProjectionMetric, metricLabel } from './HoverCard';
 import './OrganWindow.css';
-import { anatomySource } from '../../../three/anatomy';
 
 // ── Réglages du graphe (itération rapide) ────────────────────────────────────────────────────
 const C = tokens.color;
 const CHART = {
-  measured: { stroke: C.text, width: 2.25 },
+  measured: { stroke: C.text, width: 1.5 },
   /** Scénario mis en avant / scénario en retrait. */
-  on: { stroke: C.text, width: 1.75, opacity: 1, dash: '5 4', band: 0.2 },
-  off: { stroke: C.textDim, width: 1.25, opacity: 0.85, dash: '2 4', band: 0.07 },
-  measuredBand: 0.3,
-  chrono: { stroke: C.textDim, width: 1, opacity: 0.7 },
+  on: { stroke: C.text, width: 1.5, opacity: 1, dash: '5 4', band: 0.14 },
+  off: { stroke: C.textDim, width: 1.25, opacity: 0.9, dash: '2 4', band: 0.06 },
+  measuredBand: 0.2,
+  chrono: { stroke: C.textMuted, width: 1, opacity: 1 },
   grid: C.border,
-  axis: C.textDim,
-  predictedZone: 0.035,
-  font: 10,
-  /** Heure UTC d'émission de la synthèse par le sol [Persona]. */
+  axis: C.textMuted,
+  /** Repères verticaux (aujourd'hui, Sol 0, jour affiché). */
+  mark: C.borderStrong,
+  font: tokens.size.xs,
+  /** Heure UTC d'émission de la synthèse par le sol (donnée du scénario). */
   groundEmitMin: 6 * 60,
 } as const;
 
 const YEAR = 365.25;
 const chronoAt = (day: number): number => CHRONO_AGE_J0 + day / YEAR;
 const signed = (n: number, digits = 1): string => `${n < 0 ? '−' : '+'}${fmt(Math.abs(n), digits)}`;
+const DATE_FMT = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+/** « 2026-11-14 » → « 14 nov. 2026 ». */
+const fmtDate = (iso: string): string => {
+  const t = Date.parse(`${iso}T00:00:00Z`);
+  return Number.isFinite(t) ? DATE_FMT.format(t) : iso;
+};
 const hhmm = (min: number): string => {
   const m = ((Math.round(min) % 1440) + 1440) % 1440;
   return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
@@ -92,18 +102,23 @@ interface GapChart {
   yTicks: number[];
 }
 
-/** Axe Y à pas CONSTANT (1, 2 ou 5 ans) : bornes arrondies au pas, graduations régulières. */
+/**
+ * Axe Y à pas CONSTANT (1, 2 ou 5 ans) : bornes arrondies au pas, graduations régulières.
+ * Pas de marge ajoutée avant l'arrondi (elle faisait franchir une graduation et vidait le haut du tracé) :
+ * une graduation de plus seulement si la courbe touche presque la borne haute.
+ */
 function niceAxis(lo: number, hi: number): { domain: [number, number]; yTicks: number[] } {
   const span = Math.max(1, hi - lo);
   const step = span <= 6 ? 1 : span <= 12 ? 2 : 5;
   const y0 = Math.floor(lo / step) * step;
-  const y1 = Math.ceil(hi / step) * step;
+  let y1 = Math.ceil(hi / step) * step;
+  if (y1 - hi < 0.15 * step) y1 += step;
   const yTicks: number[] = [];
   for (let v = y0; v <= y1 + 1e-9; v += step) yTicks.push(v);
   return { domain: [y0, y1], yTicks };
 }
 
-function buildGapChart(organId: OrganId): GapChart {
+function buildGapChart(organId: OrganId, withMl: boolean): GapChart {
   const s0 = bioAgeSeries(organId, 0);
   const s1 = bioAgeSeries(organId, 1);
   const modeled = s0.some((p) => p.band !== undefined);
@@ -112,7 +127,7 @@ function buildGapChart(organId: OrganId): GapChart {
   const hasPrediction = s0.some((p) => p.predicted);
   const splitDay = split >= 0 ? s0[split].day : -1;
   const plan = new Map(s1.map((p) => [p.day, p]));
-  const ml: [MlPoint[], MlPoint[]] = [mlPoints(organId, 0), mlPoints(organId, 1)];
+  const ml: [MlPoint[], MlPoint[]] = withMl ? [mlPoints(organId, 0), mlPoints(organId, 1)] : [[], []];
 
   let lo = Infinity;
   let hi = -Infinity;
@@ -149,7 +164,7 @@ function buildGapChart(organId: OrganId): GapChart {
     rows, ml, modeled, hasPrediction, splitDay,
     end: [gap(last0), gap(last1)],
     endPoint: [last0, last1],
-    ...niceAxis(lo, hi + Math.max(0.4, (hi - lo) * 0.1)),
+    ...niceAxis(lo, hi),
   };
 }
 
@@ -170,9 +185,8 @@ function Sect({ title, right, children, className }: { title: ReactNode; right?:
   return (
     <section className={`ow__sect${className ? ` ${className}` : ''}`}>
       <header className="ow__sect-head">
-        <h3 className="sz-label">{title}</h3>
-        <span className="ow__fill" />
-        {right}
+        <h3 className="sz-section-title">{title}</h3>
+        {right ? <span className="ow__sect-right">{right}</span> : null}
       </header>
       {children}
     </section>
@@ -188,63 +202,68 @@ function refText(m: Metric): string {
   return '—';
 }
 
-/** Ligne de projection (ex. « perte projetée à J860 ») : sortie de modèle sur un jour futur, pas une métrique du jour. */
-const isProjectionMetric = (m: Metric): boolean => m.key.startsWith('projection');
+const capFirst = (s: string): string => s.charAt(0).toLocaleUpperCase('fr-FR') + s.slice(1);
 
-function MetricsTable({ organ }: { organ: OrganState }): JSX.Element {
-  // Os : rien n'est mesuré par le scanner — la « tendance » est la pente du modèle, pas une pente mesurée.
+/** Métriques affichées : arrivé au dernier jour, « perte projetée à J860 » doublerait la perte cumulée du jour. */
+const shownMetrics = (organ: OrganState, day: number): Metric[] =>
+  organ.metrics.filter((m) => !(day >= DAY_END && isProjectionMetric(m)));
+
+function MetricsTable({ organ, day }: { organ: OrganState; day: number }): JSX.Element {
+  // Os : rien n'est mesuré par le scanner — la « pente » est celle du modèle, pas une pente mesurée.
   const modelOnly = organ.layer === 'squelette';
-  if (organ.metrics.length === 0) {
-    return (
-      <div className="ow__empty">
-        <span className="sz-label">NON MODÉLISÉ — AUCUNE MÉTRIQUE</span>
-        <p>Aucune mesure ni modèle pour cet organe. Statut inconnu : il n’est jamais affiché en vert par défaut.</p>
-      </div>
-    );
+  const rows = shownMetrics(organ, day);
+  if (rows.length === 0) {
+    return <p className="ow__empty">Aucune mesure ni modèle pour cet organe.</p>;
   }
+  // l'étiquette d'une valeur n'est écrite par ligne que si elle varie d'une ligne à l'autre
+  const sameTag = rows.every((m) => m.tag === rows[0].tag);
   return (
-    <table className="ow__table">
+    <table className="sz-table ow__table">
       <thead>
         <tr>
-          <th>MÉTRIQUE</th>
-          <th className="ow__num">VALEUR</th>
-          <th>SEUIL</th>
-          <th>PROV.</th>
-          <th className="ow__num" title={modelOnly ? 'Pente du modèle sur 7 jours — pas une tendance mesurée' : 'Pente mesurée sur 7 jours'}>{modelOnly ? 'PENTE MODÈLE' : 'TEND. 7 J'}</th>
+          <th>Métrique</th>
+          <th data-num>Valeur</th>
+          <th aria-hidden="true" />
+          <th data-num>Seuil</th>
+          <th data-num title={modelOnly ? 'Pente du modèle sur 7 jours, pas une tendance mesurée' : 'Pente mesurée sur 7 jours'}>Pente <span className="sz-unit">%/sem</span></th>
         </tr>
       </thead>
       <tbody>
-        {organ.metrics.map((m) => {
+        {rows.map((m) => {
           const t = m.trend7d;   // pas de repli : une métrique sans tendance (cumul, projection) affiche « — »
           const proj = isProjectionMetric(m);
           const hasRef = m.ref?.low !== undefined || m.ref?.high !== undefined;
+          // mode Détails : une seule ligne de texte sous le libellé, avec ce qui est propre à la ligne
+          // (source si elle varie, bruit de mesure, origine du seuil) ; les colonnes de chiffres restent sur une ligne
+          const detail = [
+            sameTag ? null : TAG_TEXT[m.tag],
+            m.noise !== undefined ? `± ${fmt(m.noise)}${m.unit ? ` ${m.unit}` : ''}` : null,
+            hasRef ? (m.ref?.standardId ? `seuil NASA ${m.ref.standardId}` : m.tag === 'H' ? null : 'seuil d’équipe') : null,
+          ].filter(Boolean).join(' · ');
           return (
             <tr key={m.key} data-proj={proj}>
               <td>
                 <span className="ow__metric">
                   <StatusDot color={proj ? 'grey' : m.color} />
-                  <span>{m.label}</span>
-                  {proj ? <span className="ow__projtag sz-label">PROJ.</span> : null}
+                  <span className="ow__metric-text">
+                    <span className="ow__metric-label" title={sentenceCase(m.label)}>{sentenceCase(metricLabel(m))}</span>
+                    {detail ? <span className="ow__meta sz-detail">{capFirst(detail)}</span> : null}
+                  </span>
                 </span>
               </td>
-              <td className="ow__num">
+              <td data-num>
                 <span className="ow__val" style={{ '--ow-status': proj ? 'var(--sz-text-dim)' : m.color === 'green' || m.color === 'grey' ? 'var(--sz-text)' : statusVar[m.color] } as CSSProperties}>
                   {fmt(m.value)}
                 </span>
-                <span className="ow__unit">{m.unit}</span>
-                {m.noise !== undefined ? <span className="ow__noise">± {fmt(m.noise)}</span> : null}
-                <TagBadge tag={m.tag} />
               </td>
-              <td className="ow__thr">
-                <span className="ow__ref">{refText(m)}</span>
-                {/* le seuil a SA propre étiquette : norme NASA avec son identifiant, sinon hypothèse d'équipe */}
-                {hasRef ? (m.ref?.standardId ? <TagBadge tag="NASA" id={m.ref.standardId} /> : <TagBadge tag="H" />) : null}
+              <td className="ow__unit-cell">{m.unit ? <span className="sz-unit">{m.unit}</span> : null}</td>
+              <td data-num>
+                <span className={hasRef ? undefined : 'sz-muted'}>{refText(m)}</span>
               </td>
-              <td><ProvenanceBadge value={m.provenance} /></td>
-              <td className="ow__num">
+              <td data-num>
                 {t === null || t === undefined || !Number.isFinite(t)
-                  ? <span className="sz-dim">—</span>
-                  : <span className="ow__trend">{signed(t, 2)}<span className="ow__unit">%/sem</span></span>}
+                  ? <span className="sz-muted">—</span>
+                  : signed(t, 2)}
               </td>
             </tr>
           );
@@ -254,71 +273,73 @@ function MetricsTable({ organ }: { organ: OrganState }): JSX.Element {
   );
 }
 
-function Synthesis({ organId, day }: { organId: OrganId; day: number }): JSX.Element {
+/**
+ * Texte de synthèse (rédigé au sol) → affichage sobre : aucun crochet, aucune capitale de code.
+ * La norme citée (« [V1 4027] ») n'apparaît qu'en mode Détails, entre parenthèses.
+ */
+function SynthText({ text }: { text: string }): JSX.Element {
+  const clean = text
+    .replace(/\s*\[(?:H|Persona|Publié|Simulé)\]/gi, '')
+    .replace(/\s*(?:→|->)\s*(ROUGE|AMBRE|ORANGE|VERT)\b/g, (_m, w: string) => ` : ${w.toLocaleLowerCase('fr-FR')}`)
+    .replace(/\bENSUITE\b/g, 'Ensuite')
+    .replace(/\bMAINTENANT\b/g, 'Maintenant');
+  const parts = clean.split(/\s*\[(V\d[^\]]*)\]/g);   // indices impairs : identifiants de norme
+  return (
+    <p className="ow__synth-text">
+      {parts.map((p, i) => (i % 2 === 0 ? p : <span key={i} className="sz-detail"> (NASA {p})</span>))}
+    </p>
+  );
+}
+
+function Synthesis({ organId, day, hideEmpty }: { organId: OrganId; day: number; hideEmpty?: boolean }): JSX.Element | null {
   const adherence = useBody((s) => s.adherence);
   const summary = useMemo(() => getSummaryPlan(organId, day, adherence), [organId, day, adherence]);
   const date = dayToDate(summary?.day ?? day);
   const delay = useMemo(() => lightTimeMin(date), [date]);
   const delayExact = useMemo(() => lightTimeSource(date) === 'table', [date]);
-  const mock = SUMMARY_SOURCE === 'gabarit';
+  const isTemplate = SUMMARY_SOURCE === 'gabarit';
   const future = summary !== null && summary.day > DAY_TODAY;
+  if (!summary && hideEmpty) return null;
   return (
     <Sect
       className="ow__synth"
-      title={mock ? 'SYNTHÈSE — À VALIDER PAR LE CMO' : 'SYNTHÈSE IA — À VALIDER PAR LE CMO'}
+      title={isTemplate ? 'Synthèse' : 'Synthèse IA'}
       right={summary ? (
         <>
-          <span className="ow__unreviewed sz-label">NON VALIDÉE</span>
+          <span className="ow__pill">À valider par le médecin de bord</span>
           <ProvenanceBadge value={future ? 'H' : 'SIMULÉ'} />
         </>
       ) : null}
     >
       {summary ? (
         <>
-          <p className="ow__synth-text">{summary.text}</p>
-          {mock ? (
-            <p className="ow__synth-meta ow__synth-mock sz-label">
-              TEXTE GABARIT (MOCK), CALCULÉ ICI — PAS ENCORE UNE SYNTHÈSE IA. LES SYNTHÈSES IA HORS LIGNE ARRIVERONT DANS public/data/summaries/
-            </p>
-          ) : null}
+          <SynthText text={summary.text} />
           {future ? (
-            <p className="ow__synth-meta sz-label">
-              SYNTHÈSE DE PROJECTION {fmtDay(summary.day)} — PRÉ-CALCULÉE, PAS UN MESSAGE REÇU <TagBadge tag="H" /> — JAMAIS UTILISÉE POUR UN SEUIL
-            </p>
+            <p className="ow__note sz-detail">Projection, pas un message reçu. Jamais utilisée pour un seuil.</p>
           ) : (
-            <>
-              <p className="ow__synth-meta sz-label">
-                {mock ? 'SCÉNARIO : ' : ''}REÇUE DE LA TERRE À {hhmm(CHART.groundEmitMin + delay)} <TagBadge tag="Persona" /> — DÉLAI{' '}
-                {delayExact ? <>{fmt(delay, 1)} MIN <TagBadge tag="Publié" /></> : <>≈ {fmt(delay, 1)} MIN <TagBadge tag="H" /> APPROX.</>}
-              </p>
-              <p className="ow__synth-meta sz-label sz-dim">
-                SYNTHÈSE DU {fmtDay(summary.day)} · GÉNÉRÉE AU SOL, JAMAIS UTILISÉE POUR UN SEUIL
-              </p>
-            </>
+            <p className="ow__note">
+              {summary.day !== day ? `Synthèse du ${fmtDay(summary.day)}, reçue` : 'Reçue'} à {hhmm(CHART.groundEmitMin + delay)} · délai{' '}
+              {delayExact ? '' : '≈ '}{fmt(delay, 0)} min
+              <span className="sz-detail"> · générée au sol, jamais utilisée pour un seuil</span>
+            </p>
           )}
         </>
       ) : (
-        <div className="ow__empty ow__empty--flat">
-          <span className="sz-label">PAS DE SYNTHÈSE POUR CET ORGANE</span>
-        </div>
+        <p className="ow__empty">Pas de synthèse pour cet organe.</p>
       )}
     </Sect>
   );
 }
 
 // ── Graphe ───────────────────────────────────────────────────────────────────────────────────
-const tickStyle = { fontFamily: tokens.font.mono, fontSize: CHART.font, fill: CHART.axis, letterSpacing: '0.08em' };
+const tickStyle = { fontFamily: tokens.font.text, fontSize: CHART.font, fill: CHART.axis, fontVariantNumeric: 'tabular-nums' };
 
-/** Libellé vertical le long d'un repère (à gauche du trait, depuis le haut). */
-function vLabel(text: string, fill: string) {
-  return function VLabel(props: { viewBox?: { x?: number; y?: number } }): JSX.Element {
-    const x = (props.viewBox?.x ?? 0) - 4;
-    const y = (props.viewBox?.y ?? 0) + 4;
-    return (
-      <text x={x} y={y} transform={`rotate(-90 ${x} ${y})`} textAnchor="end" style={{ ...tickStyle, fill }}>
-        {text}
-      </text>
-    );
+/** Petite étiquette horizontale en haut d'un repère vertical ; `row` décale d'une ligne pour éviter les chevauchements. */
+function markLabel(text: string, row = 0, side: 'right' | 'left' = 'right') {
+  return function MarkLabel(props: { viewBox?: { x?: number; y?: number } }): JSX.Element {
+    const x = (props.viewBox?.x ?? 0) + (side === 'right' ? 5 : -5);
+    const y = (props.viewBox?.y ?? 0) + 10 + row * 14;
+    return <text x={x} y={y} textAnchor={side === 'right' ? 'start' : 'end'} style={tickStyle}>{text}</text>;
   };
 }
 
@@ -327,30 +348,35 @@ function endLabel(text: string, fill: string, dy: number) {
     const vb = props.viewBox ?? {};
     const x = (vb.x ?? 0) + (vb.width ?? 0) / 2 - 6;
     const y = (vb.y ?? 0) + (vb.height ?? 0) / 2 + dy;
-    return <text x={x} y={y} textAnchor="end" style={{ ...tickStyle, fontSize: 10, fill }}>{text}</text>;
+    return <text x={x} y={y} textAnchor="end" style={{ ...tickStyle, fill }}>{text}</text>;
   };
 }
 
 interface TipProps { active?: boolean; payload?: ReadonlyArray<{ payload?: Row | PhenoRow }> }
 
+function TipRow({ label, value, chrono, band }: { label: string; value: number; chrono?: number; band?: [number, number] }): JSX.Element {
+  return (
+    <div className="ow__tip-row">
+      <span className="sz-dim">{label}</span>
+      <span>
+        {fmt(value, 1)} ans{chrono !== undefined ? <span className="sz-dim"> ({signed(value - chrono)})</span> : null}
+        {band ? <span className="ow__tip-band sz-muted">{fmt(band[0], 1)} – {fmt(band[1], 1)}</span> : null}
+      </span>
+    </div>
+  );
+}
+
 function GapTip({ active, payload }: TipProps): JSX.Element | null {
   const r = payload?.[0]?.payload as Row | undefined;
   if (!active || !r) return null;
   const predicted = r.meas === undefined;
-  const line = (label: string, v: number | undefined, band?: [number, number]): JSX.Element | null => (v === undefined ? null : (
-    <div className="ow__tip-row">
-      <span className="sz-dim">{label}</span>
-      <span>{fmt(v, 1)} ANS <span className="sz-dim">({signed(v - r.chrono)})</span></span>
-      {band ? <span className="sz-dim ow__tip-band">[{fmt(band[0], 1)} – {fmt(band[1], 1)}]</span> : null}
-    </div>
-  ));
   return (
-    <div className="ow__tip sz-label">
-      <div className="ow__tip-head">{fmtDay(r.day)} · {predicted ? 'PRÉDIT' : 'MESURÉ'}</div>
-      {line('MESURÉ', r.meas, r.bandMeas)}
-      {predicted ? line('RYTHME ACTUEL', r.p0, r.band0) : null}
-      {predicted ? line('AVEC LE PLAN', r.p1, r.band1) : null}
-      <div className="ow__tip-row"><span className="sz-dim">ÂGE RÉEL</span><span>{fmt(r.chrono, 1)} ANS</span></div>
+    <div className="ow__tip">
+      <div className="ow__tip-head">{fmtDay(r.day)} · {predicted ? 'prédit' : 'mesuré'}</div>
+      {r.meas !== undefined ? <TipRow label="Mesuré" value={r.meas} chrono={r.chrono} band={r.bandMeas} /> : null}
+      {predicted && r.p0 !== undefined ? <TipRow label="Rythme actuel" value={r.p0} chrono={r.chrono} band={r.band0} /> : null}
+      {predicted && r.p1 !== undefined ? <TipRow label="Avec le plan" value={r.p1} chrono={r.chrono} band={r.band1} /> : null}
+      <TipRow label="Âge réel" value={r.chrono} />
     </div>
   );
 }
@@ -359,82 +385,86 @@ function PhenoTip({ active, payload }: TipProps): JSX.Element | null {
   const r = payload?.[0]?.payload as PhenoRow | undefined;
   if (!active || !r) return null;
   return (
-    <div className="ow__tip sz-label">
-      <div className="ow__tip-head">{fmtDay(r.day)} · PRÉLÈVEMENT</div>
-      <div className="ow__tip-row"><span className="sz-dim">PHENOAGE</span><span>{fmt(r.pheno, 1)} ANS <span className="sz-dim">({signed(r.pheno - r.chrono)})</span></span></div>
-      <div className="ow__tip-row"><span className="sz-dim">ÂGE RÉEL</span><span>{fmt(r.chrono, 1)} ANS</span></div>
+    <div className="ow__tip">
+      <div className="ow__tip-head">{fmtDay(r.day)} · prélèvement</div>
+      <TipRow label="PhenoAge" value={r.pheno} chrono={r.chrono} />
+      <TipRow label="Âge réel" value={r.chrono} />
     </div>
   );
 }
 
+const CHART_MARGIN = { top: 8, right: 16, bottom: 0, left: 0 };
+
 function GapChartView({ chart, day, adherence }: { chart: GapChart; day: number; adherence: 0 | 1 }): JSX.Element {
   const s = [adherence === 0 ? CHART.on : CHART.off, adherence === 1 ? CHART.on : CHART.off] as const;
-  const showDay = day !== DAY_TODAY && day !== DAY_SOL0;
+  // pas de repère du jour au dernier jour : l'axe se termine là, les fins de courbe y sont déjà
+  const showDay = day !== DAY_TODAY && day !== DAY_SOL0 && day < DAY_END;
   const xTicks = [0, DAY_TODAY, DAY_SOL0, DAY_END];
   const [e0, e1] = chart.endPoint;
   const split = chart.rows.find((r) => r.day === chart.splitDay);
+  // Étiquettes de fin posées juste au-dessus de leur courbe (qui monte : le texte, à gauche du point, ne la touche pas).
+  // Si les deux fins de courbe sont trop proches, celle du plan passe dessous.
+  const apart = e0 && e1 ? (e0.bioAge - e1.bioAge) / Math.max(1e-6, chart.domain[1] - chart.domain[0]) : 1;
   return (
     <ResponsiveContainer width="100%" height="100%">
-      <ComposedChart data={chart.rows} margin={{ top: 8, right: 10, bottom: 0, left: 0 }}>
-        <CartesianGrid stroke={CHART.grid} vertical={false} />
+      <ComposedChart data={chart.rows} margin={CHART_MARGIN}>
+        <CartesianGrid stroke={CHART.grid} strokeOpacity={0} vertical={false} />
         <XAxis
           dataKey="day" type="number" domain={[0, DAY_END]} ticks={xTicks} tick={tickStyle} interval={0}
-          tickFormatter={(d: number) => fmtDay(d)} tickLine={{ stroke: CHART.axis }} axisLine={{ stroke: CHART.axis }} height={22}
+          tickFormatter={(d: number) => fmtDay(d)} tickLine={false} axisLine={{ stroke: CHART.grid }} height={22}
         />
         <YAxis
-          type="number" domain={chart.domain} ticks={chart.yTicks} interval={0} tick={tickStyle} width={34} allowDecimals={false}
-          tickFormatter={(v: number) => fmt(v, 0)} tickLine={false} axisLine={{ stroke: CHART.axis }}
+          type="number" domain={chart.domain} ticks={chart.yTicks} interval={0} tick={tickStyle} width={30} allowDecimals={false}
+          tickFormatter={(v: number) => fmt(v, 0)} tickLine={false} axisLine={false}
         />
-        {chart.hasPrediction ? (
-          <ReferenceArea x1={chart.splitDay} x2={DAY_END} fill={C.text} fillOpacity={CHART.predictedZone} stroke="none" ifOverflow="hidden" />
-        ) : null}
 
         {/* bandes d'incertitude */}
         <Area dataKey="bandMeas" stroke="none" fill={C.text} fillOpacity={CHART.measuredBand} isAnimationActive={false} activeDot={false} connectNulls={false} />
-        <Area dataKey="band0" stroke={s[0].stroke} strokeOpacity={0.25} strokeWidth={0.5} fill={C.text} fillOpacity={s[0].band} isAnimationActive={false} activeDot={false} />
-        <Area dataKey="band1" stroke={s[1].stroke} strokeOpacity={0.25} strokeWidth={0.5} fill={C.text} fillOpacity={s[1].band} isAnimationActive={false} activeDot={false} />
+        <Area dataKey="band0" stroke="none" fill={C.text} fillOpacity={s[0].band} isAnimationActive={false} activeDot={false} />
+        <Area dataKey="band1" stroke="none" fill={C.text} fillOpacity={s[1].band} isAnimationActive={false} activeDot={false} />
 
         {/* âge réel */}
         <Line dataKey="chrono" stroke={CHART.chrono.stroke} strokeWidth={CHART.chrono.width} strokeOpacity={CHART.chrono.opacity} dot={false} activeDot={false} isAnimationActive={false} />
 
         {/* repères verticaux */}
-        <ReferenceLine x={DAY_TODAY} stroke={C.text} strokeOpacity={0.55} strokeWidth={1} label={vLabel('AUJOURD’HUI', C.text)} />
-        <ReferenceLine x={DAY_SOL0} stroke={C.textDim} strokeOpacity={0.8} strokeWidth={1} strokeDasharray="1 3" label={vLabel('SOL 0', C.textDim)} />
+        <ReferenceLine x={DAY_TODAY} stroke={CHART.mark} strokeWidth={1} label={markLabel('Aujourd’hui', 0)} />
+        <ReferenceLine x={DAY_SOL0} stroke={CHART.mark} strokeWidth={1} strokeDasharray="2 3" label={markLabel('Sol 0', 1)} />
         {showDay ? (
-          /* en fin d'axe, le libellé vertical recouvrirait les étiquettes de fin de courbe : le jour est déjà dans l'en-tête */
-          <ReferenceLine x={day} stroke={C.holo} strokeWidth={1} label={day > DAY_END * 0.86 ? undefined : vLabel(`AFFICHÉ ${fmtDay(day)}`, C.holo)} />
+          /* en fin d'axe, l'étiquette recouvrirait celles de fin de courbe : le jour est déjà dans l'en-tête */
+          <ReferenceLine
+            x={day} stroke={C.textDim} strokeWidth={1}
+            label={day > DAY_END * 0.86 ? undefined : markLabel(fmtDay(day), 2, day > DAY_END * 0.5 ? 'left' : 'right')}
+          />
         ) : null}
 
-        {/* prédit = pointillé ; mesuré = plein */}
+        {/* projection = pointillé ; mesuré = plein ; les étiquettes de fin sont ancrées sur leur courbe */}
         <Line dataKey="p1" stroke={s[1].stroke} strokeWidth={s[1].width} strokeOpacity={s[1].opacity} strokeDasharray={s[1].dash} strokeLinecap="butt" dot={false} activeDot={false} isAnimationActive={false} />
         <Line dataKey="p0" stroke={s[0].stroke} strokeWidth={s[0].width} strokeOpacity={s[0].opacity} strokeDasharray={s[0].dash} strokeLinecap="butt" dot={false} activeDot={false} isAnimationActive={false} />
         <Line dataKey="meas" stroke={CHART.measured.stroke} strokeWidth={CHART.measured.width} dot={false} activeDot={false} isAnimationActive={false} />
 
         {chart.hasPrediction && chart.modeled && e0 ? (
-          <ReferenceDot x={e0.day} y={e0.band?.[1] ?? e0.bioAge} r={0} fill="none" stroke="none" label={endLabel('RYTHME ACTUEL', s[0].stroke, -6)} />
+          <ReferenceDot x={e0.day} y={e0.bioAge} r={0} fill="none" stroke="none" label={endLabel('Rythme actuel', s[0].stroke, -11)} />
         ) : null}
         {chart.hasPrediction && chart.modeled && e1 ? (
-          <ReferenceDot x={e1.day} y={e1.band?.[0] ?? e1.bioAge} r={0} fill="none" stroke="none" label={endLabel('AVEC LE PLAN', s[1].stroke, 13)} />
+          <ReferenceDot x={e1.day} y={e1.bioAge} r={0} fill="none" stroke="none" label={endLabel('Avec le plan', s[1].stroke, apart >= 0.1 ? -11 : 16)} />
         ) : null}
 
         {chart.modeled && chart.splitDay >= 0 && split ? (
-          <ReferenceDot x={split.day} y={split.meas ?? split.chrono} r={3} fill={C.text} stroke={C.bg} strokeWidth={1} />
+          <ReferenceDot x={split.day} y={split.meas ?? split.chrono} r={2.5} fill={C.text} stroke={C.inset} strokeWidth={1} />
         ) : null}
-        {chart.hasPrediction && chart.modeled && e0 ? <ReferenceDot x={e0.day} y={e0.bioAge} r={2.5} fill={C.bg} stroke={s[0].stroke} /> : null}
-        {chart.hasPrediction && chart.modeled && e1 ? <ReferenceDot x={e1.day} y={e1.bioAge} r={2.5} fill={C.bg} stroke={s[1].stroke} /> : null}
 
-        {/* modèle d'IA B : barre p10–p90 et médiane, scénario affiché seulement */}
+        {/* modèle d'IA B (mode Détails seulement : une seule prévision par défaut) : barre p10–p90 et médiane, scénario affiché */}
         {chart.modeled ? chart.ml[adherence].map((m) => (
           <ReferenceLine
-            key={`ml-${m.day}`} ifOverflow="extendDomain" stroke={C.holo} strokeWidth={2} strokeOpacity={0.9}
+            key={`ml-${m.day}`} ifOverflow="extendDomain" stroke={C.textDim} strokeWidth={2}
             segment={[{ x: m.day, y: m.lo }, { x: m.day, y: m.hi }]}
           />
         )) : null}
         {chart.modeled ? chart.ml[adherence].map((m) => (
-          <ReferenceDot key={`ml-mid-${m.day}`} x={m.day} y={m.mid} r={2.5} fill={C.holo} stroke={C.bg} strokeWidth={1} />
+          <ReferenceDot key={`ml-mid-${m.day}`} x={m.day} y={m.mid} r={2.5} fill={C.textDim} stroke={C.inset} strokeWidth={1} />
         )) : null}
 
-        <Tooltip content={<GapTip />} cursor={{ stroke: C.textDim, strokeWidth: 1 }} isAnimationActive={false} />
+        <Tooltip content={<GapTip />} cursor={{ stroke: C.borderStrong, strokeWidth: 1 }} isAnimationActive={false} />
       </ComposedChart>
     </ResponsiveContainer>
   );
@@ -445,45 +475,42 @@ function PhenoChartView({ rows, usedDay }: { rows: PhenoRow[]; usedDay: number |
   let hi = -Infinity;
   for (const r of rows) { lo = Math.min(lo, r.pheno, r.chrono); hi = Math.max(hi, r.pheno, r.chrono); }
   if (!Number.isFinite(lo)) { lo = CHRONO_AGE_J0; hi = CHRONO_AGE_J0 + 1; }
-  const y0 = Math.floor(lo * 2) / 2;
-  const y1 = Math.ceil(hi * 2 + 0.4) / 2;
-  const yTicks: number[] = [];
-  for (let v = y0; v <= y1 + 1e-9; v += 0.5) yTicks.push(v);
+  const { domain, yTicks } = niceAxis(lo, hi);
   const ticks = [0, 28, 56, 84].filter((d) => d < DAY_TODAY - 6).concat(DAY_TODAY);
   return (
     <ResponsiveContainer width="100%" height="100%">
-      <ComposedChart data={rows} margin={{ top: 8, right: 10, bottom: 0, left: 0 }}>
-        <CartesianGrid stroke={CHART.grid} vertical={false} />
+      <ComposedChart data={rows} margin={CHART_MARGIN}>
+        <CartesianGrid stroke={CHART.grid} strokeOpacity={0} vertical={false} />
         <XAxis
           dataKey="day" type="number" domain={[0, DAY_TODAY]} ticks={ticks} tick={tickStyle} interval={0}
-          tickFormatter={(d: number) => fmtDay(d)} tickLine={{ stroke: CHART.axis }} axisLine={{ stroke: CHART.axis }} height={22}
+          tickFormatter={(d: number) => fmtDay(d)} tickLine={false} axisLine={{ stroke: CHART.grid }} height={22}
         />
         <YAxis
-          type="number" domain={[y0, y1]} ticks={yTicks} interval={0} tick={tickStyle} width={34}
-          tickFormatter={(v: number) => fmt(v, 1)} tickLine={false} axisLine={{ stroke: CHART.axis }}
+          type="number" domain={domain} ticks={yTicks} interval={0} tick={tickStyle} width={30} allowDecimals={false}
+          tickFormatter={(v: number) => fmt(v, 0)} tickLine={false} axisLine={false}
         />
         <Line dataKey="chrono" stroke={CHART.chrono.stroke} strokeWidth={CHART.chrono.width} strokeOpacity={CHART.chrono.opacity} dot={false} activeDot={false} isAnimationActive={false} />
         {usedDay !== null ? (
-          <ReferenceLine x={usedDay} stroke={C.holo} strokeWidth={1} label={vLabel(`PRÉLÈVEMENT ${fmtDay(usedDay)}`, C.holo)} />
+          <ReferenceLine x={usedDay} stroke={CHART.mark} strokeWidth={1} label={markLabel(`Prélèvement ${fmtDay(usedDay)}`, 0, 'left')} />
         ) : null}
         <Line
           dataKey="pheno" stroke={CHART.measured.stroke} strokeWidth={CHART.measured.width} isAnimationActive={false}
-          dot={{ r: 2, fill: C.bg, stroke: C.text, strokeWidth: 1 }} activeDot={{ r: 3, fill: C.text, stroke: C.text }}
+          dot={{ r: 2, fill: C.inset, stroke: C.text, strokeWidth: 1 }} activeDot={{ r: 3, fill: C.text, stroke: C.inset }}
         />
-        <Tooltip content={<PhenoTip />} cursor={{ stroke: C.textDim, strokeWidth: 1 }} isAnimationActive={false} />
+        <Tooltip content={<PhenoTip />} cursor={{ stroke: C.borderStrong, strokeWidth: 1 }} isAnimationActive={false} />
       </ComposedChart>
     </ResponsiveContainer>
   );
 }
 
-function Legend({ pheno, mock, ml }: { pheno?: boolean; mock?: boolean; ml?: boolean }): JSX.Element {
+function Legend({ pheno, ml }: { pheno?: boolean; ml?: boolean }): JSX.Element {
   return (
-    <ul className="ow__legend sz-label">
-      <li><i className="ow__key ow__key--solid" />{pheno ? (mock ? 'PHENOAGE (VALEUR FACTICE)' : 'PHENOAGE CALCULÉ') : 'MESURÉ'}</li>
-      {pheno ? null : <li><i className="ow__key ow__key--dash" />PRÉDIT (MODÈLE)</li>}
-      {pheno ? null : <li><i className="ow__key ow__key--band" />INCERTITUDE</li>}
-      {ml ? <li><i className="ow__key ow__key--ml" />MODÈLE D’IA B (P10–P90)</li> : null}
-      <li><i className="ow__key ow__key--thin" />ÂGE RÉEL</li>
+    <ul className="ow__legend">
+      <li><i className="ow__key ow__key--solid" />{pheno ? 'PhenoAge' : 'Mesuré'}</li>
+      {pheno ? null : <li><i className="ow__key ow__key--dash" />Projection</li>}
+      {pheno ? null : <li><i className="ow__key ow__key--band" />Incertitude</li>}
+      {ml ? <li title="Modèle d’IA : médiane et intervalle P10–P90"><i className="ow__key ow__key--ml" />Prévision IA, P10–P90</li> : null}
+      <li><i className="ow__key ow__key--thin" />Âge réel</li>
     </ul>
   );
 }
@@ -492,213 +519,259 @@ function Legend({ pheno, mock, ml }: { pheno?: boolean; mock?: boolean; ml?: boo
 function OrganRight({ organ, day }: { organ: OrganState; day: number }): JSX.Element {
   const adherence = useBody((s) => s.adherence);
   const setAdherence = useBody((s) => s.setAdherence);
-  const chart = useMemo(() => buildGapChart(organ.id), [organ.id]);
+  // la prévision du modèle d'IA double la projection : elle n'entre dans le graphe (et dans l'échelle) qu'en mode Détails
+  const details = usePrefs((s) => s.details);
+  const chart = useMemo(() => buildGapChart(organ.id, details), [organ.id, details]);
+  const hasMl = chart.modeled && chart.ml[adherence].length > 0;
   const btn = (a: 0 | 1, label: string): JSX.Element => {
     const v = chart.end[a];
     return (
       <button
-        type="button" className="ow__scn" aria-pressed={adherence === a} data-on={adherence === a}
+        type="button" className="ow__scn" aria-pressed={adherence === a}
         disabled={!chart.modeled} onClick={() => setAdherence(a)}
       >
-        <span className="ow__scn-top sz-label">
+        <span className="ow__scn-top">
           <i className={`ow__key ${adherence === a ? 'ow__key--dash' : 'ow__key--dash-off'}`} />
           {label}
         </span>
-        <span className="ow__scn-num">
-          {v === null ? '—' : signed(v)}
-          <small>ANS</small>
+        <span className="ow__stat-val">
+          <span className="sz-value">{v === null ? '—' : signed(v)}</span>
+          {v === null ? null : <span className="sz-unit">ans</span>}
         </span>
-        <span className="sz-label sz-dim">FIN DE MISSION · {fmtDay(DAY_END)}</span>
       </button>
     );
   };
   return (
     <div className="ow__right">
-      <Sect title={<>ÉCART D’ÂGE ESTIMÉ <TagBadge tag="H" /></>} right={<ProvenanceBadge value="H" />}>
-        <div className="ow__scns">
-          {btn(0, 'RYTHME ACTUEL')}
-          {btn(1, 'AVEC LE PLAN')}
+      <Sect
+        title="Écart d’âge en fin de mission"
+        right={<><span>{fmtDay(DAY_END)}</span><ProvenanceBadge value="H" /></>}
+      >
+        <div className="ow__scns" role="group" aria-label="Scénario">
+          {btn(0, 'Rythme actuel')}
+          {btn(1, 'Avec le plan')}
         </div>
-        <div className="ow__axis-title sz-label sz-dim">
-          <span>ÂGE ÉQUIVALENT (ANS)</span>
-          <span>MESURÉ {fmtDay(0)}–{fmtDay(DAY_TODAY)} │ PRÉDIT → {fmtDay(DAY_END)}</span>
+        <div className="ow__plot sz-ecg">
+          <span className="ow__axis-title">Âge équivalent (ans)</span>
+          <div className="ow__chart">
+            <GapChartView chart={chart} day={day} adherence={adherence} />
+            {chart.modeled ? null : <div className="ow__chart-veil">Écart d’âge non modélisé</div>}
+          </div>
         </div>
-        <div className="ow__chart">
-          <GapChartView chart={chart} day={day} adherence={adherence} />
-          {chart.modeled ? null : (
-            <div className="ow__chart-veil">
-              <span className="sz-label">NON MODÉLISÉ — ÉCART D’ÂGE INCONNU</span>
-              <span className="sz-label sz-dim">AUCUN MODÈLE : ÂGE ÉQUIVALENT = ÂGE RÉEL</span>
-            </div>
-          )}
-        </div>
-        <Legend ml={chart.modeled && chart.ml[adherence].length > 0} />
+        <Legend ml={hasMl} />
       </Sect>
-      <div className="ow__notes">
-        {chart.modeled && chart.ml[adherence].length > 0 ? (
-          <p className="ow__ml sz-mono">
-            <span className="ow__ml-name">MODÈLE D’IA B</span>{' '}
+      <div className="ow__notes sz-detail">
+        {hasMl ? (
+          <p>
+            Modèle IA B, {chart.ml[adherence][0].f.unit} :{' '}
             {chart.ml[adherence].map((m, i) => (
               <span key={m.day}>
-                {i > 0 ? ' · ' : ''}{m.day === DAY_SOL0 ? 'SOL 0' : fmtDay(m.day)} : {fmt(m.f.p50, 1)} [{fmt(m.f.p10, 1)}–{fmt(m.f.p90, 1)}]
+                {i > 0 ? ' · ' : ''}{m.day === DAY_SOL0 ? 'Sol 0' : fmtDay(m.day)} {fmt(m.f.p50, 1)} ({fmt(m.f.p10, 1)} – {fmt(m.f.p90, 1)})
               </span>
             ))}
-            {' '}<span className="sz-dim">{chart.ml[adherence][0].f.unit}</span> <TagBadge tag="H" />
           </p>
         ) : null}
-        <p className="ow__formula sz-mono">
-          bioAge = âge réel + perte cumulée % / vitesse de vieillissement terrestre %/an <TagBadge tag="H" />
-        </p>
-        <p className="ow__limit">
-          Équivalent en années, pas un vieillissement réel : la perte spatiale est en partie réversible au retour.
-        </p>
+        <p>Âge équivalent = âge réel + perte cumulée (%) ÷ vitesse de vieillissement terrestre (%/an).</p>
+        <p>Équivalent en années, pas un vieillissement réel : la perte spatiale est en partie réversible au retour.</p>
       </div>
     </div>
   );
 }
 
+const PHENO_KEY: Record<keyof PhenoAgeMarkers, string> = {
+  albumine: 'albumine', creatinine: 'creatinine', glucose: 'glucose', crp: 'crp', lymphocytes_pct: 'lymphocytes_pct',
+  vgm: 'vgm', idr: 'idr', pal: 'phosphatases_alcalines', leucocytes: 'leucocytes',
+};
+const PHENO_NAME: Partial<Record<keyof PhenoAgeMarkers, string>> = {
+  idr: 'l’IDR', crp: 'la CRP', creatinine: 'la créatinine', albumine: 'l’albumine', lymphocytes_pct: 'les lymphocytes',
+  leucocytes: 'les leucocytes', glucose: 'le glucose', vgm: 'le VGM', pal: 'les phosphatases alcalines',
+};
+
+/**
+ * D'où vient la hausse du PhenoAge entre le premier et le dernier prélèvement : pour chaque marqueur, on remet sa
+ * valeur du premier prélèvement dans le dernier et on mesure l'écart. Les deux plus forts sont dits en clair.
+ */
+function phenoDrivers(): { first: number; last: number; rise: number; top: { k: keyof PhenoAgeMarkers; years: number }[] } | null {
+  const days = [...new Set(getBloodTests('crp').map((b) => b.day))].filter((d) => d <= DAY_TODAY).sort((a, b) => a - b);
+  const a = days.length ? phenoAge(days[0]) : null;
+  const b = days.length ? phenoAge(days[days.length - 1]) : null;
+  if (!a || !b || a.day === b.day) return null;
+  const marks = (r: PhenoAgeResult): PhenoAgeMarkers =>
+    Object.fromEntries(Object.entries(PHENO_KEY).map(([k, an]) => [k, r.inputs[an]])) as unknown as PhenoAgeMarkers;
+  const mb = marks(b), ma = marks(a);
+  const base = computePhenoAge(mb, b.chronoAge);
+  const top = (Object.keys(PHENO_KEY) as (keyof PhenoAgeMarkers)[])
+    .map((k) => ({ k, years: base - computePhenoAge({ ...mb, [k]: ma[k] }, b.chronoAge) }))
+    .sort((x, y) => y.years - x.years)
+    .slice(0, 2);
+  return { first: a.day, last: b.day, rise: b.phenoAge - a.phenoAge, top };
+}
+
 function GlobalRight({ result }: { result: PhenoAgeResult | null }): JSX.Element {
   const rows = useMemo(buildPhenoRows, []);
+  const drivers = useMemo(phenoDrivers, []);
   return (
     <div className="ow__right">
       <Sect
-        title={<>PHENOAGE DANS LE TEMPS <TagBadge tag="Publié" /></>}
-        right={<>{result?.mock ? <span className="ow__mock sz-label">FACTICE</span> : null}<ProvenanceBadge value="SIMULÉ" /></>}
+        title="PhenoAge dans le temps"
       >
-        <div className="ow__scns">
-          <div className="ow__scn" data-on="true" data-static="true">
-            <span className="ow__scn-top sz-label"><i className="ow__key ow__key--solid" />PHENOAGE</span>
-            <span className="ow__scn-num">{result ? fmt(result.phenoAge, 1) : '—'}<small>ANS</small></span>
-            <span className="sz-label sz-dim">{result ? `PRÉLÈVEMENT ${fmtDay(result.day)}` : 'AUCUN PRÉLÈVEMENT'}</span>
-          </div>
-          <div className="ow__scn" data-static="true">
-            <span className="ow__scn-top sz-label"><i className="ow__key ow__key--thin" />ÂGE RÉEL</span>
-            <span className="ow__scn-num">{result ? fmt(result.chronoAge, 1) : '—'}<small>ANS</small></span>
-            <span className="sz-label sz-dim">HADDAD <TagBadge tag="Persona" /></span>
+        <div className="ow__plot sz-ecg">
+          <span className="ow__axis-title">Âge (ans)</span>
+          <div className="ow__chart">
+            <PhenoChartView rows={rows} usedDay={result?.day ?? null} />
           </div>
         </div>
-        <div className="ow__axis-title sz-label sz-dim">
-          <span>ÂGE (ANS)</span>
-          <span>UN POINT PAR PRÉLÈVEMENT HEBDOMADAIRE</span>
-        </div>
-        <div className="ow__chart">
-          <PhenoChartView rows={rows} usedDay={result?.day ?? null} />
-        </div>
-        <Legend pheno mock={result?.mock} />
+        <Legend pheno />
+        {drivers && drivers.rise >= 3 ? (
+          // une hausse rapide se lit d'abord comme une alerte sur la donnée : on dit d'où elle vient, sans la cacher
+          <p className="ow__caveat">
+            +{fmt(drivers.rise, 1)} ans de {fmtDay(drivers.first)} à {fmtDay(drivers.last)}, portés surtout par{' '}
+            {drivers.top.map((t, i) => (
+              <span key={t.k}>{i ? ' et ' : ''}{PHENO_NAME[t.k]} (+{fmt(t.years, 1)} an{t.years >= 2 ? 's' : ''})</span>
+            ))}
+            . Le PhenoAge est très sensible à ces marqueurs : sur une série simulée, une hausse de cette taille serait à confirmer par un second prélèvement avant d’en tirer un âge.
+          </p>
+        ) : null}
       </Sect>
-      <div className="ow__notes">
-        <p className="ow__formula sz-mono">PAS DE PROJECTION POUR PHENOAGE</p>
-        <p className="ow__limit">
-          PhenoAge (Levine et al., Aging, 2018) se calcule sur une prise de sang : il n’existe que les jours de prélèvement. Aucun modèle ne le prolonge ; valeurs sanguines simulées.
-          {result?.mock ? ' La formule n’est pas encore branchée : la courbe est une interpolation factice, pas un calcul.' : ''}
-        </p>
+      <div className="ow__notes sz-detail">
+        <p>Un point par prélèvement hebdomadaire, sans projection.</p>
       </div>
     </div>
   );
 }
 
 function OrganCentre({ organ, day }: { organ: OrganState; day: number }): JSX.Element {
-  const n = organ.metrics.filter((m) => !isProjectionMetric(m)).length;
   const bone = organ.layer === 'squelette';
+  const rows = shownMetrics(organ, day);
+  // provenance commune à toutes les lignes : une seule puce, dans l'en-tête de section
+  const prov = rows.length > 0 && rows.every((m) => m.provenance === rows[0].provenance) ? rows[0].provenance : null;
+  const title = day > DAY_TODAY ? `Projection à ${fmtDay(day)}` : bone ? 'Estimations du jour' : 'Métriques du jour';
   return (
     <div className="ow__centre sz-scroll">
-      <Sect
-        title={bone ? 'ESTIMATIONS DU JOUR' : 'MÉTRIQUES DU JOUR'}
-        right={<span className="sz-label sz-dim">{n} {bone ? 'ESTIMATION' : 'MESURE'}{n > 1 ? 'S' : ''}</span>}
-      >
+      <Sect title={title} right={prov ? <ProvenanceBadge value={prov} /> : null}>
+        <MetricsTable organ={organ} day={day} />
         {bone ? (
-          <p className="ow__source sz-label">
-            SOURCE : MODÈLE + BILAN AU SOL + MARQUEURS URINAIRES <TagBadge tag="H" /> — L’OS N’EST PAS MESURÉ PAR LE SCANNER
+          <p className="ow__note">
+            Densité osseuse estimée par modèle, non mesurée par le scanner.
+            <span className="sz-detail"> Source : modèle, bilan au sol et marqueurs urinaires.</span>
           </p>
         ) : null}
-        <MetricsTable organ={organ} />
       </Sect>
       <Synthesis organId={organ.id} day={day} />
     </div>
   );
 }
 
-function GlobalCentre({ result, organs, day }: { result: PhenoAgeResult | null; organs: OrganState[]; day: number }): JSX.Element {
+/** Un seul chiffre principal par bloc : les autres passent `dim` (en retrait). */
+function Stat({ label, value, dim }: { label: string; value: string; dim?: boolean }): JSX.Element {
+  return (
+    <div className="ow__stat">
+      <span className="sz-label">{label}</span>
+      <span className="ow__stat-val">
+        <span className={`sz-value${dim ? ' sz-dim' : ''}`}>{value}</span>
+        <span className="sz-unit">ans</span>
+      </span>
+    </div>
+  );
+}
+
+/** Écart d'âge par organe (colonne de gauche de « Corps entier ») : une ligne par organe, ouvre sa fenêtre. */
+function OrganGaps({ organs }: { organs: OrganState[] }): JSX.Element {
   const openOrganWindow = useBody((s) => s.openOrganWindow);
+  return (
+    <Sect className="ow__gaps" title="Écart d’âge par organe" right={<ProvenanceBadge value="H" />}>
+      <ul className="ow__organs sz-scroll">
+        {organs.map((o) => {
+          const modeled = hasBioAgeModel(o.id);
+          return (
+            <li key={o.id}>
+              <button type="button" className="ow__organ" onClick={() => openOrganWindow(o.id)}>
+                {/* sans modèle d'écart d'âge, la pastille est grise : la ligne ne dit rien de l'organe, donc pas de couleur */}
+                <StatusDot color={modeled ? o.status : 'grey'} />
+                <span className="ow__organ-name">{sentenceCase(o.name.replace(/\s*\(non modélisé\)\s*$/i, ''))}</span>
+                {/* « a un modèle d'écart d'âge » vient du modèle, pas de la couleur : sans modèle, jamais « +0,0 » */}
+                {modeled
+                  ? <span className="ow__organ-val">{signed(o.bioAge - o.chronoAge)}<span className="sz-unit ow__unit">ans</span></span>
+                  : <span className="ow__organ-val sz-muted">Non modélisé</span>}
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </Sect>
+  );
+}
+
+function GlobalCentre({ result, day }: { result: PhenoAgeResult | null; day: number }): JSX.Element {
   const tests = useMemo(() => (result ? getBloodTests().filter((t) => t.day === result.day) : []), [result]);
   const inputs = result ? Object.entries(result.inputs) : [];
+  const tagOf = (key: string): Tag => (key === 'age' ? 'Persona' : tests.find((t) => t.analyte === key)?.tag ?? 'Persona');
+  // source commune à toutes les lignes : dite une fois (puce de l'en-tête), sinon par ligne
+  const sameTag = inputs.every(([key]) => tagOf(key) === tagOf(inputs[0][0]));
   return (
-    <div className="ow__centre sz-scroll">
+    <div className="ow__centre ow__centre--fixed">
       <Sect
-        title={<>ÂGE BIOLOGIQUE GLOBAL — PHENOAGE <TagBadge tag="Publié" /></>}
-        right={result?.mock ? <span className="ow__mock sz-label">VALEUR FACTICE</span> : <span className="sz-label sz-dim">LEVINE ET AL., 2018</span>}
+        title="Âge biologique (PhenoAge)"
+        right={(
+          <>
+            {result?.mock ? <span className="ow__pill sz-detail">Valeur provisoire</span> : null}
+            <span className="sz-detail">Levine et al., 2018</span>
+          </>
+        )}
       >
         {result ? (
-          <div className="ow__pheno">
-            <div>
-              <span className="sz-label sz-dim">PHENOAGE</span>
-              <span className="ow__pheno-num">{fmt(result.phenoAge, 1)}<small>ANS</small></span>
+          <>
+            <div className="ow__stats">
+              <Stat label="Écart" value={signed(result.phenoAge - result.chronoAge)} />
+              <Stat label="PhenoAge" value={fmt(result.phenoAge, 1)} dim />
+              <Stat label="Âge réel" value={fmt(result.chronoAge, 1)} dim />
             </div>
-            <div>
-              <span className="sz-label sz-dim">ÂGE RÉEL</span>
-              <span className="ow__pheno-num ow__pheno-num--dim">{fmt(result.chronoAge, 1)}<small>ANS</small></span>
-            </div>
-            <div>
-              <span className="sz-label sz-dim">ÉCART</span>
-              <span className="ow__pheno-num">{signed(result.phenoAge - result.chronoAge)}<small>ANS</small></span>
-            </div>
-            <p className="sz-label sz-dim">
-              {result.mock ? 'VALEUR FACTICE (STUB) — FORMULE DE LEVINE 2018 PAS ENCORE CALCULÉE · PRÉLÈVEMENT' : 'CALCULÉ SUR LE PRÉLÈVEMENT DU'} {fmtDay(result.day)}{day !== result.day ? ` (DERNIER DISPONIBLE À ${fmtDay(day)})` : ''}
+            <p className="ow__note">
+              Prélèvement du {fmtDay(result.day)}{day !== result.day ? `, dernier disponible à ${fmtDay(day)}` : ''}.
             </p>
-          </div>
+          </>
         ) : (
-          <div className="ow__empty"><span className="sz-label">DONNÉES INSUFFISANTES — AUCUN PRÉLÈVEMENT</span></div>
+          <p className="ow__empty">Aucun prélèvement : données insuffisantes.</p>
         )}
       </Sect>
+      <Synthesis organId="global" day={day} hideEmpty />
       {result ? (
-        <Sect title={result.mock ? 'ENTRÉES DE LA FORMULE (NON ENCORE CALCULÉE)' : 'MARQUEURS UTILISÉS'} right={<ProvenanceBadge value="SIMULÉ" />}>
-          <table className="ow__table">
-            <thead>
-              <tr><th>MARQUEUR</th><th className="ow__num">VALEUR</th><th>RÉFÉRENCE</th><th>ÉTIQUETTE</th></tr>
-            </thead>
-            <tbody>
-              {inputs.map(([key, value]) => {
-                const meta = getAnalyteMeta(key);
-                const test = tests.find((t) => t.analyte === key);
-                const isAge = key === 'age';
-                const out = test ? value < test.refLow || value > test.refHigh : false;
-                return (
-                  <tr key={key}>
-                    <td><span className="ow__metric"><span>{isAge ? 'Âge réel' : meta?.label ?? key}</span></span></td>
-                    <td className="ow__num">
-                      <span className="ow__val" style={{ '--ow-status': out ? 'var(--sz-amber)' : 'var(--sz-text)' } as CSSProperties}>
-                        {fmt(value, meta?.digits)}
-                      </span>
-                      <span className="ow__unit">{isAge ? 'ans' : test?.unit ?? meta?.unit ?? ''}</span>
-                    </td>
-                    <td>
-                      <span className="ow__ref">
-                        {test ? `${fmt(test.refLow)} – ${fmt(test.refHigh)}` : meta ? `${fmt(meta.refLow)} – ${fmt(meta.refHigh)}` : '—'}
-                      </span>
-                    </td>
-                    <td><TagBadge tag={isAge ? 'Persona' : test?.tag ?? 'Persona'} /></td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+        <Sect className="ow__sect--fill" title="Marqueurs utilisés" right={<ProvenanceBadge value="SIMULÉ" />}>
+          {/* seul contenu qui défile dans la fenêtre : l'en-tête du tableau reste en place */}
+          <div className="ow__scroll sz-scroll">
+            <table className="sz-table ow__table ow__table--dense">
+              <thead>
+                <tr><th>Marqueur</th><th data-num>Valeur</th><th aria-hidden="true" /><th data-num>Référence</th></tr>
+              </thead>
+              <tbody>
+                {inputs.map(([key, value]) => {
+                  const meta = getAnalyteMeta(key);
+                  const test = tests.find((t) => t.analyte === key);
+                  const isAge = key === 'age';
+                  const out = test ? value < test.refLow || value > test.refHigh : false;
+                  const unit = isAge ? 'ans' : test?.unit ?? meta?.unit ?? '';
+                  const ref = test ? `${fmt(test.refLow)} – ${fmt(test.refHigh)}` : meta ? `${fmt(meta.refLow)} – ${fmt(meta.refHigh)}` : null;
+                  return (
+                    <tr key={key}>
+                      <td>
+                        {isAge ? 'Âge réel' : meta?.label ?? key}
+                        {sameTag ? null : <span className="ow__meta ow__meta--inline sz-detail">{TAG_TEXT[tagOf(key)]}</span>}
+                      </td>
+                      <td data-num>
+                        <span className="ow__val" style={{ '--ow-status': out ? 'var(--sz-amber)' : 'var(--sz-text)' } as CSSProperties}>
+                          {fmt(value, meta?.digits)}
+                        </span>
+                      </td>
+                      <td className="ow__unit-cell">{unit ? <span className="sz-unit">{unit}</span> : null}</td>
+                      <td data-num>{ref ?? <span className="sz-muted">—</span>}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </Sect>
       ) : null}
-      <Sect title="ÉCART D’ÂGE PAR ORGANE" right={<TagBadge tag="H" />}>
-        <div className="ow__chips">
-          {organs.map((o) => (
-            <button key={o.id} type="button" className="ow__chip sz-label" onClick={() => openOrganWindow(o.id)}>
-              <StatusDot color={o.status} />
-              <span>{o.name.replace(/\s*\(non modélisé\)\s*$/i, '')}</span>
-              {/* « a un modèle d'écart d'âge » vient du modèle, pas de la couleur : sans modèle, jamais « +0,0 » */}
-              <span className="sz-dim">
-                {hasBioAgeModel(o.id) ? signed(o.bioAge - o.chronoAge) : o.metrics.length === 0 ? 'NON MODÉLISÉ' : 'ÉCART NON MODÉLISÉ'}
-              </span>
-            </button>
-          ))}
-        </div>
-      </Sect>
-      <Synthesis organId="global" day={day} />
     </div>
   );
 }
@@ -728,58 +801,43 @@ export function OrganWindow(): JSX.Element | null {
 
   const isGlobal = target === 'global';
   const organ = isGlobal ? null : body.organs.find((o) => o.id === target) ?? null;
-  const sys = organ ? LAYER_META[organ.layer]?.sys ?? 'SYS-00' : 'SYS-00';
-  const name = isGlobal ? 'Corps entier' : organ?.name ?? String(target);
+  const name = isGlobal ? 'Corps entier' : sentenceCase(organ?.name ?? String(target));
   const gap = organ && hasBioAgeModel(organ.id) ? organ.bioAge - organ.chronoAge : null;
 
   return (
     <div className="ow" onMouseDown={(e) => { if (e.target === e.currentTarget) openOrganWindow(null); }}>
       <div
         ref={dialogRef} className="ow__win" role="dialog" aria-modal="true" tabIndex={-1}
-        aria-label={`Fenêtre organe — ${name}`}
-        style={{ '--ow-status': organ ? statusVar[organ.status] : 'var(--sz-text-dim)' } as CSSProperties}
+        aria-label={`Fenêtre organe — ${name}`} data-kind={isGlobal ? 'global' : 'organ'}
       >
-        <i className="ow__corner ow__corner--tl" /><i className="ow__corner ow__corner--tr" />
-        <i className="ow__corner ow__corner--bl" /><i className="ow__corner ow__corner--br" />
-
         <header className="ow__head">
-          <span className="sz-label sz-dim">{sys} / {isGlobal ? 'GLOBAL' : 'ORGANE'}</span>
           <h2 className="ow__name">{name}</h2>
-          {organ ? <StatusChip color={organ.status} label={organ.status === 'grey' ? 'NON MODÉLISÉ' : undefined} /> : null}
+          {organ ? <StatusChip color={organ.status} label={organ.status === 'grey' ? 'Non modélisé' : undefined} /> : null}
+          {/* écart d'âge du jour : dans l'en-tête, à côté du statut (les deux chiffres clés restent ceux de la colonne de droite) */}
+          {organ && gap !== null ? (
+            <span className="ow__head-gap" title="Hypothèse de l’équipe : perte cumulée rapportée à la vitesse de vieillissement terrestre">
+              Écart d’âge estimé <strong>{signed(gap)} ans</strong>
+            </span>
+          ) : null}
           <span className="ow__fill" />
-          <span className="sz-label">
-            {fmtDay(day)} <span className="sz-dim">· {body.date || dayToDate(day)} ·</span>{' '}
-            {body.projected ? <span className="ow__proj">PROJETÉ</span> : 'MESURÉ'}
+          <span className="ow__date">
+            {fmtDay(day)} · {fmtDate(body.date || dayToDate(day))}{body.projected ? ' · projection' : ''}
           </span>
-          <button type="button" className="sz-btn ow__close" onClick={() => openOrganWindow(null)} aria-label="Fermer la fenêtre">
-            FERMER <span className="sz-dim">ÉCHAP</span> ✕
-          </button>
+          <CloseButton onClose={() => openOrganWindow(null)} label="Fermer la fenêtre (Échap)" />
         </header>
 
         <div className="ow__grid">
           <div className="ow__left">
-            <div className="ow__view">
+            <div className="ow__view" title="Glisser pour tourner">
               <OrganViewer organId={target} />
             </div>
-            <span className="ow__view-tl sz-label sz-dim">{isGlobal ? 'SILHOUETTE' : 'ORGANE ISOLÉ'}</span>
-            <span className="ow__view-tr sz-label sz-dim">GLISSER POUR TOURNER</span>
-            <div className="ow__view-foot">
-              {organ ? (
-                <div className="ow__gap">
-                  <span className="sz-label sz-dim">ÉCART D’ÂGE ESTIMÉ <TagBadge tag="H" /> · {fmtDay(day)}</span>
-                  <span className="ow__gap-num" data-unknown={gap === null}>
-                    {gap === null ? <>—<small>ÉCART NON MODÉLISÉ</small></> : <>{signed(gap)}<small>ANS</small></>}
-                  </span>
-                </div>
-              ) : null}
-              <span className="sz-label sz-dim">{anatomySource() === 'z-anatomy' ? 'Z-ANATOMY — CC BY-SA 4.0' : 'MODÈLE DE SECOURS — PROCÉDURAL'}</span>
-            </div>
+            {isGlobal ? <OrganGaps organs={body.organs} /> : null}
           </div>
 
-          {isGlobal ? <GlobalCentre result={pheno} organs={body.organs} day={day} /> : null}
+          {isGlobal ? <GlobalCentre result={pheno} day={day} /> : null}
           {!isGlobal && organ ? <OrganCentre organ={organ} day={day} /> : null}
           {!isGlobal && !organ ? (
-            <div className="ow__centre"><div className="ow__empty"><span className="sz-label">ORGANE INCONNU — AUCUNE DONNÉE</span></div></div>
+            <div className="ow__centre"><p className="ow__empty">Organe inconnu : aucune donnée.</p></div>
           ) : null}
 
           {isGlobal ? <GlobalRight result={pheno} /> : null}

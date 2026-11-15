@@ -1,5 +1,7 @@
 // État partagé de la page Body. Tous les composants de la page lisent/écrivent ici ;
 // aucun ne dépend directement d'un autre composant.
+import { useLayoutEffect, useState } from 'react';
+import type { RefObject } from 'react';
 import { create } from 'zustand';
 import type { Alert, DayBody, LayerId, OrganId } from '../../types';
 import { DAY_TODAY } from '../../mocks/mission';
@@ -8,13 +10,14 @@ import { alertsForDayPlan } from '../../models/alerts';
 
 export const LAYER_ORDER: LayerId[] = ['squelette', 'muscles', 'organes', 'cardio', 'nerveux', 'exposition'];
 
-export const LAYER_META: Record<LayerId, { sys: string; label: string; mvp: boolean }> = {
-  squelette: { sys: 'SYS-01', label: 'SQUELETTE', mvp: true },
-  muscles: { sys: 'SYS-02', label: 'MUSCLES', mvp: true },
-  organes: { sys: 'SYS-03', label: 'ORGANES', mvp: true },
-  cardio: { sys: 'SYS-04', label: 'CARDIO / SANG', mvp: true },
-  nerveux: { sys: 'SYS-05', label: 'NERVEUX + YEUX', mvp: false },
-  exposition: { sys: 'SYS-06', label: 'EXPOSITION', mvp: false },
+/** Libellés en casse de phrase. `mvp: false` = calque encore partiel. */
+export const LAYER_META: Record<LayerId, { label: string; mvp: boolean }> = {
+  squelette: { label: 'Squelette', mvp: true },
+  muscles: { label: 'Muscles', mvp: true },
+  organes: { label: 'Organes', mvp: true },
+  cardio: { label: 'Cardio / sang', mvp: true },
+  nerveux: { label: 'Nerveux + yeux', mvp: false },
+  exposition: { label: 'Exposition', mvp: false },
 };
 
 export interface BodyState {
@@ -26,7 +29,7 @@ export interface BodyState {
   bloodAnalyte: string | null;              // ligne de sang dépliée
   adherence: 0 | 1;                         // 0 = rythme actuel, 1 = avec le plan
   playing: boolean;                         // lecture de la timeline
-  scanNonce: number;                        // incrémenté pour rejouer le balayage du scan
+  scanNonce: number;                        // conservé pour compatibilité (plus de bouton « rejouer » dans l'interface)
   setDay: (d: number) => void;
   toggleLayer: (l: LayerId) => void;
   soloLayer: (l: LayerId) => void;
@@ -99,4 +102,72 @@ export function useDayAlerts(): Alert[] {
   const day = useBody((s) => s.day);
   const adherence = useBody((s) => s.adherence);
   return scenarioAlerts(day, adherence);
+}
+
+/**
+ * (ajout) Liste défilante des panneaux : quand le bord bas tranche une ligne, la liste est rognée à la
+ * dernière ligne entière (éléments `[data-row]`) — jamais de demi-ligne à l'écran. Le rognage est un
+ * `clip-path` : aucune cote ne change, donc aucun effet sur la mise en page. Une ligne plus haute que
+ * `maxRow` (bloc déplié) reste visible même partiellement.
+ */
+export function useRowClip(ref: RefObject<HTMLElement | null>, maxRow = Number.POSITIVE_INFINITY): void {
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const apply = (): void => {
+      const h = el.clientHeight;
+      let cut = 0;
+      if (el.scrollHeight - el.scrollTop - h > 1) {
+        const top = el.getBoundingClientRect().top + el.clientTop;
+        let best = 0;
+        let tall = false;
+        for (const row of el.querySelectorAll<HTMLElement>('[data-row]')) {
+          const r = row.getBoundingClientRect();
+          if (r.height === 0) continue;
+          const bottom = r.bottom - top;
+          if (bottom <= h + 0.5) best = Math.max(best, bottom);
+          else if (r.top - top < h - 0.5 && r.height > maxRow) tall = true;
+        }
+        if (best > 0 && !tall) cut = h - best;
+      }
+      el.style.clipPath = cut > 0.5 ? `inset(0 0 ${cut.toFixed(1)}px 0)` : '';
+    };
+    const ro = new ResizeObserver(apply);
+    ro.observe(el);
+    for (const child of el.children) ro.observe(child);
+    el.addEventListener('scroll', apply, { passive: true });
+    apply();
+    return () => {
+      ro.disconnect();
+      el.removeEventListener('scroll', apply);
+    };
+  });
+}
+
+/**
+ * Lignes `[data-row]` cachées sous le bas d'une liste qui défile (point 7.3 : le défilement doit se voir).
+ * Rend la clé `data-below` de chaque ligne cachée (sans doublon, dans l'ordre), ou son rang si elle n'en a pas.
+ */
+export function useRowsBelow(ref: RefObject<HTMLElement | null>, dep: unknown): string[] {
+  const [below, setBelow] = useState<string[]>([]);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) { setBelow([]); return; }
+    const apply = (): void => {
+      const bottom = el.getBoundingClientRect().top + el.clientTop + el.clientHeight + 0.5; // même seuil que useRowClip
+      const keys: string[] = [];
+      el.querySelectorAll<HTMLElement>('[data-row]').forEach((row, i) => {
+        if (row.getBoundingClientRect().bottom <= bottom) return;
+        const k = row.dataset.below ?? String(i);
+        if (!keys.includes(k)) keys.push(k);
+      });
+      setBelow((prev) => (prev.join('|') === keys.join('|') ? prev : keys));
+    };
+    const ro = new ResizeObserver(apply);
+    ro.observe(el);
+    el.addEventListener('scroll', apply, { passive: true });
+    apply();
+    return () => { ro.disconnect(); el.removeEventListener('scroll', apply); };
+  }, [ref, dep]);
+  return below;
 }

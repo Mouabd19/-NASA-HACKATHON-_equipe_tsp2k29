@@ -2,7 +2,8 @@
 import { useState } from 'react';
 import type { OrganId } from '../../types';
 import { saveCheckIn, clearCheckIn, painZonesOf, type CheckInZones } from '../../ingest/checkin';
-import { Btn, Dot, Panel, Prov, Segmented, T, num } from './ui';
+import { Panel } from '../../ui';
+import { Btn, Dot, Segmented } from './ui';
 import { NOW_TITLE_ID } from './NowNextCard';
 import { ZonePicker } from './ZonePicker';
 
@@ -15,7 +16,7 @@ const ROWS: { key: Key; label: string; low: string; high: string; scale: readonl
   { key: 'mood', label: 'Humeur', low: 'très basse', high: 'excellente', scale: [1, 2, 3, 4, 5] },
   { key: 'fatigue', label: 'Fatigue', low: 'aucune', high: 'épuisé', scale: [1, 2, 3, 4, 5] },
   { key: 'pain', label: 'Douleur', low: 'aucune', high: 'maximale', scale: [0, 1, 2, 3] },
-  { key: 'sleepFelt', label: 'Sommeil ressenti', low: 'très mauvais', high: 'excellent', scale: [1, 2, 3, 4, 5] },
+  { key: 'sleepFelt', label: 'Sommeil', low: 'très mauvais', high: 'excellent', scale: [1, 2, 3, 4, 5] },
 ];
 
 const ZONES: { id: OrganId; label: string }[] = [
@@ -28,8 +29,8 @@ const TRIGGERS: Record<Key, (v: number) => boolean> = {
   pain: (v) => v >= 2, fatigue: (v) => v >= 4, mood: (v) => v <= 2, sleepFelt: () => false,
 };
 
-/** Effacer le check-in sert aux répétitions de la démo : visible en dev ou avec ?demo dans l'URL. */
-const DEMO = import.meta.env.DEV || (typeof location !== 'undefined' && new URLSearchParams(location.search).has('demo'));
+/** Effacer le check-in sert aux répétitions de la démo : visible seulement avec ?demo dans l'URL. */
+const DEMO = (typeof location !== 'undefined' && new URLSearchParams(location.search).has('demo'));
 
 export function CheckInCard({ day, done }: { day: number; done: CheckInZones | null }) {
   const [d, setD] = useState<Draft>({});
@@ -41,14 +42,17 @@ export function CheckInCard({ day, done }: { day: number; done: CheckInZones | n
     const zones = painZonesOf(done).map((id) => ZONES.find((z) => z.id === id)?.label ?? id);
     const zone = zones.length ? zones.join(', ') : null;
     return (
-      <Panel title="Check-in du matin" prov={<Prov p="RÉEL" />}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '16px 24px' }}>
+      <Panel
+        title="Check-in du matin"
+        provenance="RÉEL"
+        right={<Btn kind="quiet" size="sm" onClick={() => { setD({ ...done, painZones: painZonesOf(done) }); setOpen(true); }}>Modifier</Btn>}
+      >
+        <div className="wr-kv">
           {ROWS.map((r) => (
-            <Summary key={r.key} label={r.label} v={done[r.key]} max={r.scale[r.scale.length - 1]} alert={TRIGGERS[r.key](done[r.key])}
+            <Summary key={r.key} label={r.label} v={done[r.key]} max={r.scale[r.scale.length - 1]} alert={TRIGGERS[r.key](done[r.key])} red={r.key === 'pain' && done.pain >= 3}
               extra={r.key === 'pain' && done.pain > 0 ? (zone ?? 'zone non précisée') : undefined} />
           ))}
         </div>
-        <Btn kind="quiet" style={{ marginTop: 16, padding: 0 }} onClick={() => { setD({ ...done, painZones: painZonesOf(done) }); setOpen(true); }}>Modifier</Btn>
       </Panel>
     );
   }
@@ -69,26 +73,18 @@ export function CheckInCard({ day, done }: { day: number; done: CheckInZones | n
   };
 
   return (
-    <Panel title="Check-in du matin" prov={<Prov p="RÉEL" />} className="wr-checkin">
-      <p className="sz-detail" style={{ color: T.textDim, margin: '-4px 0 24px', fontSize: T.fs.md }}>
-        Avant toute séance · une note par ligne
-      </p>
-      <div style={{ display: 'grid', gap: 16 }}>
+    <Panel title="Check-in du matin" provenance="RÉEL" className="wr-checkin">
+      <div className="wr-ci">
         {ROWS.map((r) => (
           <div key={r.key} className="wr-row">
-            <div>
-              <div id={`ci-${r.key}`} style={{ fontSize: T.fs.lg, fontWeight: 500, color: T.text }}>{r.label}</div>
-              <div id={`ci-${r.key}-hint`} className="sz-detail" style={{ fontSize: T.fs.sm, color: T.textMuted, marginTop: 2 }}>{r.scale[0]} {r.low} · {r.scale[r.scale.length - 1]} {r.high}</div>
-            </div>
+            <div id={`ci-${r.key}`} className="wr-row__label">{r.label}</div>
             <Segmented ariaLabel={`${r.label}, de ${r.scale[0]} à ${r.scale[r.scale.length - 1]}`} describedBy={`ci-${r.key}-hint`} values={r.scale} value={d[r.key]} onChange={(v) => set(r.key, v)} />
+            <div id={`ci-${r.key}-hint`} className="wr-row__hint"><span>{r.scale[0]} {r.low}</span><span>{r.scale[r.scale.length - 1]} {r.high}</span></div>
           </div>
         ))}
         {d.pain !== undefined && d.pain > 0 && (
           <div className="wr-row">
-            <div>
-              <div style={{ fontSize: T.fs.md, color: T.textDim }}>Où as-tu mal&nbsp;?</div>
-              <div className="sz-detail" style={{ fontSize: T.fs.sm, color: T.textMuted, marginTop: 2 }}>Plusieurs zones possibles</div>
-            </div>
+            <div className="wr-row__label">Zones</div>
             <ZonePicker zones={ZONES} value={d.painZones ?? []}
               onToggle={(id) => setD((p) => {
                 const cur = p.painZones ?? [];
@@ -97,27 +93,26 @@ export function CheckInCard({ day, done }: { day: number; done: CheckInZones | n
           </div>
         )}
       </div>
-      <div style={{ display: 'flex', gap: 8, marginTop: 24, alignItems: 'center', flexWrap: 'wrap' }}>
+      <div className="wr-actions">
         <Btn kind="primary" disabled={!complete} onClick={submit}>Valider le check-in</Btn>
-        {done && <Btn kind="secondary" onClick={() => setOpen(false)}>Annuler</Btn>}
-        {done && DEMO && <Btn kind="quiet" onClick={() => { clearCheckIn(day); setD({}); setOpen(false); }}>Effacer le check-in</Btn>}
-        <span aria-live="polite" style={{ marginLeft: 'auto', fontSize: T.fs.sm, color: T.textMuted, fontVariantNumeric: 'tabular-nums' }}>{filled} notes sur 4</span>
+        {done && <Btn onClick={() => setOpen(false)}>Annuler</Btn>}
+        {done && DEMO && <Btn kind="quiet" onClick={() => { clearCheckIn(day); setD({}); setOpen(false); }}>Effacer</Btn>}
+        <span aria-live="polite" className="wr-sr-only">{filled} {filled > 1 ? 'notes' : 'note'} sur {ROWS.length}</span>
       </div>
     </Panel>
   );
 }
 
-function Summary({ label: l, v, max, extra, alert }: { label: string; v: number; max: number; extra?: string; alert: boolean }) {
+// Le déclencheur d'une alerte rouge (douleur 3/3, règle R13) porte le rouge ; les autres déclencheurs restent en jaune.
+function Summary({ label: l, v, max, extra, alert, red = false }: { label: string; v: number; max: number; extra?: string; alert: boolean; red?: boolean }) {
   return (
-    <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: T.fs.sm, color: T.textMuted }}>
-        {alert && <Dot color={T.status.amber} size={6} />}{l}
-        {alert && <span className="wr-sr-only">, déclenche une alerte</span>}
-      </div>
-      <div style={{ ...num, fontSize: T.fs.xl, color: T.text, marginTop: 4 }}>
-        {v}<span style={{ fontSize: T.fs.md, color: T.textMuted }}> / {max}</span>
-        {extra && <span style={{ fontSize: T.fs.md, color: T.textDim, fontWeight: 400 }}> · {extra}</span>}
-      </div>
+    <div className="wr-kv__row">
+      <span className="wr-kv__label">
+        {l}
+        {alert && <span className="wr-sr-only">{red ? ', déclenche l’alerte rouge' : ', déclenche une alerte'}</span>}
+      </span>
+      {extra && <span className="wr-kv__extra" title={extra}>{extra}</span>}
+      <span className="wr-kv__value">{alert && <Dot color={red ? 'red' : 'amber'} />}{v}<span className="sz-unit"> / {max}</span></span>
     </div>
   );
 }

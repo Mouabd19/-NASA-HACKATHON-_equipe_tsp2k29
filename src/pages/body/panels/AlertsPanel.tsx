@@ -1,25 +1,45 @@
-// Alertes du jour : alertsForDay(day), triées par gravité. Chaque carte porte data-organ-id
-// (lu par les traits de liaison) et allume l'organe en 3D au survol.
-import { useMemo } from 'react';
-import type { JSX, KeyboardEvent } from 'react';
+// Alertes du jour : alertsForDay(day), triées par gravité puis de haut en bas du corps (même ordre que les
+// étiquettes de la scène). Chaque ligne porte data-organ-id (lu par les traits de liaison) et met l'organe
+// en évidence en 3D au survol.
+import { useMemo, useRef } from 'react';
+import type { CSSProperties, JSX, KeyboardEvent } from 'react';
 import type { Alert, Color, DayBody, Level } from '../../../types';
 import { trend7d } from '../../../models/trend';
 import { getStandard } from '../../../content/standards';
-import { HatchBand, Panel, StatusChip, TagBadge, fmt, levelColor, sentenceCase } from '../../../ui';
-import { useBody, useDayAlerts, useDayBody } from '../store';
+import { AlarmMark, Panel, TagBadge, alarmText, fmt, levelColor, levelLabel, sentenceCase, statusVar } from '../../../ui';
+import { getAnchor } from '../../../three/anatomy';
+import { alarmNumbers, alertLayers, isOnBody, sortAlarms } from '../alarmOrder';
+import { LAYER_META, LAYER_ORDER, useBody, useDayAlerts, useDayBody, useRowClip, useRowsBelow } from '../store';
 import './AlertsPanel.css';
 
-const LEVEL_RANK: Record<Level, number> = { ROUGE: 0, ORANGE: 1, AMBRE: 2, DONNEES_INSUFFISANTES: 3, VERT: 4 };
-const LEVEL_LABEL: Record<Level, string> = {
-  ROUGE: 'ROUGE',
-  ORANGE: 'ORANGE',
-  AMBRE: 'AMBRE',
-  DONNEES_INSUFFISANTES: 'DONNÉES INSUFFISANTES',
-  VERT: 'NOMINAL',
-};
+const LEVEL_LABEL: Record<Level, string> = levelLabel;
 
-/** Une règle « V1 4027 » / « V2 7038 » vient de NASA-STD-3001 ; tout le reste est une règle de l'équipe [H]. */
+/** Une règle « V1 4027 » / « V2 7038 » vient de NASA-STD-3001 ; tout le reste est une règle de l'équipe (hypothèse). */
 const isNasaRule = (rule: string): boolean => /^V\d\s*\d+/i.test(rule.trim());
+
+
+/** Identifiant de règle interne → libellé lisible : « TENDANCE-7J » → « Tendance 7j ». */
+const ruleLabel = (rule: string): string => sentenceCase(rule.replace(/-/g, ' '));
+
+/**
+ * Texte d'alerte issu des données, remis en casse de phrase : plus de flèche ni de capitales
+ * (« → ROUGE » → « , rouge »), plus de crochets (« [H] » retiré, « [NASA V1 4002] » → « (NASA V1 4002) »).
+ */
+function cleanMessage(message: string): string {
+  return message
+    .replace(/\s*→\s*(ROUGE|AMBRE|ORANGE|VERT)\b/g, (_m, level: string) => `, ${level.toLowerCase()}`)
+    .replace(/\s*→\s*/g, ', ')
+    .replace(/,?\s*(?:du\s+)?modèle\s*\[H\]/g, (m) => (m.includes('du') ? ' du modèle' : ''))
+    .replace(/\s*\[H\]/g, '')
+    .replace(/\[([^\]]+)\]/g, '($1)')
+    .replace(/\s+([.,])/g, '$1');
+}
+
+/** Première phrase du message : affichée seule tant que la ligne n'est pas sélectionnée. */
+function firstSentence(message: string): string {
+  const cut = message.search(/\.\s+(?=\p{Lu})/u);
+  return cut < 0 ? message : message.slice(0, cut + 1);
+}
 
 /** Tendance 7 j de la première métrique de l'organe qui en a une. */
 function alertTrend(a: Alert, body: DayBody, day: number): { value: number; label: string; model: boolean } | null {
@@ -46,44 +66,68 @@ export function AlertsPanel(): JSX.Element {
   const openOrganWindow = useBody((s) => s.openOrganWindow);
 
   const adherence = useBody((s) => s.adherence);
+  const layers = useBody((s) => s.layers);
   const body = useDayBody();
   const raw = useDayAlerts();
-  const alerts = useMemo(
-    () => [...raw].sort((a, b) => (LEVEL_RANK[a.level] ?? 9) - (LEVEL_RANK[b.level] ?? 9)),
-    [raw],
-  );
+  const projected = body.projected;
+  // mêmes numéros que les repères posés sur le corps 3D, fixés pour la journée (indépendants des calques cochés)
+  const { alerts, nums } = useMemo(() => {
+    const visible = (a: Alert): boolean => isOnBody(a, layers, body);
+    return { alerts: sortAlarms(raw, projected, visible, body), nums: alarmNumbers(raw, body) };
+  }, [raw, layers, body, projected]);
+  // Jamais de demi-ligne en bas de liste.
+  const listRef = useRef<HTMLUListElement>(null);
+  useRowClip(listRef);
+  const below = useRowsBelow(listRef, alerts.length).length;
   const cards = useMemo(
-    () => alerts.map((a) => ({ a, trend: alertTrend(a, body, day), std: isNasaRule(a.rule) ? getStandard(a.rule) : null })),
-    [alerts, body, day],
+    () => alerts.map((a) => {
+      const num = nums.get(a.id);
+      // calque masqué : nom du premier calque de l'organe, pour le dire en clair sur la ligne (le numéro reste, en gris)
+      const hiddenLayer = a.level !== 'VERT' && getAnchor(a.organId) && !isOnBody(a, layers, body)
+        ? LAYER_ORDER.find((l) => alertLayers(a, body).includes(l))
+        : undefined;
+      return { a, num, hiddenLayer, trend: alertTrend(a, body, day), std: isNasaRule(a.rule) ? getStandard(a.rule) : null };
+    }),
+    [alerts, nums, body, day, layers],
   );
-
-  const nRed = alerts.filter((a) => a.level === 'ROUGE').length;
+  // Toutes les alarmes affichées ont le même niveau : le marqueur et le mot sont dits une fois, dans l'en-tête,
+  // au lieu d'être répétés sur chaque ligne. Le niveau reste dans l'infobulle et le texte lu de chaque ligne.
+  const shown = cards.filter((c) => c.hiddenLayer === undefined && levelColor[c.a.level] !== 'grey');
+  const uniform = shown.length > 1 && shown.every((c) => c.a.level === shown[0].a.level) ? shown[0].a.level : null;
 
   return (
     <Panel
-      sys="ALR"
       title="Alertes"
       provenance="SIMULÉ"
       className="alr"
-      right={
-        <span className="alr__count" data-red={nRed > 0}>
-          {String(alerts.length).padStart(2, '0')}
+      right={alerts.length > 0 ? (
+        <span className="alr__head">
+          {uniform ? <AlarmMark level={uniform} projected={projected} withLabel /> : null}
+          <span className="alr__count" aria-label={`${alerts.length} alerte${alerts.length > 1 ? 's' : ''}`}>{alerts.length}</span>
         </span>
-      }
+      ) : undefined}
     >
       {body.projected ? (
-        <div className="alr__proj">PROJECTION {adherence === 1 ? 'AVEC LE PLAN' : 'AU RYTHME ACTUEL'} — CORPS PROJETÉ <TagBadge tag="H" /></div>
+        <div className="alr__proj sz-detail">
+          Projection {adherence === 1 ? 'avec le plan' : 'au rythme actuel'} <TagBadge tag="H" />
+        </div>
       ) : null}
 
       {cards.length === 0 ? (
-        <div className="alr__empty">
-          <span className="alr__empty-mark" aria-hidden="true" />
-          <span>Aucune alerte<span className="sz-detail"> — tendances 7 j dans la bande de bruit</span></span>
-        </div>
+        <p className="alr__empty">
+          Aucune alerte<span className="sz-detail"> : tendances sur 7 jours dans la marge de bruit.</span>
+        </p>
       ) : (
-        <ul className="alr__list">
-          {cards.map(({ a, trend, std }) => {
+        <ul className="alr__list" ref={listRef}>
+          {cards.map(({ a, num, hiddenLayer, trend, std }) => {
             const color: Color = levelColor[a.level] ?? 'grey';
+            const level = LEVEL_LABEL[a.level] ?? sentenceCase(a.level);
+            const title = sentenceCase(a.title);
+            // « Cœur — VO₂max en baisse » : l'organe en gras court, puis le constat
+            const [organ, finding] = title.includes(' — ') ? [title.split(' — ')[0], sentenceCase(title.split(' — ').slice(1).join(' — '))] : [title, ''];
+            const message = cleanMessage(a.message);
+            const isSelected = selected === a.organId;
+            const masked = hiddenLayer !== undefined;
             const onKey = (e: KeyboardEvent): void => {
               if (e.target !== e.currentTarget) return;
               if (e.key !== 'Enter' && e.key !== ' ') return;
@@ -94,13 +138,16 @@ export function AlertsPanel(): JSX.Element {
               <li key={a.id}>
                 <article
                   className="alr__card"
+                  data-row
                   role="button"
                   tabIndex={0}
                   data-organ-id={a.organId}
                   data-level={a.level}
                   data-color={color}
+                  data-projected={projected}
+                  data-masked={masked}
                   data-hovered={hovered === a.organId}
-                  data-selected={selected === a.organId}
+                  data-selected={isSelected}
                   onMouseEnter={() => setHovered(a.organId)}
                   onMouseLeave={() => setHovered(null)}
                   onFocus={() => setHovered(a.organId)}
@@ -108,43 +155,51 @@ export function AlertsPanel(): JSX.Element {
                   onClick={() => setSelected(a.organId)}
                   onKeyDown={onKey}
                 >
-                  {a.level === 'ROUGE' ? <HatchBand color="red" height={5} /> : null}
-                  <div className="alr__body">
-                    <div className="alr__top">
-                      <StatusChip color={color} label={LEVEL_LABEL[a.level] ?? a.level} />
-                      <span className="alr__fill" />
-                      <span title={std ? `${std.title}${std.verified ? '' : ' — référence à vérifier'}` : 'Règle interne de l’équipe (hypothèse)'}>
-                        {isNasaRule(a.rule) ? <TagBadge tag="NASA" id={a.rule} /> : <TagBadge tag="H" id={a.rule} />}
+                  <span className="alr__num" aria-hidden="true">{num ?? ''}</span>
+                  <h3 className="alr__title" title={`${alarmText(a.level, projected)} : ${title}`}>
+                    <strong className="alr__organ">{organ}</strong>{finding ? <span className="alr__finding"> {finding}</span> : null}
+                    {uniform && !masked ? <span className="sz-sr"> · {alarmText(a.level, projected)}</span> : null}
+                  </h3>
+                  <span className="alr__prio">
+                    {uniform && !masked ? null : masked ? (
+                      // repère absent de la scène : pas de numéro, pas de couleur, la raison en clair
+                      <span className="alr__word alr__word--masked" title={`Calque ${LAYER_META[hiddenLayer].label} masqué : repère absent de la scène`}>Calque masqué</span>
+                    ) : color === 'grey' ? (
+                      <span className="alr__word">
+                        <span className="sz-dot" data-color={color} style={{ '--sz-status': statusVar[color] } as CSSProperties} aria-hidden="true" />
+                        {level}
                       </span>
-                    </div>
-                    <h3 className="alr__title">{sentenceCase(a.title)}</h3>
-                    <p className="alr__msg sz-detail" title={a.message}>{a.message}</p>
-                    <div className="alr__foot">
+                    ) : <AlarmMark level={a.level} projected={projected} withLabel />}
+                  </span>
+                  <button
+                    type="button"
+                    className="alr__open"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelected(a.organId);
+                      openOrganWindow(a.organId);
+                    }}
+                    aria-label={`Ouvrir la fiche : ${title}`}
+                    title="Ouvrir la fiche"
+                  >
+                    <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5L8 6l-3.5 3.5" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  </button>
+
+                  <div className="alr__more sz-detail">
+                    <p className="alr__msg" title={message}>{isSelected ? message : firstSentence(message)}</p>
+                    <div className="alr__meta">
+                      <span title={std ? `${std.title}${std.verified ? '' : ' (référence à vérifier)'}` : `Règle interne de l’équipe : ${ruleLabel(a.rule)}`}>
+                        {isNasaRule(a.rule) ? <TagBadge tag="NASA" id={a.rule} /> : <TagBadge tag="H" />}
+                      </span>
                       {trend ? (
-                        <span className="alr__trend sz-detail" title={`Pente sur 7 jours — ${trend.label}`}>
-                          {/* os : pente du MODÈLE (rien n'est mesuré par le scanner), pas une tendance mesurée */}
-                          <span className="alr__k">{trend.model ? 'PENTE MODÈLE 7 J' : 'TENDANCE 7 J'}</span>
-                          <span className="alr__v">{signed(trend.value, 2)} %/SEM</span>
+                        <span className="alr__trend" title={`Pente sur 7 jours : ${trend.label}`}>
+                          {/* os : pente du MODÈLE (rien n'est mesuré par scanner), pas une tendance mesurée */}
+                          {trend.model ? 'Pente du modèle' : 'Tendance'} 7 j{' '}
+                          <span className="alr__v">{signed(trend.value, 2)} %/sem</span>
                         </span>
                       ) : (
-                        <span className="alr__trend sz-detail">
-                          <span className="alr__k">TENDANCE 7 J</span>
-                          <span className="alr__v alr__v--none">INDISPONIBLE</span>
-                        </span>
+                        <span className="alr__trend">Tendance 7 j indisponible</span>
                       )}
-                      <span className="alr__fill" />
-                      <button
-                        type="button"
-                        className="alr__detail"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelected(a.organId);
-                          openOrganWindow(a.organId);
-                        }}
-                        title="Ouvrir la fenêtre organe"
-                      >
-                        Ouvrir →
-                      </button>
                     </div>
                   </div>
                 </article>
@@ -153,6 +208,15 @@ export function AlertsPanel(): JSX.Element {
           })}
         </ul>
       )}
+      {below > 0 ? (
+        <button
+          type="button"
+          className="alr__below"
+          onClick={() => listRef.current?.scrollBy({ top: listRef.current.clientHeight * 0.8, behavior: 'smooth' })}
+        >
+          + {below} alerte{below > 1 ? 's' : ''} plus bas
+        </button>
+      ) : null}
     </Panel>
   );
 }

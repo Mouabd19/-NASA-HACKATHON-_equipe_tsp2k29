@@ -1,7 +1,7 @@
-/* Fenêtre organe — préfixe .ow. Couleurs : variables --sz-* uniquement. */
+/* Fenêtre organe — préfixe .ow. Modale standard : surface --sz-panel, une bordure, des séparateurs.
+   Couleurs : variables --sz-* uniquement. */
 
 .ow {
-  --ow-status: var(--sz-text-dim);
   position: fixed;
   inset: 0;
   z-index: 60;
@@ -11,40 +11,29 @@
   grid-template-columns: minmax(0, 1fr);
   place-items: center;
   padding: 24px;
-  background: color-mix(in srgb, var(--sz-bg) 78%, transparent);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
+  background: color-mix(in srgb, var(--sz-bg) 80%, transparent);
   animation: ow-fade 140ms ease-out both;
 }
 
 .ow__win {
-  position: relative;
   display: flex;
   flex-direction: column;
   width: min(1200px, 100%);
   height: min(720px, 100%);
   max-height: calc(100dvh - 48px);
-  background: var(--sz-bg);
-  border: 1px solid var(--sz-border-strong);
+  background: var(--sz-panel);
+  border: 1px solid var(--sz-border);
   border-radius: var(--sz-radius);
+  box-shadow: var(--sz-shadow-pop);
   overflow: hidden;
-  outline: none;
-  animation: ow-in 160ms ease-out both;
 }
-
-/* équerres d'angle (retirées : fenêtre arrondie) */
-.ow__corner { display: none; }
-.ow__corner-unused {
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  pointer-events: none;
-  border: 0 solid var(--sz-text);
-}
-.ow__corner--tl { top: -5px; left: -5px; border-top-width: 1px; border-left-width: 1px; }
-.ow__corner--tr { top: -5px; right: -5px; border-top-width: 1px; border-right-width: 1px; }
-.ow__corner--bl { bottom: -5px; left: -5px; border-bottom-width: 1px; border-left-width: 1px; }
-.ow__corner--br { bottom: -5px; right: -5px; border-bottom-width: 1px; border-right-width: 1px; }
+/* fenêtre d'un organe : moins de contenu que « Corps entier », donc moins haute (pas de colonne à moitié vide) */
+.ow__win[data-kind='organ'] { height: min(620px, 100%); }
+/* mode Détails : formule et limites du modèle s'ajoutent sous le graphe, qui garde sa hauteur */
+html[data-details='on'] .ow__win[data-kind='organ'] { height: min(720px, 100%); }
+/* la fenêtre reçoit le focus à l'ouverture (Échap, lecteurs d'écran) : pas de contour de focus sur le cadre lui-même */
+.ow .ow__win:focus,
+.ow .ow__win:focus-visible { outline: none; }
 
 .ow__fill { flex: 1; min-width: 0; }
 
@@ -54,23 +43,27 @@
   align-items: center;
   gap: 12px;
   flex: none;
-  height: 40px;
-  padding: 0 8px 0 14px;
-  border-bottom: 1px solid var(--sz-border-strong);
-  box-shadow: inset 2px 0 0 var(--ow-status);
+  height: 48px;
+  padding: 0 12px 0 var(--sz-pad);
+  border-bottom: 1px solid var(--sz-border);
   white-space: nowrap;
 }
 .ow__name {
-  font-family: var(--sz-font-text);
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0;
-  text-transform: none;
+  font-size: var(--sz-fs-title);
+  font-weight: 600;
+  line-height: 1.3;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.ow__proj { color: var(--sz-holo); }
-.ow__close { margin-left: 4px; }
+/* écart d'âge du jour, à côté du statut : texte courant, pas un chiffre clé */
+.ow__head-gap { font-size: var(--sz-fs-data); color: var(--sz-text-dim); font-variant-numeric: tabular-nums; }
+.ow__head-gap strong { font-weight: 500; color: var(--sz-text); }
+.ow__date {
+  font-size: var(--sz-fs-small);
+  color: var(--sz-text-dim);
+  font-variant-numeric: tabular-nums;
+}
 
 /* ── Grille 3 colonnes ── */
 .ow__grid {
@@ -80,332 +73,288 @@
   grid-template-columns: 300px minmax(0, 1fr) 420px;
 }
 .ow__grid > * { min-width: 0; min-height: 0; }
-.ow__left { position: relative; border-right: 1px solid var(--sz-border); overflow: hidden; }
-.ow__centre { padding: 0 14px 14px; border-right: 1px solid var(--sz-border); overflow-y: auto; overscroll-behavior: contain; }
-.ow__right { display: flex; flex-direction: column; padding: 0 14px 12px; }
-
-/* ── Colonne 3D ── */
-.ow__view {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(var(--sz-border) 1px, transparent 1px) 0 0 / 100% 40px,
-    linear-gradient(90deg, var(--sz-border) 1px, transparent 1px) 0 0 / 40px 100%;
-  background-color: var(--sz-panel);
-}
-.ow__view::after {
-  /* la grille s'efface vers le centre : l'organe reste lisible */
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(ellipse at 50% 46%, var(--sz-bg) 30%, transparent 85%);
-  z-index: 0;
-}
-.ow__view > * { position: relative; z-index: 1; }
-.ow__view-tl,
-.ow__view-tr { position: absolute; top: 10px; pointer-events: none; z-index: 2; }
-.ow__view-tl { left: 12px; }
-.ow__view-tr { right: 12px; }
-.ow__view-foot {
-  position: absolute;
-  left: 12px;
-  right: 12px;
-  bottom: 10px;
+.ow__left {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  pointer-events: none;
-  z-index: 2;
+  border-right: 1px solid var(--sz-border);
+  background: var(--sz-inset);
 }
-.ow__gap { display: flex; flex-direction: column; gap: 2px; }
-.ow__gap-num {
-  font-family: var(--sz-font-mono);
-  font-size: 30px;
-  line-height: 1.05;
-  font-weight: 400;
-  color: var(--ow-status);
-  font-variant-numeric: tabular-nums;
+.ow__centre {
+  padding: 0 var(--sz-pad) var(--sz-pad);
+  border-right: 1px solid var(--sz-border);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
-.ow__gap-num[data-unknown='true'] { color: var(--sz-unknown); }
-.ow__gap-num small,
-.ow__scn-num small,
-.ow__pheno-num small {
-  margin-left: 6px;
-  font-size: 11px;
-  letter-spacing: var(--sz-tracking);
-  color: var(--sz-text-dim);
+.ow__right { display: flex; flex-direction: column; padding: 0 var(--sz-pad) var(--sz-pad); }
+/* « Corps entier » : la colonne ne défile pas, seul le tableau des marqueurs défile (.ow__scroll) */
+.ow__centre--fixed { display: flex; flex-direction: column; overflow: hidden; }
+.ow__centre--fixed > .ow__sect { flex: none; }
+.ow__centre--fixed > .ow__sect--fill { flex: 1 1 0; min-height: 96px; display: flex; flex-direction: column; }
+.ow__scroll { flex: 1; min-height: 0; overflow-y: auto; margin-right: -8px; padding-right: 8px; }
+.ow__scroll thead th { position: sticky; top: 0; z-index: 1; background: var(--sz-panel); }
+
+/* ── Colonne 3D ── */
+.ow__view { flex: 1; min-height: 120px; }
+/* « Corps entier » : écart d'âge par organe sous la silhouette, sur une colonne */
+.ow__gaps {
+  flex: 0 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 0 8px 8px;
+  border-top: 1px solid var(--sz-border);
 }
+.ow__gaps .ow__sect-head { flex: none; padding: 0 8px; }
+
+/* Chiffre clé + unité sur la même ligne de base */
+.ow__stat-val { display: inline-flex; align-items: baseline; gap: 6px; white-space: nowrap; }
 
 /* ── Sections ── */
 .ow__sect-head {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 8px;
-  height: 34px;
+  height: 44px;
   white-space: nowrap;
 }
-.ow__sect-head h3 { color: var(--sz-text); }
-.ow__sect + .ow__sect { margin-top: 10px; border-top: 1px solid var(--sz-border); }
-
-/* ── Tableau des métriques ── */
-.ow__table { width: 100%; font-size: 12px; }
-.ow__table th {
-  padding: 0 8px 5px 0;
-  text-align: left;
-  font-family: var(--sz-font-text);
-  font-size: 11px;
-  font-weight: 400;
-  letter-spacing: var(--sz-tracking);
-  color: var(--sz-text-dim);
-  border-bottom: 1px solid var(--sz-border-strong);
-  white-space: nowrap;
-}
-.ow__table td {
-  padding: 6px 8px 6px 0;
-  border-bottom: 1px solid var(--sz-border);
-  vertical-align: middle;
-  line-height: 1.3;
-}
-.ow__table th:last-child,
-.ow__table td:last-child { padding-right: 0; }
-.ow__table .ow__num { text-align: right; white-space: nowrap; }
-.ow__metric { display: flex; align-items: center; gap: 8px; }
-.ow__val {
-  font-family: var(--sz-font-mono);
-  font-size: 13px;
-  color: var(--ow-status, var(--sz-text));
-  font-variant-numeric: tabular-nums;
-}
-.ow__unit {
-  margin-left: 4px;
-  font-family: var(--sz-font-mono);
-  font-size: 11px;
-  color: var(--sz-text-dim);
-  letter-spacing: 0.04em;
-}
-.ow__noise {
-  display: block;
-  font-family: var(--sz-font-text);
-  font-size: 11px;
-  color: var(--sz-text-dim);
-}
-.ow__ref {
-  display: block;
-  font-family: var(--sz-font-text);
-  font-size: 11px;
-  white-space: nowrap;
-}
-.ow__trend { font-family: var(--sz-font-mono); font-size: 11px; font-variant-numeric: tabular-nums; }
-
-.ow__empty {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 14px;
-  border: 1px dashed var(--sz-unknown);
-  color: var(--sz-text-dim);
-  font-size: 12px;
-}
-.ow__empty--flat { padding: 10px 12px; }
-
-/* ── Synthèse IA ── */
-.ow__synth-text {
-  padding: 10px 12px;
-  border: 1px solid var(--sz-border);
-  border-left: 1px solid var(--sz-text-dim);
-  background: var(--sz-panel);
-  font-size: 13px;
-  line-height: 1.5;
-}
-.ow__synth-meta { margin-top: 8px; line-height: 1.6; }
-.ow__synth-meta + .ow__synth-meta { margin-top: 2px; }
-.ow__unreviewed {
-  padding: 2px 6px;
-  border: 1px dashed var(--sz-text-dim);
-  color: var(--sz-text-dim);
-}
-
-/* ── PhenoAge ── */
-.ow__pheno {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px 12px;
-}
-.ow__pheno > div { display: flex; flex-direction: column; gap: 2px; }
-.ow__pheno > p { grid-column: 1 / -1; }
-.ow__pheno-num {
-  font-family: var(--sz-font-mono);
-  font-size: 26px;
-  line-height: 1.1;
-  font-variant-numeric: tabular-nums;
-}
-.ow__pheno-num--dim { color: var(--sz-text-dim); }
-
-.ow__chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.ow__chip {
+.ow__sect-right {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  height: 24px;
-  padding: 0 8px;
-  border: 1px solid var(--sz-border);
-  color: var(--sz-text);
-  transition: background-color 120ms, border-color 120ms;
+  gap: 8px;
+  flex: none;
+  font-size: var(--sz-fs-small);
+  color: var(--sz-text-dim);
+  font-variant-numeric: tabular-nums;
 }
-.ow__chip:hover { background: var(--sz-panel-hover); border-color: var(--sz-border-strong); }
+.ow__sect + .ow__sect { margin-top: var(--sz-pad); border-top: 1px solid var(--sz-border); }
+
+/* Phrase d'accompagnement : courte, secondaire */
+.ow__note {
+  margin-top: 8px;
+  font-size: var(--sz-fs-small);
+  line-height: 1.5;
+  color: var(--sz-text-dim);
+}
+.ow__note + .ow__note { margin-top: 2px; }
+.ow__empty { font-size: var(--sz-fs-data); color: var(--sz-text-muted); }
+.ow__centre > .ow__empty { padding-top: var(--sz-pad); }
+
+/* Puce neutre toujours visible (« À valider par le médecin de bord ») : mêmes dimensions que .sz-prov,
+   qui ne peut pas servir ici (masquée hors mode Détails). */
+.ow__pill {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  height: 18px;
+  padding: 0 6px;
+  border: 1px solid var(--sz-border-strong);
+  border-radius: var(--sz-radius-xs);
+  font-size: var(--sz-fs-label);
+  line-height: 1;
+  font-weight: 400;
+  color: var(--sz-text);
+  white-space: nowrap;
+}
+
+/* ── Tableaux (base : .sz-table) ── */
+.ow__table td { padding-top: 4px; padding-bottom: 4px; line-height: 1.35; vertical-align: middle; }
+.ow__table th[data-num] { text-align: right; }
+/* la première colonne prend la place libre (max-width: 0 = elle peut se tronquer) : les colonnes de chiffres restent serrées à droite */
+.ow__table th:first-child { width: 100%; }
+.ow__table td:first-child { max-width: 0; }
+.ow__table th, .ow__table td { padding-left: 8px; padding-right: 8px; }
+.ow__table th:first-child, .ow__table td:first-child { padding-left: 0; }
+.ow__table th:last-child, .ow__table td:last-child { padding-right: 0; }
+.ow__table td[data-num] { white-space: nowrap; }
+/* l'unité a sa propre colonne, alignée à gauche et collée au chiffre : les chiffres tombent sur une même verticale */
+.ow__table .ow__unit-cell { padding-left: 0; text-align: left; white-space: nowrap; }
+.ow__table td[data-num]:has(+ .ow__unit-cell),
+.ow__table th[data-num]:has(+ th[aria-hidden]) { padding-right: 4px; }
+.ow__table tbody tr:last-child td { border-bottom: 1px solid var(--sz-border); }
+.ow__table tr[data-proj='true'] td { color: var(--sz-text-dim); }
+.ow__table--dense td { height: 28px; padding-top: 0; padding-bottom: 0; }
+.ow__metric { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.ow__metric-text { display: flex; flex-direction: column; min-width: 0; }
+.ow__metric-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* mode Détails : une ligne de texte sous le libellé (source, bruit, norme du seuil) */
+.ow__meta {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--sz-fs-label);
+  line-height: 1.4;
+  color: var(--sz-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.ow__meta--inline { margin-left: 8px; }
+.ow__val { color: var(--ow-status, var(--sz-text)); font-weight: 500; }
+.ow__unit { margin-left: 4px; }
+
+/* ── Synthèse ── */
+.ow__synth-text {
+  max-width: 68ch;
+  font-size: var(--sz-fs-body);
+  line-height: 1.55;
+  color: var(--sz-text);
+}
+
+/* ── PhenoAge : trois valeurs, l'écart (chiffre qui sert à décider) en premier ── */
+.ow__stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sz-gap); }
+.ow__stat { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+/* chiffres en retrait (.sz-dim seule est écrasée par .sz-value, de même spécificité et déclarée après) */
+.ow__stat .sz-value.sz-dim { color: var(--sz-text-dim); font-weight: 500; }
+
+/* ── Écart d'âge par organe : liste sur une colonne ── */
+.ow__organs { flex: 1; min-height: 0; }
+.ow__organ {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: var(--sz-control-h);
+  padding: 0 8px;
+  width: 100%;
+  border-radius: var(--sz-radius-xs);
+  font-size: var(--sz-fs-data);
+  color: var(--sz-text);
+  text-align: left;
+  transition: background-color 120ms;
+}
+.ow__organ:hover { background: var(--sz-panel-hover); }
+.ow__organ-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ow__organ-val { flex: none; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ow__organ-val.sz-muted { font-size: var(--sz-fs-small); }
 
 /* ── Colonne graphe ── */
 .ow__right > .ow__sect { flex: 1; min-height: 0; display: flex; flex-direction: column; }
-.ow__scns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; flex: none; }
+.ow__scns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; flex: none; margin-bottom: var(--sz-gap); }
 .ow__scn {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 3px;
-  padding: 8px 10px;
+  gap: 4px;
+  padding: 8px 12px 10px;
   border: 1px solid var(--sz-border);
-  color: var(--sz-text-dim);
+  border-radius: var(--sz-radius-sm);
   text-align: left;
-  transition: background-color 120ms, border-color 120ms, color 120ms;
+  transition: background-color 120ms, border-color 120ms;
 }
-button.ow__scn:hover:not(:disabled) { background: var(--sz-panel-hover); border-color: var(--sz-border-strong); }
-.ow__scn[data-on='true'] {
-  border-color: var(--sz-text);
-  background: var(--sz-panel-hover);
-  color: var(--sz-text);
-}
-.ow__scn[data-static='true'] { border-color: var(--sz-border); background: transparent; }
-.ow__scn:disabled { border-style: dashed; border-color: var(--sz-unknown); background: transparent; color: var(--sz-unknown); }
-.ow__scn-top { display: inline-flex; align-items: center; gap: 8px; }
-.ow__scn-num {
-  font-family: var(--sz-font-mono);
-  font-size: 28px;
-  line-height: 1.1;
-  font-variant-numeric: tabular-nums;
+.ow__scn:hover:not(:disabled) { background: var(--sz-panel-hover); }
+.ow__scn[aria-pressed='true'] { border-color: var(--sz-border-strong); background: var(--sz-panel-hover); }
+.ow__scn[aria-pressed='false'] .sz-value { color: var(--sz-text-dim); }
+.ow__scn:disabled { background: transparent; border-color: var(--sz-border); }
+.ow__scn:disabled .sz-value { color: var(--sz-text-muted); }
+.ow__scn-top {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--sz-fs-small);
+  font-weight: 500;
+  color: var(--sz-text-dim);
 }
 
-.ow__axis-title {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  flex: none;
-  margin-top: 10px;
-  font-size: 11px;
-  white-space: nowrap;
-}
-.ow__chart {
-  position: relative;
+.ow__plot {
   flex: 1;
-  min-height: 150px;
-  margin-top: 2px;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 4px 4px 8px;
+  border-radius: 0;
 }
+.ow__axis-title { flex: none; font-size: var(--sz-fs-label); line-height: 1.4; color: var(--sz-text-muted); }
+.ow__chart { position: relative; flex: 1; min-height: 140px; }
 .ow__chart .recharts-surface { overflow: visible; }
 .ow__chart *:focus { outline: none; }
 .ow__chart-veil {
   position: absolute;
-  inset: 8px 10px 22px 34px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  text-align: center;
+  inset: 0 0 22px 30px;
+  display: grid;
+  place-items: center;
   pointer-events: none;
-  background:
-    repeating-linear-gradient(-45deg, var(--sz-border) 0, var(--sz-border) 1px, transparent 1px, transparent 9px),
-    color-mix(in srgb, var(--sz-bg) 70%, transparent);
-  color: var(--sz-text-dim);
+  font-size: var(--sz-fs-small);
+  color: var(--sz-text-muted);
 }
 
 .ow__legend {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 14px;
+  gap: 4px 12px;
   flex: none;
-  margin-top: 6px;
-  font-size: 11px;
+  margin-top: 8px;
+  font-size: var(--sz-fs-label);
   color: var(--sz-text-dim);
 }
 .ow__legend li { display: inline-flex; align-items: center; gap: 6px; }
 
-/* échantillons de trait (légende + boutons) */
-.ow__key { display: inline-block; flex: none; width: 22px; height: 0; border-top: 2px solid var(--sz-text); }
+/* échantillons de trait (légende + scénarios) */
+.ow__key { display: inline-block; flex: none; width: 16px; height: 0; border-top: 1.5px solid var(--sz-text); }
 .ow__key--dash { border-top-style: dashed; }
-.ow__key--dash-off { border-top: 1px dashed var(--sz-text-dim); }
-.ow__key--thin { border-top: 1px solid var(--sz-text-dim); }
+.ow__key--dash-off { border-top: 1.5px dotted var(--sz-text-dim); }
+.ow__key--thin { border-top: 1px solid var(--sz-text-muted); }
 .ow__key--band {
   height: 8px;
   border-top: 0;
-  background: color-mix(in srgb, var(--sz-text) 22%, transparent);
+  border-radius: 1px;
+  background: color-mix(in srgb, var(--sz-text) 18%, transparent);
+}
+/* prévision du modèle d'IA : même marque que sur le graphe (barre P10–P90 et point médian) */
+.ow__key--ml {
+  position: relative;
+  width: 6px;
+  height: 12px;
+  border-top: 0;
+}
+.ow__key--ml::before,
+.ow__key--ml::after {
+  content: '';
+  position: absolute;
+  background: var(--sz-text-dim);
+}
+.ow__key--ml::before { left: 2px; top: 0; width: 2px; height: 12px; }
+.ow__key--ml::after { left: 0; top: 3px; width: 6px; height: 6px; border-radius: 50%; }
+
+/* Mise en garde sous le graphe PhenoAge : toujours visible, texte courant, pas d'encadré */
+.ow__caveat {
+  margin-top: 8px;
+  max-width: 60ch;
+  font-size: var(--sz-fs-small);
+  line-height: 1.5;
+  color: var(--sz-text-dim);
 }
 
+/* Formule et limites du modèle (mode Détails) */
 .ow__notes {
   flex: none;
-  margin-top: 10px;
-  padding-top: 8px;
+  margin-top: var(--sz-gap);
+  padding-top: var(--sz-gap);
   border-top: 1px solid var(--sz-border);
+  font-size: var(--sz-fs-small);
+  line-height: 1.5;
+  color: var(--sz-text-dim);
+  font-variant-numeric: tabular-nums;
 }
-.ow__key--ml { width: 2px; height: 10px; border-top: 0; background: var(--sz-holo); }
-.ow__ml { margin-bottom: 4px; font-size: 11px; line-height: 1.5; color: var(--sz-text); }
-.ow__ml-name { color: var(--sz-holo); }
-.ow__formula { font-size: 11px; line-height: 1.5; color: var(--sz-text); }
-.ow__limit { margin-top: 4px; font-size: 11px; line-height: 1.4; color: var(--sz-text-dim); }
+.ow__notes p + p { margin-top: 4px; }
 
 /* ── Infobulle ── */
 .ow__tip {
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  padding: 7px 9px;
+  gap: 4px;
+  padding: 8px 12px;
   border: 1px solid var(--sz-border-strong);
-  background: color-mix(in srgb, var(--sz-bg) 94%, transparent);
-  font-size: 11px;
+  border-radius: var(--sz-radius-sm);
+  background: var(--sz-panel-hover);
+  box-shadow: var(--sz-shadow-pop);
+  font-size: var(--sz-fs-small);
+  font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
-.ow__tip-head { padding-bottom: 3px; border-bottom: 1px solid var(--sz-border); }
-.ow__tip-row { display: grid; grid-template-columns: 96px auto; column-gap: 8px; }
-.ow__tip-band { grid-column: 2; }
+.ow__tip-head { padding-bottom: 4px; border-bottom: 1px solid var(--sz-border); font-weight: 500; }
+.ow__tip-row { display: grid; grid-template-columns: 88px auto; column-gap: 8px; }
+.ow__tip-band { display: block; font-size: var(--sz-fs-label); }
 
 @keyframes ow-fade { from { opacity: 0; } to { opacity: 1; } }
-@keyframes ow-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .ow, .ow__win { animation: none; }
-}
-
-/* ── Honnêteté : seuil / valeur étiquetés séparément, lignes de projection, marqueurs « factice » ── */
-.ow__thr { white-space: nowrap; min-width: 64px; }
-/* valeur et seuil : le chiffre, puis SON étiquette dessous (deux lignes, colonnes étroites) */
-.ow__thr .sz-tag, .ow__num .sz-tag { display: block; margin-top: 2px; }
-.ow__table th { white-space: nowrap; }
-.ow__table tr[data-proj='true'] td { color: var(--sz-text-dim); }
-.ow__projtag {
-  flex: none;
-  padding: 0 4px;
-  border: 1px dashed var(--sz-border-strong);
-  color: var(--sz-text-dim);
-}
-.ow__source {
-  margin: 0 0 10px;
-  padding: 5px 8px;
-  border: 1px dashed var(--sz-border-strong);
-  color: var(--sz-text);
-  line-height: 1.6;
-  white-space: normal;
-}
-.ow__mock,
-.ow__synth-mock {
-  padding: 2px 6px;
-  border: 1px dashed var(--sz-unknown);
-  color: var(--sz-text);
-}
-.ow__synth-mock { white-space: normal; }
-.ow__gap-num small, .ow__gap-num[data-unknown='true'] small { letter-spacing: 0.08em; }
-
-/* Liste défilante : fondu bas de 16 px — une ligne coupée se lit comme « ça défile », pas comme un bug. */
-.ow__centre {
-  padding-bottom: 14px;
-  -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 16px), transparent);
-  mask-image: linear-gradient(to bottom, black calc(100% - 16px), transparent);
+  .ow { animation: none; }
 }

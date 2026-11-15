@@ -1,4 +1,4 @@
-/* Panneau CALQUES — préfixe .lyr. Couleurs : variables --sz-* uniquement. */
+/* Panneau « Calques » — préfixe .lyr. Couleurs : variables --sz-* uniquement. */
 
 .lyr {
   width: 100%;
@@ -12,227 +12,230 @@
   overflow: hidden;
 }
 
-/* ── Bascules : 2 rangées de 3, toujours visibles ── */
+/* ── Cases à cocher : 3 rangées de 2, toujours visibles ── */
+
 .lyr__grid {
   flex: none;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1px;
-  background: var(--sz-border);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 8px;
+  padding: 8px;
   border-bottom: 1px solid var(--sz-border);
 }
 .lyr__tog {
   display: flex;
   align-items: center;
-  gap: 5px;
-  height: 26px;
+  gap: 8px;
+  height: var(--sz-control-h);
   min-width: 0;
-  padding: 0 7px;
-  background: var(--sz-panel);
-  font-family: var(--sz-font-text);
-  font-size: 11px;
+  padding: 0 8px;
+  border-radius: var(--sz-radius-sm);
+  font-size: var(--sz-fs-data);
   line-height: 1;
-  letter-spacing: 0;
-  text-transform: none;
-  font-weight: 500;
+  font-weight: 400;
   white-space: nowrap;
   color: var(--sz-text-dim);
   user-select: none;
   transition: background-color 120ms, color 120ms;
 }
-.lyr__tog:hover { background: var(--sz-panel-hover); }
+.lyr__tog:hover { background: var(--sz-panel-hover); color: var(--sz-text); }
 .lyr__tog:focus-visible { outline-offset: -2px; }
-.lyr__tog[data-active='true'] { color: var(--sz-text); background: var(--sz-panel-hover); }
-.lyr__tog[data-active='true'] .lyr__box { border-color: var(--sz-text); }
-.lyr__tog[data-active='true'] .lyr__box::after { content: ''; position: absolute; inset: 2px; background: var(--sz-text); }
-.lyr__tog .lyr__box { width: 9px; height: 9px; }
-.lyr__tog-n { flex: none; color: var(--sz-text-dim); }
-.lyr__tog-l { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; text-align: left; }
-.lyr__tog-a { flex: none; color: var(--sz-text); font-variant-numeric: tabular-nums; }
+.lyr__tog[data-active='true'] { color: var(--sz-text); }
+.lyr__tog-l {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+}
 
+.lyr__box {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--sz-border-strong);
+  border-radius: var(--sz-radius-xs);
+  background: var(--sz-inset);
+  color: var(--sz-bg);
+  transition: background-color 120ms, border-color 120ms;
+}
+.lyr__box svg {
+  width: 14px;
+  height: 14px;
+  margin: -1px;
+  max-width: none;
+  opacity: 0;
+  transition: opacity 120ms;
+}
+.lyr__tog:hover .lyr__box { border-color: var(--sz-text-muted); }
+.lyr__tog[data-active='true'] .lyr__box {
+  background: var(--sz-accent);
+  border-color: var(--sz-accent);
+}
+.lyr__tog[data-active='true'] .lyr__box svg { opacity: 1; }
+
+/* ── Liste des calques affichés ── */
+
+/* Barre de défilement toujours visible quand il reste des lignes (8 px réservés, repris sur la marge droite) */
 .lyr__list {
+  --lyr-pad-r: 8px;
   display: block;
   flex: 1 1 auto;
   min-height: 0;
+  overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  scrollbar-width: auto;
+  scrollbar-color: auto;
 }
-.lyr__empty--all { padding: 10px; }
 
-.lyr__layer { border-bottom: 1px solid var(--sz-border); }
+.lyr__layer {
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--sz-border);
+}
 .lyr__layer:last-child { border-bottom: 0; }
 
-/* ── Ligne de calque ── */
-
+/* En-tête de calque : titre de section (.sz-section-title) ; un clic masque le calque */
 .lyr__head {
   display: flex;
   align-items: center;
   gap: 8px;
   width: 100%;
-  height: 28px;
-  padding: 0 10px;
-  font-family: var(--sz-font-text);
-  font-size: 11px;
-  line-height: 1;
-  letter-spacing: 0;
-  text-transform: none;
-  font-weight: 500;
+  height: var(--sz-row-h);
+  padding: 4px var(--lyr-pad-r) 0 var(--sz-pad);
   text-align: left;
   white-space: nowrap;
-  color: var(--sz-text-dim);
   user-select: none;
-  transition: background-color 120ms, color 120ms;
 }
-.lyr__head:hover { background: var(--sz-panel-hover); }
 .lyr__head:focus-visible { outline-offset: -2px; }
-.lyr__layer[data-active='true'] > .lyr__head { color: var(--sz-text); }
-
-.lyr__box {
-  position: relative;
-  flex: none;
-  width: 10px;
-  height: 10px;
-  border: 1px solid var(--sz-border-strong);
-}
-.lyr__layer[data-active='true'] .lyr__box { border-color: var(--sz-text); }
-.lyr__layer[data-active='true'] .lyr__box::after {
-  content: '';
-  position: absolute;
-  inset: 2px;
-  background: var(--sz-text);
-}
-
-.lyr__sys {
-  flex: none;
-  color: var(--sz-text-dim);
-}
 .lyr__label {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.lyr__beta {
-  flex: none;
-  padding: 1px 3px;
-  border: 1px dashed var(--sz-border-strong);
-  font-size: 11px;
-  letter-spacing: var(--sz-tracking);
-  color: var(--sz-text-dim);
-}
-.lyr__fill { flex: 1; min-width: 0; }
+.lyr__beta,
 .lyr__alerts {
   flex: none;
-  min-width: 34px;
-  text-align: right;
-  color: var(--sz-text);
+  font-size: var(--sz-fs-label);
+  font-weight: 400;
+  color: var(--sz-text-muted);
 }
-.lyr__alerts[data-zero='true'] { color: var(--sz-unknown); }
+.lyr__fill { flex: 1; min-width: 0; }
 
-/* ── Organes du calque ── */
+/* Source ou limite du calque (os : densité estimée, pas mesurée) */
+.lyr__src {
+  padding: 0 var(--lyr-pad-r) 6px var(--sz-pad);
+  font-size: var(--sz-fs-small);
+  line-height: 1.4;
+  color: var(--sz-text-muted);
+}
+
+/* ── Organes du calque : colonnes communes à toutes les lignes (pastille · nom · valeur · unité · source) ── */
 
 .lyr__organs {
-  padding: 0 0 4px;
+  display: grid;
+  /* les marges latérales sont des pistes : le fond de survol couvre toute la largeur */
+  grid-template-columns: var(--sz-pad) 8px minmax(0, 1fr) auto auto auto var(--lyr-pad-r);
 }
+.lyr__organs > li { display: contents; }
 
 .lyr__organ {
-  position: relative;
+  grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: 6px minmax(0, 1fr) auto 56px;
+  grid-template-columns: subgrid;
   align-items: center;
-  column-gap: 8px;
-  height: 22px;
-  padding: 0 10px 0 28px;
-  font-family: var(--sz-font-text);
-  font-size: 11px;
+  height: var(--sz-row-h);
+  font-size: var(--sz-fs-data);
   line-height: 1;
-  letter-spacing: 0;
-  text-transform: none;
-  font-weight: 500;
   white-space: nowrap;
-  color: var(--sz-text-dim);
+  color: var(--sz-text);
   cursor: pointer;
   user-select: none;
+  transition: background-color 120ms;
 }
-/* Filet vertical qui rattache l'organe à son calque */
-.lyr__organ::before {
-  content: '';
-  position: absolute;
-  left: 14px;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: var(--sz-border);
-}
+.lyr__organ > .sz-dot { grid-column: 2; }
 .lyr__organ:focus-visible { outline-offset: -2px; }
+.lyr__organ--static { cursor: default; }
 
 .lyr__oname {
   min-width: 0;
+  margin-left: 8px;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: var(--sz-text);
-}
-.lyr__val {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: 'zero' 1;
-  color: var(--sz-text);
-}
-.lyr__unit {
-  margin-left: 4px;
-  font-size: 11px;
-  letter-spacing: 0.04em;
-  text-transform: none;
-  color: var(--sz-text-dim);
-}
-.lyr__organ .sz-tag {
-  justify-self: end;
-  line-height: 1;
-}
-.lyr__none {
-  grid-column: 3 / 5;
-  justify-self: end;
-  font-size: 11px;
-  color: var(--sz-unknown);
+  line-height: 1.4;
 }
 .lyr__organ[data-status='grey'] .lyr__oname { color: var(--sz-text-dim); }
 
-/* Survol (liste ou 3D) et épinglage */
-.lyr__organ[data-hovered='true'] { background: var(--sz-panel-hover); }
-.lyr__organ[data-hovered='true']::before,
-.lyr__organ[data-selected='true']::before { background: var(--sz-text); }
-.lyr__organ[data-selected='true'] {
-  background: var(--sz-panel-hover);
-  box-shadow: inset 0 0 0 1px var(--sz-border-strong);
+.lyr__val {
+  margin-left: 12px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
-.lyr__organ[data-selected='true']::before { width: 2px; }
+.lyr__val[data-color='amber'] { color: var(--sz-amber); }
+.lyr__val[data-color='red'] { color: var(--sz-red); }
+.lyr__unit {
+  margin-left: 4px;
+  text-align: left;
+}
+.lyr__organ .sz-tag {
+  margin-left: 8px;
+  text-align: right;
+  line-height: 1;
+}
+/* Ligne sans chiffre : nom à gauche, mention à droite, hors colonnes */
+.lyr__organ--plain {
+  display: flex;
+  padding: 0 var(--lyr-pad-r) 0 var(--sz-pad);
+}
+.lyr__organ--plain .lyr__oname { flex: 1; }
+.lyr__none {
+  flex: none;
+  margin-left: 12px;
+  font-size: var(--sz-fs-small);
+  color: var(--sz-text-muted);
+}
+
+/* Survol (liste ou 3D) et sélection */
+.lyr__organ[data-hovered='true'] { background: color-mix(in srgb, var(--sz-panel-hover) 60%, var(--sz-panel)); }
+.lyr__organ[data-selected='true'] { background: var(--sz-panel-hover); }
+.lyr__organ[data-selected='true'] .lyr__oname { font-weight: 500; }
 
 .lyr__empty {
-  padding: 2px 10px 8px 28px;
-  font-family: var(--sz-font-text);
-  font-size: 11px;
-  letter-spacing: var(--sz-tracking);
-  color: var(--sz-unknown);
+  padding: 6px var(--lyr-pad-r) 10px var(--sz-pad);
+  font-size: var(--sz-fs-small);
+  line-height: 1.4;
+  color: var(--sz-text-muted);
+}
+.lyr__list > .lyr__empty { padding: 12px var(--sz-pad); }
+
+/* Étiquette de source commune au groupe (Détails) : dite une fois, dans l'en-tête du calque */
+.lyr__gtag { flex: none; font-weight: 400; }
+
+/* Projection : pastilles creuses de la couleur, valeurs en texte normal (une prévision n'est pas une alarme) */
+.lyr--projected .lyr__organ .sz-dot:not([data-color='grey']),
+.lyr--projected .lyr__tog .sz-dot:not([data-color='grey']) {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--sz-status);
 }
 
-
-
-/* Liste défilante : fondu bas de 16 px — une ligne coupée se lit comme « ça défile », pas comme un bug. */
-.lyr__list {
-  padding-bottom: 6px;
-  -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 10px), transparent);
-  mask-image: linear-gradient(to bottom, black calc(100% - 10px), transparent);
-}
-
-/* Source du calque (os : pas le scanner) et précision sur ce qu'un calque BÊTA ne couvre pas */
-.lyr__src {
-  padding: 2px 10px 5px 28px;
-  font-family: var(--sz-font-text);
-  font-size: 11px;
-  line-height: 1.45;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  font-weight: 500;
+/* Lignes cachées sous le bas de la liste : le défilement se voit (même voix que « + 2 alertes plus bas ») */
+.lyr__below {
+  flex: none;
+  display: block;
+  width: 100%;
+  padding: 6px var(--sz-pad);
+  border-top: 1px solid var(--sz-border);
+  text-align: left;
+  font-size: var(--sz-fs-small);
+  line-height: 1.4;
   color: var(--sz-text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background-color 120ms, color 120ms;
 }
-.lyr__src b { font-weight: 500; color: var(--sz-text); }
-.lyr__organ--static { cursor: default; }
+.lyr__below:hover,
+.lyr__below:focus-visible { background: var(--sz-panel-hover); color: var(--sz-text); }
