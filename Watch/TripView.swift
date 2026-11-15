@@ -19,7 +19,7 @@ struct TripView: View {
                         .monospacedDigit()
                         .foregroundStyle(Palette.secondary)
                 }
-                Text(m.phase)
+                Text("\(m.phase) · \(store.origin.short)")
                     .font(.footnote)
                     .foregroundStyle(Palette.secondary)
 
@@ -62,7 +62,7 @@ struct TripView: View {
                     }
                 }
 
-                OriginFooter(origin: store.origin, extra: "Calendrier de la persona")
+                OriginFooter(origin: store.origin, extra: "Calendrier de la persona", stale: store.isStale)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }

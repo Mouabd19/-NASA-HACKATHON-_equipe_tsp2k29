@@ -96,12 +96,26 @@ enum DataOrigin: Equatable {
         case .embedded: return "Simulé · instantané embarqué"
         }
     }
+
+    /// Même chose, quand le Mac ne répond plus : on montre l'heure de la dernière réponse, pas une synchro en cours
+    func label(stale: Bool) -> String {
+        if stale, case .mac(let at) = self { return "Simulé · dernière réponse du Mac à \(at.hm)" }
+        return label
+    }
+
+    /// Mot court pour la première ligne d'une page : la provenance se voit sans faire défiler
+    var short: String {
+        switch self {
+        case .loading: return "Chargement"
+        case .mac, .embedded: return "Simulé"
+        }
+    }
 }
 
 enum DemoMode {
     /// `-SZDemo YES` au lancement : aucune requête au Mac, instantané embarqué, pouls simulé lancé tout seul
     static var isOn: Bool { UserDefaults.standard.bool(forKey: "SZDemo") }
-    /// `-SZPage today|pulse|body|todo|trip|health|settings` : page affichée au lancement (captures)
+    /// `-SZPage today|why|pulse|body|todo|trip|health|settings` : page affichée au lancement (captures) ; `why` ouvre le « Pourquoi ? »
     static var page: String? { UserDefaults.standard.string(forKey: "SZPage") }
 }
 
@@ -112,6 +126,9 @@ final class SummaryStore: ObservableObject {
     @Published private(set) var summary: WatchSummary
     @Published private(set) var origin: DataOrigin = .loading
     @Published private(set) var lastError: String?
+
+    /// Le Mac a répondu une fois, mais la dernière requête a échoué
+    var isStale: Bool { lastError != nil }
 
     private var refreshing = false
 
@@ -159,6 +176,8 @@ final class TodoStore: ObservableObject {
     @Published private(set) var synced = false
     @Published private(set) var lastError: String?
     @Published private(set) var busy: Set<String> = []
+    /// La dernière requête n'a pas abouti (Mac absent) : on espace les essais
+    @Published private(set) var unreachable = false
 
     private var localDone: Set<String> = []
 
@@ -172,12 +191,20 @@ final class TodoStore: ObservableObject {
 
     var doneCount: Int { items.filter(\.done).count }
 
+    /// Prochaine tâche à faire : la liste est déjà triée (urgence médicale d'abord, puis l'heure).
+    /// La charge lourde suspendue (niveau ORANGE ou ROUGE) est sautée.
+    func nextTask(level: String) -> WatchTodo? {
+        let suspend = level == "ORANGE" || level == "ROUGE"
+        return items.first { !$0.done && !(suspend && $0.isHeavy) }
+    }
+
     func refresh() async {
         guard !DemoMode.isOn, !AppKeys.currentServerURL.isEmpty else { useEmbedded(); return }
         do {
             let (r, _) = try await Transport.perform(try ServerAPI.todoCall(base: AppKeys.currentServerURL))
             guard (200..<300).contains(r.status) else { throw APIError.http(r.status) }
             let list = try JSONDecoder().decode([WatchTodo].self, from: r.data)
+            unreachable = false
             if list.isEmpty {
                 // Le Mac répond mais la War Room n'a pas encore poussé la liste : rien à cocher côté serveur
                 useEmbedded()
@@ -187,8 +214,10 @@ final class TodoStore: ObservableObject {
             items = list.sorted(by: Self.order)
             synced = true
             lastError = nil
+            unreachable = false
         } catch {
             lastError = error.localizedDescription
+            unreachable = true
             if !synced { useEmbedded() }
         }
     }

@@ -13,13 +13,14 @@ struct PulseView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 6) {
                     if heart.isSimulated || (heart.phase == .idle && simulatedSetting) {
-                        Text("SIMULÉ · non envoyé")
+                        Text("Simulé · non envoyé au Mac")
                             .font(.footnote.weight(.semibold))
                             .foregroundStyle(Palette.amber)
                             .fixedSize(horizontal: false, vertical: true)
                     }
 
-                    statusRow(live: live)
+                    // simulé : le bandeau ambre ci-dessus suffit, pas de seconde mention « Simulé »
+                    if !(live && heart.isSimulated) { statusRow(live: live) }
 
                     HStack(alignment: .firstTextBaseline, spacing: 6) {
                         Text(heart.bpm.map { String(Int($0.rounded())) } ?? "--")
@@ -69,7 +70,7 @@ struct PulseView: View {
 
     private func statusRow(live: Bool) -> some View {
         let (text, color): (String, Color) = {
-            if live { return heart.isSimulated ? ("Simulé", Palette.amber) : ("En direct", Palette.green) }
+            if live { return ("En direct", Palette.green) }
             switch heart.phase {
             case .starting: return ("Démarrage", Palette.gray)
             case .running: return ("En attente du pouls", Palette.gray)
@@ -86,9 +87,11 @@ struct PulseView: View {
         }
     }
 
+    /// Blanc pour un pouls réel et frais. Simulé : gris clair, pour ne pas le lire comme une alerte
+    /// (l'ambre est réservé au bandeau « SIMULÉ » et aux statuts). Ancien : gris.
     private func valueColor(live: Bool) -> Color {
         guard live else { return Palette.gray }
-        return heart.isSimulated ? Palette.amber : Palette.text
+        return heart.isSimulated ? Palette.secondary : Palette.text
     }
 
     /// Écart à la FC de repos : celle du porteur (Santé) en réel, celle de la persona en simulé.

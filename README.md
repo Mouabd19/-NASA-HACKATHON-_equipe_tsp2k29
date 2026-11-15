@@ -77,10 +77,10 @@ La Couronne fait défiler les pages de haut en bas. Une information par page.
 
 | Page | Ce qu'elle montre | Source |
 |---|---|---|
-| **Aujourd'hui** | Niveau du jour (pastille de couleur, gris si inconnu), nombre de zones à surveiller, consigne **Maintenant**, puis **Ensuite** : qui décide et dans quel délai | `GET /api/watch/summary`, sinon instantané embarqué |
+| **Aujourd'hui** | « Jour 94 · Haddad · Simulé » en première ligne. Niveau du jour (pastille de couleur, gris si inconnu), nombre de zones à surveiller, **Pourquoi ?** (touche : les raisons du niveau, avec leur règle). **Maintenant** : la prochaine tâche de la to-do (urgence médicale d'abord, puis l'heure). **Ensuite** : qui décide | `GET /api/watch/summary`, sinon instantané embarqué |
 | **Pouls** | Pouls en direct, petit cœur qui bat au rythme mesuré, écart à ta FC de repos (lue dans Santé), tracé des 60 dernières valeurs, envoi au Mac | **Réel** (montre) |
-| **Corps** | Mannequin 3D (SceneKit) qui tourne lentement ; les zones en alerte prennent leur couleur. Touche le corps pour le faire tourner à la Couronne, retouche pour rendre la Couronne aux pages. La ligne du bas ouvre la liste des alertes | résumé du jour |
-| **To-do** | Les tâches du jour, cochables. « Priorité 1 » en rouge, « Suspendu » pour la charge lourde si le niveau est orange ou rouge | `GET /api/todo`, sinon liste embarquée de J94 |
+| **Corps** | Mannequin 3D (SceneKit) qui tourne lentement ; les zones en alerte prennent leur couleur, « Simulé » écrit dessous. La Couronne change de page comme ailleurs. Touche le corps pour qu'elle le fasse tourner, retouche (ou change de page) pour la rendre aux pages. La ligne du bas ouvre la liste des alertes | résumé du jour |
+| **To-do** | Les tâches du jour, cochables. « Priorité 1 » en rouge, « Suspendu » pour la charge lourde si le niveau est orange ou rouge | `GET /api/todo` (le serveur la remplit avec le plan du jour si la War Room n'est pas encore ouverte), sinon liste embarquée de J94 |
 | **Trajet** | J94 / 860, frise avec Sol 0, jours avant Sol 0, délai radio Terre-Mars (aller simple et aller-retour) | résumé du jour |
 | **Santé** | Envoi des dernières mesures de Santé au Mac (inchangé) | **Réel** |
 | **Réglages** | Adresse du Mac, bouton Tester, mode simulé (inchangés) | |
@@ -89,6 +89,7 @@ Pourquoi cet ordre : la démo commence par la question « que dois-je faire main
 
 **Honnêteté des données.** Le pied de chaque page dit d'où vient ce qu'elle affiche :
 - « Simulé · Mac à 07:02 » : calculé par le Mac (persona Haddad, données simulées) ;
+- « Simulé · dernière réponse du Mac à 07:02 » : le Mac ne répond plus, la montre garde sa dernière réponse ;
 - « Simulé · instantané embarqué » : le Mac ne répond pas, ou l'endpoint n'est pas encore déployé. L'app affiche alors une copie de J94 enregistrée dans `Watch/EmbeddedSnapshot.swift` ;
 - la to-do dit « Synchronisée avec le Mac » ou « Non synchronisée : coches gardées sur la montre ».
 
@@ -105,21 +106,52 @@ L'écran affiche :
 
 **Arrêter** termine la séance sans l'enregistrer dans Santé.
 
-**Mode simulé** (page Réglages, désactivé par défaut) : produit un pouls inventé pour tester l'écran, par exemple dans le simulateur. Tout s'affiche en ambre avec « SIMULÉ · non envoyé ». L'écart est alors calculé contre la FC de repos simulée de Haddad. **Aucune valeur simulée n'est envoyée au Mac.**
+**Mode simulé** (page Réglages, désactivé par défaut) : produit un pouls inventé pour tester l'écran, par exemple dans le simulateur. Le bandeau ambre « Simulé · non envoyé au Mac » le dit ; le chiffre et le cœur sont en gris clair, pour ne pas ressembler à une alerte. L'écart est alors calculé contre la FC de repos simulée de Haddad. **Aucune valeur simulée n'est envoyée au Mac.**
 
-**Repli** : si la montre n'atteint pas le Mac (pas de réseau, délai dépassé, connexion refusée) et que l'app iPhone est joignable, la requête passe par l'iPhone via WatchConnectivity. L'iPhone affiche alors le nombre de requêtes relayées. Le résumé et la to-do passent par le même chemin.
+**Repli** : si la montre n'atteint pas le Mac (pas de réseau, délai dépassé, connexion refusée) et que l'app iPhone est joignable, la requête passe par l'iPhone via WatchConnectivity. L'iPhone affiche alors le nombre de requêtes relayées. Le résumé et la to-do passent par le même chemin. Quand le Mac ne répond pas, la to-do n'est plus interrogée que toutes les 15 s (au lieu de 5 s), pour laisser le relais au pouls.
 
 **Animations.** Changement de page (0,2 s), battement du cœur, rotation lente du corps. Avec Réglages › Accessibilité › Réduire les animations, le cœur et le corps restent immobiles.
 
 **Mode démo (simulateur).** Arguments de lancement :
 - `-SZDemo YES` : aucune requête au Mac, instantané embarqué, pouls simulé lancé tout seul (jamais envoyé) ;
-- `-SZPage today|pulse|body|todo|trip|health|settings` : page affichée au lancement.
+- `-SZPage today|why|pulse|body|todo|trip|health|settings` : page affichée au lancement (`why` ouvre le « Pourquoi ? »). Sans cet argument, l'app démarre sur Aujourd'hui.
 
 ```sh
 xcrun simctl launch <UDID> com.tsp2k29.solzero.SOLZeroWatch.watchkitapp -SZDemo YES -SZPage body
 ```
 
-Captures de chaque page dans `shots/` (Apple Watch SE 3 44 mm, watchOS 26.2).
+Captures de chaque page dans `shots/` (Apple Watch SE 44 mm, watchOS 26.2), plus `01b-why.png` pour le « Pourquoi ? ».
+
+## Retour du jury et corrections (15/11)
+
+Note du jury : 6,5/10. Base jugée honnête, flux du pouls intact, deux points bloquants pour la démo.
+
+**Bloquants, corrigés**
+- **Couronne piégée sur la page Corps.** La vue prenait le focus toute seule en arrivant, donc la Couronne faisait tourner le corps au lieu de changer de page. Maintenant la vue n'est focusable qu'après un toucher (`.focusable(crownMode)`), et `crownMode` repasse à faux en arrivant sur la page, en la quittant et quand le focus part. Vérifié dans le simulateur avec `-SZPage body` : pas de « Couronne : rotation » au lancement, deux captures à 4 s d'écart sont différentes (le corps tourne). Le passage à la page suivante par la Couronne n'a pas pu être simulé en ligne de commande : à vérifier au poignet.
+- **Provenance invisible au premier écran.** Aujourd'hui commence par « Jour 94 · Haddad · Simulé ». Trajet : « Croisière aller · Simulé ». Corps : « Simulé » sous le mannequin, juste au-dessus de « 4 zones à surveiller ».
+
+**À améliorer, fait**
+- **Maintenant** affiche la prochaine tâche non faite (urgence médicale d'abord, puis l'heure, charge lourde sautée si suspendue), avec son heure, puis la consigne du jour. Vérifié avec le serveur : après avoir coché « Check-in du matin » côté Mac, la montre passe à « 07:05 · Analyse d'urine du matin ».
+- **Pourquoi ?** sous le niveau : la liste des raisons du triage (`triage.reasons`), chacune avec sa règle (NASA-STD-3001, Tendance 7 j, Hypothèse de l'équipe). Capture `shots/01b-why.png`.
+- **Pouls simulé** : chiffre et cœur en gris clair, plus en ambre. Une seule mention, le bandeau « Simulé · non envoyé au Mac ».
+- **Réseau** : to-do interrogée toutes les 15 s quand le Mac ne répond pas (5 s sinon), résumé toutes les 30 s.
+- **Pied de page** : « Simulé · dernière réponse du Mac à HH:MM » quand la dernière requête a échoué.
+- **To-do vide sans War Room** (endpoint, branche `night/watch-api`) : `GET /api/todo` remplit la liste avec le plan de J94 si elle est vide. La War Room la remplace en la poussant, les coches déjà faites restent. Testé (vitest) et vérifié avec la montre du simulateur contre `npm run dev`.
+
+**Gardé tel quel** : envoi du pouls (`guard !isSimulated`, « En direct » < 15 s), écart à la FC de repos lu dans Santé, gris par défaut, repli étiqueté sur l'instantané embarqué, Réduire les animations, règles étiquetées, charge lourde suspendue en ORANGE/ROUGE, options `-SZDemo` / `-SZPage`.
+
+**Pas corrigé**
+- Ordre de la Couronne (Santé et Réglages après Trajet) : gardé. L'app démarre sur Aujourd'hui ; ouvre-la juste avant de monter sur scène.
+- Mannequin rudimentaire : gardé. À la caméra, montrer plutôt la ligne « 4 zones à surveiller » et la liste des alertes.
+- Rien n'a encore tourné sur la vraie montre avec ces changements : voir la check-list ci-dessous.
+
+**Check-list avant le pitch**
+1. Serveur lancé avec `npm run dev -- --host`, branche `night/watch-api` fusionnée. Depuis l'iPhone (Safari) : `http://IP:5173/api/watch/summary` doit répondre.
+2. Wi-Fi de l'événement qui isole les appareils : partage de connexion de l'iPhone, nouvelle IP envoyée à la montre.
+3. Réglages de la montre : **Mode simulé désactivé**.
+4. Page Pouls → Démarrer une fois avant le pitch, accepter la feuille Santé.
+5. Page Corps : la Couronne passe bien à la To-do. Si « Couronne : rotation » s'affiche, toucher le corps une fois.
+6. Revenir sur Aujourd'hui avant de monter sur scène.
 
 ## Endpoint `GET /api/watch/summary`
 
@@ -152,7 +184,7 @@ curl http://$IP:5173/api/watch/summary
 2. **Projet.** `cd ~/Documents/Hacks/sol-zero-watch && xcodegen generate`. iPhone branché, montre au poignet déverrouillée.
 3. **Installer.** Commandes de « Réinstaller sans cliquer » ci-dessous (iPhone puis montre), ou ⌘R dans Xcode sur chaque schéma. Le compte gratuit expire au bout de 7 jours.
 4. **Adresse.** Dans l'app iPhone : `http://IP:5173` → Tester → Envoyer à la montre. Sur la montre, page Réglages → Tester (point vert).
-5. **Répétition.** Ouvre le Plan du jour sur le Mac (il pousse la to-do). Sur la montre : Aujourd'hui affiche « Simulé · Mac à … », la To-do dit « Synchronisée avec le Mac », coche une tâche et regarde-la se cocher sur le Mac. Page Pouls → Démarrer → « En direct » sur la montre et sur le Mac. Vérifie que **Mode simulé est désactivé**.
+5. **Répétition.** Sur la montre : Aujourd'hui affiche « Simulé · Mac à … », la To-do dit « Synchronisée avec le Mac », coche une tâche et regarde-la se cocher sur le Mac. Page Pouls → Démarrer → « En direct » sur la montre et sur le Mac. Vérifie que **Mode simulé est désactivé**.
 
 ## 6. Tester avec curl
 
@@ -237,7 +269,7 @@ C'est normal. Active le mode simulé, ou lance avec `-SZDemo YES`.
 Le serveur n'a pas l'endpoint `/api/watch/summary` (branche `night/watch-api` pas encore fusionnée) : la montre affiche la copie de J94. La to-do et le pouls marchent quand même.
 
 **La Couronne ne change plus de page sur la page Corps**
-Elle fait tourner le corps (« Couronne : rotation » en haut). Touche le corps une fois pour la rendre aux pages.
+Elle fait tourner le corps (« Couronne : rotation · touche pour finir » sous le corps) : quelqu'un a touché le corps. Touche-le une fois pour la rendre aux pages. Corrigé le 15/11 : la page ne prend plus la Couronne toute seule.
 
 **L'app ne s'ouvre plus au bout de 7 jours**
 C'est la signature du compte gratuit qui a expiré. Relance ⌘R depuis Xcode.

@@ -27,10 +27,11 @@ struct SectionLabel: View {
 struct OriginFooter: View {
     let origin: DataOrigin
     var extra: String?
+    var stale = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 1) {
-            Text(origin.label)
+            Text(origin.label(stale: stale))
             if let extra { Text(extra) }
         }
         .font(.caption2)
@@ -75,4 +76,11 @@ struct Sparkline: View {
             }
         }
     }
+}
+
+/// Étiquette d'une règle : « V1 4027 » → « NASA-STD-3001 V1 4027 » ; tendance ; sinon hypothèse de l'équipe
+func ruleLabel(_ rule: String) -> String {
+    if rule.hasPrefix("V") { return "NASA-STD-3001 \(rule)" }
+    if rule.uppercased().hasPrefix("TENDANCE") { return "Tendance 7 j" }
+    return "Hypothèse de l'équipe"
 }

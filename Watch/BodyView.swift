@@ -7,30 +7,35 @@ import UIKit
 /// Ce n'est pas un rendu anatomique : il situe les alertes, comme les étiquettes de la page Corps du web.
 struct BodyView: View {
     @ObservedObject var store: SummaryStore
+    /// Vrai quand la page Corps est affichée : en la quittant, la Couronne revient toujours aux pages
+    var isActive = true
     @StateObject private var model = BodyScene()
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    /// La Couronne ne fait tourner le corps qu'après un toucher. Sans ce toucher, la vue n'est pas focusable :
+    /// elle ne peut pas prendre la Couronne toute seule, et la Couronne continue de changer de page.
+    @State private var crownMode = false
     @FocusState private var crownFocused: Bool
     @State private var crown = 0.0
     @State private var showList = false
 
     private var alerts: [WatchSummary.AlertZone] { store.summary.alerts }
+    private var controlled: Bool { crownMode && crownFocused }
 
     var body: some View {
         VStack(spacing: 4) {
             SceneView(scene: model.scene, pointOfView: model.camera, options: [.rendersContinuously])
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .overlay(alignment: .topLeading) {
-                    if crownFocused {
-                        Text("Couronne : rotation")
-                            .font(.caption2)
-                            .foregroundStyle(Palette.secondary)
-                    }
+                .overlay(alignment: .bottomLeading) {
+                    // provenance toujours visible ; remplacée par l'aide quand la Couronne fait tourner le corps
+                    Text(controlled ? "Couronne : rotation · touche pour finir" : store.origin.short)
+                        .font(.caption2)
+                        .foregroundStyle(Palette.secondary)
                 }
-                .focusable(true)
+                .focusable(crownMode)
                 .focused($crownFocused)
                 .digitalCrownRotation($crown, from: 0, through: 360, by: nil, sensitivity: .low,
                                       isContinuous: true, isHapticFeedbackEnabled: false)
-                .onTapGesture { crownFocused.toggle() }
+                .onTapGesture { crownMode.toggle() }
                 .accessibilityLabel(accessibilityText)
 
             Button { showList = true } label: {
@@ -40,6 +45,8 @@ struct BodyView: View {
                         .font(.footnote)
                         .monospacedDigit()
                         .foregroundStyle(Palette.text)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
                     Spacer(minLength: 0)
                     Image(systemName: "chevron.right")
                         .font(.caption2)
@@ -50,13 +57,26 @@ struct BodyView: View {
             .buttonStyle(.plain)
         }
         .navigationTitle("Corps")
-        .onAppear { model.apply(alerts); model.setSpinning(!reduceMotion && !crownFocused) }
+        .onAppear { crownMode = false; model.apply(alerts); updateSpin() }
         .onChange(of: alerts) { _, new in model.apply(new) }
         .onChange(of: crown) { _, new in model.setCrown(degrees: new) }
-        .onChange(of: crownFocused) { _, focused in model.setSpinning(!reduceMotion && !focused) }
-        .onChange(of: reduceMotion) { _, reduce in model.setSpinning(!reduce && !crownFocused) }
-        .sheet(isPresented: $showList) { NavigationStack { AlertList(alerts: alerts, origin: store.origin) } }
+        .onChange(of: crownMode) { _, on in
+            // la vue doit d'abord devenir focusable avant de recevoir le focus
+            Task { @MainActor in crownFocused = on }
+            updateSpin()
+        }
+        .onChange(of: crownFocused) { _, focused in
+            if !focused { crownMode = false }
+            updateSpin()
+        }
+        .onChange(of: isActive) { _, active in if !active { crownMode = false } }
+        .onChange(of: reduceMotion) { _, _ in updateSpin() }
+        .sheet(isPresented: $showList) {
+            NavigationStack { AlertList(alerts: alerts, origin: store.origin, stale: store.isStale) }
+        }
     }
+
+    private func updateSpin() { model.setSpinning(!reduceMotion && !crownMode) }
 
     private var countLabel: String {
         switch alerts.count {
@@ -82,6 +102,7 @@ struct BodyView: View {
 struct AlertList: View {
     let alerts: [WatchSummary.AlertZone]
     let origin: DataOrigin
+    var stale = false
 
     var body: some View {
         List {
@@ -105,17 +126,10 @@ struct AlertList: View {
                 }
                 .padding(.vertical, 2)
             }
-            OriginFooter(origin: origin)
+            OriginFooter(origin: origin, stale: stale)
                 .listRowBackground(Color.clear)
         }
         .navigationTitle("Alertes")
-    }
-
-    /// « V1 4027 » → « NASA V1 4027 » ; règle de l'équipe → « Hypothèse de l'équipe »
-    private func ruleLabel(_ rule: String) -> String {
-        if rule.hasPrefix("V") { return "NASA-STD-3001 \(rule)" }
-        if rule.hasPrefix("TENDANCE") { return "Tendance 7 j" }
-        return "Hypothèse de l'équipe"
     }
 }
 
