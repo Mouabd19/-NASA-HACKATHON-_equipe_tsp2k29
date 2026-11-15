@@ -2,14 +2,15 @@
 // La fenêtre organe est montée à la racine. Aucun composant ne dépend d'un autre : tout passe par le store useBody.
 import { Component, useEffect } from 'react';
 import type { ErrorInfo, JSX, ReactNode } from 'react';
-import { DAY_TODAY } from '../../mocks/mission';
+import { ASTRONAUT, DAY_TODAY } from '../../mocks/mission';
+import { lightTimeMin } from '../../content/horizons';
 import { useNavigate } from 'react-router-dom';
 import { BodyScene } from '../../three/BodyScene';
 import { look } from '../../three/look';
-import { PanelCloseContext, ProvenanceBadge, TagBadge, fmt } from '../../ui';
+import { PanelCloseContext, ProvenanceBadge, TagBadge, dayToDate, fmt, sentenceCase } from '../../ui';
 import { usePrefs } from '../../ui/prefs';
 import type { BodyPanelId } from '../../ui/prefs';
-import { scenarioBody, useBody } from './store';
+import { LAYER_META, LAYER_ORDER, scenarioBody, useBody } from './store';
 import { useUrlState } from './urlState';
 import { Header } from './panels/Header';
 import { LayersPanel } from './panels/LayersPanel';
@@ -50,7 +51,29 @@ class SceneBoundary extends Component<{ children: ReactNode }, { error: string |
   }
 }
 
-/** Informations posées sur la scène : mention « Projection » (toujours visible) et provenance (mode Détails). */
+/**
+ * Légendes d'image aux coins de la scène, comme les incrustations d'un cliché (DICOM) : identification,
+ * jour et date, calques affichés, nature de l'image et délai Terre. Discrètes, toujours là, jamais cliquables.
+ */
+function SceneCorners(): JSX.Element {
+  const day = useBody((s) => s.day);
+  const layers = useBody((s) => s.layers);
+  const date = dayToDate(day);
+  const shown = LAYER_ORDER.filter((l) => layers[l]).map((l) => LAYER_META[l].label.toLowerCase());
+  return (
+    <>
+      <div className="body-corner body-corner--bl sz-mono" aria-hidden="true">
+        <span>Calques · {shown.length ? shown.join(', ') : 'aucun'}</span>
+        <span>Atlas Z-Anatomy, pas une image du patient</span>
+      </div>
+      <div className="body-corner body-corner--br sz-mono" aria-hidden="true">
+        <span>Délai Terre {fmt(lightTimeMin(date), 1)} min</span>
+      </div>
+    </>
+  );
+}
+
+/** Informations posées sur la scène : identification, mention « Projection » (toujours visible), provenance (Détails). */
 function SceneChrome(): JSX.Element {
   const day = useBody((s) => s.day);
   const adherence = useBody((s) => s.adherence);
@@ -63,6 +86,10 @@ function SceneChrome(): JSX.Element {
   const steps = Array.from({ length: look.heat.levels }, (_, i) => i);
   return (
     <div className="body-chrome" data-projected={projected}>
+      <div className="body-id sz-mono">
+        <span className="body-id__name">{sentenceCase(ASTRONAUT.name)} · {ASTRONAUT.id}</span>
+        <span>{fmtDayLong(day)} · {dayToDate(day)}</span>
+      </div>
       {projected && (
         <div className="body-ribbon" role="status" title="Jour futur : corps projeté par le modèle, pas une mesure">
           <span className="body-ribbon__text">Projection</span>
@@ -121,6 +148,9 @@ function SceneChrome(): JSX.Element {
   );
 }
 
+/** « J094 » : numéro de jour sur trois chiffres, comme un numéro de série d'examen. */
+const fmtDayLong = (day: number): string => `J${String(day).padStart(3, '0')}`;
+
 /** Fournit le bouton × aux panneaux d'un emplacement. */
 function Closable({ id, children }: { id: BodyPanelId; children: ReactNode }): JSX.Element | null {
   const closed = usePrefs((s) => s.closed.includes(id));
@@ -169,6 +199,7 @@ export function Body(): JSX.Element {
         <SceneBoundary><BodyScene /></SceneBoundary>
         <LeaderLines />
         <SceneChrome />
+        <SceneCorners />
         <HoverCard />
         <ViewMenu />
       </section>

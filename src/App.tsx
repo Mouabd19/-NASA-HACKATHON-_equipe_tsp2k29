@@ -23,7 +23,13 @@ function TopBar(): JSX.Element {
   return (
     <header className="sz-topbar">
       <div className="sz-topbar__left">
-        <span className="sz-wordmark">Sol Zéro</span>
+        <span className="sz-wordmark">
+          {/* une onde de pouls : la marque vient de l'instrument, pas d'une bibliothèque d'icônes */}
+          <svg viewBox="0 0 20 12" aria-hidden="true">
+            <path d="M0 7h5l1.5-3 2 7 2.5-11 2 7h7" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
+          </svg>
+          <span>Sol Zéro</span>
+        </span>
         <nav className="sz-nav" aria-label="Pages">
           {TABS.map((t) => (
             <NavLink
@@ -38,7 +44,12 @@ function TopBar(): JSX.Element {
       </div>
 
       <div className="sz-topbar__right">
-        <strong className="sz-topbar__opt">{sentenceCase(ASTRONAUT.name)}</strong>
+        {/* identification du patient, comme le bandeau d'un moniteur */}
+        <span className="sz-patient" title="Persona fictive du scénario de mission">
+          <span className="sz-patient__role">Cdt</span>
+          <strong className="sz-patient__name">{sentenceCase(ASTRONAUT.name)}</strong>
+          <span className="sz-mono sz-patient__role">{ASTRONAUT.id}</span>
+        </span>
         {/* rappel d'honnêteté unique quand les étiquettes par chiffre sont masquées */}
         <span
           className="sz-topbar__sim"

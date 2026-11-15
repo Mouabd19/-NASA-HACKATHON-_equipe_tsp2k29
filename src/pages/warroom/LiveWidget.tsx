@@ -143,7 +143,8 @@ function LiveRow({ type, m, simulated, flag, dataVersion, now, trace }: {
   const when = fresh ? new Date(m.date).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : ago(age);
   const origin = watch ? (isLive ? 'En direct' : `Montre · ${ago(age)}`)
     : m.source === 'manual' ? `Saisie manuelle · ${when}`
-    : simulated ? when
+    // série simulée : pas d'heure (elle serait calculée contre l'horloge réelle, donc fausse) et la mention reste visible
+    : simulated ? 'Série simulée'
     : `Export · ${when}`;
 
   const unit = UNIT[type];
@@ -161,7 +162,7 @@ function LiveRow({ type, m, simulated, flag, dataVersion, now, trace }: {
         {origin}
         {flag && <ProvenanceBadge value="SIMULÉ" />}
       </span>
-      <span className={`sz-value${watch ? ' sz-value--lg' : ''}`} data-stale={!fresh}>
+      <span className={`sz-value wr-readout${watch ? ' sz-readout' : ''}`} data-stale={!fresh}>
         {fmt(m.value, d)} <span className="sz-unit">{unit}</span>
       </span>
       <span className={`wr-note wr-metric__side${ref.real ? '' : ' sz-detail'}`}>

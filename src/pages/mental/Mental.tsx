@@ -106,7 +106,7 @@ function Frise({ sel, onSel, mlAlert }: { sel: { sc: Sc; day: number }; onSel: (
   };
   return (
     <div>
-      <div className="mt-chart"><div className="mt-chart__in" ref={ref}>
+      <div className="mt-chart sz-ecg"><div className="mt-chart__in" ref={ref}>
         <svg className="mt-frise" viewBox={`0 0 ${W} ${H}`} width={W} height={H} role="img" aria-label={`Frise J${d0} à J${d1} : humeur, sommeil, variabilité cardiaque et temps avec l'équipage, avec et sans trouble ; verdicts des agents aux jours analysés`}>
           {/* période du trouble : aplat neutre */}
           <rect className="mt-frise__zone" x={x(ONSET)} y={20} width={x(d1) - x(ONSET)} height={BOTTOM - 20} />

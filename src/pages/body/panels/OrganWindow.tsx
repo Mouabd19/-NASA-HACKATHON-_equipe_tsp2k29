@@ -407,7 +407,7 @@ function GapChartView({ chart, day, adherence }: { chart: GapChart; day: number;
   return (
     <ResponsiveContainer width="100%" height="100%">
       <ComposedChart data={chart.rows} margin={CHART_MARGIN}>
-        <CartesianGrid stroke={CHART.grid} vertical={false} />
+        <CartesianGrid stroke={CHART.grid} strokeOpacity={0} vertical={false} />
         <XAxis
           dataKey="day" type="number" domain={[0, DAY_END]} ticks={xTicks} tick={tickStyle} interval={0}
           tickFormatter={(d: number) => fmtDay(d)} tickLine={false} axisLine={{ stroke: CHART.grid }} height={22}
@@ -479,7 +479,7 @@ function PhenoChartView({ rows, usedDay }: { rows: PhenoRow[]; usedDay: number |
   return (
     <ResponsiveContainer width="100%" height="100%">
       <ComposedChart data={rows} margin={CHART_MARGIN}>
-        <CartesianGrid stroke={CHART.grid} vertical={false} />
+        <CartesianGrid stroke={CHART.grid} strokeOpacity={0} vertical={false} />
         <XAxis
           dataKey="day" type="number" domain={[0, DAY_TODAY]} ticks={ticks} tick={tickStyle} interval={0}
           tickFormatter={(d: number) => fmtDay(d)} tickLine={false} axisLine={{ stroke: CHART.grid }} height={22}
@@ -550,7 +550,7 @@ function OrganRight({ organ, day }: { organ: OrganState; day: number }): JSX.Ele
           {btn(0, 'Rythme actuel')}
           {btn(1, 'Avec le plan')}
         </div>
-        <div className="ow__plot">
+        <div className="ow__plot sz-ecg">
           <span className="ow__axis-title">Âge équivalent (ans)</span>
           <div className="ow__chart">
             <GapChartView chart={chart} day={day} adherence={adherence} />
@@ -584,7 +584,7 @@ function GlobalRight({ result }: { result: PhenoAgeResult | null }): JSX.Element
       <Sect
         title="PhenoAge dans le temps"
       >
-        <div className="ow__plot">
+        <div className="ow__plot sz-ecg">
           <span className="ow__axis-title">Âge (ans)</span>
           <div className="ow__chart">
             <PhenoChartView rows={rows} usedDay={result?.day ?? null} />

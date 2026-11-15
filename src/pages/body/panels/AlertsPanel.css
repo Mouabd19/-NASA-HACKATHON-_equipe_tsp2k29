@@ -51,7 +51,8 @@
   display: block;
   flex: 1 1 auto;
   min-height: 0;
-  padding: 4px 0;
+  padding: 0;
+  border-top: 1px solid var(--sz-border);
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -62,11 +63,12 @@
 
 .alr__card {
   display: grid;
-  grid-template-columns: 8px minmax(0, 1fr) 24px;
+  grid-template-columns: 16px minmax(0, 1fr) auto 24px;
   align-items: center;
   column-gap: 8px;
   min-height: var(--sz-row-h);
   padding: 0 0 0 var(--sz-pad);
+  border-bottom: 1px solid var(--sz-border);
   cursor: pointer;
   user-select: none;
   transition: background-color 120ms;
@@ -74,6 +76,17 @@
 .alr__card[data-hovered='true'] { background: color-mix(in srgb, var(--sz-panel-hover) 60%, var(--sz-panel)); }
 .alr__card[data-selected='true'] { background: var(--sz-panel-hover); }
 .alr__card:focus-visible { outline-offset: -2px; }
+
+/* Numéro de repère : le même que l'annotation sur le corps */
+.alr__num {
+  font-family: var(--sz-font-mono);
+  font-size: var(--sz-fs-small);
+  color: var(--sz-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.alr__card[data-hovered='true'] .alr__num,
+.alr__card[data-selected='true'] .alr__num { color: var(--sz-text); }
+.alr__prio { display: inline-flex; align-items: center; justify-content: flex-end; min-width: 24px; }
 
 .alr__title {
   min-width: 0;
@@ -86,6 +99,7 @@
   color: var(--sz-text);
 }
 .alr__card[data-selected='true'] .alr__title { font-weight: 500; }
+.alr__card[data-level='ROUGE'] .alr__title { color: var(--sz-red); }
 
 /* Chevron : ouvre la fiche de l'organe */
 .alr__open {
@@ -108,7 +122,7 @@
 /* ── Mode Détails : message, règle et tendance sous le titre ── */
 
 .alr__more {
-  grid-column: 2 / 3;
+  grid-column: 2 / 4;
   min-width: 0;
   padding-bottom: 8px;
 }

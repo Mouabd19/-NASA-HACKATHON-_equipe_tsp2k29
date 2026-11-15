@@ -131,7 +131,8 @@ export function WarRoom() {
       {/* La barre haute porte déjà le nom de l'onglet : le titre reste pour les lecteurs d'écran. */}
       <header className="wr-head">
         <h1 className="wr-sr-only">Plan du jour</h1>
-        Jour {DAY} · {dateLabel}
+        <span className="wr-head__day">Jour {DAY} · {dateLabel}</span>
+        <span className="wr-head__clock sz-mono">Heure de bord 07:00</span>
         <span className="sz-detail"> · Haddad <TagBadge tag="Persona" /> · en route vers Mars</span>
       </header>
 

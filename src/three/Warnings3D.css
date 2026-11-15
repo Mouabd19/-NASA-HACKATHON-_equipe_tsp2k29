@@ -21,7 +21,7 @@
 /* Trait de liaison : neutre, 1 px. Pointillé = jour projeté (seul le trait le dit : l'étiquette garde un cadre plein). */
 .w3d-line {
   fill: none;
-  stroke: var(--sz-border-strong);
+  stroke: var(--sz-text-muted);
   stroke-width: 1;
   shape-rendering: crispEdges;
   opacity: 0;
@@ -48,35 +48,49 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  max-width: 280px;
-  padding: 0 10px;
+  max-width: 300px;
+  padding: 0 6px 0 0;
   border: 1px solid var(--sz-border-strong);
-  border-radius: var(--sz-radius-sm);
+  border-radius: var(--sz-radius-xs);
   /* Pas de fond 100 % opaque au-dessus du canevas WebGL (voir HoverCard.css). */
-  background: color-mix(in srgb, var(--sz-panel) 97%, transparent);
+  background: color-mix(in srgb, var(--sz-bg) 96%, transparent);
   color: var(--sz-text);
   font-size: var(--sz-fs-data);
   line-height: 1;
-  font-weight: 500;
+  font-weight: 400;
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
   cursor: pointer;
   user-select: none;
-  transition: background-color 120ms, border-color 120ms;
+  transition: background-color 120ms var(--sz-ease), border-color 120ms var(--sz-ease);
 }
 .w3d-plate.is-hot,
 .w3d-plate:focus-visible {
   background: var(--sz-panel-hover);
-  border-color: var(--sz-text-muted);
+  border-color: var(--sz-text-dim);
 }
 
+/* Numéro de repère, repris dans la liste « Alertes » (comme les repères d'un compte rendu d'imagerie). */
+.w3d-plate__num {
+  display: inline-grid;
+  place-items: center;
+  align-self: stretch;
+  min-width: 24px;
+  padding: 0 4px;
+  border-right: 1px solid var(--sz-border-strong);
+  font-family: var(--sz-font-mono);
+  font-size: var(--sz-fs-small);
+  color: var(--sz-text-dim);
+}
+.w3d-plate.is-hot .w3d-plate__num { color: var(--sz-text); }
 .w3d-plate__label { flex: none; }
 .w3d-plate__meta {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: var(--sz-fs-small);
+  font-family: var(--sz-font-mono);
+  font-size: var(--sz-fs-label);
   font-weight: 400;
   color: var(--sz-text-dim);
 }

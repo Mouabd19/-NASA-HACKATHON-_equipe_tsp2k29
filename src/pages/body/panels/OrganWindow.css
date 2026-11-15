@@ -148,12 +148,12 @@ html[data-details='on'] .ow__win[data-kind='organ'] { height: min(720px, 100%); 
   flex: none;
   height: 18px;
   padding: 0 6px;
+  border: 1px solid var(--sz-border-strong);
   border-radius: var(--sz-radius-xs);
-  background: var(--sz-panel-hover);
   font-size: var(--sz-fs-label);
   line-height: 1;
-  font-weight: 500;
-  color: var(--sz-text-dim);
+  font-weight: 400;
+  color: var(--sz-text);
   white-space: nowrap;
 }
 
@@ -259,8 +259,7 @@ html[data-details='on'] .ow__win[data-kind='organ'] { height: min(720px, 100%); 
   display: flex;
   flex-direction: column;
   padding: 8px 4px 4px 8px;
-  border-radius: var(--sz-radius-sm);
-  background: var(--sz-inset);
+  border-radius: 0;
 }
 .ow__axis-title { flex: none; font-size: var(--sz-fs-label); line-height: 1.4; color: var(--sz-text-muted); }
 .ow__chart { position: relative; flex: 1; min-height: 140px; }

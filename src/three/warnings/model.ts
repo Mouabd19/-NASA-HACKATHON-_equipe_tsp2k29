@@ -6,6 +6,7 @@ import { DAY_TODAY } from '../../mocks/mission';
 import { alertsForDayPlan } from '../../models/alerts';
 import { getDayBodyPlan } from '../../sim/load';
 import * as anatomy from '../anatomy';
+import { alarmNumbers } from '../../pages/body/alarmOrder';
 
 export interface WarnItem {
   key: string;
@@ -20,6 +21,10 @@ export interface WarnItem {
   /** Nom court de la zone (« Hanche »). */
   label: string;
   levelLabel: string;
+  /** Niveau de triage (priorité d'alarme : ROUGE haute, ORANGE moyenne, AMBRE basse). */
+  level: Level;
+  /** Numéro de repère, le même que dans la liste « Alertes ». */
+  num: number;
   /** Règle appliquée (« NASA V1 4027 », « Tendance 7 j ») — affichée en infobulle et en mode Détails. */
   ruleLabel: string;
   leaving: boolean;
@@ -40,7 +45,9 @@ export function warnItems(day: number, layers: Record<LayerId, boolean>, adheren
   const body = getDayBodyPlan(day, adherence);
   const out: WarnItem[] = [];
   let right = 0;
-  for (const alert of alertsForDayPlan(day, adherence)) {
+  const all = alertsForDayPlan(day, adherence);
+  const nums = alarmNumbers(all);
+  for (const alert of all) {
     if (alert.level === 'VERT') continue; // un warning ne s'affiche jamais en vert
     const anchor = anatomy.getAnchor(alert.organId);
     if (!anchor) continue;
@@ -63,6 +70,8 @@ export function warnItems(day: number, layers: Record<LayerId, boolean>, adheren
       projected: day > DAY_TODAY,
       label: sentenceCase(alert.title.split(' — ')[0] || String(alert.organId)),
       levelLabel: LEVEL_LABEL[alert.level],
+      level: alert.level,
+      num: nums.get(alert.id) ?? 0,
       ruleLabel: ruleLabel(alert.rule),
       leaving: false,
     });

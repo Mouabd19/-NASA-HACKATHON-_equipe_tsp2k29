@@ -27,6 +27,8 @@
   flex: none;
 }
 .sw-big .sz-chip { margin-left: 8px; align-self: center; }
+.sw-big .sz-unit { font-size: var(--sz-fs-data); }
+.sw-main .sz-label { color: var(--sz-text); font-weight: 500; }
 
 .sw-week {
   display: flex;
@@ -50,10 +52,9 @@
 }
 
 .sw-chart {
-  height: 64px;
+  height: 80px;
   margin-top: 12px;
-  border-radius: var(--sz-radius-sm);
-  background: var(--sz-inset);
+  border-radius: 0;
 }
 
 /* Repères (mode Détails) : une ligne */
@@ -90,9 +91,10 @@
 }
 .sw-vital .sz-label { white-space: nowrap; }
 .sw-vital__val {
-  font-size: var(--sz-fs-data);
+  font-family: var(--sz-font-num);
+  font-size: var(--sz-fs-title);
   line-height: 1.4;
-  font-weight: 500;
+  font-weight: 400;
   font-variant-numeric: tabular-nums;
   color: var(--sz-text);
   white-space: nowrap;

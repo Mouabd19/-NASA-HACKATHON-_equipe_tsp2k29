@@ -3,22 +3,19 @@
 // en évidence en 3D au survol.
 import { useMemo, useRef } from 'react';
 import type { CSSProperties, JSX, KeyboardEvent } from 'react';
-import type { Alert, Color, DayBody, Level, OrganId } from '../../../types';
+import type { Alert, Color, DayBody, Level } from '../../../types';
 import { trend7d } from '../../../models/trend';
 import { getStandard } from '../../../content/standards';
-import { getAnchor } from '../../../three/anatomy';
-import { Panel, TagBadge, fmt, levelColor, levelLabel, sentenceCase, statusVar } from '../../../ui';
+import { AlarmMark, Panel, TagBadge, fmt, levelColor, levelLabel, sentenceCase, statusVar } from '../../../ui';
+import { sortAlarms } from '../alarmOrder';
 import { useBody, useDayAlerts, useDayBody, useRowClip } from '../store';
 import './AlertsPanel.css';
 
-const LEVEL_RANK: Record<Level, number> = { ROUGE: 0, ORANGE: 1, AMBRE: 2, DONNEES_INSUFFISANTES: 3, VERT: 4 };
 const LEVEL_LABEL: Record<Level, string> = levelLabel;
 
 /** Une règle « V1 4027 » / « V2 7038 » vient de NASA-STD-3001 ; tout le reste est une règle de l'équipe (hypothèse). */
 const isNasaRule = (rule: string): boolean => /^V\d\s*\d+/i.test(rule.trim());
 
-/** Hauteur de l'organe sur le corps (ancre 3D) : plus haut = d'abord. Organe sans ancre : en dernier. */
-const bodyHeight = (id: OrganId): number => getAnchor(id)?.[1] ?? Number.NEGATIVE_INFINITY;
 
 /** Identifiant de règle interne → libellé lisible : « TENDANCE-7J » → « Tendance 7j ». */
 const ruleLabel = (rule: string): string => sentenceCase(rule.replace(/-/g, ' '));
@@ -70,10 +67,8 @@ export function AlertsPanel(): JSX.Element {
   const adherence = useBody((s) => s.adherence);
   const body = useDayBody();
   const raw = useDayAlerts();
-  const alerts = useMemo(
-    () => [...raw].sort((a, b) => ((LEVEL_RANK[a.level] ?? 9) - (LEVEL_RANK[b.level] ?? 9)) || (bodyHeight(b.organId) - bodyHeight(a.organId))),
-    [raw],
-  );
+  // même ordre et mêmes numéros que les repères posés sur le corps 3D
+  const alerts = useMemo(() => sortAlarms(raw), [raw]);
   // Jamais de demi-ligne en bas de liste.
   const listRef = useRef<HTMLUListElement>(null);
   useRowClip(listRef);
@@ -103,7 +98,7 @@ export function AlertsPanel(): JSX.Element {
         </p>
       ) : (
         <ul className="alr__list" ref={listRef}>
-          {cards.map(({ a, trend, std }) => {
+          {cards.map(({ a, trend, std }, i) => {
             const color: Color = levelColor[a.level] ?? 'grey';
             const level = LEVEL_LABEL[a.level] ?? sentenceCase(a.level);
             const title = sentenceCase(a.title);
@@ -134,15 +129,20 @@ export function AlertsPanel(): JSX.Element {
                   onClick={() => setSelected(a.organId)}
                   onKeyDown={onKey}
                 >
-                  <span
-                    className="sz-dot"
-                    data-color={color}
-                    style={{ '--sz-status': statusVar[color] } as CSSProperties}
-                    role="img"
-                    aria-label={level}
-                    title={level}
-                  />
+                  <span className="alr__num" aria-hidden="true">{i + 1}</span>
                   <h3 className="alr__title" title={`${level} : ${title}`}>{title}</h3>
+                  <span className="alr__prio">
+                    {color === 'grey' ? (
+                      <span
+                        className="sz-dot"
+                        data-color={color}
+                        style={{ '--sz-status': statusVar[color] } as CSSProperties}
+                        role="img"
+                        aria-label={level}
+                        title={level}
+                      />
+                    ) : <AlarmMark level={a.level} />}
+                  </span>
                   <button
                     type="button"
                     className="alr__open"

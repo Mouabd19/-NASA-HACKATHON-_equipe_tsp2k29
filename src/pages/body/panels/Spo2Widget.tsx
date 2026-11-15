@@ -87,7 +87,7 @@ export function Spo2Widget(): JSX.Element {
   const low = color === 'amber' || color === 'red';
 
   const yLow = Math.min(93, Math.floor(Math.min(...win.map((p) => p.value), 100)) - 1);
-  const tick = { fontFamily: tokens.font.text, fontSize: tokens.size.xs, fill: tokens.color.textMuted } as const;
+  const tick = { fontFamily: tokens.font.mono, fontSize: tokens.size.xs, fill: tokens.color.textMuted } as const;
   const x0 = cur ? Math.max(0, cur.day - WINDOW + 1) : 0;
   const x1 = cur ? Math.max(cur.day, x0 + 1) : WINDOW;
   // Une seule mesure : ni courbe ni intervalle sur 7 jours, la valeur suffit.
@@ -104,7 +104,7 @@ export function Spo2Widget(): JSX.Element {
             <div className="sw-main">
               <span className="sz-label">SpO₂</span>
               <div className="sw-big">
-                <span className="sz-value sz-value--lg" style={low ? { color: statusVar[color] } : undefined}>{fmt(cur.value, 0)}</span>
+                <span className="sz-readout" style={low ? { color: statusVar[color] } : undefined}>{fmt(cur.value, 0)}</span>
                 <span className="sz-unit">%</span>
                 {low ? <StatusChip color={color} label={color === 'red' ? 'Basse' : 'Attention'} /> : null}
               </div>
@@ -120,7 +120,7 @@ export function Spo2Widget(): JSX.Element {
 
           {hasTrend ? (
             <div
-              className="sw-chart"
+              className="sw-chart sz-ecg"
               role="img"
               aria-label={`SpO₂ sur ${WINDOW} jours, jusqu’à ${fmtDay(cur.day)}`}
               title={`Repère d’attention ${SPO2_REF} % (hypothèse de l’équipe) · référence personnelle 30 j : ${baseText}`}

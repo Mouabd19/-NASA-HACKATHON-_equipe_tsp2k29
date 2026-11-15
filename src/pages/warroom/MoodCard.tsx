@@ -42,10 +42,10 @@ export function MoodCard() {
     <Panel title="Signal d'humeur" provenance="SIMULÉ">
       <div className="wr-metric">
         <span className="sz-label wr-metric__full">Score J{last.day}</span>
-        <span className="sz-value" data-alert={last.alert || undefined}>{fmt(last.score, 2)}</span>
+        <span className="sz-value wr-readout" data-alert={last.alert || undefined}>{fmt(last.score, 2)}</span>
         <span className="wr-note wr-metric__side">{last.alert ? `Au-dessus du seuil depuis J${first?.day ?? last.day}` : 'Sous le seuil'}</span>
       </div>
-      <div className="wr-chart">
+      <div className="wr-chart sz-ecg">
         <div className="wr-chart__plot">
           <Chart s={s} threshold={threshold} />
           {/* étiquette du seuil : au bout du pointillé, hors du SVG (qui s'étire en largeur) */}

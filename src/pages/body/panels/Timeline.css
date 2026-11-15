@@ -101,6 +101,7 @@
 }
 .tl__svg text {
   shape-rendering: auto;
+  font-family: var(--sz-font-mono);
   font-size: var(--sz-fs-label);
   fill: var(--sz-text-muted);
   font-variant-numeric: tabular-nums;
@@ -124,14 +125,16 @@
 
 /* ── Curseur (déplacé par transform uniquement) : poignée ronde sur la piste ── */
 
+/* Curseur de tendance, comme sur un moniteur : un trait vertical, pas une bille. */
 .tl__cursor-knob {
   position: absolute;
-  top: 27px; /* centrée sur la piste (32–38) */
-  left: -8px;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  border: 2px solid var(--sz-panel);
+  top: 25px; /* centré sur la piste (32–38) */
+  left: -2px;
+  width: 4px;
+  height: 20px;
+  border-radius: 1px;
+  border: 0;
+  box-shadow: 0 0 0 2px var(--sz-panel);
   background: var(--sz-text);
   pointer-events: none;
   will-change: transform;
@@ -151,6 +154,7 @@
   will-change: transform;
 }
 .tl__readout-day {
-  font-weight: 600;
+  font-family: var(--sz-font-mono);
+  font-weight: 500;
   color: var(--sz-text);
 }

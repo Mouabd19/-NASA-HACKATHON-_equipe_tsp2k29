@@ -1,8 +1,10 @@
 /* Page Corps — préfixe .body-. Couleurs : variables --sz-* uniquement.
-   Grille : bandeau · [colonne gauche | scène 3D | colonne droite] · chronologie. Une seule gouttière partout. */
+   Grille : bandeau · [colonne gauche | scène 3D | colonne droite] · chronologie.
+   Comme l'écran d'un moniteur : une seule surface découpée en secteurs par des filets de 1 px
+   (la gouttière EST le filet), sans cartes ni coins arrondis. La scène reste le seul secteur noir. */
 
 .body-page {
-  --body-gap: var(--sz-gap);
+  --body-gap: 1px;
   --body-left: 320px;
   --body-right: 320px;
   display: grid;
@@ -16,9 +18,18 @@
   width: 100%;
   height: 100%;
   min-height: 0;
-  padding: var(--body-gap);
+  padding: 0;
   overflow: hidden;
+  background: var(--sz-border);
 }
+
+/* Secteurs : pas de cadre propre, le filet vient de la grille. */
+.body-page .sz-panel {
+  border: 0;
+  border-radius: 0;
+}
+.body-page .sz-panel__head { border-bottom: 0; min-height: 36px; }
+.body-page .sz-panel__body { padding-top: 4px; }
 
 /* Colonne fermée : la piste vide ne garde pas de gouttière. */
 .body-page[data-left='false'] { --body-left: 0px; column-gap: 0; }
@@ -78,8 +89,6 @@
   min-width: 0;
   min-height: 0;
   overflow: hidden;
-  border: 1px solid var(--sz-border);
-  border-radius: var(--sz-radius);
   background: var(--sz-bg);
   container-type: size;
 }
@@ -98,6 +107,36 @@
   pointer-events: none;
 }
 
+/* Identification en haut à gauche, comme l'incrustation d'un cliché. */
+.body-id {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 16px;
+  color: var(--sz-text-muted);
+}
+.body-id__name { color: var(--sz-text-dim); }
+
+/* Légendes des coins bas : même voix que l'identification. */
+.body-corner {
+  position: absolute;
+  bottom: 12px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 16px;
+  color: var(--sz-text-muted);
+  pointer-events: none;
+}
+.body-corner--bl { left: 12px; }
+.body-corner--br { right: 12px; text-align: right; }
+.body-page--clean .body-corner--br { display: none; }
+@container (max-width: 520px) {
+  .body-corner--bl span:last-child,
+  .body-corner--br { display: none; }
+}
+
 /* Mention « Projection » : puce neutre, toujours visible quand le jour affiché est futur. */
 .body-ribbon {
   display: inline-flex;
@@ -105,9 +144,9 @@
   gap: 8px;
   height: 24px;
   padding: 0 8px;
-  border: 1px solid var(--sz-border);
+  border: 1px solid var(--sz-text-dim);
   border-radius: var(--sz-radius-xs);
-  background: var(--sz-panel);
+  background: var(--sz-bg);
   font-size: var(--sz-fs-small);
   line-height: 1;
   white-space: nowrap;
@@ -178,8 +217,24 @@
 
 /* ── Petites hauteurs : gouttière resserrée ── */
 
-@media (max-height: 760px) {
-  .body-page { --body-gap: 8px; }
+/* ── Téléphone : une colonne qui défile. La scène d'abord, puis les secteurs dans l'ordre de lecture. ── */
+@media (max-width: 760px) {
+  .body-page,
+  .body-page[data-top],
+  .body-page[data-left],
+  .body-page[data-right] {
+    --body-left: 1fr;
+    --body-right: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 62vh auto auto auto;
+    grid-template-areas: 'top' 'scene' 'bottom' 'left' 'right';
+    height: 100%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .body-page[data-left='false'] .body-col--right,
+  .body-page[data-right='false'] .body-col--left { margin: 0; }
+  .body-col { gap: var(--body-gap); }
 }
 
 /* ── Écran épuré : tous les panneaux fermés → la scène occupe toute la page ── */

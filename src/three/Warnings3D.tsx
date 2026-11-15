@@ -105,7 +105,7 @@ const columns: Record<1 | -1, Rec[]> = { 1: [], [-1]: [] };
 
 const sameItem = (a: WarnItem, b: WarnItem): boolean =>
   a.key === b.key && a.color === b.color && a.side === b.side && a.projected === b.projected
-  && a.label === b.label && a.levelLabel === b.levelLabel && a.alert.message === b.alert.message;
+  && a.label === b.label && a.levelLabel === b.levelLabel && a.alert.message === b.alert.message && a.num === b.num;
 
 export function Warnings3D(): JSX.Element | null {
   const lastTarget = useRef<WarnItem[]>([]);

@@ -18,14 +18,28 @@
 
 .rs-chain { display: block; }
 
+/* Chaîne de décision : un rail vertical relie les quatre étapes, comme une piste de tracé.
+   Chaque étape a son repère numéroté sur le rail ; la décision, au bout, est le texte le plus fort. */
+.rs-chain { padding: 8px 0; }
 .rs-step {
+  position: relative;
   display: grid;
-  grid-template-columns: 112px minmax(0, 1fr);
+  grid-template-columns: 96px minmax(0, 1fr);
   column-gap: 16px;
-  padding: 16px var(--sz-pad);
-  border-bottom: 1px solid var(--sz-border);
+  padding: 16px var(--sz-pad) 16px 56px;
 }
-.rs-step:last-child { border-bottom: 0; }
+.rs-step::before {
+  content: '';
+  position: absolute;
+  left: 27px;
+  top: 40px;
+  bottom: -16px;
+  width: 1px;
+  background: var(--sz-border-strong);
+}
+.rs-step:last-child::before { display: none; }
+.rs-step:last-child .rs-step__text { font-size: var(--sz-fs-title); line-height: 1.45; font-weight: 500; }
+.rs-step:last-child .rs-step__n { background: var(--sz-text); color: var(--sz-bg); border-color: var(--sz-text); }
 
 .rs-step__head {
   display: flex;
@@ -35,12 +49,22 @@
   padding-top: 2px;
 }
 .rs-step__n {
-  flex: none;
-  width: 12px;
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  display: grid;
+  place-items: center;
+  width: 23px;
+  height: 23px;
+  border: 1px solid var(--sz-border-strong);
+  border-radius: var(--sz-radius-xs);
+  background: var(--sz-panel);
+  font-family: var(--sz-font-mono);
   font-size: var(--sz-fs-small);
   font-variant-numeric: tabular-nums;
-  color: var(--sz-text-muted);
+  color: var(--sz-text);
 }
+.rs-step__head .sz-label { font-family: var(--sz-font-mono); font-size: var(--sz-fs-small); color: var(--sz-text-muted); }
 
 .rs-step__body { min-width: 0; }
 .rs-step__text {
@@ -64,27 +88,32 @@
   margin-right: 6px;
 }
 
-/* Citation de la norme : filet gauche, pas de cadre. */
+/* Citation de la norme : un extrait de document, avec sa référence en tête (comme une pièce citée au dossier). */
 .rs-quote {
   margin-top: 12px;
-  padding: 2px 0 2px 12px;
-  border-left: 2px solid var(--sz-border-strong);
+  border: 1px solid var(--sz-border-strong);
+  border-radius: var(--sz-radius-xs);
+  background: var(--sz-inset);
 }
 .rs-quote__ref {
-  font-size: var(--sz-fs-small);
-  line-height: 1.4;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--sz-border);
+  font-family: var(--sz-font-mono);
+  font-size: var(--sz-fs-label);
+  line-height: 1.5;
   color: var(--sz-text-dim);
 }
 .rs-quote__text {
-  margin-top: 4px;
-  font-size: var(--sz-fs-data);
-  line-height: 1.5;
+  padding: 12px 12px 0;
+  font-size: var(--sz-fs-body);
+  line-height: 1.55;
   color: var(--sz-text);
 }
+.rs-quote__text:last-child { padding-bottom: 12px; }
 .rs-quote__text--empty { color: var(--sz-text-dim); }
 .rs-quote__link {
   display: inline-block;
-  margin-top: 4px;
+  margin: 8px 12px 12px;
   font-size: var(--sz-fs-small);
 }
 
@@ -104,9 +133,9 @@
 
 .rs-models { margin-top: 32px; }
 .rs-models__title {
-  font-size: var(--sz-fs-title);
-  line-height: 1.4;
-  font-weight: 600;
+  font-size: 20px;
+  line-height: 1.3;
+  font-weight: 500;
   color: var(--sz-text);
 }
 .rs-models__sub {
@@ -116,9 +145,14 @@
 }
 .rs-models__list {
   display: grid;
-  gap: var(--sz-gap);
-  margin-top: 12px;
+  gap: 1px;
+  margin-top: 16px;
+  border: 1px solid var(--sz-border);
+  background: var(--sz-border);
 }
+.rs-models__list .sz-panel { border: 0; border-radius: 0; }
+.rs-models__list .sz-panel__head { border-bottom: 0; }
+.rs-stats .sz-value { font-size: 28px; font-weight: 400; }
 
 .rs-model__head { padding-right: var(--sz-pad); }
 
@@ -186,7 +220,18 @@
   color: var(--sz-text-muted);
 }
 
+/* Écran large : la chaîne se lit à gauche, les modèles qui l'ont produite à droite. */
+@media (min-width: 1240px) {
+  .rs-page { display: grid; grid-template-columns: minmax(0, 760px) minmax(320px, 1fr); column-gap: 32px; align-items: start; }
+  .rs-page > * { grid-column: 1; }
+  .rs-page > .rs-models { grid-column: 2; grid-row: 3 / span 3; margin-top: 0; max-width: none; }
+  .rs-models__title { font-size: var(--sz-fs-title); }
+  .rs-page .rs-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px 16px; }
+  .rs-page .rs-stats .sz-value { font-size: 24px; }
+}
+
 @media (max-width: 640px) {
+  .rs-step { padding-left: 52px; }
   .rs-step,
   .rs-def__row { grid-template-columns: minmax(0, 1fr); row-gap: 4px; }
   .rs-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }

@@ -18,15 +18,19 @@
   display: inline-flex;
   align-items: center;
   height: 20px;
-  padding: 0 8px;
+  padding: 0 6px;
+  border: 1px solid var(--sz-border-strong);
   border-radius: var(--sz-radius-xs);
-  background: var(--sz-panel-hover);
   color: var(--sz-text-dim);
   font-size: var(--sz-fs-small);
-  font-weight: 500;
+  font-weight: 400;
 }
 
-.mt-grid { display: grid; gap: var(--sz-gap); }
+/* Secteurs séparés par des filets, comme les autres pages. */
+.mt-grid { display: grid; gap: 1px; border: 1px solid var(--sz-border); background: var(--sz-border); }
+.mt-page .sz-panel { border: 0; border-radius: 0; }
+.mt-page .sz-panel__head { border-bottom: 0; min-height: 40px; }
+.mt-page .sz-panel__body { padding-top: 4px; padding-bottom: 20px; }
 /* Pas de bouton × sur cette page : le contenu de droite s'aligne sur la marge des panneaux. */
 .mt-page .sz-panel__head { padding-right: var(--sz-pad); }
 
@@ -39,9 +43,13 @@
 
 .mt-stats {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px 24px;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px 32px;
 }
+/* Le résultat qui compte : l'échange proposé à J85. Les deux autres se lisent au second regard. */
+.mt-stat .sz-value { font-size: 28px; line-height: 1.1; font-weight: 400; }
+.mt-stat:first-child .sz-value { font-size: var(--sz-fs-readout); line-height: 1; }
+.mt-stat dd { align-items: baseline; }
 .mt-stat { min-width: 0; }
 .mt-stat dt { display: block; }
 .mt-stat dd {
@@ -60,8 +68,7 @@
 
 .mt-chart {
   padding: 12px;
-  border-radius: var(--sz-radius-sm);
-  background: var(--sz-inset);
+  border-radius: 0;
   overflow: hidden;
 }
 /* Le SVG est dessiné à la largeur mesurée de ce conteneur (échelle 1). */
@@ -72,9 +79,12 @@
   font-variant-numeric: tabular-nums;
   fill: var(--sz-text-muted);
 }
-.mt-frise .mt-frise__name { fill: var(--sz-text-dim); }
-.mt-frise__zone { fill: var(--sz-text); opacity: 0.04; }
-.mt-frise__grid { stroke: var(--sz-border); opacity: 0.6; }
+.mt-frise .mt-frise__name { fill: var(--sz-text-dim); font-size: var(--sz-fs-small); }
+/* Graduations des jours : chasse fixe, comme l'axe d'un enregistrement. */
+.mt-frise text[text-anchor='middle'] { font-family: var(--sz-font-mono); }
+.mt-frise__zone { fill: var(--sz-text); opacity: 0.05; }
+/* Le papier d'ECG porte déjà la grille : pas de seconde grille par-dessus. */
+.mt-frise__grid { stroke: var(--sz-border); opacity: 0; }
 .mt-frise__axis { stroke: var(--sz-border); }
 .mt-frise__mark { stroke: var(--sz-border-strong); }
 .mt-frise__mark--dash { stroke: var(--sz-text-muted); stroke-dasharray: 3 3; }
@@ -186,7 +196,7 @@
   line-height: 1.5;
   color: var(--sz-text);
 }
-.mt-facts__time { color: var(--sz-text-dim); font-variant-numeric: tabular-nums; }
+.mt-facts__time { font-family: var(--sz-font-mono); font-size: var(--sz-fs-small); color: var(--sz-text-dim); font-variant-numeric: tabular-nums; }
 .mt-facts__quote { color: var(--sz-text-dim); }
 .mt-dossier__foot {
   margin-top: 12px;

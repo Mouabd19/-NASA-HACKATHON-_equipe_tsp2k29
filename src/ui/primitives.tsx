@@ -2,8 +2,8 @@
 // Aucune couleur en dur : tout passe par les variables CSS injectées par tokens.ts.
 import { createContext, useContext } from 'react';
 import type { CSSProperties, JSX, ReactNode } from 'react';
-import type { Color, Provenance, Tag } from '../types';
-import { statusLabel } from './tokens';
+import type { Color, Level, Provenance, Tag } from '../types';
+import { levelLabel, levelPriority, priorityLabel, priorityMark, statusLabel } from './tokens';
 
 /** Variable CSS d'un statut (gris = inconnu, jamais vert par défaut). */
 export const statusVar: Record<Color, string> = {
@@ -89,6 +89,22 @@ export function StatusChip({ color, label }: StatusChipProps): JSX.Element {
     <span className="sz-chip" data-color={color} style={style}>
       <span className="sz-dot" aria-hidden="true" />
       {label ?? statusLabel[color]}
+    </span>
+  );
+}
+
+export interface AlarmMarkProps { level: Level; className?: string }
+
+/**
+ * Marqueur de priorité d'alarme (« !!! », « !! », « ! »), comme dans le champ d'alarme d'un moniteur :
+ * aplat de la couleur d'alarme, texte sombre. Rien pour un niveau nominal ou inconnu.
+ */
+export function AlarmMark({ level, className }: AlarmMarkProps): JSX.Element | null {
+  const p = levelPriority[level];
+  if (!p) return null;
+  return (
+    <span className={cx('sz-alarm', className)} data-priority={p} role="img" aria-label={priorityLabel[p]} title={`${priorityLabel[p]} · ${levelLabel[level]}`}>
+      {priorityMark[p]}
     </span>
   );
 }

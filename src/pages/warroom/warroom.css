@@ -6,19 +6,32 @@
 
 /* ── Grilles de la page ──────────────────────────────────────────────── */
 /* En-tête : une ligne (le nom de la page est déjà l'onglet actif de la barre haute). */
-.wr-head { margin-bottom: 12px; font-size: var(--sz-fs-data); line-height: 1.4; color: var(--sz-text-dim); }
+.wr-head { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 8px; margin-bottom: 16px; font-size: var(--sz-fs-data); line-height: 1.4; color: var(--sz-text-dim); }
+.wr-head__day { color: var(--sz-text); font-weight: 500; }
+.wr-head__clock { order: 9; margin-left: auto; color: var(--sz-text-muted); }
 /* Le contenu de droite des en-têtes s'aligne sur la marge des panneaux (pas de bouton × sur cette page). */
 .wr-page .sz-panel__head { padding-right: var(--sz-pad); }
-.wr-grid { display: grid; gap: var(--sz-gap); }
-.wr-now { display: grid; gap: var(--sz-gap); grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); align-items: start; }
-.wr-main { display: grid; gap: var(--sz-gap); grid-template-columns: minmax(300px, 360px) minmax(0, 1fr); align-items: start; }
-.wr-side { display: grid; gap: var(--sz-gap); min-width: 0; }
+.wr-grid { display: grid; gap: 1px; border: 1px solid var(--sz-border); background: var(--sz-border); }
+/* Comme la page Corps : une seule surface découpée en secteurs par des filets (la gouttière est le filet). */
+.wr-page .sz-panel { border: 0; border-radius: 0; }
+.wr-page .sz-panel__head { border-bottom: 0; min-height: 40px; }
+.wr-page .sz-panel__body { padding-top: 4px; }
+.wr-now { display: grid; gap: 1px; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); align-items: stretch; }
+.wr-now > .sz-panel { min-height: 176px; }
+.wr-main { display: grid; gap: 1px; grid-template-columns: minmax(300px, 360px) minmax(0, 1fr); align-items: stretch; }
+.wr-side { display: grid; gap: 1px; min-width: 0; grid-template-rows: auto 1fr; }
 .wr-foot { display: flex; justify-content: flex-end; margin-top: 16px; }
+/* Grandes valeurs de la page (score d'humeur, mesures) : chiffres condensés de moniteur */
+.wr-readout { font-size: 28px; line-height: 1.1; font-weight: 400; }
+.wr-readout.sz-readout { font-size: var(--sz-fs-readout); }
 @media (max-width: 1000px) {
   .wr-main { grid-template-columns: minmax(280px, 320px) minmax(0, 1fr); }
 }
 @media (max-width: 820px) {
   .wr-now, .wr-main { grid-template-columns: minmax(0, 1fr); }
+  .wr-now > .sz-panel { min-height: 0; }
+  .wr-order { font-size: 22px; }
+  .wr-order[data-muted='true'] { font-size: 18px; }
 }
 
 /* Panneau dont le corps est une liste pleine largeur. */
@@ -31,13 +44,15 @@
 
 /* ── Maintenant / Ensuite ────────────────────────────────────────────── */
 .wr-now__body { display: grid; gap: 12px; align-content: start; }
-.wr-order { font-size: var(--sz-fs-display); line-height: 1.25; font-weight: 600; color: var(--sz-text); max-width: 36ch; text-wrap: balance; }
-.wr-order[data-muted='true'] { font-size: var(--sz-fs-title); line-height: 1.4; font-weight: 500; color: var(--sz-text-dim); }
+.wr-now__body { padding-bottom: 24px !important; }
+/* La consigne : le seul grand texte de la page. */
+.wr-order { font-size: 28px; line-height: 1.2; font-weight: 500; letter-spacing: -0.01em; color: var(--sz-text); max-width: 34ch; text-wrap: balance; }
+.wr-order[data-muted='true'] { font-size: 22px; line-height: 1.3; font-weight: 400; letter-spacing: 0; color: var(--sz-text-dim); }
 .wr-reasons { display: grid; gap: 4px; padding-left: 16px; list-style: disc; color: var(--sz-text-dim); }
 .wr-reasons li::marker { color: var(--sz-text-muted); }
 .wr-next { display: grid; gap: 8px; align-content: start; }
 .wr-next__who { display: flex; align-items: baseline; gap: 8px; }
-.wr-next__who strong { font-size: var(--sz-fs-body); font-weight: 600; color: var(--sz-text); }
+.wr-next__who strong { font-size: var(--sz-fs-title); font-weight: 500; color: var(--sz-text); }
 
 /* Bloc repliable (synthèse IA) : chevron à la place du triangle natif */
 .wr-fold { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--sz-border); }
@@ -79,15 +94,15 @@
 /* ── Liste du jour ───────────────────────────────────────────────────── */
 .wr-todo { container-type: inline-size; }
 /* Se lit comme un agenda : case · heure · titre · catégorie · chevron « Pourquoi ». Même hauteur de ligne que les listes de Corps. */
-.wr-todo-row { display: grid; grid-template-columns: 24px 40px minmax(0, 1fr) auto 24px; column-gap: 8px; align-items: center; min-height: var(--sz-row-h); padding: 4px calc(var(--sz-pad) - 6px) 4px calc(var(--sz-pad) - 4px); border-bottom: 1px solid var(--sz-border); }
+.wr-todo-row { display: grid; grid-template-columns: 24px 44px minmax(0, 1fr) auto 24px; column-gap: 8px; align-items: center; min-height: var(--sz-row-h); padding: 4px calc(var(--sz-pad) - 6px) 4px calc(var(--sz-pad) - 4px); border-bottom: 1px solid var(--sz-border); }
 .wr-todo-row:last-child { border-bottom: 0; }
 .wr-todo-row:hover { background: var(--sz-panel-hover); }
 .wr-todo__check { display: grid; place-items: center; width: 24px; height: 24px; cursor: pointer; }
 .wr-todo__main { min-width: 0; }
-.wr-todo__title { font-size: var(--sz-fs-data); font-weight: 500; color: var(--sz-text); transition: color 150ms; }
+.wr-todo__title { font-size: var(--sz-fs-body); font-weight: 400; color: var(--sz-text); transition: color 150ms; }
 .wr-todo__detail { margin-top: 2px; font-size: var(--sz-fs-small); color: var(--sz-text-dim); }
 .wr-todo__kind { display: inline-flex; align-items: center; gap: 6px; font-size: var(--sz-fs-small); color: var(--sz-text-dim); white-space: nowrap; }
-.wr-todo__time { font-size: var(--sz-fs-small); color: var(--sz-text-dim); font-variant-numeric: tabular-nums; }
+.wr-todo__time { font-family: var(--sz-font-mono); font-size: var(--sz-fs-small); color: var(--sz-text-dim); font-variant-numeric: tabular-nums; }
 .wr-todo__why { grid-column: 5; display: grid; place-items: center; width: 24px; height: 24px; border-radius: var(--sz-radius-sm); color: var(--sz-text-muted); transition: color 120ms; }
 .wr-todo__why svg { width: 12px; height: 12px; }
 .wr-todo-row:hover .wr-todo__why,
@@ -139,7 +154,7 @@
 .wr-progress { height: 4px; border-radius: 2px; overflow: hidden; background: var(--sz-border); }
 .wr-progress > div { height: 100%; background: var(--sz-text); }
 
-.wr-chart { margin-top: 12px; padding: 8px 8px 4px; border-radius: var(--sz-radius-sm); background: var(--sz-inset); }
+.wr-chart { margin-top: 12px; padding: 8px 8px 4px; border-radius: 0; }
 /* 32 px à droite du tracé pour l'étiquette du seuil, alignée sur le pointillé. */
 .wr-chart__plot { position: relative; padding-right: 32px; }
 .wr-chart__mark { position: absolute; right: 0; transform: translateY(-50%); font-size: var(--sz-fs-label); line-height: 1; color: var(--sz-text-muted); font-variant-numeric: tabular-nums; }
@@ -152,3 +167,4 @@
 .wr-snapshot__row dd { margin: 0; }
 .wr-snapshot__value { font-variant-numeric: tabular-nums; color: var(--sz-text); }
 .wr-snapshot__row dd.wr-note { min-width: 7ch; text-align: right; font-variant-numeric: tabular-nums; }
+.wr-todo { border-top: 1px solid var(--sz-border); }

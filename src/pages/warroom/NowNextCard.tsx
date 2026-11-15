@@ -3,7 +3,7 @@
 // Le délai Terre n'est affiché qu'une fois, dans l'en-tête de « Ensuite ».
 // Avant le check-in du jour, aucune consigne n'est affichée : l'inconnu se voit (gris).
 import type { OrganSummary, RouterOutput, Tag, TriageResult } from '../../types';
-import { Panel, StatusChip, TagBadge, fmt, levelColor, sentenceCase } from '../../ui';
+import { AlarmMark, Panel, StatusChip, TagBadge, fmt, levelColor, sentenceCase } from '../../ui';
 import { usePrefs } from '../../ui/prefs';
 import { Btn, LEVEL_LABEL, hhmm } from './ui';
 
@@ -49,6 +49,7 @@ export function NowNextCard(props: {
           <span className="sz-panel__fill" />
           <span className="sz-panel__right">
             <span className="sz-detail">Calculé à bord</span>
+            {!pending && <AlarmMark level={t.level} />}
             <span aria-hidden><StatusChip color={grey ? 'grey' : levelColor[t.level]} label={levelText} /></span>
           </span>
         </header>
@@ -56,10 +57,10 @@ export function NowNextCard(props: {
           <div role={red ? 'alert' : 'status'} aria-live={red ? 'assertive' : 'polite'}>
             <span className="wr-sr-only">{levelText}. </span>
             {pending
-              ? <p className="wr-text">Aucune consigne avant le check-in</p>
+              ? <p className="wr-order" data-muted="true">Aucune consigne avant le check-in</p>
               : <p className="wr-order" data-muted={grey}>{out.maintenant}</p>}
           </div>
-          {pending && <div><Btn onClick={goToCheckIn}>Faire le check-in</Btn></div>}
+          {pending && <div><Btn kind="primary" onClick={goToCheckIn}>Faire le check-in</Btn></div>}
           {!pending && t.reasons.length > 0 && (
             <ul className="wr-reasons">
               {t.reasons.slice(0, 4).map((r) => {
