@@ -6,11 +6,15 @@
   "functions": {
     "api/index.ts": { "maxDuration": 60, "includeFiles": "server/vercel/dist/**" }
   },
+  "redirects": [
+    { "source": "/slides", "destination": "/slides/", "permanent": false }
+  ],
   "rewrites": [
     { "source": "/ingest", "destination": "/api/index?__p=/ingest" },
     { "source": "/ingest/:path*", "destination": "/api/index?__p=/ingest/:path*" },
     { "source": "/api/:path*", "destination": "/api/index?__p=/api/:path*" },
-    { "source": "/((?!api/|api$|ingest/|ingest$|models/|data/|assets/).*)", "destination": "/index.html" }
+    { "source": "/slides/", "destination": "/slides/index.html" },
+    { "source": "/((?!api/|api$|ingest/|ingest$|models/|data/|assets/|slides/).*)", "destination": "/index.html" }
   ],
   "headers": [
     { "source": "/assets/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }] },

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Captures de revue : chaque état visuel nommé de l'app -> status/shots/<nom>.png + report.json.
+// Captures de revue : chaque état visuel nommé de l'app -> docs/hackathon/status/shots/<nom>.png + report.json.
 //
 //   npm run shots                 toutes les captures (build d'abord si dist/ est absent)
 //   npm run shots -- 10 12        seulement celles dont le nom contient « 10 » ou « 12 »
@@ -16,7 +16,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const OUT = join(ROOT, 'status', 'shots');
+const OUT = join(ROOT, 'docs', 'hackathon', 'status', 'shots');
 const PORT = 4179;
 const BASE = `http://localhost:${PORT}`;
 const SETTLE_MS = 2500;
@@ -237,7 +237,7 @@ async function main() {
   if (filters.length === 0) writeFileSync(join(OUT, 'report.json'), `${JSON.stringify(out, null, 2)}\n`);
   else console.log('(filtre actif : report.json non réécrit)');
   const bad = report.filter((r) => r.errors.length > 0);
-  console.log(`${report.length} capture(s) dans status/shots/ · ${bad.length} page(s) avec erreurs console`);
+  console.log(`${report.length} capture(s) dans docs/hackathon/status/shots/ · ${bad.length} page(s) avec erreurs console`);
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });

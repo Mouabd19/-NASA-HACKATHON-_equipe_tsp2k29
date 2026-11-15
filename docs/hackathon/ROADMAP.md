@@ -588,7 +588,7 @@ Des lunettes connectées portées en mission. L'IA en déduit des **indicateurs*
 
 ### Prototype multi-agents (piste parallèle, timebox dim. 06:00)
 - **But :** montrer sur un exemple que l'analyse hiérarchique produit des signaux utiles et argumentés. Il illustre la slide Vision (une capture ou 20 s de vidéo) et n'entre pas dans le parcours de démo principal.
-- **Propriétaire :** volontaire, le premier qui a livré ses jalons de sam. 23:00 (à défaut, ça reste une slide). Dossiers **à lui seul** : `proto/mental/` (scripts, hors de `src/`) et `public/data/mental/` (sorties).
+- **Propriétaire :** volontaire, le premier qui a livré ses jalons de sam. 23:00 (à défaut, ça reste une slide). Dossiers **à lui seul** : `scripts/mental-agents/` (scripts, hors de `src/`) et `public/data/mental/` (sorties).
 - **Entrées (100 % SIMULÉ, aucune personne réelle) :** journal d'activité et transcriptions synthétiques de Haddad sur J60 → J94, avec un glissement dépressif progressif injecté à partir de J75 (vérité connue → on peut mesurer si le système le voit, et quand), + check-ins, cortisol, sommeil, VFC du générateur de Mouad.
 - **Hiérarchie des agents :**
 
