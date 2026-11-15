@@ -17,7 +17,7 @@ function Chart({ s, threshold }: { s: MoodSignal[]; threshold: number }) {
   const first = s.find((p) => p.alert);
   return (
     <svg viewBox={`0 0 ${W} ${H}`} width="100%" height={H} preserveAspectRatio="none" role="img"
-      aria-label={`Score d'humeur du jour ${d0} au jour ${d1}, seuil ${fmt(threshold, 2)}${first ? `, alerte depuis le jour ${first.day}` : ', aucune alerte'}`}>
+      aria-label={`Mood score from day ${d0} to day ${d1}, threshold ${fmt(threshold, 2)}${first ? `, alert since day ${first.day}` : ', no alert'}`}>
       {/* Seuil en gris : la couleur ne sert qu'au score, quand il le dépasse. */}
       <line x1={PAD} x2={W - PAD} y1={y(threshold)} y2={y(threshold)} stroke={tokens.color.textMuted} strokeDasharray="4 3" strokeWidth={1} vectorEffect="non-scaling-stroke" />
       <polyline points={line} fill="none" stroke={T.text} strokeWidth={1.5} vectorEffect="non-scaling-stroke" />
@@ -31,19 +31,19 @@ export function MoodCard() {
   const threshold = (modelCards().find((c) => c.id === 'mood-risk') as { threshold?: number } | undefined)?.threshold ?? 0.44;
   if (!s.length) {
     return (
-      <Panel title="Signal d'humeur" provenance="SIMULÉ">
-        <p className="sz-dim">Données insuffisantes</p>
+      <Panel title="Mood signal" provenance="SIMULÉ">
+        <p className="sz-dim">Insufficient data</p>
       </Panel>
     );
   }
   const last = s[s.length - 1];
   const first = s.find((p) => p.alert);
   return (
-    <Panel title="Signal d'humeur" provenance="SIMULÉ">
+    <Panel title="Mood signal" provenance="SIMULÉ">
       <div className="wr-metric">
-        <span className="sz-label wr-metric__full">Score J{last.day}</span>
+        <span className="sz-label wr-metric__full">Score D{last.day}</span>
         <span className="sz-value wr-readout" data-alert={last.alert || undefined}>{fmt(last.score, 2)}</span>
-        <span className="wr-note wr-metric__side">{last.alert ? `Au-dessus du seuil depuis J${first?.day ?? last.day}` : 'Sous le seuil'}</span>
+        <span className="wr-note wr-metric__side">{last.alert ? `Above threshold since D${first?.day ?? last.day}` : 'Below threshold'}</span>
       </div>
       <div className="wr-chart sz-ecg">
         <div className="wr-chart__plot">
@@ -51,11 +51,11 @@ export function MoodCard() {
           {/* étiquette du seuil : au bout du pointillé, hors du SVG (qui s'étire en largeur) */}
           <span className="wr-chart__mark" style={{ top: `${((PAD + (1 - threshold) * (H - 2 * PAD)) / H) * 100}%` }} aria-hidden>{fmt(threshold, 2)}</span>
         </div>
-        <div className="wr-chart__axis"><span>J{s[0].day}</span><span>J{last.day}</span></div>
+        <div className="wr-chart__axis"><span>D{s[0].day}</span><span>D{last.day}</span></div>
       </div>
       <p className="wr-note">
-        Pas un diagnostic
-        <span className="sz-detail"> · modèle comparant Haddad à sa propre référence (J0–J20)</span>
+        Not a diagnosis
+        <span className="sz-detail"> · model comparing Haddad with his own baseline (D0–D20)</span>
       </p>
     </Panel>
   );

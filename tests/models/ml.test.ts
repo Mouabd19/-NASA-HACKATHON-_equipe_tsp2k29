@@ -9,7 +9,7 @@ describe('modèles d\'IA entraînés (inférence hors ligne)', () => {
     const cards = modelCards();
     expect(cards.map(c => c.id).sort()).toEqual(['blood-age', 'mood-risk', 'organ-forecast']);
     for (const c of cards) {
-      expect(c.learning).toMatch(/[Ss]upervisé/);
+      expect(c.learning).toMatch(/[Ss]upervised/);
       expect(c.data.length).toBeGreaterThan(20);
       expect(c.limits.length).toBeGreaterThan(0);
       expect(Object.keys(c.metrics).length).toBeGreaterThan(0);

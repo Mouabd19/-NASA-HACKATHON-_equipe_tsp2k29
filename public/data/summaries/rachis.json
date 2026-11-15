@@ -1,50 +1,50 @@
 {
  "organId": "rachis",
  "generatedBy": "IA-sol",
- "model": "Claude (Anthropic), rédigé hors ligne",
+ "model": "Claude (Anthropic), written offline",
  "generatedAt": "2026-11-14",
  "reviewed": false,
- "note": "Synthèse IA rédigée au sol à partir des seuls chiffres du simulateur (src/sim, données de Mouad). À valider par le CMO. N'est jamais utilisée pour décider d'une alerte.",
+ "note": "AI summary written on the ground from the simulator figures only (src/sim, Mouad's data). To be validated by the CMO. Never used to decide on an alert.",
  "days": [
   {
    "day": 0,
    "adherence": 0,
-   "text": "Bilan de référence (J0) : densité du rachis lombaire à 100 % du pré-vol. Le seuil NASA est de 95 % [V1 4027]. Statut nominal."
+   "text": "Baseline assessment (D0): lumbar spine density at 100% of preflight. The NASA threshold is 95% [V1 4027]. Status: nominal."
   },
   {
    "day": 30,
    "adherence": 0,
-   "text": "Rachis à 99,66 % du pré-vol, soit une perte de 0,34 %. La colonne perd environ deux fois moins vite que la hanche. Statut nominal."
+   "text": "Spine at 99.66% of preflight, a loss of 0.34%. The spine is losing about half as fast as the hip. Status: nominal."
   },
   {
    "day": 60,
    "adherence": 0,
-   "text": "Rachis à 99,34 % du pré-vol (perte de 0,66 %). La perte reste lente et régulière (−0,07 point par semaine). Aucun signal."
+   "text": "Spine at 99.34% of preflight (loss of 0.66%). Loss remains slow and steady (−0.07 point per week). No signal."
   },
   {
    "day": 94,
    "adherence": 0,
-   "text": "Rachis à 99,01 % du pré-vol (perte de 1 %), statut nominal. La pente est la plus faible des trois sites osseux suivis. Pas d'action spécifique en plus du plan osseux général."
+   "text": "Spine at 99.01% of preflight (loss of 1%), status: nominal. The slope is the lowest of the three tracked bone sites. No specific action beyond the general bone plan."
   },
   {
    "day": 210,
    "adherence": 0,
-   "text": "Projection à Sol 0 (J210) au rythme actuel : 98,05 % du pré-vol, soit une perte de 1,95 %. Statut nominal. Projection du modèle, pas une mesure."
+   "text": "Projection at Sol 0 (D210) at current pace: 98.05% of preflight, a loss of 1.95%. Status: nominal. Model projection, not a measurement."
   },
   {
    "day": 210,
    "adherence": 1,
-   "text": "Projection à Sol 0 (J210) avec le plan suivi : 98,69 % du pré-vol, soit une perte de 1,31 %. Statut nominal. Projection du modèle, pas une mesure."
+   "text": "Projection at Sol 0 (D210) with the plan followed: 98.69% of preflight, a loss of 1.31%. Status: nominal. Model projection, not a measurement."
   },
   {
    "day": 860,
    "adherence": 0,
-   "text": "Projection au retour (J860) au rythme actuel : 95,65 % du pré-vol, soit une perte de 4,35 %. C'est juste au-dessus du seuil de 95 % [V1 4027] : statut à surveiller. Projection du modèle, pas une mesure."
+   "text": "Projection at return (D860) at current pace: 95.65% of preflight, a loss of 4.35%. This is just above the 95% threshold [V1 4027]: status: monitor. Model projection, not a measurement."
   },
   {
    "day": 860,
    "adherence": 1,
-   "text": "Projection au retour (J860) avec le plan suivi : 97,89 % du pré-vol, soit une perte de 2,11 %. Statut nominal. Projection du modèle, pas une mesure."
+   "text": "Projection at return (D860) with the plan followed: 97.89% of preflight, a loss of 2.11%. Status: nominal. Model projection, not a measurement."
   }
  ]
 }

@@ -3,20 +3,20 @@
  "date": "2026-10-25",
  "scenario": "drift",
  "model": "claude-haiku-5-5",
- "label": "Prototype — données SIMULÉES — signal IA, pas un diagnostic",
+ "label": "Prototype — SIMULATED data — AI signal, not a diagnosis",
  "input": {
   "transcript": [
-   "06:44 — Réveil. Se lève directement.",
-   "07:30 — Petit-déjeuner avec l'équipage. Haddad : « Tu peux arrêter de me demander si ça va ? » Répond après un long silence.",
-   "08:30 — Briefing avec la Terre (message différé). Haddad pose deux questions sur le planning et propose une modification.",
-   "10:00 — Maintenance du système de filtration d'air : terminée dans les temps.",
-   "12:40 — Déjeuner commun. Haddad : « J'ai l'impression de tourner en rond ici. »",
-   "14:00 — Séance d'exercice : complète (60 min ARED + vélo).",
-   "16:00 — Expérience de biologie avec Okafor. Haddad plaisante et propose une variante du protocole.",
-   "17:30 — Appel vidéo différé avec sa famille (messages enregistrés). Message enregistré de 9 min, sourit.",
-   "19:30 — Dîner commun. Haddad : « Ito, tu me montres ta modif sur la pompe ? »",
-   "21:00 — Soirée film avec l'équipage, commente le film.",
-   "23:30 — Coucher."
+   "06:44 — Wakes up. Gets up right away.",
+   "07:30 — Breakfast with the crew. Haddad: “Can you stop asking me if I'm okay?” Answers after a long silence.",
+   "08:30 — Briefing with Earth (delayed message). Haddad asks two questions about the schedule and suggests a change.",
+   "10:00 — Air filtration system maintenance: finished on time.",
+   "12:40 — Shared lunch. Haddad: “I feel like I'm going around in circles here.”",
+   "14:00 — Exercise session: complete (60 min ARED + bike).",
+   "16:00 — Biology experiment with Okafor. Haddad jokes and suggests a variation of the protocol.",
+   "17:30 — Delayed video call with his family (recorded messages). 9-min recorded message, smiles.",
+   "19:30 — Shared dinner. Haddad: “Ito, will you show me your fix on the pump?”",
+   "21:00 — Movie night with the crew, comments on the film.",
+   "23:30 — Goes to bed."
   ],
   "sensors": {
    "tempsDeParoleMin": 53,
@@ -35,121 +35,121 @@
  "observers": [
   {
    "id": "obs-actions",
-   "label": "Observateur — actions et comportements",
+   "label": "Observer — actions and behavior",
    "output": {
     "faits": [
      {
       "heure": "06:44",
-      "fait": "Lever directement, sans délai signalé.",
+      "fait": "Gets up right away, no delay reported.",
       "citation": null
      },
      {
       "heure": "08:30",
-      "fait": "Participe au briefing avec la Terre et propose une modification du planning.",
+      "fait": "Takes part in the briefing with Earth and suggests a schedule change.",
       "citation": null
      },
      {
       "heure": "10:00",
-      "fait": "Maintenance du système de filtration d'air terminée dans les temps.",
+      "fait": "Air filtration system maintenance finished on time.",
       "citation": null
      },
      {
       "heure": "14:00",
-      "fait": "Séance d'exercice complète (60 min ARED et vélo).",
+      "fait": "Full exercise session (60 min ARED and bike).",
       "citation": null
      },
      {
       "heure": "19:30",
-      "fait": "Dîner pris avec l'équipage ; demande à Ito de lui montrer sa modification sur la pompe.",
-      "citation": "Ito, tu me montres ta modif sur la pompe ?"
+      "fait": "Dinner with the crew; asks Ito to show him his fix on the pump.",
+      "citation": "Ito, will you show me your fix on the pump?"
      },
      {
       "heure": "23:30",
-      "fait": "Coucher après une soirée film avec l'équipage.",
+      "fait": "Goes to bed after a movie night with the crew.",
       "citation": null
      }
     ],
-    "resume": "Haddad a pris ses trois repas, dont deux avec l'équipage, et a terminé la maintenance et la séance d'exercice prévues. Il a passé 209 minutes avec l'équipage, a dormi 7,1 heures et a effectué 3 872 pas."
+    "resume": "Haddad ate his three meals, two of them with the crew, and completed the planned maintenance and exercise session. He spent 209 minutes with the crew, slept 7.1 hours and took 3,872 steps."
    },
    "seconds": 6
   },
   {
    "id": "obs-paroles",
-   "label": "Observateur — paroles et interactions",
+   "label": "Observer — speech and interactions",
    "output": {
     "faits": [
      {
       "heure": "07:30",
-      "fait": "Demande à l'équipage de cesser de lui demander comment il va ; répond après un long silence.",
-      "citation": "Tu peux arrêter de me demander si ça va ?"
+      "fait": "Asks the crew to stop asking him how he is; answers after a long silence.",
+      "citation": "Can you stop asking me if I'm okay?"
      },
      {
       "heure": "08:30",
-      "fait": "Prend l'initiative pendant le briefing avec la Terre : pose deux questions sur le planning et propose une modification.",
+      "fait": "Takes the initiative during the briefing with Earth: asks two questions about the schedule and suggests a change.",
       "citation": null
      },
      {
       "heure": "12:40",
-      "fait": "Exprime au déjeuner une appréciation sur son environnement de vie à bord.",
-      "citation": "J'ai l'impression de tourner en rond ici."
+      "fait": "At lunch, expresses a view about his living environment onboard.",
+      "citation": "I feel like I'm going around in circles here."
      },
      {
       "heure": "16:00",
-      "fait": "Pendant l'expérience de biologie avec Okafor, plaisante et propose de lui-même une variante du protocole.",
+      "fait": "During the biology experiment with Okafor, jokes and suggests a variation of the protocol on his own.",
       "citation": null
      },
      {
       "heure": "17:30",
-      "fait": "Enregistre un message de 9 min pour l'appel différé avec sa famille.",
+      "fait": "Records a 9-min message for the delayed call with his family.",
       "citation": null
      },
      {
       "heure": "19:30",
-      "fait": "Au dîner, initie une demande directe à Ito concernant la modification de la pompe.",
-      "citation": "Ito, tu me montres ta modif sur la pompe ?"
+      "fait": "At dinner, makes a direct request to Ito about the pump fix.",
+      "citation": "Ito, will you show me your fix on the pump?"
      }
     ],
-    "resume": "Haddad a parlé 53 min sur 209 min de temps avec l'équipage, et a pris l'initiative dans la plupart de ses échanges professionnels de la journée. Il a répondu à une question sur son bien-être après un long silence et a enregistré un message pour sa famille."
+    "resume": "Haddad spoke for 53 min out of 209 min of time with the crew, and took the initiative in most of his work exchanges of the day. He answered a question about his well-being after a long silence and recorded a message for his family."
    },
    "seconds": 5.6
   },
   {
    "id": "obs-corps",
-   "label": "Observateur — corps et ressentis",
+   "label": "Observer — body and feelings",
    "output": {
     "faits": [
      {
       "heure": "06:44",
-      "fait": "Se lève directement au réveil, sans signalement de fatigue ou de latence.",
+      "fait": "Gets up right away at wake-up, with no fatigue or latency reported.",
       "citation": null
      },
      {
       "heure": "07:30",
-      "fait": "Répond après un long silence lors du petit-déjeuner, avec une réponse différée.",
+      "fait": "Answers after a long silence at breakfast, with a delayed response.",
       "citation": null
      },
      {
       "heure": "12:40",
-      "fait": "Exprime un ressenti de lassitude face au lieu de vie lors du déjeuner.",
-      "citation": "J'ai l'impression de tourner en rond ici."
+      "fait": "Expresses weariness with the living quarters at lunch.",
+      "citation": "I feel like I'm going around in circles here."
      },
      {
       "heure": "14:00",
-      "fait": "Réalise la séance d'exercice complète, soit 60 minutes d'ARED et de vélo.",
+      "fait": "Completes the full exercise session, i.e. 60 minutes of ARED and bike.",
       "citation": null
      },
      {
       "heure": "17:30",
-      "fait": "Sourit pendant le visionnage d'un message enregistré de 9 minutes.",
+      "fait": "Smiles while watching a 9-minute recorded message.",
       "citation": null
      },
      {
       "heure": "23:30",
-      "fait": "Se couche ; sommeil mesuré de 7,1 heures sur la nuit.",
+      "fait": "Goes to bed; measured sleep of 7.1 hours over the night.",
       "citation": null
      }
     ],
-    "resume": "Haddad se lève sans délai, réalise une séance d'exercice complète et dort 7,1 heures. Il exprime en milieu de journée un ressenti de répétition et répond après un long silence le matin."
+    "resume": "Haddad gets up without delay, completes a full exercise session and sleeps 7.1 hours. Around midday he expresses a feeling of monotony, and in the morning he answers after a long silence."
    },
    "seconds": 6.4
   }
@@ -157,134 +157,134 @@
  "psychologists": [
   {
    "id": "psy-physique",
-   "label": "Psychologue — état physico-psychique",
+   "label": "Psychologist — physical and psychological state",
    "output": {
     "niveau": "rien",
     "confiance": "moyenne",
     "hypotheses": [
      {
-      "schema": "Lassitude liée au lieu de vie, possiblement ponctuelle, à regarder sur les prochains jours.",
+      "schema": "Weariness with the living quarters, possibly one-off, to be watched over the next few days.",
       "preuves": [
-       "Au déjeuner, Haddad dit « J'ai l'impression de tourner en rond ici. » (observateurs paroles et corps)",
-       "Humeur déclarée à 3/5 aujourd'hui, contre 4/5 les trois jours précédents (J72 à J74)",
-       "Il a demandé à l'équipage de cesser de lui demander comment il va, après un long silence (07:30)"
+       "At lunch, Haddad says “I feel like I'm going around in circles here.” (speech and body observers)",
+       "Self-reported mood at 3/5 today, vs 4/5 on the three previous days (D72 to D74)",
+       "He asked the crew to stop asking him how he is, after a long silence (07:30)"
       ]
      },
      {
-      "schema": "Baisse de récupération physiologique légère, sous le seuil d'alerte.",
+      "schema": "Slight drop in physiological recovery, below the alert threshold.",
       "preuves": [
-       "VFC à 46.9 ms aujourd'hui, soit -17 % vs référence (sous le seuil de 20 %)",
-       "VFC moyenne sur 7 jours à 48.2 ms, soit -15 % vs référence",
-       "Le sommeil reste stable à 7.1 h, soit +3 % vs référence"
+       "HRV at 46.9 ms today, i.e. -17% vs baseline (below the 20% threshold)",
+       "7-day average HRV at 48.2 ms, i.e. -15% vs baseline",
+       "Sleep remains stable at 7.1 h, i.e. +3% vs baseline"
       ]
      }
     ],
     "ecartsReference": [
-     "Humeur déclarée : 3/5 aujourd'hui, soit -21 % vs référence 3.8 (seul écart ≥ 20 %)",
-     "VFC : 46.9 ms, soit -17 % vs référence 56.8 (sous le seuil)",
-     "Repas sautés : 0 aujourd'hui contre 0.5 de référence (écart favorable)"
+     "Self-reported mood: 3/5 today, i.e. -21% vs baseline 3.8 (only deviation ≥ 20%)",
+     "HRV: 46.9 ms, i.e. -17% vs baseline 56.8 (below the threshold)",
+     "Skipped meals: 0 today vs 0.5 baseline (favorable deviation)"
     ],
     "pointsRassurants": [
-     "Haddad a pris l'initiative au briefing avec la Terre et a proposé une modification du planning",
-     "Il a terminé la maintenance de filtration dans les temps et réalisé la séance d'exercice complète",
-     "Il a participé à l'expérience de biologie avec Okafor en proposant une variante, et a enregistré un message pour sa famille",
-     "Sommeil stable à 7.1 h, pas à 3 872 (+5 %), temps avec l'équipage à 209 min (+16 %)",
-     "Aucun repas sauté aujourd'hui"
+     "Haddad took the initiative at the briefing with Earth and suggested a schedule change",
+     "He finished the filtration maintenance on time and completed the full exercise session",
+     "He took part in the biology experiment with Okafor, suggesting a variation, and recorded a message for his family",
+     "Sleep stable at 7.1 h, steps at 3,872 (+5%), time with the crew at 209 min (+16%)",
+     "No skipped meals today"
     ],
-    "noteAuPsy": "Un seul indicateur (humeur déclarée) s'écarte de plus de 20 % aujourd'hui, et la VFC reste sous le seuil, donc le niveau reste « rien ». Le ressenti de lassitude exprimé au déjeuner mérite une attention, surtout si l'humeur reste à 3/5 les prochains jours. Un point léger avec Haddad sur son ressenti du lieu de vie pourrait suffire à éclairer la situation."
+    "noteAuPsy": "Only one indicator (self-reported mood) deviates by more than 20% today, and HRV stays below the threshold, so the level remains “nothing to report”. The weariness expressed at lunch deserves attention, especially if mood stays at 3/5 over the next few days. A light check-in with Haddad about how he feels about the living quarters may be enough to clarify the situation."
    },
    "seconds": 9.4
   },
   {
    "id": "psy-anxiete",
-   "label": "Psychologue — rapport à l'anxiété",
+   "label": "Psychologist — anxiety",
    "output": {
     "niveau": "rien",
     "confiance": "moyenne",
     "hypotheses": [
      {
-      "schema": "Lassitude exprimée face au lieu de vie, sans repli marqué : un schéma à regarder si elle se répète.",
+      "schema": "Weariness expressed about the living quarters, without marked withdrawal: a pattern to watch if it recurs.",
       "preuves": [
-       "Au déjeuner (12:40), Haddad dit : « J'ai l'impression de tourner en rond ici. »",
-       "Humeur déclarée de 3/5 aujourd'hui, contre une référence de 3,8 (-21 %).",
-       "Il reste pourtant investi : initiative au briefing, variante de protocole proposée à Okafor, séance d'exercice complète."
+       "At lunch (12:40), Haddad says: “I feel like I'm going around in circles here.”",
+       "Self-reported mood of 3/5 today, vs a baseline of 3.8 (-21%).",
+       "He nonetheless stays engaged: initiative at the briefing, protocol variation suggested to Okafor, full exercise session."
       ]
      },
      {
-      "schema": "Irritabilité ou agacement face aux questions répétées sur son état : à observer.",
+      "schema": "Irritability or annoyance at repeated questions about how he is: to be observed.",
       "preuves": [
-       "À 07:30, il demande à l'équipage d'arrêter de lui demander comment il va, après un long silence.",
-       "Ses réponses matinales sont différées, selon l'observateur corps et ressentis.",
-       "Le temps de parole reste proche de sa référence (+10 %), ce qui limite le signal."
+       "At 07:30, he asks the crew to stop asking him how he is, after a long silence.",
+       "His morning responses are delayed, according to the body and feelings observer.",
+       "Speaking time stays close to his baseline (+10%), which limits the signal."
       ]
      },
      {
-      "schema": "Variabilité cardiaque légèrement basse : un indicateur physiologique à suivre, sans valeur d'alerte seule.",
+      "schema": "Slightly low heart rate variability: a physiological indicator to follow, not an alert on its own.",
       "preuves": [
-       "VFC de 46,9 ms aujourd'hui, contre une référence de 56,8 ms (-17 %), sous le seuil de 20 %.",
-       "Moyenne sur 7 jours de 48,2 ms (-15 %), donc une baisse stable plutôt qu'une chute brutale.",
-       "Cortisol non mesuré aujourd'hui, donc aucune donnée hormonale pour confirmer."
+       "HRV of 46.9 ms today, vs a baseline of 56.8 ms (-17%), below the 20% threshold.",
+       "7-day average of 48.2 ms (-15%), so a steady decline rather than a sudden drop.",
+       "Cortisol not measured today, so no hormonal data to confirm."
       ]
      }
     ],
     "ecartsReference": [
-     "Humeur déclarée : 3 contre une référence de 3,8 (-21 %).",
-     "VFC : 46,9 ms contre 56,8 ms (-17 %).",
-     "Temps de parole moyen sur 7 jours : 39,3 min (-19 %)."
+     "Self-reported mood: 3 vs a baseline of 3.8 (-21%).",
+     "HRV: 46.9 ms vs 56.8 ms (-17%).",
+     "7-day average speaking time: 39.3 min (-19%)."
     ],
     "pointsRassurants": [
-     "Sommeil de 7,1 h, au niveau de sa référence (+3 %).",
-     "Trois repas pris, dont deux avec l'équipage, et aucun repas sauté aujourd'hui.",
-     "Temps avec l'équipage de 209 min (+16 %), avec des échanges spontanés et de l'humour pendant l'expérience de biologie.",
-     "Il sourit en regardant le message de sa famille et prend l'initiative au briefing avec la Terre."
+     "Sleep of 7.1 h, at his baseline level (+3%).",
+     "Three meals eaten, two of them with the crew, and no skipped meals today.",
+     "Time with the crew of 209 min (+16%), with spontaneous exchanges and humor during the biology experiment.",
+     "He smiles while watching his family's message and takes the initiative at the briefing with Earth."
     ],
-    "noteAuPsy": "Un seul indicateur (l'humeur) dépasse le seuil de 20 % aujourd'hui, et l'écart n'est pas confirmé sur plusieurs jours. Les signaux qualitatifs (lassitude au déjeuner, demande d'arrêter les questions sur son état) méritent une attention douce lors du prochain point. Le cortisol n'a pas été mesuré, il serait utile de le relever si le schéma persiste."
+    "noteAuPsy": "Only one indicator (mood) crosses the 20% threshold today, and the deviation is not confirmed over several days. The qualitative signals (weariness at lunch, asking people to stop asking how he is) deserve gentle attention at the next check-in. Cortisol was not measured; it would be useful to record it if the pattern persists."
    },
    "seconds": 9.7
   },
   {
    "id": "psy-social",
-   "label": "Psychologue — lien social et isolement",
+   "label": "Psychologist — social ties and isolation",
    "output": {
     "niveau": "rien",
     "confiance": "moyenne",
     "hypotheses": [
      {
-      "schema": "Lassitude liée au cadre de vie à bord, à surveiller sur les prochains jours. Un seul indicateur dépasse le seuil de 20 % aujourd'hui.",
+      "schema": "Weariness with the living conditions onboard, to be monitored over the next few days. Only one indicator crosses the 20% threshold today.",
       "preuves": [
-       "Haddad dit « J'ai l'impression de tourner en rond ici. » au déjeuner",
-       "Humeur déclarée à 3/5 aujourd'hui, contre 4/5 les jours J68, J69, J71, J72 et J73 (écart de -21 % vs référence)",
-       "VFC à 46.9 ms, soit -17 % vs référence, sans passage au seuil de 20 %"
+       "Haddad says “I feel like I'm going around in circles here.” at lunch",
+       "Self-reported mood at 3/5 today, vs 4/5 on D68, D69, D71, D72 and D73 (-21% deviation vs baseline)",
+       "HRV at 46.9 ms, i.e. -17% vs baseline, without reaching the 20% threshold"
       ]
      },
      {
-      "schema": "Retrait ponctuel le matin, sans répétition sur la semaine.",
+      "schema": "One-off withdrawal in the morning, not repeated over the week.",
       "preuves": [
-       "Demande à l'équipage de cesser de lui demander comment il va, après un long silence à 07:30",
-       "Réponse différée au petit-déjeuner, signalée par l'observateur corps et ressentis",
-       "Temps de parole moyen sur 7 jours à 39.3 min, soit -19 %, mais le temps de parole du jour est au-dessus de sa référence (+10 %)"
+       "Asks the crew to stop asking him how he is, after a long silence at 07:30",
+       "Delayed response at breakfast, reported by the body and feelings observer",
+       "7-day average speaking time at 39.3 min, i.e. -19%, but today's speaking time is above his baseline (+10%)"
       ]
      }
     ],
     "ecartsReference": [
-     "Humeur déclarée : 3/5 aujourd'hui, soit -21 % vs référence 3.8",
-     "VFC : 46.9 ms aujourd'hui, soit -17 % vs référence 56.8",
-     "Temps de parole moyen 7 jours : 39.3 min, soit -19 % vs référence"
+     "Self-reported mood: 3/5 today, i.e. -21% vs baseline 3.8",
+     "HRV: 46.9 ms today, i.e. -17% vs baseline 56.8",
+     "7-day average speaking time: 39.3 min, i.e. -19% vs baseline"
     ],
     "pointsRassurants": [
-     "Sommeil de 7.1 h, au-dessus de sa référence (+3 %)",
-     "Séance d'exercice complète et maintenance terminée dans les temps",
-     "Initiative prise pendant le briefing et proposition de variante lors de l'expérience avec Okafor",
-     "Temps avec l'équipage à +16 % vs référence, repas pris sans saut, message enregistré pour la famille, sourire pendant le visionnage"
+     "Sleep of 7.1 h, above his baseline (+3%)",
+     "Full exercise session and maintenance finished on time",
+     "Initiative taken during the briefing and a variation suggested during the experiment with Okafor",
+     "Time with the crew at +16% vs baseline, meals eaten without skipping, message recorded for his family, smiling while watching"
     ],
-    "noteAuPsy": "Un seul indicateur (humeur, -21 %) dépasse le seuil aujourd'hui, et le temps avec l'équipage reste au-dessus de la référence. Le ressenti de lassitude sur le cadre de vie mérite d'être repris en échange informel si le schéma se répète. Le cortisol du J70 (423 nmol/L) n'a pas été mesuré aujourd'hui et ne peut pas être relié à ce constat."
+    "noteAuPsy": "Only one indicator (mood, -21%) crosses the threshold today, and time with the crew stays above baseline. The weariness with the living conditions deserves to be discussed informally if the pattern recurs. Cortisol from D70 (423 nmol/L) was not measured today and cannot be linked to this finding."
    },
    "seconds": 8.1
   }
  ],
  "dossierPourLePsyHumain": {
   "niveau": "rien",
-  "regle": "niveau atteint par au moins 2 psychologues sur 3",
+  "regle": "level reached by at least 2 of 3 psychologists",
   "votes": [
    {
     "psy": "psy-physique",

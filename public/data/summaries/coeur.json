@@ -1,50 +1,50 @@
 {
  "organId": "coeur",
  "generatedBy": "IA-sol",
- "model": "Claude (Anthropic), rédigé hors ligne",
+ "model": "Claude (Anthropic), written offline",
  "generatedAt": "2026-11-14",
  "reviewed": false,
- "note": "Synthèse IA rédigée au sol à partir des seuls chiffres du simulateur (src/sim, données de Mouad). À valider par le CMO. N'est jamais utilisée pour décider d'une alerte.",
+ "note": "AI summary written on the ground from the simulator figures only (src/sim, Mouad's data). To be validated by the CMO. Never used to decide on an alert.",
  "days": [
   {
    "day": 0,
    "adherence": 0,
-   "text": "Bilan de référence (J0) : VO₂max de 44,1 ml/kg/min, fraction d'éjection de 61,8 %. Bonne capacité d'endurance avant le départ. Statut nominal."
+   "text": "Baseline assessment (D0): VO₂max of 44.1 ml/kg/min, ejection fraction of 61.8%. Good endurance capacity before departure. Status: nominal."
   },
   {
    "day": 30,
    "adherence": 0,
-   "text": "VO₂max à 42,2 ml/kg/min, soit 95,7 % du pré-vol. La baisse (environ −0,8 par semaine) est attendue en début de vol. Fraction d'éjection stable à 61,9 %."
+   "text": "VO₂max at 42.2 ml/kg/min, i.e. 95.7% of preflight. The decline (about −0.8 per week) is expected early in flight. Ejection fraction stable at 61.9%."
   },
   {
    "day": 60,
    "adherence": 0,
-   "text": "VO₂max à 40,6 ml/kg/min, soit 92,2 % du pré-vol. Masse ventriculaire à 96,8 % de J0 : le cœur s'adapte à l'apesanteur. Toujours au-dessus des seuils NASA."
+   "text": "VO₂max at 40.6 ml/kg/min, i.e. 92.2% of preflight. Ventricular mass at 96.8% of D0: the heart is adapting to microgravity. Still above the NASA thresholds."
   },
   {
    "day": 94,
    "adherence": 0,
-   "text": "VO₂max à 39,3 ml/kg/min, soit 89,2 % du pré-vol : statut à surveiller. Au-dessus des deux seuils NASA (80 % du pré-vol [V1 4003] et 36,5 ml/kg/min [V1 4002]), mais la pente mène pile à la limite à l'arrivée sur Mars. Conduite proposée : intervalles sur vélo ou tapis un jour sur deux."
+   "text": "VO₂max at 39.3 ml/kg/min, i.e. 89.2% of preflight: status: monitor. Above both NASA thresholds (80% of preflight [V1 4003] and 36.5 ml/kg/min [V1 4002]), but the slope leads right to the limit on arrival at Mars. Suggested action: cycle or treadmill intervals every other day."
   },
   {
    "day": 210,
    "adherence": 0,
-   "text": "Projection à Sol 0 (J210) au rythme actuel : VO₂max de 36,5 ml/kg/min (83 % du pré-vol). C'est exactement le seuil NASA de 36,5 [V1 4002] : statut à surveiller. Projection du modèle, pas une mesure."
+   "text": "Projection at Sol 0 (D210) at current pace: VO₂max of 36.5 ml/kg/min (83% of preflight). This is exactly the NASA threshold of 36.5 [V1 4002]: status: monitor. Model projection, not a measurement."
   },
   {
    "day": 210,
    "adherence": 1,
-   "text": "Projection à Sol 0 (J210) avec le plan suivi : VO₂max de 37,3 ml/kg/min (84,8 % du pré-vol). C'est au-dessus du seuil de 36,5 [V1 4002] : statut à surveiller. Projection du modèle, pas une mesure."
+   "text": "Projection at Sol 0 (D210) with the plan followed: VO₂max of 37.3 ml/kg/min (84.8% of preflight). This is above the 36.5 threshold [V1 4002]: status: monitor. Model projection, not a measurement."
   },
   {
    "day": 860,
    "adherence": 0,
-   "text": "Projection au retour (J860) au rythme actuel : VO₂max de 34,5 ml/kg/min, soit 78,4 % du pré-vol. C'est sous les deux seuils NASA [V1 4002, V1 4003] : statut hors seuil. Projection du modèle, pas une mesure."
+   "text": "Projection at return (D860) at current pace: VO₂max of 34.5 ml/kg/min, i.e. 78.4% of preflight. This is below both NASA thresholds [V1 4002, V1 4003]: status out of limits. Model projection, not a measurement."
   },
   {
    "day": 860,
    "adherence": 1,
-   "text": "Projection au retour (J860) avec le plan suivi : VO₂max de 35,9 ml/kg/min, soit 81,6 % du pré-vol. C'est au-dessus de 80 % du pré-vol [V1 4003] mais sous 36,5 [V1 4002] : statut hors seuil. Le plan protège l'endurance sans suffire sur 860 jours."
+   "text": "Projection at return (D860) with the plan followed: VO₂max of 35.9 ml/kg/min, i.e. 81.6% of preflight. This is above 80% of preflight [V1 4003] but below 36.5 [V1 4002]: status out of limits. The plan protects endurance but is not enough over 860 days."
   }
  ]
 }

@@ -18,8 +18,8 @@ const SEVERITY: Level[] = ['VERT', 'DONNEES_INSUFFISANTES', 'AMBRE', 'ORANGE', '
 const worst = (a: Level, b: Level): Level => (SEVERITY.indexOf(b) > SEVERITY.indexOf(a) ? b : a);
 
 const PAIN_ZONE: Record<string, string> = {
-  hanche: 'hanche', rachis: 'dos', femur: 'fémur', cuisse: 'cuisse', mollet: 'mollet',
-  paravertebraux: 'bas du dos', coeur: 'poitrine', cerveau: 'tête', yeux: 'yeux', reins: 'flanc / reins',
+  hanche: 'hip', rachis: 'back', femur: 'femur', cuisse: 'thigh', mollet: 'calf',
+  paravertebraux: 'lower back', coeur: 'chest', cerveau: 'head', yeux: 'eyes', reins: 'flank / kidneys',
 };
 
 /** Ce que le check-in du matin impose (règles R13). */
@@ -29,14 +29,14 @@ export function checkInLevel(ci: CheckIn): { level: Level; reasons: string[] } {
   const zone = ci.painZone ? ` (${PAIN_ZONE[ci.painZone] ?? ci.painZone})` : '';
   if (ci.pain >= 3) {
     level = 'ROUGE';
-    reasons.push(`Douleur forte 3/3${zone} : prévenir le CMO de bord immédiatement [R13]`);
+    reasons.push(`Severe pain 3/3${zone}: notify the CMO immediately [R13]`);
   } else if (ci.pain === 2) {
     level = 'ORANGE';
-    reasons.push(`Douleur modérée 2/3${zone} : prévenir le CMO de bord dans la journée [R13]`);
+    reasons.push(`Moderate pain 2/3${zone}: notify the CMO today [R13]`);
   }
   if (ci.mood <= 2 && ci.fatigue >= 4) {
     level = worst(level, 'ORANGE');
-    reasons.push(`Humeur ${ci.mood}/5 avec fatigue ${ci.fatigue}/5 : prévenir le CMO de bord [R13]`);
+    reasons.push(`Mood ${ci.mood}/5 with fatigue ${ci.fatigue}/5: notify the CMO [R13]`);
   }
   return { level, reasons };
 }
@@ -49,13 +49,13 @@ const moodAlertDays = (() => {
 function groundRoutineFor(alerts: Alert[], psy: boolean): string[] {
   const has = (...ids: string[]) => alerts.some(a => ids.includes(a.organId as string));
   const out: string[] = [];
-  if (has('hanche', 'rachis', 'femur')) out.push('Os : réévaluer les bisphosphonates avec le médecin au sol');
-  if (has('coeur')) out.push('Aérobie : faire valider le protocole par intervalles');
-  if (has('yeux')) out.push('Risque SANS : transmettre les mesures de la gaine du nerf optique');
-  if (has('reins')) out.push('Reins : avis sur le risque de calculs (calcium urinaire)');
-  if (has('sang')) out.push('Sang : faire relire les valeurs hors référence');
-  if (has('dose')) out.push('Exposition : bilan de dose avec le radioprotectionniste');
-  if (psy) out.push('Moral : point psy proposé à l\'astronaute (il choisit de le partager ou non)');
+  if (has('hanche', 'rachis', 'femur')) out.push('Bone: reassess bisphosphonates with the ground flight surgeon');
+  if (has('coeur')) out.push('Aerobic: get the interval protocol approved');
+  if (has('yeux')) out.push('SANS risk: send the optic nerve sheath measurements');
+  if (has('reins')) out.push('Kidneys: advice on kidney stone risk (urinary calcium)');
+  if (has('sang')) out.push('Blood: have out-of-range values reviewed');
+  if (has('dose')) out.push('Radiation: dose review with the radiation health officer');
+  if (psy) out.push('Morale: psych session offered to the astronaut (they choose whether to share it)');
   return out;
 }
 
@@ -80,11 +80,11 @@ export function realWatchCheck(): { level: Level; reason: string } | null {
   const last = rhr.at(-1);
   if (!last) return null;
   const z = zScore(last.value, getRealBaseline('RestingHeartRate'));
-  if (z === null) return { level: 'VERT', reason: `Montre RÉELLE : FC au repos ${Math.round(last.value)} bpm (référence personnelle insuffisante)` };
+  if (z === null) return { level: 'VERT', reason: `REAL watch: resting HR ${Math.round(last.value)} bpm (insufficient personal baseline)` };
   const off = Math.abs(z) >= 2;
   return {
     level: off ? 'AMBRE' : 'VERT',
-    reason: `Montre RÉELLE : FC au repos ${Math.round(last.value)} bpm, ${z >= 0 ? '+' : '−'}${Math.abs(z).toFixed(1).replace('.', ',')} écart-type vs sa référence 30 j${off ? ' → à recontrôler' : ''}`,
+    reason: `REAL watch: resting HR ${Math.round(last.value)} bpm, ${z >= 0 ? '+' : '−'}${Math.abs(z).toFixed(1)} SD vs 30-day personal baseline${off ? ' → recheck' : ''}`,
   };
 }
 
@@ -105,21 +105,21 @@ export function triage(day: number): TriageResult {
   if (ci) {
     const c = checkInLevel(ci);
     level = worst(level, c.level);
-    const pain = ci.pain > 0 ? `douleur ${ci.pain}/3` : 'aucune douleur';
-    reasons.push(`Check-in : humeur ${ci.mood}/5, fatigue ${ci.fatigue}/5, ${pain}, sommeil ressenti ${ci.sleepFelt}/5`);
+    const pain = ci.pain > 0 ? `pain ${ci.pain}/3` : 'no pain';
+    reasons.push(`Check-in: mood ${ci.mood}/5, fatigue ${ci.fatigue}/5, ${pain}, perceived sleep ${ci.sleepFelt}/5`);
     reasons.push(...c.reasons);
   } else if (day >= 0 && day <= DAY_TODAY) {
-    reasons.push('Check-in du matin manquant : à faire avant toute décision');
+    reasons.push('Morning check-in missing: complete it before any decision');
     if (level === 'VERT') level = 'DONNEES_INSUFFISANTES';
   } else if (day > DAY_TODAY) {
-    reasons.push(`Projection J${day} : statuts issus des modèles, pas de check-in`);
+    reasons.push(`Projection D${day}: statuses from the models, no check-in`);
   }
 
   // cas limites : prélèvement expiré → jamais de vert
   if (day >= 0 && day <= DAY_TODAY) {
     const age = bloodAgeDays(day);
     if (age > BLOOD_MAX_AGE_DAYS) {
-      reasons.push(Number.isFinite(age) ? `Prélèvement expiré (dernier il y a ${age} jours) : à refaire` : 'Aucun prélèvement disponible : à faire');
+      reasons.push(Number.isFinite(age) ? `Blood draw expired (last one ${age} days ago): repeat it` : 'No blood draw available: schedule one');
       if (age > BLOOD_STALE_DAYS && level === 'VERT') level = 'DONNEES_INSUFFISANTES';
     }
   }
@@ -133,8 +133,8 @@ export function triage(day: number): TriageResult {
   // humeur basse 3 jours de suite (règle §8) ou signal du modèle C → point psy PROPOSÉ, niveau inchangé
   const low3 = day <= DAY_TODAY && [0, 1, 2].every(k => (getCheckIn(day - k)?.mood ?? 5) <= 2);
   const mlMood = moodAlertDays().has(day);
-  if (low3) reasons.push('Humeur ≤ 2 trois jours de suite : point psy proposé, jamais imposé');
-  if (mlMood) reasons.push('Signal d\'humeur (modèle C [H]) : glissement par rapport à la référence personnelle, point psy proposé');
+  if (low3) reasons.push('Mood ≤ 2 three days in a row: psych session offered, never imposed');
+  if (mlMood) reasons.push('Mood signal (model C [H]): drift from personal baseline, psych session offered');
 
   const out: TriageResult = { level, reasons, groundRoutine: groundRoutineFor(alerts, low3 || mlMood) };
   if (cacheable) cache.set(key, out);

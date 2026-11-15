@@ -3,7 +3,7 @@ import type { OrganId } from '../../types';
 
 export function ZonePicker({ zones, value, onToggle }: { zones: { id: OrganId; label: string }[]; value: OrganId[]; onToggle: (id: OrganId) => void }) {
   return (
-    <div role="group" aria-label="Zones de la douleur" className="wr-zones">
+    <div role="group" aria-label="Pain locations" className="wr-zones">
       {zones.map((z) => {
         const on = value.includes(z.id);
         return (

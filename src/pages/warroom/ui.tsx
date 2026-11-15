@@ -89,4 +89,4 @@ export function Segmented<V extends string | number>(props: {
   );
 }
 
-export const hhmm = (d: Date) => d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+export const hhmm = (d: Date) => d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });

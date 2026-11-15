@@ -12,10 +12,10 @@ import { usePrefs } from '../../ui/prefs';
 import { Btn, LEVEL_LABEL, hhmm } from './ui';
 
 const DECIDEUR: Record<RouterOutput['ensuite']['decideur'], string> = {
-  moi: 'Toi', CMO: 'Médecin de bord', sol: 'Médecin au sol', equipage: 'Équipage',
+  moi: 'You', CMO: 'Crew Medical Officer (CMO)', sol: 'Ground flight surgeon', equipage: 'Crew',
 };
 
-const ZONE: Record<string, string> = { rachis: 'dos', cerveau: 'tête', paravertebraux: 'dos' };
+const ZONE: Record<string, string> = { rachis: 'back', cerveau: 'head', paravertebraux: 'back', hanche: 'hip' };
 
 /** Id du titre « Maintenant » : le check-in y renvoie le focus après validation. */
 export const NOW_TITLE_ID = 'wr-now-title';
@@ -52,7 +52,7 @@ function orderReasons(reasons: readonly string[]): { r: string; num?: number }[]
 const keepReason = (x: { r: string; num?: number }): boolean => x.num !== undefined || /\[R13\]$/.test(x.r);
 
 /** « le CMO de bord décide… » → « Le CMO de bord décide… » (texte du routeur, en minuscule initiale). */
-const capFirst = (s: string): string => s.charAt(0).toLocaleUpperCase('fr-FR') + s.slice(1);
+const capFirst = (s: string): string => s.charAt(0).toLocaleUpperCase('en-US') + s.slice(1);
 
 /** Amène l'utilisateur sur la première note du check-in (panneau .wr-checkin). */
 function goToCheckIn() {
@@ -83,17 +83,17 @@ export function NowNextCard(props: {
   const shownReasons = allReasons || reasons.length - kept.length <= 1 ? reasons : kept;
   const moreReasons = reasons.length - shownReasons.length;
   const reply = out.ensuite.reponseMin != null ? new Date(props.missionNow.getTime() + out.ensuite.reponseMin * 60_000) : null;
-  const levelText = pending ? 'En attente' : LEVEL_LABEL[t.level];
+  const levelText = pending ? 'Pending' : LEVEL_LABEL[t.level];
 
   return (
     <div className="wr-now">
       {/* ROUGE : un filet rouge en haut du secteur, visible de loin (rien ne clignote) */}
       <section className="sz-panel wr-now__main" data-red={red || undefined} aria-labelledby={NOW_TITLE_ID}>
         <header className="sz-panel__head">
-          <h2 id={NOW_TITLE_ID} tabIndex={-1} className="sz-panel__title">Maintenant</h2>
+          <h2 id={NOW_TITLE_ID} tabIndex={-1} className="sz-panel__title">Now</h2>
           <span className="sz-panel__fill" />
           <span className="sz-panel__right">
-            <span className="sz-detail">Calculé à bord</span>
+            <span className="sz-detail">Computed onboard</span>
             {/* niveau codé une seule fois : marqueur + mot pour une alarme, voyant + mot sinon */}
             {/* en ROUGE, le marqueur et le mot passent devant la consigne, à sa taille */}
             {red ? null : !grey && levelPriority[t.level]
@@ -105,7 +105,7 @@ export function NowNextCard(props: {
           <div role={red ? 'alert' : 'status'} aria-live={red ? 'assertive' : 'polite'}>
             <span className="wr-sr-only">{levelText}. </span>
             {pending
-              ? <p className="wr-order" data-muted="true">Aucune consigne avant le check-in</p>
+              ? <p className="wr-order" data-muted="true">No instruction until the check-in</p>
               : (
                 <p className="wr-order" data-muted={grey}>
                   {red ? (
@@ -118,7 +118,7 @@ export function NowNextCard(props: {
                 </p>
               )}
           </div>
-          {pending && <div><Btn kind="primary" onClick={goToCheckIn}>Faire le check-in</Btn></div>}
+          {pending && <div><Btn kind="primary" onClick={goToCheckIn}>Do the check-in</Btn></div>}
           {shownReasons.length > 0 && (
             <ul className="wr-reasons">
               {shownReasons.map(({ r, num }) => {
@@ -126,7 +126,7 @@ export function NowNextCard(props: {
                 const m = /^(.*?)\s*\[([^\]]+)\]$/.exec(r);
                 return (
                   <li key={r}>
-                    <span className="wr-reasons__num" title={num ? `Repère ${num} sur la page Corps` : undefined}>{num ?? ''}</span>
+                    <span className="wr-reasons__num" title={num ? `Marker ${num} on the Body page` : undefined}>{num ?? ''}</span>
                     <span>{sentenceCase(m ? m[1] : r)}{m && <> <span className="sz-tag">{m[2]}</span></>}</span>
                   </li>
                 );
@@ -135,7 +135,7 @@ export function NowNextCard(props: {
                 <li>
                   <span className="wr-reasons__num" />
                   <button type="button" className="wr-reasons__more" onClick={() => setAllReasons(true)}>
-                    + {moreReasons} autres raisons
+                    + {moreReasons} more reasons
                   </button>
                 </li>
               ) : null}
@@ -145,22 +145,22 @@ export function NowNextCard(props: {
       </section>
 
       <Panel
-        title="Ensuite"
+        title="Next"
         provenance="SIMULÉ"
-        right={<span className="sz-num">Délai Terre {fmt(delayMin, 1)} min <TagBadge tag={props.delayTag} /></span>}
+        right={<span className="sz-num">Earth delay {fmt(delayMin, 1)} min <TagBadge tag={props.delayTag} /></span>}
       >
         {pending ? (
-          <p className="wr-text sz-dim">Après le check-in</p>
+          <p className="wr-text sz-dim">After the check-in</p>
         ) : (
           <div className="wr-next">
             <div className="wr-next__who">
-              <span className="sz-label">Décide</span>
+              <span className="sz-label">Decides</span>
               <strong>{DECIDEUR[out.ensuite.decideur]}</strong>
             </div>
             <p className="wr-text">{capFirst(out.ensuite.texte)}</p>
-            {reply && <div className="wr-note">Réponse vers {hhmm(reply)}</div>}
+            {reply && <div className="wr-note">Reply around {hhmm(reply)}</div>}
             {t.groundRoutine.length > 0 && (
-              <div className="wr-note">Suivi par le sol : {t.groundRoutine.join(' · ')}</div>
+              <div className="wr-note">Ground follow-up: {t.groundRoutine.join(' · ')}</div>
             )}
           </div>
         )}
@@ -169,8 +169,8 @@ export function NowNextCard(props: {
           <details className="wr-fold" open={details}>
             <summary>
               <span>
-                <span className="wr-fold__line">Synthèse IA · {ZONE[props.summary.organId] ?? props.summary.organId} · reçue à {hhmm(props.summaryReceivedAt)}</span>
-                <span className="wr-fold__line wr-fold__sub sz-detail">À valider par le médecin de bord</span>
+                <span className="wr-fold__line">AI summary · {ZONE[props.summary.organId] ?? props.summary.organId} · received at {hhmm(props.summaryReceivedAt)}</span>
+                <span className="wr-fold__line wr-fold__sub sz-detail">To be reviewed by the CMO</span>
               </span>
             </summary>
             <p>{props.summary.text}</p>

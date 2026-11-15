@@ -10,5 +10,5 @@ const byId = new Map<string, Standard>(
 
 /** Norme par identifiant (« V1 4027 »). Identifiant inconnu → entrée non vérifiée, jamais d'exception. */
 export function getStandard(id: string): Standard {
-  return byId.get(id) ?? { id, title: 'Norme inconnue', quote: '', url: data.url, verified: false };
+  return byId.get(id) ?? { id, title: 'Unknown standard', quote: '', url: data.url, verified: false };
 }

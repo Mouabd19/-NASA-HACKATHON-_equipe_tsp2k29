@@ -220,13 +220,13 @@ async function zipEntryStream(blob: Blob, wanted = /(^|\/)export\.xml$/): Promis
   const tail = new DataView(await blob.slice(blob.size - tailLen).arrayBuffer());
   let eocd = -1;
   for (let i = tailLen - 22; i >= 0; i--) if (u32(tail, i) === 0x06054b50) { eocd = i; break; }
-  if (eocd < 0) throw new Error('Archive ZIP illisible (pas de répertoire central).');
+  if (eocd < 0) throw new Error('Unreadable ZIP archive (no central directory).');
   let cdSize = u32(tail, eocd + 12);
   let cdOff = u32(tail, eocd + 16);
   if (cdOff === 0xffffffff || cdSize === 0xffffffff) {
     // ZIP64 : le localisateur précède l'EOCD.
     const loc = eocd - 20;
-    if (loc < 0 || u32(tail, loc) !== 0x07064b50) throw new Error('ZIP64 non pris en charge.');
+    if (loc < 0 || u32(tail, loc) !== 0x07064b50) throw new Error('ZIP64 is not supported.');
     const z64Off = Number(tail.getBigUint64(loc + 8, true));
     const z64 = new DataView(await blob.slice(z64Off, z64Off + 56).arrayBuffer());
     cdSize = Number(z64.getBigUint64(40, true));
@@ -262,12 +262,12 @@ async function zipEntryStream(blob: Blob, wanted = /(^|\/)export\.xml$/): Promis
       const dataStart = lho + 30 + u16(lh, 26) + u16(lh, 28);
       const raw = blob.slice(dataStart, dataStart + csize).stream() as ReadableStream<Uint8Array>;
       if (method === 0) return { stream: raw, size: usize };
-      if (method !== 8) throw new Error(`Méthode de compression ZIP ${method} non prise en charge.`);
+      if (method !== 8) throw new Error(`ZIP compression method ${method} is not supported.`);
       return { stream: raw.pipeThrough(new DecompressionStream('deflate-raw') as unknown as ReadableWritablePair<Uint8Array, Uint8Array>) as ReadableStream<Uint8Array>, size: usize };
     }
     p += 46 + nlen + xlen + clen;
   }
-  throw new Error('export.xml introuvable dans l\'archive.');
+  throw new Error('export.xml not found in the archive.');
 }
 
 async function isZip(blob: Blob): Promise<boolean> {

@@ -37,20 +37,20 @@ export function TagBadge({ tag, id }: TagBadgeProps): JSX.Element {
 }
 
 /** Libellé affiché d'une étiquette (les crochets et le sigle « H » ne sont plus affichés). */
-export const TAG_TEXT: Record<Tag, string> = { NASA: 'NASA', 'Publié': 'Publié', H: 'Hypothèse', Persona: 'Persona' };
+export const TAG_TEXT: Record<Tag, string> = { NASA: 'NASA', 'Publié': 'Published', H: 'Hypothesis', Persona: 'Persona' };
 
 const TAG_TITLE: Record<Tag, string> = {
-  NASA: 'Seuil issu d’une norme NASA',
-  'Publié': 'Valeur issue d’une publication scientifique',
-  H: 'Hypothèse de l’équipe',
-  Persona: 'Donnée du scénario de mission (fictive)',
+  NASA: 'Threshold from a NASA standard',
+  'Publié': 'Value from a peer-reviewed publication',
+  H: 'Team hypothesis',
+  Persona: 'Mission scenario data (fictional)',
 };
 
-export const PROVENANCE_TEXT: Record<Provenance, string> = { 'RÉEL': 'Réel', 'SIMULÉ': 'Simulé', H: 'Hypothèse' };
+export const PROVENANCE_TEXT: Record<Provenance, string> = { 'RÉEL': 'Real', 'SIMULÉ': 'Simulated', H: 'Hypothesis' };
 const PROVENANCE_TITLE: Record<Provenance, string> = {
-  'RÉEL': 'Données réelles',
-  'SIMULÉ': 'Données simulées',
-  H: 'Hypothèse de l’équipe',
+  'RÉEL': 'Real data',
+  'SIMULÉ': 'Simulated data',
+  H: 'Team hypothesis',
 };
 
 export interface ProvenanceBadgeProps { value: Provenance }
@@ -106,7 +106,7 @@ export interface AlarmMarkProps {
 export function alarmText(level: Level, projected = false): string {
   const p = levelPriority[level];
   const word = levelLabel[level];
-  if (projected) return `${word} · projection, pas une alarme`;
+  if (projected) return `${word} · projection, not an alarm`;
   return p ? `${word} · ${priorityLabel[p].toLowerCase()}` : word;
 }
 
@@ -141,7 +141,7 @@ export function AlarmMark({ level, projected = false, withLabel = false, classNa
     <span className={cx('sz-alarm-l', className)} data-projected={projected || undefined} title={text}>
       {mark}
       <span className="sz-alarm-l__word">{levelLabel[level]}</span>
-      <span className="sz-sr">{projected ? ' · projection, pas une alarme' : ` · ${priorityLabel[p].toLowerCase()}`}</span>
+      <span className="sz-sr">{projected ? ' · projection, not an alarm' : ` · ${priorityLabel[p].toLowerCase()}`}</span>
     </span>
   );
 }
@@ -164,7 +164,7 @@ export const PanelCloseContext = createContext<(() => void) | null>(null);
 export interface CloseButtonProps { onClose: () => void; label?: string; className?: string }
 
 /** Bouton × discret. */
-export function CloseButton({ onClose, label = 'Fermer le panneau', className }: CloseButtonProps): JSX.Element {
+export function CloseButton({ onClose, label = 'Close panel', className }: CloseButtonProps): JSX.Element {
   return (
     <button type="button" className={cx('sz-close', className)} onClick={onClose} aria-label={label} title={label}>
       <svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 1l8 8M9 1l-8 8" stroke="currentColor" strokeWidth="1.3" /></svg>

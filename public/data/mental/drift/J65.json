@@ -3,21 +3,21 @@
  "date": "2026-10-16",
  "scenario": "drift",
  "model": "claude-haiku-5-5",
- "label": "Prototype — données SIMULÉES — signal IA, pas un diagnostic",
+ "label": "Prototype — SIMULATED data — AI signal, not a diagnosis",
  "input": {
   "transcript": [
-   "07:02 — Réveil. Se lève directement.",
-   "06:50 — Message reçu ou incident signalé la veille : un désaccord technique avec Ito pendant le briefing.",
-   "07:30 — Petit-déjeuner avec l'équipage. Haddad : « Bien dormi, pour une fois. » Échange suivi avec Okafor (3 répliques). Regarde ses interlocuteurs dans les yeux.",
-   "08:30 — Briefing avec la Terre (message différé). Haddad pose deux questions sur le planning et propose une modification.",
-   "10:00 — Maintenance du système de filtration d'air : terminée dans les temps.",
-   "12:40 — Déjeuner commun. Haddad : « Pas maintenant. »",
-   "14:00 — Séance d'exercice : complète (60 min ARED + vélo). Dit avoir mal à la tête.",
-   "16:00 — Expérience de biologie avec Okafor. Haddad exécute les étapes demandées, peu d'échanges.",
-   "17:30 — Appel vidéo différé avec sa famille (messages enregistrés). Message enregistré court (2 min), ton neutre.",
-   "19:30 — Saute le dîner commun. Kovacs note son absence.",
-   "21:00 — Décline la soirée film proposée par Ito : « Je préfère être seul un moment. »",
-   "23:40 — Coucher."
+   "07:02 — Wakes up. Gets up right away.",
+   "06:50 — Message received or incident reported the day before: a technical disagreement with Ito during the briefing.",
+   "07:30 — Breakfast with the crew. Haddad: “Slept well, for once.” Sustained exchange with Okafor (3 lines). Looks the people he talks to in the eye.",
+   "08:30 — Briefing with Earth (delayed message). Haddad asks two questions about the schedule and suggests a change.",
+   "10:00 — Air filtration system maintenance: finished on time.",
+   "12:40 — Shared lunch. Haddad: “Not now.”",
+   "14:00 — Exercise session: complete (60 min ARED + bike). Says he has a headache.",
+   "16:00 — Biology experiment with Okafor. Haddad carries out the requested steps, little conversation.",
+   "17:30 — Delayed video call with his family (recorded messages). Short recorded message (2 min), neutral tone.",
+   "19:30 — Skips the shared dinner. Kovacs notices his absence.",
+   "21:00 — Declines the movie night suggested by Ito: “I'd rather be alone for a while.”",
+   "23:40 — Goes to bed."
   ],
   "sensors": {
    "tempsDeParoleMin": 26,
@@ -36,121 +36,121 @@
  "observers": [
   {
    "id": "obs-actions",
-   "label": "Observateur — actions et comportements",
+   "label": "Observer — actions and behavior",
    "output": {
     "faits": [
      {
       "heure": "07:02",
-      "fait": "Se lève directement à l'heure du réveil, sans délai.",
+      "fait": "Gets up right away at wake-up time, without delay.",
       "citation": null
      },
      {
       "heure": "10:00",
-      "fait": "Termine la maintenance du système de filtration d'air dans les temps.",
+      "fait": "Finishes the air filtration system maintenance on time.",
       "citation": null
      },
      {
       "heure": "14:00",
-      "fait": "Réalise la séance d'exercice en entier (60 min ARED et vélo).",
+      "fait": "Completes the full exercise session (60 min ARED and bike).",
       "citation": null
      },
      {
       "heure": "19:30",
-      "fait": "Saute le dîner commun ; Kovacs note son absence.",
+      "fait": "Skips the shared dinner; Kovacs notices his absence.",
       "citation": null
      },
      {
       "heure": "21:00",
-      "fait": "Décline la soirée film proposée par Ito et reste seul.",
-      "citation": "Je préfère être seul un moment."
+      "fait": "Declines the movie night suggested by Ito and stays alone.",
+      "citation": "I'd rather be alone for a while."
      },
      {
       "heure": "23:40",
-      "fait": "Se couche à 23:40.",
+      "fait": "Goes to bed at 23:40.",
       "citation": null
      }
     ],
-    "resume": "Haddad s'est levé à 07:02, a terminé ses tâches du jour (maintenance, séance d'exercice complète) et a passé la soirée seul après avoir sauté le dîner commun. Son temps avec l'équipage est de 79 minutes, avec 1 repas sauté et 3064 pas enregistrés."
+    "resume": "Haddad got up at 07:02, finished his tasks for the day (maintenance, full exercise session) and spent the evening alone after skipping the shared dinner. His time with the crew was 79 minutes, with 1 skipped meal and 3,064 steps recorded."
    },
    "seconds": 7.5
   },
   {
    "id": "obs-paroles",
-   "label": "Observateur — paroles et interactions",
+   "label": "Observer — speech and interactions",
    "output": {
     "faits": [
      {
       "heure": "07:30",
-      "fait": "Échange avec Okafor au petit-déjeuner (3 répliques), Haddad regarde ses interlocuteurs dans les yeux.",
-      "citation": "Bien dormi, pour une fois."
+      "fait": "Exchange with Okafor at breakfast (3 lines); Haddad looks the people he talks to in the eye.",
+      "citation": "Slept well, for once."
      },
      {
       "heure": "08:30",
-      "fait": "Pendant le briefing avec la Terre, Haddad pose deux questions sur le planning et propose une modification.",
+      "fait": "During the briefing with Earth, Haddad asks two questions about the schedule and suggests a change.",
       "citation": null
      },
      {
       "heure": "12:40",
-      "fait": "Refuse de se joindre au déjeuner commun.",
-      "citation": "Pas maintenant."
+      "fait": "Declines to join the shared lunch.",
+      "citation": "Not now."
      },
      {
       "heure": "17:30",
-      "fait": "Enregistre un message de 2 minutes pour l'appel vidéo différé avec sa famille.",
+      "fait": "Records a 2-minute message for the delayed video call with his family.",
       "citation": null
      },
      {
       "heure": "19:30",
-      "fait": "Saute le dîner commun ; Kovacs note son absence.",
+      "fait": "Skips the shared dinner; Kovacs notices his absence.",
       "citation": null
      },
      {
       "heure": "21:00",
-      "fait": "Décline la soirée film proposée par Ito.",
-      "citation": "Je préfère être seul un moment."
+      "fait": "Declines the movie night suggested by Ito.",
+      "citation": "I'd rather be alone for a while."
      }
     ],
-    "resume": "Haddad répond aux échanges du matin et prend l'initiative de proposer une modification lors du briefing. Dans l'après-midi et la soirée, il refuse le déjeuner, saute le dîner et décline l'invitation d'Ito, avec 26 minutes de parole au total sur la journée."
+    "resume": "Haddad responds in the morning exchanges and takes the initiative to suggest a change during the briefing. In the afternoon and evening, he declines lunch, skips dinner and turns down Ito's invitation, with 26 minutes of speaking time in total over the day."
    },
    "seconds": 5.7
   },
   {
    "id": "obs-corps",
-   "label": "Observateur — corps et ressentis",
+   "label": "Observer — body and feelings",
    "output": {
     "faits": [
      {
       "heure": "07:02",
-      "fait": "Se lève directement après une nuit de 7 h de sommeil.",
+      "fait": "Gets up right away after a night of 7 h of sleep.",
       "citation": null
      },
      {
       "heure": "07:30",
-      "fait": "Regarde ses interlocuteurs dans les yeux pendant le petit-déjeuner, en échangeant trois répliques avec Okafor.",
-      "citation": "Bien dormi, pour une fois."
+      "fait": "Looks the people he talks to in the eye during breakfast, exchanging three lines with Okafor.",
+      "citation": "Slept well, for once."
      },
      {
       "heure": "14:00",
-      "fait": "Déclare avoir mal à la tête après la séance d'exercice.",
+      "fait": "Reports a headache after the exercise session.",
       "citation": null
      },
      {
       "heure": "14:00",
-      "fait": "Termine la séance d'exercice complète (60 min ARED et vélo).",
+      "fait": "Completes the full exercise session (60 min ARED and bike).",
       "citation": null
      },
      {
       "heure": "17:30",
-      "fait": "Enregistre un message de 2 minutes pour sa famille, sur un ton neutre.",
+      "fait": "Records a 2-minute message for his family, in a neutral tone.",
       "citation": null
      },
      {
       "heure": "19:30",
-      "fait": "Saute le dîner commun.",
+      "fait": "Skips the shared dinner.",
       "citation": null
      }
     ],
-    "resume": "Haddad se lève directement après 7 h de sommeil et déclare avoir mal à la tête l'après-midi, après avoir terminé une séance d'exercice complète. Il saute le dîner commun et enregistre un message familial de 2 minutes au ton neutre."
+    "resume": "Haddad gets up right away after 7 h of sleep and reports a headache in the afternoon, after completing a full exercise session. He skips the shared dinner and records a 2-minute family message in a neutral tone."
    },
    "seconds": 6.9
   }
@@ -158,150 +158,150 @@
  "psychologists": [
   {
    "id": "psy-physique",
-   "label": "Psychologue — état physico-psychique",
+   "label": "Psychologist — physical and psychological state",
    "output": {
     "niveau": "a_surveiller",
     "confiance": "moyenne",
     "hypotheses": [
      {
-      "schema": "Retrait social marqué : le temps de parole et le temps avec l'équipage chutent nettement, et Haddad décline les moments collectifs.",
+      "schema": "Marked social withdrawal: speaking time and time with the crew drop sharply, and Haddad declines group moments.",
       "preuves": [
-       "Temps avec l'équipage à 79 min, soit -56 % vs référence, et temps de parole à 26 min, soit -46 % vs référence.",
-       "Refus du déjeuner (« Pas maintenant. ») puis du film d'Ito (« Je préfère être seul un moment. »), avec un dîner sauté.",
-       "Écart de deux indicateurs ou plus à -20 % ou plus sur J63 et J65 (parole, équipage), avec une humeur déclarée à 3/5 (-21 %)."
+       "Time with the crew at 79 min, i.e. -56% vs baseline, and speaking time at 26 min, i.e. -46% vs baseline.",
+       "Declines lunch (“Not now.”) then Ito's movie (“I'd rather be alone for a while.”), with a skipped dinner.",
+       "Two or more indicators deviating by -20% or more on D63 and D65 (speech, crew), with self-reported mood at 3/5 (-21%)."
       ]
      },
      {
-      "schema": "Gêne physique et fatigue en hausse après l'effort, à regarder comme possible facteur de retrait.",
+      "schema": "Physical discomfort and increased fatigue after exertion, to be watched as a possible factor in the withdrawal.",
       "preuves": [
-       "Mal de tête déclaré à 14:00, juste après la séance d'exercice complète.",
-       "Fatigue déclarée à 3/5 aujourd'hui, contre 2/5 les jours J63 et J64.",
-       "Nombre de pas à 3064, soit -17 % vs référence, sans dépasser le seuil de 20 %."
+       "Headache reported at 14:00, right after the full exercise session.",
+       "Self-reported fatigue at 3/5 today, vs 2/5 on D63 and D64.",
+       "Step count at 3,064, i.e. -17% vs baseline, without crossing the 20% threshold."
       ]
      },
      {
-      "schema": "Appétit possiblement moins régulier : repas sautés répétés sur la semaine.",
+      "schema": "Appetite possibly less regular: repeated skipped meals over the week.",
       "preuves": [
-       "Repas sautés à 1 aujourd'hui, soit +100 % vs référence 0.5, et moyenne 7 jours à 0.7 (+40 %).",
-       "Repas sautés à 2 le J59 et à 1 le J61, J64 et J65, avec 0 repas sauté sur J60, J62 et J63.",
-       "Dîner commun sauté ce soir, sans motif évoqué par les observateurs."
+       "Skipped meals at 1 today, i.e. +100% vs baseline 0.5, and 7-day average at 0.7 (+40%).",
+       "2 skipped meals on D59 and 1 on D61, D64 and D65, with 0 skipped meals on D60, D62 and D63.",
+       "Shared dinner skipped tonight, with no reason mentioned by the observers."
       ]
      }
     ],
     "ecartsReference": [
-     "Temps avec l'équipage : 79 min contre 180.1 min de référence (-56 %).",
-     "Temps de parole : 26 min contre 48.4 min de référence (-46 %).",
-     "Humeur déclarée : 3/5 contre 3.8 de référence (-21 %)."
+     "Time with the crew: 79 min vs 180.1 min baseline (-56%).",
+     "Speaking time: 26 min vs 48.4 min baseline (-46%).",
+     "Self-reported mood: 3/5 vs 3.8 baseline (-21%)."
     ],
     "pointsRassurants": [
-     "Sommeil de 7 h, identique à la référence (+1 %), et lever à 07:02 sans délai.",
-     "VFC à 58.8 ms, au-dessus de la référence (+4 %), sans signe de tension physiologique marqué.",
-     "Tâches réalisées : maintenance du filtre d'air dans les temps, séance d'exercice complète, et proposition constructive lors du briefing.",
-     "Échange serein au petit-déjeuner avec Okafor, avec contact visuel et la phrase « Bien dormi, pour une fois. »"
+     "Sleep of 7 h, same as baseline (+1%), and up at 07:02 without delay.",
+     "HRV at 58.8 ms, above baseline (+4%), with no marked sign of physiological strain.",
+     "Tasks completed: air filter maintenance on time, full exercise session, and a constructive suggestion during the briefing.",
+     "Calm exchange at breakfast with Okafor, with eye contact and the sentence “Slept well, for once.”"
     ],
-    "noteAuPsy": "Le retrait social est net aujourd'hui et il s'inscrit dans un écart déjà présent à J63, mais le signal ne dure que deux jours. Le sommeil et la VFC restent stables, ce qui limite l'hypothèse d'une détresse physiologique. Un contact informel et sans pression, avec un suivi des repas et de la fatigue dans les prochains jours, paraît pertinent."
+    "noteAuPsy": "The social withdrawal is clear today and fits a deviation already present on D63, but the signal has lasted only two days. Sleep and HRV remain stable, which makes physiological distress less likely. An informal, no-pressure contact, with follow-up on meals and fatigue over the next few days, seems appropriate."
    },
    "seconds": 12.7
   },
   {
    "id": "psy-anxiete",
-   "label": "Psychologue — rapport à l'anxiété",
+   "label": "Psychologist — anxiety",
    "output": {
     "niveau": "a_surveiller",
     "confiance": "moyenne",
     "hypotheses": [
      {
-      "schema": "Retrait social marqué sur la journée, à regarder sur plusieurs jours : Haddad refuse les moments communs et reste seul.",
+      "schema": "Marked social withdrawal over the day, to be watched over several days: Haddad declines shared moments and stays alone.",
       "preuves": [
-       "Temps avec l'équipage à 79 min, soit -56 % vs référence (180.1 min)",
-       "Temps de parole à 26 min, soit -46 % vs référence (48.4 min)",
-       "Refus du déjeuner à 12:40 (« Pas maintenant ») puis refus de la soirée film à 21:00 (« Je préfère être seul un moment. »)"
+       "Time with the crew at 79 min, i.e. -56% vs baseline (180.1 min)",
+       "Speaking time at 26 min, i.e. -46% vs baseline (48.4 min)",
+       "Declines lunch at 12:40 (“Not now”) then declines the movie night at 21:00 (“I'd rather be alone for a while.”)"
       ]
      },
      {
-      "schema": "Tension ou irritabilité possible, qui pourrait expliquer le repli plutôt qu'un simple besoin de calme.",
+      "schema": "Possible tension or irritability, which could explain the withdrawal rather than a simple need for quiet.",
       "preuves": [
-       "Humeur déclarée à 3/5 aujourd'hui, soit -21 % vs référence (3.8)",
-       "Fatigue déclarée à 3/5, en hausse par rapport à J64 (2/5)",
-       "Mal de tête déclaré à 14:00 après la séance d'exercice"
+       "Self-reported mood at 3/5 today, i.e. -21% vs baseline (3.8)",
+       "Self-reported fatigue at 3/5, up from D64 (2/5)",
+       "Headache reported at 14:00 after the exercise session"
       ]
      },
      {
-      "schema": "Épisodes répétés plutôt qu'un seul fait isolé : J63 et J65 présentent deux écarts de 20 % ou plus ou plus, avec J64 qui revient vers la référence.",
+      "schema": "Repeated episodes rather than a single isolated event: D63 and D65 show two deviations of 20% or more, with D64 returning toward baseline.",
       "preuves": [
-       "J63 : parole 38 min (-21 %) et équipage 127 min (-29 %), avec cortisol à 401 nmol/L",
-       "J65 : quatre indicateurs au-delà de 20 % (équipage, parole, repas sautés, humeur)",
-       "J64 : seul l'indicateur repas sautés s'écarte (1 repas vs 0.5 de référence)"
+       "D63: speech 38 min (-21%) and crew 127 min (-29%), with cortisol at 401 nmol/L",
+       "D65: four indicators beyond 20% (crew, speech, skipped meals, mood)",
+       "D64: only the skipped-meals indicator deviates (1 meal vs 0.5 baseline)"
       ]
      }
     ],
     "ecartsReference": [
-     "Temps avec l'équipage : -56 % vs référence (79 min contre 180.1 min)",
-     "Temps de parole : -46 % vs référence (26 min contre 48.4 min)",
-     "Repas sautés : +100 % vs référence (1 contre 0.5)"
+     "Time with the crew: -56% vs baseline (79 min vs 180.1 min)",
+     "Speaking time: -46% vs baseline (26 min vs 48.4 min)",
+     "Skipped meals: +100% vs baseline (1 vs 0.5)"
     ],
     "pointsRassurants": [
-     "Sommeil stable à 7 h, soit +1 % vs référence, et lever à l'heure sans délai",
-     "VFC à 58.8 ms, soit +4 % vs référence, dans la variation normale",
-     "Tâches du jour réalisées : maintenance dans les temps et séance d'exercice complète",
-     "Échanges du matin de bonne qualité : regard soutenu et initiative proposée au briefing de 08:30",
-     "Message familial enregistré à 17:30, sans signe d'alerte sur le ton"
+     "Sleep stable at 7 h, i.e. +1% vs baseline, and up on time without delay",
+     "HRV at 58.8 ms, i.e. +4% vs baseline, within normal variation",
+     "Today's tasks completed: maintenance on time and full exercise session",
+     "Good-quality morning exchanges: steady eye contact and an initiative suggested at the 08:30 briefing",
+     "Family message recorded at 17:30, with no warning sign in the tone"
     ],
-    "noteAuPsy": "Le retrait social de J65 touche quatre indicateurs, mais il s'inscrit dans des écarts déjà observés à J63 sans l'explication d'un incident ponctuel. Le signal n'est pas continu sur quatre jours (J64 revient vers la référence), donc le critère d'échange n'est pas atteint. Un point informel avec Haddad, sans cadrage formel, serait utile pour comprendre le refus de la soirée et le mal de tête déclaré."
+    "noteAuPsy": "The social withdrawal on D65 affects four indicators, and it fits deviations already seen on D63 without being explained by a one-off incident. The signal is not continuous over four days (D64 returns toward baseline), so the conversation criterion is not met. An informal check-in with Haddad, without a formal framework, would help understand why he declined the evening and the reported headache."
    },
    "seconds": 12
   },
   {
    "id": "psy-social",
-   "label": "Psychologue — lien social et isolement",
+   "label": "Psychologist — social ties and isolation",
    "output": {
     "niveau": "a_surveiller",
     "confiance": "moyenne",
     "hypotheses": [
      {
-      "schema": "Retrait social marqué sur la journée, qui s'accentue depuis J63 : schéma à regarder, sans diagnostic.",
+      "schema": "Marked social withdrawal over the day, increasing since D63: a pattern to watch, not a diagnosis.",
       "preuves": [
-       "Temps de parole à 26 min aujourd'hui (-46 % vs référence) et temps avec l'équipage à 79 min (-56 % vs référence)",
-       "Refus du déjeuner commun (« Pas maintenant »), dîner sauté et soirée film déclinée (« Je préfère être seul un moment »)",
-       "J63 déjà à -21 % en parole et -29 % en temps d'équipage, puis J64 revenu dans la norme sauf les repas sautés"
+       "Speaking time at 26 min today (-46% vs baseline) and time with the crew at 79 min (-56% vs baseline)",
+       "Declines the shared lunch (“Not now”), skips dinner and declines the movie night (“I'd rather be alone for a while”)",
+       "D63 already at -21% for speech and -29% for crew time, then D64 back within normal range except for skipped meals"
       ]
      },
      {
-      "schema": "Fatigue et humeur basse qui pourraient accompagner le repli.",
+      "schema": "Fatigue and low mood that could accompany the withdrawal.",
       "preuves": [
-       "Humeur déclarée à 3/5 (-21 % vs référence 3.8), en baisse sur la journée",
-       "Fatigue à 3/5, la valeur la plus haute de la semaine",
-       "Mal de tête déclaré à 14:00 après la séance d'exercice"
+       "Self-reported mood at 3/5 (-21% vs baseline 3.8), down over the day",
+       "Fatigue at 3/5, the highest value of the week",
+       "Headache reported at 14:00 after the exercise session"
       ]
      },
      {
-      "schema": "Repas sautés et repli sur des tâches individuelles, qui pourraient refléter une moindre disponibilité sociale plutôt qu'un choix délibéré.",
+      "schema": "Skipped meals and retreat into individual tasks, which could reflect lower social availability rather than a deliberate choice.",
       "preuves": [
-       "Repas sautés à 1 aujourd'hui (+100 % vs référence 0.5), moyenne 7 j à +40 %",
-       "Maintenance et séance d'exercice menées à terme seul, sans signalement de difficulté",
-       "Pas à 3064 (-17 % vs référence), en dessous de la référence mais dans la moyenne 7 j (+9 %)"
+       "Skipped meals at 1 today (+100% vs baseline 0.5), 7-day average at +40%",
+       "Maintenance and exercise session completed alone, with no difficulty reported",
+       "Steps at 3,064 (-17% vs baseline), below baseline but within the 7-day average (+9%)"
       ]
      }
     ],
     "ecartsReference": [
-     "Temps de parole : 26 min aujourd'hui (-46 %), moyenne 7 j à -13 %",
-     "Temps avec l'équipage : 79 min aujourd'hui (-56 %), moyenne 7 j à 0 %",
-     "Repas sautés : 1 aujourd'hui (+100 %), moyenne 7 j à +40 %"
+     "Speaking time: 26 min today (-46%), 7-day average at -13%",
+     "Time with the crew: 79 min today (-56%), 7-day average at 0%",
+     "Skipped meals: 1 today (+100%), 7-day average at +40%"
     ],
     "pointsRassurants": [
-     "Sommeil stable à 7 h (+1 % vs référence), sans dette sur la semaine",
-     "VFC à 58.8 ms (+4 % vs référence), moyenne 7 j à +3 %",
-     "Échanges de qualité le matin : trois répliques avec Okafor, regard soutenu, initiative au briefing avec la Terre",
-     "Séance d'exercice menée en entier et message familial enregistré dans les temps"
+     "Sleep stable at 7 h (+1% vs baseline), no sleep debt over the week",
+     "HRV at 58.8 ms (+4% vs baseline), 7-day average at +3%",
+     "Good-quality exchanges in the morning: three lines with Okafor, steady eye contact, initiative at the briefing with Earth",
+     "Exercise session completed in full and family message recorded on time"
     ],
-    "noteAuPsy": "Le temps de parole et le temps avec l'équipage sont en baisse aujourd'hui, avec 4 indicateurs écartés de 20 % ou plus, et l'écart existe aussi en J63 (2 indicateurs), ce qui rejoint le critère de surveillance. La durée du signal reste inférieure à 4 jours et les biomarqueurs physiologiques sont stables, donc pas de critère d'échange automatique à ce stade. Un échange informel avec Haddad serait pertinent, en gardant à l'esprit qu'il a exprimé le besoin d'être seul (« Je préfère être seul un moment »)."
+    "noteAuPsy": "Speaking time and time with the crew are down today, with 4 indicators deviating by 20% or more, and the deviation also exists on D63 (2 indicators), which meets the monitoring criterion. The signal has lasted less than 4 days and physiological biomarkers are stable, so there is no automatic conversation criterion at this stage. An informal conversation with Haddad would be appropriate, keeping in mind that he expressed a need to be alone (“I'd rather be alone for a while”)."
    },
    "seconds": 11.4
   }
  ],
  "dossierPourLePsyHumain": {
   "niveau": "a_surveiller",
-  "regle": "niveau atteint par au moins 2 psychologues sur 3",
+  "regle": "level reached by at least 2 of 3 psychologists",
   "votes": [
    {
     "psy": "psy-physique",

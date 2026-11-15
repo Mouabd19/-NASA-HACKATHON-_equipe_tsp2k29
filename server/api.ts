@@ -32,7 +32,7 @@ function readBody(req: IncomingMessage): Promise<unknown> {
     const parts: Buffer[] = [];
     req.on('data', (c: Buffer) => {
       size += c.length;
-      if (size > MAX_BODY) { ko(new Error('corps trop gros')); req.destroy(); return; }
+      if (size > MAX_BODY) { ko(new Error('body too large')); req.destroy(); return; }
       parts.push(c);
     });
     req.on('end', () => {

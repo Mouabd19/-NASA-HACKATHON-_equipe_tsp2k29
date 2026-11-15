@@ -1,16 +1,16 @@
 {
  "id": "blood-age",
  "version": 2,
- "title": "Âge sanguin — régression ElasticNet entraînée sur NHANES 2015–2018",
- "learning": "Supervisé (régression). Cible : âge chronologique. Modèle linéaire régularisé (ElasticNet, validation croisée 5 plis). Entraîné hors ligne avant la démo.",
- "data": "NHANES 2015–2016 et 2017–2018 (CDC) : 9326 adultes de 20 à 79 ans, prises de sang réelles (80 % entraînement, 20 % test). Données terrestres.",
- "use": "Suivre la VARIATION de l'âge sanguin de Haddad d'un prélèvement à l'autre ; PhenoAge reste la référence publiée.",
+ "title": "Blood age — ElasticNet regression trained on NHANES 2015–2018",
+ "learning": "Supervised (regression). Target: chronological age. Regularized linear model (ElasticNet, 5-fold cross-validation). Trained offline before the demo.",
+ "data": "NHANES 2015–2016 and 2017–2018 (CDC): 9326 adults aged 20 to 79, real blood tests (80% training, 20% test). Terrestrial data.",
+ "use": "Track the CHANGE in Haddad's blood age from one draw to the next; PhenoAge remains the published reference.",
  "tag": "Publié",
  "limits": [
-  "Les analyses de routine n'expliquent qu'une partie de l'âge (R² = 0.279) : erreur moyenne ± 11.76 ans sur une personne.",
-  "La valeur absolue est imprécise ; la variation chez une même personne est le signal utile.",
-  "Population terrestre générale (États-Unis), pas des astronautes. Indicateur, pas diagnostic.",
-  "Klemera-Doubal testé : les marqueurs portent trop peu d'information (r = 0.511), l'estimation retombe sur l'âge réel (écart ± 0.16 an)."
+  "Routine lab tests explain only part of age (R² = 0.279): mean error ± 11.76 years for an individual.",
+  "The absolute value is imprecise; the change within the same person is the useful signal.",
+  "General terrestrial population (United States), not astronauts. An indicator, not a diagnosis.",
+  "Klemera-Doubal tested: the markers carry too little information (r = 0.511), the estimate falls back to chronological age (gap ± 0.16 year)."
  ],
  "markers": [
   {

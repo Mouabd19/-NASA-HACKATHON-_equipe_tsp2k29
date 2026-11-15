@@ -48,7 +48,7 @@ export function Sparkline({
       height={height}
       viewBox={`0 0 ${width} ${height}`}
       role="img"
-      aria-label={label ?? (empty ? 'Aucune donnée' : `Courbe de ${pts.length} points`)}
+      aria-label={label ?? (empty ? 'No data' : `Trend of ${pts.length} points`)}
       style={{ color, display: 'block', flex: 'none' }}
     >
       {band && !empty ? (

@@ -12,9 +12,9 @@ import { sentenceCase } from './ui';
 import { syncDetailsAttr, usePrefs } from './ui/prefs';
 
 const TABS = [
-  { to: '/body', label: 'Corps' },
-  { to: '/warroom', label: 'Plan du jour' },
-  { to: '/mental', label: 'Santé mentale' },
+  { to: '/body', label: 'Body' },
+  { to: '/warroom', label: "Today's plan" },
+  { to: '/mental', label: 'Mental health' },
 ] as const;
 
 function TopBar(): JSX.Element {
@@ -24,7 +24,7 @@ function TopBar(): JSX.Element {
     <header className="sz-topbar">
       <div className="sz-topbar__left">
         {/* mot-symbole seul : pas de pictogramme santé générique */}
-        <span className="sz-wordmark">Sol Zéro</span>
+        <span className="sz-wordmark">Sol Zero</span>
         <nav className="sz-nav" aria-label="Pages">
           {TABS.map((t) => (
             <NavLink
@@ -40,16 +40,16 @@ function TopBar(): JSX.Element {
 
       <div className="sz-topbar__right">
         {/* identification du patient : grade et nom de la persona, rien d'inventé en plus */}
-        <span className="sz-patient" title="Persona fictive du scénario de mission">
-          <span className="sz-patient__role">Cdt</span>
+        <span className="sz-patient" title="Fictional persona from the mission scenario">
+          <span className="sz-patient__role">Cmdr</span>
           <strong className="sz-patient__name">{sentenceCase(ASTRONAUT.name)}</strong>
         </span>
         {/* rappel d'honnêteté unique quand les étiquettes par chiffre sont masquées */}
         <span
           className="sz-topbar__sim"
-          title="Persona fictive et données simulées — « Détails » affiche la provenance de chaque chiffre"
+          title="Fictional persona and simulated data — “Details” shows where each figure comes from"
         >
-          Données simulées
+          Simulated data
         </span>
         <DetailsToggle />
       </div>
@@ -67,9 +67,9 @@ function DetailsToggle(): JSX.Element {
       className="sz-btn sz-btn--sm"
       aria-pressed={details}
       onClick={() => setDetails(!details)}
-      title="Afficher les sources et la provenance de chaque chiffre (D)"
+      title="Show the source and provenance of each figure (D)"
     >
-      Détails
+      Details
     </button>
   );
 }

@@ -2,24 +2,24 @@ import { describe, expect, it } from 'vitest';
 import { dayToDate, fmt, fmtDay } from './format';
 
 describe('fmt', () => {
-  it('utilise la virgule décimale', () => {
-    expect(fmt(8.7, 2)).toBe('8,70');
-    expect(fmt(4.22)).toBe('4,22');
+  it('utilise le point décimal', () => {
+    expect(fmt(8.7, 2)).toBe('8.70');
+    expect(fmt(4.22)).toBe('4.22');
     expect(fmt(94)).toBe('94');
-    expect(fmt(1.005, 1)).toBe('1,0');
-    expect(fmt(-1.5, 1)).toBe('-1,5');
+    expect(fmt(1.005, 1)).toBe('1.0');
+    expect(fmt(-1.5, 1)).toBe('-1.5');
   });
   it('ne rend jamais -0 ni NaN', () => {
-    expect(fmt(-0.001, 1)).toBe('0,0');
+    expect(fmt(-0.001, 1)).toBe('0.0');
     expect(fmt(Number.NaN)).toBe('—');
     expect(fmt(Number.POSITIVE_INFINITY, 2)).toBe('—');
   });
 });
 
 describe('fmtDay', () => {
-  it('préfixe J', () => {
-    expect(fmtDay(94)).toBe('J94');
-    expect(fmtDay(0)).toBe('J0');
+  it('préfixe D', () => {
+    expect(fmtDay(94)).toBe('D94');
+    expect(fmtDay(0)).toBe('D0');
   });
 });
 

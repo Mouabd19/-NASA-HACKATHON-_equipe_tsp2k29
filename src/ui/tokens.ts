@@ -58,18 +58,18 @@ export const statusColor: Record<Color, string> = {
 /** Le mot porte le sens, la pastille porte la couleur (vocabulaire des voyants de bord). */
 export const statusLabel: Record<Color, string> = {
   green: 'Nominal',
-  amber: 'Attention',
-  red: 'Alerte',
-  grey: 'Sans donnée',
+  amber: 'Caution',
+  red: 'Warning',
+  grey: 'No data',
 };
 
 /** Libellé d'un niveau de triage, le même sur toutes les pages (ORANGE : à confirmer par Mouad). */
 export const levelLabel: Record<Level, string> = {
   VERT: 'Nominal',
-  AMBRE: 'Attention',
-  ORANGE: 'Attention renforcée',
-  ROUGE: 'Alerte',
-  DONNEES_INSUFFISANTES: 'Données insuffisantes',
+  AMBRE: 'Caution',
+  ORANGE: 'Elevated caution',
+  ROUGE: 'Warning',
+  DONNEES_INSUFFISANTES: 'Insufficient data',
 };
 
 export const levelColor: Record<Level, Color> = {
@@ -96,9 +96,9 @@ export const levelPriority: Record<Level, AlarmPriority | null> = {
 // haute : un seul « ! » sur aplat rouge (la couleur suffit) ; moyenne : triangle « attention » (dessiné par AlarmMark)
 export const priorityMark: Record<AlarmPriority, string> = { haute: '!', moyenne: '!!', basse: '!' };
 export const priorityLabel: Record<AlarmPriority, string> = {
-  haute: 'Priorité haute',
-  moyenne: 'Priorité moyenne',
-  basse: 'Priorité basse',
+  haute: 'High priority',
+  moyenne: 'Medium priority',
+  basse: 'Low priority',
 };
 
 /** Injecte les tokens en variables CSS sur :root (appelé une fois dans main.tsx). */

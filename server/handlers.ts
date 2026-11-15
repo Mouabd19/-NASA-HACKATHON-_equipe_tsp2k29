@@ -32,16 +32,16 @@ const LIVE_MAX = 500;
 
 /** Le Raccourci iOS envoie parfois des nombres en texte (« 98 », « 0,98 ») ou un type HealthKit complet. */
 export function parseIngest(body: unknown): Measurement | string {
-  if (!body || typeof body !== 'object') return 'Corps JSON attendu : {type, value, unit, date}';
+  if (!body || typeof body !== 'object') return 'Expected JSON body: {type, value, unit, date}';
   const b = body as Record<string, unknown>;
   const rawType = String(b.type ?? '').replace(/^HK(Quantity|Category)TypeIdentifier/, '');
   const type = rawType as Measurement['type'];
-  if (!LIVE_TYPES.includes(type)) return `type inconnu : ${String(b.type)}`;
+  if (!LIVE_TYPES.includes(type)) return `unknown type: ${String(b.type)}`;
   let value = typeof b.value === 'number' ? b.value : Number(String(b.value ?? '').replace(',', '.').replace(/[^\d.+-]/g, ''));
-  if (!Number.isFinite(value)) return 'value doit être un nombre';
+  if (!Number.isFinite(value)) return 'value must be a number';
   if (type === 'OxygenSaturation' && value > 0 && value <= 1) value *= 100;
-  if (type === 'OxygenSaturation' && (value < 50 || value > 100)) return 'SpO₂ hors bornes (50–100 %)';
-  if ((type === 'HeartRate' || type === 'RestingHeartRate') && (value < 20 || value > 250)) return 'FC hors bornes (20–250 bpm)';
+  if (type === 'OxygenSaturation' && (value < 50 || value > 100)) return 'SpO₂ out of range (50–100%)';
+  if ((type === 'HeartRate' || type === 'RestingHeartRate') && (value < 20 || value > 250)) return 'HR out of range (20–250 bpm)';
   const unit = typeof b.unit === 'string' && b.unit.trim() ? normUnit(b.unit.trim()) : DEFAULT_UNIT[type] ?? '';
   const d = typeof b.date === 'string' && b.date.trim() ? new Date(b.date) : new Date();
   const date = Number.isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
@@ -67,7 +67,7 @@ export function handle(state: ApiState, req: ApiRequest): ApiResponse {
   // Ajout : la War Room pousse la to-do du jour (pushTodo). Les cases déjà cochées sont conservées.
   if (path === '/api/todo' && (method === 'POST' || method === 'PUT')) {
     const items = Array.isArray(req.body) ? req.body : null;
-    if (!items || !items.every(isTodo)) return { status: 400, json: { error: 'Tableau de TodoItem attendu' } };
+    if (!items || !items.every(isTodo)) return { status: 400, json: { error: 'Expected an array of TodoItem' } };
     const done = new Set(state.todo.filter((t) => t.done).map((t) => t.id));
     state.todo = items.map((t) => ({ ...t, done: t.done || done.has(t.id) }));
     return { status: 200, json: { ok: true, count: state.todo.length }, changed: true };
@@ -85,7 +85,7 @@ export function handle(state: ApiState, req: ApiRequest): ApiResponse {
     const b = (req.body ?? {}) as Record<string, unknown>;
     const key = String(b.item ?? b.id ?? b.label ?? '').trim();
     const item = state.todo.find((t) => t.id === key || menuLabel(t) === key || t.title === key);
-    if (!item) return { status: 404, json: { ok: false, error: `item inconnu : ${key}` } };
+    if (!item) return { status: 404, json: { ok: false, error: `unknown item: ${key}` } };
     item.done = true;
     return { status: 200, json: { ok: true, id: item.id, title: item.title, done: true }, changed: true };
   }
@@ -94,7 +94,7 @@ export function handle(state: ApiState, req: ApiRequest): ApiResponse {
   if (done && method === 'POST') {
     const id = decodeURIComponent(done[1]);
     const item = state.todo.find((t) => t.id === id);
-    if (!item) return { status: 404, json: { ok: false, error: `item inconnu : ${id}` } };
+    if (!item) return { status: 404, json: { ok: false, error: `unknown item: ${id}` } };
     item.done = done[2] === 'done';
     return { status: 200, json: { ok: true, id, title: item.title, done: item.done }, changed: true };
   }
@@ -111,10 +111,10 @@ export function handle(state: ApiState, req: ApiRequest): ApiResponse {
     const type = req.query.get('type');
     const pool = type ? state.live.filter((m) => m.type === type) : state.live;
     const last = pool.reduce<Measurement | null>((a, m) => (!a || Date.parse(m.date) >= Date.parse(a.date) ? m : a), null);
-    return last ? { status: 200, json: last } : { status: 404, json: { error: 'aucune mesure en direct' } };
+    return last ? { status: 200, json: last } : { status: 404, json: { error: 'no live reading' } };
   }
 
   if (path === '/api/health' && method === 'GET') return { status: 200, json: { ok: true, todo: state.todo.length, live: state.live.length } };
 
-  return { status: 404, json: { error: `${method} ${path} inconnu` } };
+  return { status: 404, json: { error: `${method} ${path} not found` } };
 }

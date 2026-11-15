@@ -6,12 +6,12 @@ import { Panel } from '../../ui';
 import { Dot } from './ui';
 
 const KIND: Record<TodoItem['kind'], string> = {
-  exercice: 'Exercice', repas: 'Repas', test: 'Test', medical: 'Médical',
+  exercice: 'Exercise', repas: 'Meal', test: 'Test', medical: 'Medical',
 };
 
 /** Niveau ORANGE/ROUGE : toute tâche en charge lourde est suspendue (la carte Maintenant dit quoi faire). */
 const isSuspended = (t: TodoItem, level: Level) =>
-  (level === 'ORANGE' || level === 'ROUGE') && /charge lourde/i.test(`${t.title} ${t.detail ?? ''}`);
+  (level === 'ORANGE' || level === 'ROUGE') && /charge lourde|heavy load/i.test(`${t.title} ${t.detail ?? ''}`);
 
 const isUrgent = (t: TodoItem) => t.kind === 'medical' && t.priority === 1;
 
@@ -22,8 +22,8 @@ const order = (a: TodoItem, b: TodoItem) =>
 export function TodoList({ items, onToggle, synced, level }: { items: TodoItem[]; onToggle: (id: string, done: boolean) => void; synced: boolean; level: Level }) {
   if (items.length === 0) {
     return (
-      <Panel title="Aujourd'hui" provenance="SIMULÉ">
-        <p className="sz-dim">Aucune tâche prévue aujourd'hui</p>
+      <Panel title="Today" provenance="SIMULÉ">
+        <p className="sz-dim">No tasks scheduled today</p>
       </Panel>
     );
   }
@@ -32,15 +32,15 @@ export function TodoList({ items, onToggle, synced, level }: { items: TodoItem[]
 
   return (
     <Panel
-      title="Aujourd'hui"
+      title="Today"
       className="wr-flush"
       provenance="SIMULÉ"
       right={
         <>
           {synced
-            ? <span className="sz-detail">Liste synchronisée</span>
-            : <span title="Les coches sont gardées sur cet écran">Liste non synchronisée</span>}
-          <span className="sz-num" aria-label={`${doneCount} tâches faites sur ${items.length}`}>{doneCount} / {items.length}</span>
+            ? <span className="sz-detail">List synced</span>
+            : <span title="Checkmarks are kept on this screen">List not synced</span>}
+          <span className="sz-num" aria-label={`${doneCount} of ${items.length} tasks done`}>{doneCount} / {items.length}</span>
         </>
       }
     >
@@ -59,27 +59,27 @@ function Row({ t, onToggle, suspended }: { t: TodoItem; onToggle: (id: string, d
         <input
           type="checkbox"
           className="wr-check"
-          aria-label={`Fait : ${t.title}`}
+          aria-label={`Done: ${t.title}`}
           checked={t.done}
           disabled={suspended}
           onChange={(e) => onToggle(t.id, e.target.checked)}
         />
       </label>
-      <span className="wr-todo__time">{t.time && <><span className="wr-sr-only">à </span>{t.time}</>}</span>
+      <span className="wr-todo__time">{t.time && <><span className="wr-sr-only">at </span>{t.time}</>}</span>
       <div className="wr-todo__main">
         <div className="wr-todo__title">{t.title}</div>
         {t.detail && !suspended && <div className="wr-todo__detail sz-detail">{t.detail}</div>}
       </div>
       <span className="wr-todo__kind" data-flag={suspended || urgent || undefined}>
         {suspended ? (
-          <><Dot color="amber" size={6} /><span title="Voir la consigne « Maintenant »">Suspendu</span></>
+          <><Dot color="amber" size={6} /><span title="See the “Now” instruction">Suspended</span></>
         ) : urgent ? (
           <><Dot color="red" size={6} />Urgent</>
         ) : (
           KIND[t.kind]
         )}
       </span>
-      <Link className="wr-todo__why" to={`/reasoning/${encodeURIComponent(t.reasoningId)}`} aria-label={`Pourquoi : ${t.title}`} title="Pourquoi">
+      <Link className="wr-todo__why" to={`/reasoning/${encodeURIComponent(t.reasoningId)}`} aria-label={`Why: ${t.title}`} title="Why">
         <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5L8 6l-3.5 3.5" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
       </Link>
     </li>

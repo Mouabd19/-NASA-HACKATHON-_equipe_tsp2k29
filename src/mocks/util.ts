@@ -57,7 +57,7 @@ export function clamp(v: number, lo: number, hi: number): number {
 
 /** Nombre au format français (virgule décimale). */
 export function fr(v: number, digits = 1): string {
-  return v.toFixed(digits).replace('.', ',');
+  return v.toFixed(digits);
 }
 
 /** Pente (par jour) d'une régression linéaire simple sur des valeurs espacées d'un jour. */

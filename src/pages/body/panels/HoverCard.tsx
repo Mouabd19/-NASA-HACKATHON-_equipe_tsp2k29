@@ -36,8 +36,8 @@ interface TrendView {
 
 /** Libellés trop longs pour une ligne de carte : forme courte à l'affichage (le libellé complet reste en infobulle). */
 const SHORT_LABEL: Record<string, string> = {
-  densite_osseuse: 'Densité estimée vs pré-vol',
-  gaine_nerf_optique: 'Gaine du nerf optique',
+  densite_osseuse: 'Est. density vs preflight',
+  gaine_nerf_optique: 'Optic nerve sheath',
 };
 
 /** Libellé affiché d'une métrique : sans parenthèse technique (« (scan hebdo) », « (44) »). */
@@ -249,13 +249,13 @@ export function HoverCard(): JSX.Element | null {
               </p>
             ) : null}
             {organ.layer === 'squelette' ? (
-              <p className="hvc__sub sz-detail">Source : modèle, bilan au sol et marqueurs urinaires (pas le scanner).</p>
+              <p className="hvc__sub sz-detail">Source: model, preflight ground assessment and urine markers (not the scanner).</p>
             ) : null}
           </header>
 
           {unmodeled ? (
             <p className="hvc__none">
-              Non modélisé<span className="sz-detail"> : aucune mesure pour cet organe, statut inconnu.</span>
+              Not modeled<span className="sz-detail">: no measurement for this organ, status unknown.</span>
             </p>
           ) : (
             <ul className="hvc__metrics">
@@ -264,8 +264,8 @@ export function HoverCard(): JSX.Element | null {
                 const proj = isProjectionMetric(m);
                 // mode Détails : origine du seuil (norme NASA ou seuil d'équipe), puis la provenance si elle varie d'une ligne à l'autre
                 const origin = [
-                  th ? (m.ref?.standardId ? `NASA ${m.ref.standardId}` : 'hypothèse d’équipe') : null,
-                  commonProv ? null : PROVENANCE_TEXT[m.provenance].toLocaleLowerCase('fr-FR'),
+                  th ? (m.ref?.standardId ? `NASA ${m.ref.standardId}` : 'team hypothesis') : null,
+                  commonProv ? null : PROVENANCE_TEXT[m.provenance].toLocaleLowerCase('en-US'),
                 ].filter(Boolean).join(' · ');
                 return (
                   <li className="hvc__m" key={m.key}>
@@ -278,10 +278,10 @@ export function HoverCard(): JSX.Element | null {
                     </div>
                     {th ? (
                       <div className="hvc__note">
-                        Seuil {th}{origin ? <span className="sz-detail"> · {origin}</span> : null}
+                        Threshold {th}{origin ? <span className="sz-detail"> · {origin}</span> : null}
                       </div>
                     ) : origin ? (
-                      <div className="hvc__note sz-detail">{origin.charAt(0).toLocaleUpperCase('fr-FR') + origin.slice(1)}</div>
+                      <div className="hvc__note sz-detail">{origin.charAt(0).toLocaleUpperCase('en-US') + origin.slice(1)}</div>
                     ) : null}
                   </li>
                 );
@@ -293,35 +293,35 @@ export function HoverCard(): JSX.Element | null {
             {trend ? (
               <div className="hvc__m">
                 <div className="hvc__row hvc__row--mid">
-                  <span className="hvc__k">Tendance 7 j</span>
+                  <span className="hvc__k">7-day trend</span>
                   <Sparkline
                     values={trend.series}
                     width={56}
                     height={20}
                     dashedFrom={trend.dashedFrom}
-                    label={`Tendance sur 7 jours : ${metricLabel(trend.metric)}`}
+                    label={`7-day trend: ${metricLabel(trend.metric)}`}
                   />
                   {trend.value === null ? (
-                    <span className="hvc__v hvc__v--none">Indisponible</span>
+                    <span className="hvc__v hvc__v--none">Unavailable</span>
                   ) : (
-                    <span className="hvc__v">{signed(trend.value, 2)}<span className="sz-unit"> %/sem</span></span>
+                    <span className="hvc__v">{signed(trend.value, 2)}<span className="sz-unit"> %/wk</span></span>
                   )}
                 </div>
                 {/* rappel de la métrique seulement si la tendance ne porte pas sur la première ligne de la carte */}
                 {trendIsFirst ? null : <div className="hvc__note">{metricLabel(trend.metric, true)}</div>}
                 {trend.band ? (
-                  <div className="hvc__note sz-detail">Bruit de mesure ± {fmt(trend.metric.noise ?? 0)} {trend.metric.unit}</div>
+                  <div className="hvc__note sz-detail">Measurement noise ± {fmt(trend.metric.noise ?? 0)} {trend.metric.unit}</div>
                 ) : null}
               </div>
             ) : null}
 
             <div className="hvc__m">
               <div className="hvc__row">
-                <span className="hvc__k" title="Hypothèse de l’équipe : perte cumulée rapportée à la vitesse de vieillissement terrestre">Écart d’âge estimé</span>
+                <span className="hvc__k" title="Team hypothesis: cumulative loss divided by the Earth aging rate">Estimated age gap</span>
                 {gapKnown ? (
-                  <span className="hvc__v">{signed(gap, 1)}<span className="sz-unit"> ans</span></span>
+                  <span className="hvc__v">{signed(gap, 1)}<span className="sz-unit"> yr</span></span>
                 ) : (
-                  <span className="hvc__v hvc__v--none">Non modélisé</span>
+                  <span className="hvc__v hvc__v--none">Not modeled</span>
                 )}
               </div>
             </div>
@@ -333,9 +333,9 @@ export function HoverCard(): JSX.Element | null {
                 type="button"
                 className="sz-btn sz-btn--sm"
                 onClick={open}
-                title={organId === 'cerveau' ? 'Ouvrir la page Santé mentale (ou double-clic sur l’organe)' : 'Ouvrir la fenêtre de détail (ou double-clic sur l’organe)'}
+                title={organId === 'cerveau' ? 'Open the Mental health page (or double-click the organ)' : 'Open the detail window (or double-click the organ)'}
               >
-                {organId === 'cerveau' ? 'Suivi santé mentale' : 'Ouvrir le détail'}
+                {organId === 'cerveau' ? 'Mental health tracking' : 'Open details'}
               </button>
             </footer>
           ) : null}

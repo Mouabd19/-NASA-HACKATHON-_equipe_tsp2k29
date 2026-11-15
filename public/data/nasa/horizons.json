@@ -4,7 +4,7 @@
  "provisional": false,
  "fetchedAt": "2026-11-14T18:39:06.364Z",
  "query": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND=%27499%27&OBJ_DATA=NO&MAKE_EPHEM=YES&EPHEM_TYPE=OBSERVER&CENTER=%27500%40399%27&START_TIME=%272026-08-12%27&STOP_TIME=%272028-12-20%27&STEP_SIZE=%271+d%27&QUANTITIES=%2720%2C23%27&CSV_FORMAT=YES&CAL_FORMAT=CAL",
- "note": "Distance géocentrique Terre–Mars (Mars = 499, centre = 500@399). Délai radio aller = distance / c. Conjonction solaire : élongation < 3°.",
+ "note": "Geocentric Earth–Mars distance (Mars = 499, center = 500@399). One-way radio delay = distance / c. Solar conjunction: elongation < 3°.",
  "j0": "2026-08-12",
  "days": [
   {

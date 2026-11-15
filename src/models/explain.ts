@@ -14,13 +14,13 @@ import { DOSE_CAREER_LIMIT_MSV, DOSE_CRUISE_MSV_DAY, DOSE_SURFACE_MSV_DAY } from
 import { bloodAgeSeries, moodSignals, organForecast } from './ml/index.ts';
 
 const fr = (v: number | undefined, digits = 1) =>
-  v === undefined || !Number.isFinite(v) ? '—' : v.toFixed(digits).replace('.', ',');
+  v === undefined || !Number.isFinite(v) ? '—' : v.toFixed(digits);
 const step = (kind: ReasoningStep['kind'], text: string, tag: Tag, source?: ReasoningStep['source']): ReasoningStep =>
   source ? { kind, text, tag, source } : { kind, text, tag };
 
 const nasa = (id: string): ReasoningStep['source'] => {
   const s = getStandard(id);
-  return { label: `NASA-STD-3001 Vol. 1 Rév. C — ${id}`, url: s.url };
+  return { label: `NASA-STD-3001 Vol. 1 Rev. C — ${id}`, url: s.url };
 };
 // Sources vérifiées par Steve (public/data/nasa/references.json) : titre et lien repris tels quels.
 const refs = new Map(references.references.map(r => [r.id, r]));
@@ -30,59 +30,59 @@ const cite = (id: string, fallback: string): NonNullable<ReasoningStep['source']
 };
 const REF = {
   ochmo: cite('ochmo-exercise', 'NASA OCHMO Technical Brief — Exercise (2023)'),
-  leblanc2013: cite('leblanc2013', 'LeBlanc et al. 2013 — bisphosphonates + exercice sur l\'ISS'),
+  leblanc2013: cite('leblanc2013', 'LeBlanc et al. 2013 — bisphosphonates + exercise on the ISS'),
   smithCa: cite('smith-calcium', 'Smith S.M., Calcium and Bone Metabolism During Spaceflight (NASA)'),
-  okada: cite('okada2022', 'Okada et al. 2022 — calculs rénaux en vol'),
-  onsd: cite('fall2022-onsd', 'Fall et al. 2022 — gaine du nerf optique et SANS'),
+  okada: cite('okada2022', 'Okada et al. 2022 — kidney stones in flight'),
+  onsd: cite('fall2022-onsd', 'Fall et al. 2022 — optic nerve sheath and SANS'),
   levine: cite('phenoage', 'Levine et al., Aging, 2018 (PhenoAge)'),
-  nhanes: { label: 'Modèle A — entraîné sur NHANES 2015–2018 (CDC)', url: 'https://wwwn.cdc.gov/nchs/nhanes/' },
-  rad: { label: 'MSL/RAD — Zeitlin et al. 2013 ; Hassler et al. 2014' },
-  sim: (what: string) => ({ label: `${what} — SIMULÉ (persona Haddad)` }),
+  nhanes: { label: 'Model A — trained on NHANES 2015–2018 (CDC)', url: 'https://wwwn.cdc.gov/nchs/nhanes/' },
+  rad: { label: 'MSL/RAD — Zeitlin et al. 2013; Hassler et al. 2014' },
+  sim: (what: string) => ({ label: `${what} — SIMULATED (persona Haddad)` }),
 };
 
 const metricAt = (day: number, organ: string, key: string): Metric | undefined =>
   getDayBody(day).organs.find(o => o.id === organ)?.metrics.find(m => m.key === key);
-const when = (day: number) => (day > DAY_TODAY ? `Projection J${day}` : `J${day}`);
-const pace = (day: number) => (day > DAY_TODAY ? 'projection des modèles, pas une mesure' : 'mesuré');
+const when = (day: number) => (day > DAY_TODAY ? `Projection D${day}` : `D${day}`);
+const pace = (day: number) => (day > DAY_TODAY ? 'model projection, not a measurement' : 'measured');
 
 /** Prévision du modèle B (J94 → J210 / J860), en une phrase. */
 function forecastText(organ: 'hanche' | 'cuisse' | 'coeur', horizon: 210 | 860): string | null {
   const cur = organForecast(organ, horizon, 0);
   const plan = organForecast(organ, horizon, 1);
   if (!cur || !plan) return null;
-  return `Modèle d'IA B (régression quantile, entraîné sur 2 000 astronautes virtuels calibrés NASA), à partir des mesures J0–J${DAY_TODAY} : à J${horizon}, ` +
-    `${fr(cur.p50, 1)} % ${cur.unit.replace(/^% /, '')} au rythme actuel (fourchette 10–90 % : ${fr(cur.p10, 1)}–${fr(cur.p90, 1)}), ` +
-    `${fr(plan.p50, 1)} % avec le plan.`;
+  return `AI model B (quantile regression, trained on 2,000 virtual astronauts calibrated to NASA data), from measurements D0–D${DAY_TODAY}: at D${horizon}, ` +
+    `${fr(cur.p50, 1)}% ${cur.unit.replace(/^% /, '')} at current pace (10–90% range: ${fr(cur.p10, 1)}–${fr(cur.p90, 1)}), ` +
+    `${fr(plan.p50, 1)}% with the plan.`;
 }
 
 type Builder = (day: number) => Omit<Reasoning, 'id'>;
 
 const CHAINS: Record<string, Builder> = {
-  'r-hanche-ared': day => boneChain(day, 'ARED charge lourde — pourquoi ?',
-    'Squat et soulevé de terre lourds sur ARED : la charge axiale est la contre-mesure la plus efficace sur la hanche (NASA OCHMO). Décidé à bord, sans attendre la Terre.', REF.ochmo),
-  'r-hanche-nutrition': day => boneChain(day, 'Menu calcium et vitamine D — pourquoi ?',
-    'Menu os de la journée (≈ 1 200 mg de calcium, 800 UI de vitamine D) : soutenir la formation osseuse, sans excès car le calcium urinaire est surveillé.'),
+  'r-hanche-ared': day => boneChain(day, 'ARED heavy loading — why?',
+    'Heavy squats and deadlifts on ARED: axial loading is the most effective countermeasure for the hip (NASA OCHMO). Decided onboard, without waiting for Earth.', REF.ochmo),
+  'r-hanche-nutrition': day => boneChain(day, 'Calcium and vitamin D menu — why?',
+    'Bone menu for the day (≈ 1,200 mg calcium, 800 IU vitamin D): supports bone formation, without excess since urinary calcium is being monitored.'),
   'r-urine': day => {
     const ca = metricAt(day, 'reins', 'calcium_urinaire');
     return {
-      title: 'Analyse d\'urine du matin — pourquoi ?',
+      title: 'First-morning urinalysis — why?',
       steps: [
-        step('donnee', `${when(day)} : calcium urinaire ${fr(ca?.value, 0)} mg/24 h (${pace(day)}). Le scanner ne voit pas l'os : l'urine est notre fenêtre quotidienne sur la résorption.`, 'Persona', REF.sim('Urine quotidienne')),
-        step('modele', 'L\'os qui fond libère son calcium dans les urines. Le modèle d\'IA B s\'en sert pour estimer la perte osseuse de la hanche (calcium + CTX urinaires).', 'H', REF.smithCa),
-        step('norme', `NASA-STD-3001 [V1 4027] : densité de la hanche ≥ ${BONE_RED.hanche} % du pré-vol. Suivre la résorption chaque jour permet d'agir avant le seuil.`, 'NASA', nasa('V1 4027')),
-        step('decision', 'Échantillon d\'urine du matin, analysé à bord : il nourrit le statut de l\'os et des reins du lendemain.', 'H'),
+        step('donnee', `${when(day)}: urinary calcium ${fr(ca?.value, 0)} mg/24 h (${pace(day)}). The scanner cannot see bone: urine is our daily window on resorption.`, 'Persona', REF.sim('Daily urine')),
+        step('modele', 'Bone breakdown releases calcium into the urine. AI model B uses it to estimate hip bone loss (urinary calcium + CTX).', 'H', REF.smithCa),
+        step('norme', `NASA-STD-3001 [V1 4027]: hip bone density ≥ ${BONE_RED.hanche}% of preflight. Tracking resorption every day allows action before the threshold.`, 'NASA', nasa('V1 4027')),
+        step('decision', 'First-morning urine sample, analyzed onboard: it feeds the next day\'s bone and kidney status.', 'H'),
       ],
     };
   },
   'r-sol-routine': day => {
     const g = metricAt(day, 'yeux', 'gaine_nerf_optique');
     return {
-      title: 'Point « Sol-routine » — pourquoi ?',
+      title: 'Ground routine consult — why?',
       steps: [
-        step('donnee', `${when(day)} : os en projection sous le seuil, VO₂max proche de la limite à Sol 0, gaine du nerf optique ${fr(g?.value, 2)} mm.`, 'Persona', REF.sim('Corps du jour')),
-        step('modele', forecastText('hanche', DAY_END as 860) ?? `Modèle « bone » : perte de ${fr(boneLossPct('hanche', DAY_END, 0), 1)} % à J${DAY_END} au rythme actuel.`, 'H'),
-        step('norme', 'Ces sujets (bisphosphonates, risque SANS, protocole aérobie) dépassent ce que l\'équipage tranche seul. Exercice + bisphosphonates ont protégé l\'os d\'astronautes sur l\'ISS.', 'Publié', REF.leblanc2013),
-        step('decision', 'Message différé au médecin au sol. Sa réponse arrive dans ENSUITE avec le délai radio du jour : MAINTENANT n\'en dépend jamais.', 'H'),
+        step('donnee', `${when(day)}: bone projected below threshold, VO₂max close to the limit at Sol 0, optic nerve sheath ${fr(g?.value, 2)} mm.`, 'Persona', REF.sim("Today's body")),
+        step('modele', forecastText('hanche', DAY_END as 860) ?? `"Bone" model: ${fr(boneLossPct('hanche', DAY_END, 0), 1)}% loss at D${DAY_END} at current pace.`, 'H'),
+        step('norme', 'These topics (bisphosphonates, SANS risk, aerobic protocol) go beyond what the crew decides alone. Exercise + bisphosphonates protected astronauts\' bone on the ISS.', 'Publié', REF.leblanc2013),
+        step('decision', 'Delayed message to the ground flight surgeon. The reply arrives under NEXT with today\'s radio delay: NOW never depends on it.', 'H'),
       ],
     };
   },
@@ -90,57 +90,57 @@ const CHAINS: Record<string, Builder> = {
     const v = metricAt(day, 'coeur', 'vo2max');
     const f = forecastText('coeur', DAY_SOL0 as 210);
     return {
-      title: 'Cardio par intervalles — pourquoi ?',
+      title: 'Interval cardio — why?',
       steps: [
-        step('donnee', `${when(day)} : VO₂max ${fr(v?.value, 1)} ml/kg/min, soit ${fr(((v?.value ?? NaN) / VO2_PREFLIGHT) * 100, 1)} % du pré-vol (${fr(VO2_PREFLIGHT, 1)}).`, 'Persona', REF.sim('Montre + séance vélo')),
-        step('modele', f ?? `Modèle « aerobic » : ${fr(vo2max(DAY_SOL0, 0), 1)} ml/kg/min à Sol 0 au rythme actuel, ${fr(vo2max(DAY_SOL0, 1), 1)} avec le plan.`, 'H'),
-        step('norme', `NASA-STD-3001 [V1 4003] : ≥ 80 % du pré-vol ; [V1 4002] : ≥ ${fr(VO2_MIN_ABS, 1)} ml/kg/min pour sortir sur Mars (J${DAY_SOL0}).`, 'NASA', nasa('V1 4003')),
-        step('decision', 'Séance d\'intervalles à 85–90 % de la FC max (vélo CEVIS ou tapis T2 en alternance) : c\'est l\'entraînement qui remonte le plus vite le VO₂max.', 'H', REF.ochmo),
+        step('donnee', `${when(day)}: VO₂max ${fr(v?.value, 1)} ml/kg/min, i.e. ${fr(((v?.value ?? NaN) / VO2_PREFLIGHT) * 100, 1)}% of preflight (${fr(VO2_PREFLIGHT, 1)}).`, 'Persona', REF.sim('Watch + cycle session')),
+        step('modele', f ?? `"Aerobic" model: ${fr(vo2max(DAY_SOL0, 0), 1)} ml/kg/min at Sol 0 at current pace, ${fr(vo2max(DAY_SOL0, 1), 1)} with the plan.`, 'H'),
+        step('norme', `NASA-STD-3001 [V1 4003]: ≥ 80% of preflight; [V1 4002]: ≥ ${fr(VO2_MIN_ABS, 1)} ml/kg/min for Mars surface EVA (D${DAY_SOL0}).`, 'NASA', nasa('V1 4003')),
+        step('decision', 'Interval session at 85–90% of max HR (alternating CEVIS cycle and T2 treadmill): the fastest way to raise VO₂max.', 'H', REF.ochmo),
       ],
     };
   },
-  'r-cuisse-tendance': day => muscleChain(day, 'cuisse', 'Renforcement de la cuisse — pourquoi ?',
-    'Squat lourd sur ARED pendant 7 jours, puis réévaluation sur la tendance (jamais sur un point isolé).'),
-  'r-mollet': day => muscleChain(day, 'mollet', 'Extension des mollets — pourquoi ?',
-    'Extension des mollets sur ARED : muscle très sollicité au sol, quasi inactif en apesanteur.'),
-  'r-cuisse-proteines': day => muscleChain(day, 'cuisse', 'Menu protéines — pourquoi ?',
-    'Menu muscle (≈ 140 g de protéines, dont une prise juste après l\'ARED) pour soutenir la synthèse musculaire.'),
+  'r-cuisse-tendance': day => muscleChain(day, 'cuisse', 'Thigh strengthening — why?',
+    'Heavy squats on ARED for 7 days, then reassessment on the trend (never on a single data point).'),
+  'r-mollet': day => muscleChain(day, 'mollet', 'Calf raises — why?',
+    'Calf raises on ARED: a muscle heavily used on the ground and nearly idle in microgravity.'),
+  'r-cuisse-proteines': day => muscleChain(day, 'cuisse', 'Protein menu — why?',
+    'Muscle menu (≈ 140 g protein, including a serving right after ARED) to support muscle protein synthesis.'),
   'r-nerf-optique': day => {
     const g = metricAt(day, 'yeux', 'gaine_nerf_optique');
     return {
-      title: 'Vision + échographie du nerf optique — pourquoi ?',
+      title: 'Vision + optic nerve ultrasound — why?',
       steps: [
-        step('donnee', `${when(day)} : gaine du nerf optique ${fr(g?.value, 2)} mm (5,00 mm à J0), mesurée à l'échographie, déjà pratiquée sur l'ISS.`, 'Persona', REF.sim('Scan du jour')),
-        step('modele', 'Moyenne sur 7 jours : elle dépasse le repère de vigilance de 5,5 mm. Pas de projection au-delà de J94 : aucun modèle publié, donc rien d\'inventé.', 'H'),
-        step('norme', 'La gaine reflète la pression dans le crâne, liée aux troubles de la vision en vol (SANS). Repère de 5,5 mm : hypothèse d\'équipe [H].', 'Publié', REF.onsd),
-        step('decision', 'Test de vision et nouvelle mesure aujourd\'hui ; les mesures partent au médecin au sol (Sol-routine).', 'H'),
+        step('donnee', `${when(day)}: optic nerve sheath ${fr(g?.value, 2)} mm (5.00 mm at D0), measured by ultrasound, already performed on the ISS.`, 'Persona', REF.sim('Daily scan')),
+        step('modele', '7-day average: it exceeds the 5.5 mm watch threshold. No projection beyond D94: no published model, so nothing is invented.', 'H'),
+        step('norme', 'Sheath diameter reflects intracranial pressure, linked to in-flight vision changes (SANS). 5.5 mm threshold: team hypothesis [H].', 'Publié', REF.onsd),
+        step('decision', 'Vision test and repeat measurement today; measurements go to the ground flight surgeon (ground routine).', 'H'),
       ],
     };
   },
   'r-calcium-urinaire': day => {
     const ca = metricAt(day, 'reins', 'calcium_urinaire');
     return {
-      title: 'Menu anti-calculs + échographie des reins — pourquoi ?',
+      title: 'Stone-prevention menu + kidney ultrasound — why?',
       steps: [
-        step('donnee', `${when(day)} : calcium urinaire ${fr(ca?.value, 0)} mg/24 h, moyenne 7 j au-dessus du repère.`, 'Persona', REF.sim('Urine quotidienne')),
-        step('modele', 'Le calcium libéré par l\'os passe dans les urines : la hausse suit la perte osseuse estimée.', 'H', REF.smithCa),
-        step('norme', 'Référence terrestre < 300 mg/24 h ; le risque de calculs rénaux augmente en vol.', 'Publié', REF.okada),
-        step('decision', 'Au moins 2,5 L d\'eau, sel réduit, et échographie des reins.', 'H'),
+        step('donnee', `${when(day)}: urinary calcium ${fr(ca?.value, 0)} mg/24 h, 7-day average above the threshold.`, 'Persona', REF.sim('Daily urine')),
+        step('modele', 'Calcium released from bone passes into the urine: the rise tracks the estimated bone loss.', 'H', REF.smithCa),
+        step('norme', 'Terrestrial reference < 300 mg/24 h; kidney stone risk increases in flight.', 'Publié', REF.okada),
+        step('decision', 'At least 2.5 L of water, reduced salt, and a kidney ultrasound.', 'H'),
       ],
     };
   },
   'r-checkin': day => {
     const ci = getCheckIn(day);
     return {
-      title: 'Check-in du matin — pourquoi ?',
+      title: 'Morning check-in — why?',
       steps: [
         step('donnee', ci
-          ? `${when(day)} : humeur ${ci.mood}/5, fatigue ${ci.fatigue}/5, douleur ${ci.pain}/3, sommeil ressenti ${ci.sleepFelt}/5 (${ci.source === 'manual' ? 'RÉEL, saisi' : 'SIMULÉ'}).`
-          : `${when(day)} : check-in pas encore fait. C'est la seule donnée que l'astronaute est seul à pouvoir fournir.`,
-          'Persona', { label: 'Check-in du matin — RÉEL quand il est saisi, SIMULÉ sinon' }),
-        step('modele', 'Il entre dans le triage du jour (règles R13) et dans le modèle d\'IA C (signal d\'humeur, comparé à la référence personnelle J0–J20).', 'H'),
-        step('norme', 'Douleur 3 → ROUGE, douleur 2 → prévenir le CMO, humeur ≤ 2 avec fatigue ≥ 4 → ORANGE (règles d\'équipe [H]). L\'officier médical de bord décide quand la Terre est loin.', 'NASA', nasa('V1 3006')),
-        step('decision', 'Check-in en premier écran de la journée, en moins de 30 secondes. Sans lui, jamais de statut vert.', 'H'),
+          ? `${when(day)}: mood ${ci.mood}/5, fatigue ${ci.fatigue}/5, pain ${ci.pain}/3, perceived sleep ${ci.sleepFelt}/5 (${ci.source === 'manual' ? 'REAL, entered' : 'SIMULATED'}).`
+          : `${when(day)}: check-in not done yet. It is the only data only the astronaut can provide.`,
+          'Persona', { label: 'Morning check-in — REAL when entered, SIMULATED otherwise' }),
+        step('modele', 'It feeds today\'s triage (rules R13) and AI model C (mood signal, compared with the personal baseline D0–D20).', 'H'),
+        step('norme', 'Pain 3 → RED, pain 2 → notify the CMO, mood ≤ 2 with fatigue ≥ 4 → ORANGE (team rules [H]). The Crew Medical Officer decides when Earth is far away.', 'NASA', nasa('V1 3006')),
+        step('decision', 'Check-in is the first screen of the day, in under 30 seconds. Without it, never a green status.', 'H'),
       ],
     };
   },
@@ -149,93 +149,93 @@ const CHAINS: Record<string, Builder> = {
     const last = draws.at(-1)?.day;
     const age = bloodAgeSeries().filter(p => p.day <= day).at(-1);
     return {
-      title: 'Micro-prélèvement capillaire — pourquoi ?',
+      title: 'Capillary micro-sample — why?',
       steps: [
-        step('donnee', last === undefined ? 'Aucun prélèvement disponible.' : `Dernier prélèvement : J${last}, il y a ${day - last} jours.`, 'Persona', REF.sim('Prélèvement hebdomadaire')),
+        step('donnee', last === undefined ? 'No blood draw available.' : `Last blood draw: D${last}, ${day - last} days ago.`, 'Persona', REF.sim('Weekly blood draw')),
         step('modele', age
-          ? `Modèle d'IA A (régression ElasticNet, entraîné sur 9 300 adultes réels NHANES) : âge sanguin ${fr(age.bloodAge, 1)} ans pour ${fr(age.chronoAge, 1)} ans d'âge réel. Avec PhenoAge (Levine 2018), il a besoin de marqueurs à jour.`
-          : 'PhenoAge (Levine 2018) et le modèle d\'IA A (âge sanguin) ont besoin de marqueurs à jour.', 'H', REF.nhanes),
-        step('norme', 'Une donnée expirée ne donne jamais un statut vert : au-delà de 7 jours le prélèvement est à refaire, au-delà de 14 jours le triage passe en « données insuffisantes ».', 'H'),
-        step('decision', 'Micro-prélèvement au doigt (hebdomadaire) : une prise de sang veineuse quotidienne serait irréaliste en vol.', 'H'),
+          ? `AI model A (ElasticNet regression, trained on 9,300 real NHANES adults): blood age ${fr(age.bloodAge, 1)} years for a chronological age of ${fr(age.chronoAge, 1)}. Like PhenoAge (Levine 2018), it needs up-to-date markers.`
+          : 'PhenoAge (Levine 2018) and AI model A (blood age) need up-to-date markers.', 'H', REF.nhanes),
+        step('norme', 'Expired data never yields a green status: after 7 days the draw must be repeated; after 14 days triage switches to "insufficient data".', 'H'),
+        step('decision', 'Finger-prick micro-sample (weekly): a daily venous blood draw would be unrealistic in flight.', 'H'),
       ],
     };
   },
   'r-dose': day => {
     const d = metricAt(day, 'dose', 'dose_cumulee');
     return {
-      title: 'Revue de la dose — pourquoi ?',
+      title: 'Dose review — why?',
       steps: [
-        step('donnee', `${when(day)} : dose cumulée ${fr(d?.value, 0)} mSv (dosimètre de bord, SIMULÉ).`, 'Persona', REF.sim('Dosimètre')),
-        step('modele', `${fr(DOSE_CRUISE_MSV_DAY, 2)} mSv/j en croisière, ${fr(DOSE_SURFACE_MSV_DAY, 2)} mSv/j en surface (mesures du rover Curiosity).`, 'Publié', REF.rad),
-        step('norme', `NASA-STD-3001 [V1 4030] : dose de carrière sous ${DOSE_CAREER_LIMIT_MSV} mSv.`, 'NASA', nasa('V1 4030')),
-        step('decision', 'Revue avec le CMO du temps passé hors de la zone la mieux protégée.', 'H'),
+        step('donnee', `${when(day)}: cumulative dose ${fr(d?.value, 0)} mSv (onboard dosimeter, SIMULATED).`, 'Persona', REF.sim('Dosimeter')),
+        step('modele', `${fr(DOSE_CRUISE_MSV_DAY, 2)} mSv/d in cruise, ${fr(DOSE_SURFACE_MSV_DAY, 2)} mSv/d on the surface (Curiosity rover measurements).`, 'Publié', REF.rad),
+        step('norme', `NASA-STD-3001 [V1 4030]: career dose below ${DOSE_CAREER_LIMIT_MSV} mSv.`, 'NASA', nasa('V1 4030')),
+        step('decision', 'Review with the CMO of time spent outside the best-shielded area.', 'H'),
       ],
     };
   },
   'r-cmo': day => ({
-    title: 'Prévenir le CMO — pourquoi ?',
+    title: 'Notify the CMO — why?',
     steps: [
-      step('donnee', `${when(day)} : un indicateur a franchi un seuil rouge, ou le check-in signale une douleur ou un état qui l'exige.`, 'Persona', REF.sim('Corps du jour + check-in')),
-      step('modele', 'Triage du jour (calculé à bord) : le niveau le plus grave entre les alertes d\'organe et le check-in (règles R13).', 'H'),
-      step('norme', 'NASA-STD-3001 [V1 3006] : un officier médical de bord ; quand la Terre est loin, c\'est lui qui décide.', 'NASA', nasa('V1 3006')),
-      step('decision', 'Le CMO de bord est prévenu avant toute séance ; la Terre est informée dès que le lien le permet.', 'H'),
+      step('donnee', `${when(day)}: an indicator crossed a red threshold, or the check-in reports pain or a condition that requires it.`, 'Persona', REF.sim("Today's body + check-in")),
+      step('modele', 'Today\'s triage (computed onboard): the most severe level between organ alerts and the check-in (rules R13).', 'H'),
+      step('norme', 'NASA-STD-3001 [V1 3006]: a Crew Medical Officer onboard; when Earth is far away, the CMO decides.', 'NASA', nasa('V1 3006')),
+      step('decision', 'The onboard CMO is notified before any exercise session; Earth is informed as soon as the link allows.', 'H'),
     ],
   }),
   'r-psy': day => {
     const s = moodSignals().filter(m => m.day <= day).at(-1);
     return {
-      title: 'Point psy proposé — pourquoi ?',
+      title: 'Psych session offered — why?',
       steps: [
         step('donnee', s
-          ? `${when(day)} : humeur, fatigue, sommeil, variabilité cardiaque et cortisol des 7 derniers jours, comparés à la référence de l'astronaute (J0–J20). Écart d'humeur : ${fr(s.z.mood, 1).replace('-', '−')} écart-type.`
-          : 'Humeur basse plusieurs jours de suite au check-in.', 'Persona', REF.sim('Check-in + montre + prélèvement')),
+          ? `${when(day)}: mood, fatigue, sleep, heart rate variability and cortisol over the last 7 days, compared with the astronaut's baseline (D0–D20). Mood deviation: ${fr(s.z.mood, 1).replace('-', '−')} SD.`
+          : 'Low mood several days in a row at check-in.', 'Persona', REF.sim('Check-in + watch + blood draw')),
         step('modele', s
-          ? `Modèle d'IA C (régression logistique, entraîné sur 1 500 astronautes virtuels) : score ${fr(s.score, 2)}, au-dessus du seuil 2 jours de suite. Sur le test : 92 % des épisodes détectés, 6 % de fausses alertes.`
-          : 'Règle : humeur ≤ 2 trois jours de suite.', 'H'),
-        step('norme', 'NASA-STD-3001 [V1 6010] : entretiens psychologiques réguliers avec un professionnel.', 'NASA', nasa('V1 6010')),
-        step('decision', 'Un échange est PROPOSÉ. L\'astronaute voit son signal en premier et décide ; rien n\'est imposé ni transmis sans son accord. Signal à regarder, jamais un diagnostic.', 'H'),
+          ? `AI model C (logistic regression, trained on 1,500 virtual astronauts): score ${fr(s.score, 2)}, above the threshold 2 days in a row. On the test set: 92% of episodes detected, 6% false alarms.`
+          : 'Rule: mood ≤ 2 three days in a row.', 'H'),
+        step('norme', 'NASA-STD-3001 [V1 6010]: routine private psychological conferences with a professional.', 'NASA', nasa('V1 6010')),
+        step('decision', 'A conversation is PROPOSED. The astronaut sees the signal first and decides; nothing is imposed or shared without their consent. A signal to look at, never a diagnosis.', 'H'),
       ],
     };
   },
   'r-dos': day => ({
-    title: 'Mobilité du dos — pourquoi ?',
+    title: 'Back mobility — why?',
     steps: [
-      step('donnee', `${when(day)} : douleur du bas du dos signalée au check-in.`, 'Persona', { label: 'Check-in du matin' }),
-      step('modele', 'En apesanteur, la colonne s\'allonge et les muscles paravertébraux s\'atrophient : la douleur lombaire est fréquente.', 'H'),
-      step('norme', 'Repère d\'équipe [H] : douleur 2 → prévenir le CMO ; douleur 1 → mobilité douce.', 'H'),
-      step('decision', 'Séance de mobilité et de gainage du dos, 15 min.', 'H', REF.ochmo),
+      step('donnee', `${when(day)}: lower back pain reported at check-in.`, 'Persona', { label: 'Morning check-in' }),
+      step('modele', 'In microgravity the spine lengthens and the paraspinal muscles atrophy: low back pain is common.', 'H'),
+      step('norme', 'Team threshold [H]: pain 2 → notify the CMO; pain 1 → gentle mobility.', 'H'),
+      step('decision', 'Back mobility and core stability session, 15 min.', 'H', REF.ochmo),
     ],
   }),
   'r-pvt': day => {
     const p = metricAt(day, 'yeux', 'pvt');
     return {
-      title: 'Test de vigilance PVT — pourquoi ?',
+      title: 'PVT alertness test — why?',
       steps: [
         step('donnee', p
-          ? `${when(day)} : temps de réaction ${fr(p.value, 0)} ms, ${p.trend7d === undefined ? 'tendance 7 j indisponible' : `tendance 7 j ${fr(p.trend7d, 1)} %/sem`}.`
-          : `${when(day)} : aucune mesure de vigilance récente, la donnée est expirée.`, 'Persona', REF.sim('Test PVT quotidien')),
-        step('modele', 'Moyenne sur 7 jours du temps de réaction, croisée avec la fatigue et le sommeil du check-in. Le manque de sommeil allonge les temps de réaction avant qu\'on le ressente.', 'H'),
-        step('norme', 'Pas de seuil NASA chiffré dans nos sources : repère d\'équipe [H], vigilance à surveiller au-delà de 300 ms de moyenne. Une donnée manquante ne donne jamais un statut vert.', 'H'),
-        step('decision', 'Test PVT de 3 minutes aujourd\'hui, avant les tâches qui demandent de la précision.', 'H'),
+          ? `${when(day)}: reaction time ${fr(p.value, 0)} ms, ${p.trend7d === undefined ? '7-day trend unavailable' : `7-day trend ${fr(p.trend7d, 1)}%/wk`}.`
+          : `${when(day)}: no recent alertness measurement; the data has expired.`, 'Persona', REF.sim('Daily PVT')),
+        step('modele', '7-day average reaction time, cross-checked with check-in fatigue and sleep. Sleep loss slows reaction times before it is felt.', 'H'),
+        step('norme', 'No numeric NASA threshold in our sources: team threshold [H], alertness to watch above a 300 ms average. Missing data never yields a green status.', 'H'),
+        step('decision', '3-minute PVT today, before tasks that require precision.', 'H'),
       ],
     };
   },
   'r-fatigue': day => ({
-    title: 'Récupération — pourquoi ?',
+    title: 'Recovery — why?',
     steps: [
-      step('donnee', `${when(day)} : fatigue élevée ou sommeil ressenti dégradé au check-in.`, 'Persona', { label: 'Check-in du matin' }),
-      step('modele', 'Fatigue et sommeil entrent dans le triage et dans le modèle d\'IA C (signal d\'humeur).', 'H'),
-      step('norme', 'Pas de seuil NASA chiffré : repère d\'équipe [H].', 'H'),
-      step('decision', 'Respiration lente 10 min et dîner tôt et léger pour protéger le sommeil.', 'H', REF.ochmo),
+      step('donnee', `${when(day)}: high fatigue or poor perceived sleep at check-in.`, 'Persona', { label: 'Morning check-in' }),
+      step('modele', 'Fatigue and sleep feed the triage and AI model C (mood signal).', 'H'),
+      step('norme', 'No numeric NASA threshold: team threshold [H].', 'H'),
+      step('decision', '10 min of slow breathing and an early, light dinner to protect sleep.', 'H', REF.ochmo),
     ],
   }),
   'r-entretien': day => ({
-    title: 'Protocole d\'entretien — pourquoi ?',
+    title: 'Maintenance protocol — why?',
     steps: [
-      step('donnee', `${when(day)} : aucune alerte, tous les indicateurs suivis sont dans leurs seuils.`, 'Persona', REF.sim('Corps du jour')),
-      step('modele', 'Les modèles projettent une perte lente même sans alerte : l\'entretien la freine.', 'H'),
-      step('norme', 'NASA : environ 600 min d\'exercice par semaine, cardio + musculation, pendant toute la mission.', 'NASA', REF.ochmo),
-      step('decision', 'Séances standard ARED + cardio continu et menu standard.', 'H'),
+      step('donnee', `${when(day)}: no alerts; all tracked indicators are within their thresholds.`, 'Persona', REF.sim("Today's body")),
+      step('modele', 'The models project slow loss even without an alert: maintenance slows it down.', 'H'),
+      step('norme', 'NASA: about 600 min of exercise per week, cardio + resistance training, throughout the mission.', 'NASA', REF.ochmo),
+      step('decision', 'Standard ARED sessions + continuous cardio and standard menu.', 'H'),
     ],
   }),
 };
@@ -246,9 +246,9 @@ function boneChain(day: number, title: string, decision: string, src?: Reasoning
   return {
     title,
     steps: [
-      step('donnee', `${when(day)} : densité de la hanche ESTIMÉE à ${fr(dens?.value, 2)} % du pré-vol (perte ${fr(loss?.value, 2)} %). Le scanner à ultrasons ne mesure pas l'os : estimation à partir du bilan au sol et des marqueurs urinaires.`, 'H', REF.sim('Corps du jour')),
-      step('modele', forecastText('hanche', 860) ?? `Modèle « bone » : perte de ${fr(boneLossPct('hanche', DAY_END, 0), 1)} % à J${DAY_END} au rythme actuel.`, 'H'),
-      step('norme', `NASA-STD-3001 [V1 4027] : densité osseuse ≥ ${BONE_RED.hanche} % du pré-vol à la hanche, ≥ ${BONE_RED.femur} % au col du fémur. La projection passe sous le seuil → AMBRE.`, 'NASA', nasa('V1 4027')),
+      step('donnee', `${when(day)}: hip bone density ESTIMATED at ${fr(dens?.value, 2)}% of preflight (loss ${fr(loss?.value, 2)}%). The ultrasound scanner does not measure bone: estimate based on the preflight ground assessment and urinary markers.`, 'H', REF.sim("Today's body")),
+      step('modele', forecastText('hanche', 860) ?? `"Bone" model: ${fr(boneLossPct('hanche', DAY_END, 0), 1)}% loss at D${DAY_END} at current pace.`, 'H'),
+      step('norme', `NASA-STD-3001 [V1 4027]: bone density ≥ ${BONE_RED.hanche}% of preflight at the hip, ≥ ${BONE_RED.femur}% at the femoral neck. The projection falls below the threshold → AMBER.`, 'NASA', nasa('V1 4027')),
       step('decision', decision, 'H', src),
     ],
   };
@@ -260,21 +260,21 @@ function muscleChain(day: number, organ: 'cuisse' | 'mollet', title: string, dec
   return {
     title,
     steps: [
-      step('donnee', `${when(day)} : volume ${organ === 'cuisse' ? 'de la cuisse' : 'du mollet'} ${fr(vol?.value, 1)} % de J0, tendance 7 j ${fr(vol?.trend7d, 2)} %/sem (bruit ± ${fr(vol?.noise, 2)}).`, 'Persona', REF.sim('Scan du jour')),
-      step('modele', f ?? 'Régression sur les 7 derniers jours : la pente sort de la bande de bruit. Une valeur isolée ne déclenche jamais d\'alerte.', 'H'),
-      step('norme', 'Pas de seuil NASA chiffré sur le volume musculaire : repères d\'équipe [H] sur la perte et la tendance 7 j.', 'H'),
+      step('donnee', `${when(day)}: ${organ === 'cuisse' ? 'thigh' : 'calf'} volume ${fr(vol?.value, 1)}% of D0, 7-day trend ${fr(vol?.trend7d, 2)}%/wk (noise ± ${fr(vol?.noise, 2)}).`, 'Persona', REF.sim('Daily scan')),
+      step('modele', f ?? 'Regression over the last 7 days: the slope leaves the noise band. A single value never triggers an alert.', 'H'),
+      step('norme', 'No numeric NASA threshold for muscle volume: team thresholds [H] on loss and 7-day trend.', 'H'),
       step('decision', decision, 'H', REF.ochmo),
     ],
   };
 }
 
 const UNKNOWN = (id: string): Reasoning => ({
-  id, title: 'Raisonnement introuvable',
+  id, title: 'Reasoning not found',
   steps: [
-    step('donnee', `Aucune donnée associée à l'identifiant « ${id} ».`, 'H'),
-    step('modele', 'Aucun modèle appliqué.', 'H'),
-    step('norme', 'Aucune norme associée.', 'H'),
-    step('decision', 'Données insuffisantes : aucune consigne ne peut être justifiée.', 'H'),
+    step('donnee', `No data linked to the identifier "${id}".`, 'H'),
+    step('modele', 'No model applied.', 'H'),
+    step('norme', 'No associated standard.', 'H'),
+    step('decision', 'Insufficient data: no instruction can be justified.', 'H'),
   ],
 });
 

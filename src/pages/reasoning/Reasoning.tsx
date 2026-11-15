@@ -10,10 +10,10 @@ import { ModelCards } from './ModelCards';
 import './reasoning.css';
 
 const KIND: Record<ReasoningStep['kind'], string> = {
-  donnee: 'Donnée',
-  modele: 'Modèle',
-  norme: 'Norme',
-  decision: 'Décision',
+  donnee: 'Data',
+  modele: 'Model',
+  norme: 'Standard',
+  decision: 'Decision',
 };
 
 /** « NASA-STD-3001 V1 4027 » → « V1 4027 ». */
@@ -25,9 +25,12 @@ export function standardIdOf(step: ReasoningStep): string | null {
 
 // Mots écrits en capitales dans les données : rendus en casse de phrase à l'affichage (les sigles ne sont pas touchés).
 const LOWER: Record<string, string> = {
-  'ESTIMÉE': 'estimée', 'SIMULÉ': 'simulé', 'SIMULÉE': 'simulée', 'SIMULÉES': 'simulées', 'RÉEL': 'réel',
-  AMBRE: 'ambre', ORANGE: 'orange', ROUGE: 'rouge', VERT: 'vert',
-  'PROPOSÉ': 'proposé', PROPOSE: 'propose', MAINTENANT: '« Maintenant »', ENSUITE: '« Ensuite »',
+  'ESTIMÉE': 'estimated', 'SIMULÉ': 'simulated', 'SIMULÉE': 'simulated', 'SIMULÉES': 'simulated', 'RÉEL': 'real',
+  AMBRE: 'amber', ORANGE: 'orange', ROUGE: 'red', VERT: 'green',
+  'PROPOSÉ': 'proposed', PROPOSE: 'proposes', MAINTENANT: '“Now”', ENSUITE: '“Next”',
+  // mêmes mots une fois les données traduites
+  ESTIMATED: 'estimated', SIMULATED: 'simulated', REAL: 'real', AMBER: 'amber', RED: 'red', GREEN: 'green',
+  PROPOSED: 'proposed', PROPOSES: 'proposes', NOW: '“Now”', NEXT: '“Next”',
 };
 const LOWER_RE = new RegExp(`(?<![\\p{L}\\d])(${Object.keys(LOWER).sort((a, b) => b.length - a.length).join('|')})(?![\\p{L}\\d])`, 'gu');
 
@@ -36,18 +39,18 @@ export function plain(text: string): string {
   return text
     .replace(/\s*\[H\]/g, '')
     .replace(/\[(V\d\s?\d{4})\]/g, '$1')
-    .replace(/\s*\((?:§\s?\d+|règles R\d+)\)/g, '')
-    .replace(/\s+→\s+/g, ' : ')
+    .replace(/\s*\((?:§\s?\d+|règles R\d+|rules? R\d+)\)/g, '')
+    .replace(/\s+→\s+/g, ': ')
     .replace(LOWER_RE, (w) => LOWER[w] ?? w);
 }
 
 /** Titre de la page : le sujet seul (« ARED charge lourde — pourquoi ? » → « ARED charge lourde »). */
-const pageTitle = (title: string): string => plain(title).replace(/\s*[—–-]\s*pourquoi\s*\?\s*$/i, '');
+const pageTitle = (title: string): string => plain(title).replace(/\s*[—–-]\s*(?:pourquoi|why)\s*\?\s*$/i, '');
 
 /** Libellé de source sans la mention de provenance (portée par l'étiquette, en mode Détails). */
 /** L'écran d'origine est nommé comme son onglet : « Corps du jour » → « Corps · J94 ». */
-const sourceLabel = (label: string): string => plain(label.replace(/\s*—\s*SIMULÉ\s*\(persona [^)]*\)\s*$/u, ''))
-  .replace(/^Corps du jour(?: J\d+)?/, `Corps · J${MISSION_TODAY}`);
+const sourceLabel = (label: string): string => plain(label.replace(/\s*—\s*(?:SIMULÉ|SIMULATED)\s*\(persona [^)]*\)\s*$/iu, ''))
+  .replace(/^(?:Corps du jour|Today's body|Body today)(?: [JD]\d+)?/, `Body · D${MISSION_TODAY}`);
 
 export function ReasoningPage() {
   const { id = '' } = useParams();
@@ -55,7 +58,7 @@ export function ReasoningPage() {
 
   const shell = (children: ReactNode) => (
     <div className="sz-page rs-page">
-      <Link className="sz-link rs-back" to="/warroom">‹ Plan du jour</Link>
+      <Link className="sz-link rs-back" to="/warroom">‹ Today's plan</Link>
       {children}
     </div>
   );
@@ -64,9 +67,9 @@ export function ReasoningPage() {
     return shell(
       <>
         <header className="sz-page__head">
-          <h1 className="sz-page__title">Explication introuvable</h1>
+          <h1 className="sz-page__title">Explanation not found</h1>
         </header>
-        <p className="rs-empty">Cette explication n'existe pas ou n'est plus disponible.</p>
+        <p className="rs-empty">This explanation does not exist or is no longer available.</p>
       </>,
     );
   }
@@ -84,8 +87,8 @@ export function ReasoningPage() {
       </ol>
       {hasH && (
         <p className="rs-note sz-detail">
-          Les étapes « Hypothèse » sont des repères de l'équipe. L'écart d'âge d'un organe est un équivalent en années de
-          vieillissement terrestre : la perte osseuse ou musculaire en vol est en partie réversible au retour.
+          “Hypothesis” steps are team benchmarks. An organ's age gap is expressed as equivalent years of aging on
+          Earth: bone and muscle loss in flight is partly reversible after return.
         </p>
       )}
       <ModelCards />
@@ -108,12 +111,12 @@ function Step({ step, index }: { step: ReasoningStep; index: number }) {
         {std && (
           <blockquote className="rs-quote">
             <div className="rs-quote__ref">
-              NASA-STD-3001 vol. 1 rév. C, {std.id} · {std.title}
-              {!std.verified && ' · non vérifié'}
+              NASA-STD-3001 Vol. 1 Rev. C, {std.id} · {std.title}
+              {!std.verified && ' · not verified'}
             </div>
             {std.quote
-              ? <p className="rs-quote__text">« {std.quote} »</p>
-              : <p className="rs-quote__text rs-quote__text--empty">Citation indisponible hors ligne</p>}
+              ? <p className="rs-quote__text">“{std.quote}”</p>
+              : <p className="rs-quote__text rs-quote__text--empty">Quote unavailable offline</p>}
             {std.url && <a href={std.url} target="_blank" rel="noreferrer" className="sz-link rs-quote__link">Source</a>}
           </blockquote>
         )}
@@ -123,7 +126,7 @@ function Step({ step, index }: { step: ReasoningStep; index: number }) {
           <TagBadge tag={step.tag} id={step.tag === 'NASA' && stdId ? stdId : undefined} />
           {src && (
             <span className="rs-step__src">
-              Source :{' '}
+              Source:{' '}
               {src.url
                 ? <a href={src.url} target="_blank" rel="noreferrer" className="sz-link">{sourceLabel(src.label)}</a>
                 : sourceLabel(src.label)}

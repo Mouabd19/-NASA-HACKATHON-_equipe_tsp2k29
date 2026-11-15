@@ -19,10 +19,10 @@ applyTokens();
 
 // Modèles Z-Anatomy (Steve) chargés AVANT le premier rendu : la scène et la fenêtre organe
 // lisent la même liste de pièces. Échec ou plus de 15 s → corps procédural de secours (aucun blocage de la démo).
-const timeout = new Promise<never>((_, reject) => setTimeout(() => reject(new Error('délai dépassé')), 15000));
+const timeout = new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timed out')), 15000));
 Promise.race([loadZAnatomy(), timeout])
   .then(({ parts, manifest }) => setLoadedAnatomy(parts, manifest))
-  .catch((e) => console.warn('[SOL ZÉRO] Modèles Z-Anatomy non chargés, corps procédural utilisé :', e))
+  .catch((e) => console.warn('[SOL ZÉRO] Z-Anatomy models not loaded, using procedural body:', e))
   .finally(() => {
     createRoot(document.getElementById('root')!).render(
       <StrictMode>
