@@ -1,50 +1,50 @@
 {
  "organId": "dose",
  "generatedBy": "IA-sol",
- "model": "Claude (Anthropic), rédigé hors ligne",
+ "model": "Claude (Anthropic), written offline",
  "generatedAt": "2026-11-14",
  "reviewed": false,
- "note": "Synthèse IA rédigée au sol à partir des seuls chiffres du simulateur (src/sim, données de Mouad). À valider par le CMO. N'est jamais utilisée pour décider d'une alerte.",
+ "note": "AI summary written on the ground from the simulator figures only (src/sim, Mouad's data). To be validated by the CMO. Never used to decide on an alert.",
  "days": [
   {
    "day": 0,
    "adherence": 0,
-   "text": "Départ (J0) : dose cumulée nulle. Débit prévu en croisière : 1,84 mSv par jour (mesures RAD de Curiosity). La limite de carrière NASA est de 600 mSv [V1 4030]."
+   "text": "Departure (D0): zero cumulative dose. Expected cruise dose rate: 1.84 mSv per day (Curiosity RAD measurements). The NASA career limit is 600 mSv [V1 4030]."
   },
   {
    "day": 30,
    "adherence": 0,
-   "text": "Dose cumulée de 55 mSv, exactement au niveau prévu. Aucun événement solaire détecté. Statut nominal."
+   "text": "Cumulative dose of 55 mSv, exactly as planned. No solar particle event detected. Status: nominal."
   },
   {
    "day": 60,
    "adherence": 0,
-   "text": "Dose cumulée de 110 mSv, exactement au niveau prévu. Aucun événement solaire détecté. Statut nominal."
+   "text": "Cumulative dose of 110 mSv, exactly as planned. No solar particle event detected. Status: nominal."
   },
   {
    "day": 94,
    "adherence": 0,
-   "text": "Dose cumulée de 173 mSv, exactement au niveau prévu : statut nominal. La limite de carrière NASA est de 600 mSv [V1 4030]. L'alerte se déclenche sur tout excès par rapport au prévu."
+   "text": "Cumulative dose of 173 mSv, exactly as planned: status: nominal. The NASA career limit is 600 mSv [V1 4030]. An alert triggers on any excess over the plan."
   },
   {
    "day": 210,
    "adherence": 0,
-   "text": "À l'arrivée sur Mars (Sol 0, J210) : dose cumulée prévue de 386 mSv. En surface, le débit tombe à 0,64 mSv par jour. Statut nominal."
+   "text": "On arrival at Mars (Sol 0, D210): expected cumulative dose of 386 mSv. On the surface, the dose rate drops to 0.64 mSv per day. Status: nominal."
   },
   {
    "day": 210,
    "adherence": 1,
-   "text": "À l'arrivée sur Mars (Sol 0, J210) : dose cumulée prévue de 386 mSv. En surface, le débit tombe à 0,64 mSv par jour. L'exercice ne change pas la dose."
+   "text": "On arrival at Mars (Sol 0, D210): expected cumulative dose of 386 mSv. On the surface, the dose rate drops to 0.64 mSv per day. Exercise does not change the dose."
   },
   {
    "day": 860,
    "adherence": 0,
-   "text": "Au retour (J860) au rythme actuel : dose cumulée prévue de 802 mSv. C'est au-dessus de la limite de carrière NASA de 600 mSv [V1 4030] : statut hors seuil. C'est une contrainte connue de toute mission martienne, pas un défaut du suivi."
+   "text": "At return (D860) at current pace: expected cumulative dose of 802 mSv. This is above the NASA career limit of 600 mSv [V1 4030]: status out of limits. It is a known constraint of any Mars mission, not a monitoring failure."
   },
   {
    "day": 860,
    "adherence": 1,
-   "text": "Au retour (J860) avec le plan suivi : dose cumulée prévue de 802 mSv, au-dessus de la limite de 600 mSv [V1 4030]. L'exercice n'y change rien. Seuls le blindage et la trajectoire réduisent la dose."
+   "text": "At return (D860) with the plan followed: expected cumulative dose of 802 mSv, above the 600 mSv limit [V1 4030]. Exercise changes nothing here. Only shielding and trajectory reduce the dose."
   }
  ]
 }

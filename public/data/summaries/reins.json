@@ -1,50 +1,50 @@
 {
  "organId": "reins",
  "generatedBy": "IA-sol",
- "model": "Claude (Anthropic), rédigé hors ligne",
+ "model": "Claude (Anthropic), written offline",
  "generatedAt": "2026-11-14",
  "reviewed": false,
- "note": "Synthèse IA rédigée au sol à partir des seuls chiffres du simulateur (src/sim, données de Mouad). À valider par le CMO. N'est jamais utilisée pour décider d'une alerte.",
+ "note": "AI summary written on the ground from the simulator figures only (src/sim, Mouad's data). To be validated by the CMO. Never used to decide on an alert.",
  "days": [
   {
    "day": 0,
    "adherence": 0,
-   "text": "Bilan de référence (J0) : aucun calcul à l'échographie. Calcium urinaire de 164 mg/24 h (référence 100–300). Statut nominal."
+   "text": "Baseline assessment (D0): no stones on ultrasound. Urinary calcium of 164 mg/24 h (reference 100–300). Status: nominal."
   },
   {
    "day": 30,
    "adherence": 0,
-   "text": "Calcium urinaire à 247 mg/24 h, en nette hausse depuis J0 : le calcium libéré par les os passe dans l'urine. Aucun calcul détecté. Hydratation renforcée conseillée."
+   "text": "Urinary calcium at 247 mg/24 h, clearly up since D0: calcium released from bone passes into the urine. No stones detected. Increased hydration recommended."
   },
   {
    "day": 60,
    "adherence": 0,
-   "text": "Calcium urinaire à 255 mg/24 h : la hausse se stabilise. Aucun calcul à l'échographie. Statut nominal."
+   "text": "Urinary calcium at 255 mg/24 h: the rise is leveling off. No stones on ultrasound. Status: nominal."
   },
   {
    "day": 94,
    "adherence": 0,
-   "text": "Calcium urinaire à 269 mg/24 h, aucun calcul détecté : statut nominal. Le risque de calcul reste à surveiller tant que l'os perd du calcium. Conduite proposée : au moins 2,5 L d'eau par jour et sel réduit."
+   "text": "Urinary calcium at 269 mg/24 h, no stones detected: status: nominal. Stone risk remains to monitor as long as bone is losing calcium. Suggested action: at least 2.5 L of water per day and reduced salt."
   },
   {
    "day": 210,
    "adherence": 0,
-   "text": "Projection à Sol 0 (J210) : calcium urinaire stable autour de 270 mg/24 h, sous la limite de 300. Statut nominal. Le nombre de calculs n'est pas projeté par le modèle."
+   "text": "Projection at Sol 0 (D210): urinary calcium stable around 270 mg/24 h, below the 300 limit. Status: nominal. The number of stones is not projected by the model."
   },
   {
    "day": 210,
    "adherence": 1,
-   "text": "Projection à Sol 0 (J210) avec le plan suivi : calcium urinaire stable autour de 270 mg/24 h, sous la limite de 300. Statut nominal. Le nombre de calculs n'est pas projeté par le modèle."
+   "text": "Projection at Sol 0 (D210) with the plan followed: urinary calcium stable around 270 mg/24 h, below the 300 limit. Status: nominal. The number of stones is not projected by the model."
   },
   {
    "day": 860,
    "adherence": 0,
-   "text": "Projection au retour (J860) au rythme actuel : calcium urinaire stable autour de 270 mg/24 h. Statut nominal. Le nombre de calculs n'est pas projeté par le modèle."
+   "text": "Projection at return (D860) at current pace: urinary calcium stable around 270 mg/24 h. Status: nominal. The number of stones is not projected by the model."
   },
   {
    "day": 860,
    "adherence": 1,
-   "text": "Projection au retour (J860) avec le plan suivi : calcium urinaire stable autour de 270 mg/24 h. Statut nominal. Le nombre de calculs n'est pas projeté par le modèle."
+   "text": "Projection at return (D860) with the plan followed: urinary calcium stable around 270 mg/24 h. Status: nominal. The number of stones is not projected by the model."
   }
  ]
 }

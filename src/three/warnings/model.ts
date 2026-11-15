@@ -35,10 +35,21 @@ const LEVEL_LABEL: Record<Level, string> = levelLabel;
 /** Étiquettes par colonne : toutes à droite tant que la colonne tient, la gauche ne sert qu'au débordement. */
 const COLUMN_MAX = 9;
 
+// Libellés affichés des codes de règle internes (les codes eux-mêmes restent des données).
+const RULE_TEXT: Record<string, string> = {
+  'TENDANCE-7J': '7-day trend',
+  'ROUGE-2-MESURES': 'Red on 2 readings',
+  'CALCIUM-U': 'Urinary calcium',
+  'RAD-DOSE': 'Radiation dose',
+  'SANG-REF': 'Blood reference range',
+  'SANS-ONSD': 'SANS (ONSD)',
+};
+
 function ruleLabel(rule: string): string {
   if (/^V\d /.test(rule)) return `NASA ${rule}`;
+  if (RULE_TEXT[rule]) return RULE_TEXT[rule];
   // « TENDANCE-7J » → « Tendance 7 j » (espace insécable, comme partout ailleurs dans l'interface)
-  return sentenceCase(rule.replace(/-/g, ' ')).replace(/(\d)\s*j\b/gi, '$1\u00a0j');
+  return sentenceCase(rule.replace(/-/g, ' ')).replace(/(\d)\s*[jd]\b/gi, '$1\u00a0d');
 }
 
 export function warnItems(day: number, layers: Record<LayerId, boolean>, adherence = 0): WarnItem[] {

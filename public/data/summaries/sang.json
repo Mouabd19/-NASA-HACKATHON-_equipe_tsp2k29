@@ -1,50 +1,50 @@
 {
  "organId": "sang",
  "generatedBy": "IA-sol",
- "model": "Claude (Anthropic), rédigé hors ligne",
+ "model": "Claude (Anthropic), written offline",
  "generatedAt": "2026-11-14",
  "reviewed": false,
- "note": "Synthèse IA rédigée au sol à partir des seuls chiffres du simulateur (src/sim, données de Mouad). À valider par le CMO. N'est jamais utilisée pour décider d'une alerte.",
+ "note": "AI summary written on the ground from the simulator figures only (src/sim, Mouad's data). To be validated by the CMO. Never used to decide on an alert.",
  "days": [
   {
    "day": 0,
    "adherence": 0,
-   "text": "Bilan de référence (J0) : FC de repos 57 bpm, SpO₂ 98,5 %, tension 116/76 mmHg. Hémoglobine à 15,1 g/dL. Toutes les valeurs sont dans la norme."
+   "text": "Baseline assessment (D0): resting HR 57 bpm, SpO₂ 98.5%, BP 116/76 mmHg. Hemoglobin at 15.1 g/dL. All values are within normal limits."
   },
   {
    "day": 30,
    "adherence": 0,
-   "text": "FC de repos 57 bpm, SpO₂ 99 %, tension 122/80 mmHg. Le volume des jambes est à 89,3 % de J0 : les fluides montent vers le haut du corps, comme attendu en apesanteur. Statut nominal."
+   "text": "Resting HR 57 bpm, SpO₂ 99%, BP 122/80 mmHg. Leg volume is 89.3% of D0: fluids shift toward the upper body, as expected in microgravity. Status: nominal."
   },
   {
    "day": 60,
    "adherence": 0,
-   "text": "FC de repos 60 bpm, SpO₂ 98,4 %, tension 122/77 mmHg. L'hémoglobine baisse lentement (14,7 g/dL), comme attendu (anémie spatiale, Trudel 2022). Statut nominal."
+   "text": "Resting HR 60 bpm, SpO₂ 98.4%, BP 122/77 mmHg. Hemoglobin is slowly declining (14.7 g/dL), as expected (space anemia, Trudel 2022). Status: nominal."
   },
   {
    "day": 94,
    "adherence": 0,
-   "text": "FC de repos 62 bpm, SpO₂ 98,7 %, tension 124/77 mmHg, hémoglobine 14,1 g/dL. La circulation reste dans les normes : statut nominal. Seul le VO₂max, suivi avec le cœur, est à surveiller."
+   "text": "Resting HR 62 bpm, SpO₂ 98.7%, BP 124/77 mmHg, hemoglobin 14.1 g/dL. Circulation remains within normal limits: status: nominal. Only VO₂max, tracked with the heart, needs monitoring."
   },
   {
    "day": 210,
    "adherence": 0,
-   "text": "Le modèle ne projette pas la circulation au-delà d'aujourd'hui. Dernières valeurs mesurées (J94) : FC 62 bpm, SpO₂ 98,7 %, hémoglobine 14,1 g/dL. Pour l'endurance à Sol 0, voir le cœur (VO₂max)."
+   "text": "The model does not project circulation beyond today. Last measured values (D94): HR 62 bpm, SpO₂ 98.7%, hemoglobin 14.1 g/dL. For endurance at Sol 0, see the heart (VO₂max)."
   },
   {
    "day": 210,
    "adherence": 1,
-   "text": "Le modèle ne projette pas la circulation au-delà d'aujourd'hui. Dernières valeurs mesurées (J94) : FC 62 bpm, SpO₂ 98,7 %, hémoglobine 14,1 g/dL. Pour l'endurance à Sol 0, voir le cœur (VO₂max)."
+   "text": "The model does not project circulation beyond today. Last measured values (D94): HR 62 bpm, SpO₂ 98.7%, hemoglobin 14.1 g/dL. For endurance at Sol 0, see the heart (VO₂max)."
   },
   {
    "day": 860,
    "adherence": 0,
-   "text": "Le modèle ne projette pas la circulation jusqu'au retour. Dernières valeurs mesurées (J94) : FC 62 bpm, SpO₂ 98,7 %, hémoglobine 14,1 g/dL. Pour l'endurance au retour, voir le cœur (VO₂max)."
+   "text": "The model does not project circulation to return. Last measured values (D94): HR 62 bpm, SpO₂ 98.7%, hemoglobin 14.1 g/dL. For endurance at return, see the heart (VO₂max)."
   },
   {
    "day": 860,
    "adherence": 1,
-   "text": "Le modèle ne projette pas la circulation jusqu'au retour. Dernières valeurs mesurées (J94) : FC 62 bpm, SpO₂ 98,7 %, hémoglobine 14,1 g/dL. Pour l'endurance au retour, voir le cœur (VO₂max)."
+   "text": "The model does not project circulation to return. Last measured values (D94): HR 62 bpm, SpO₂ 98.7%, hemoglobin 14.1 g/dL. For endurance at return, see the heart (VO₂max)."
   }
  ]
 }

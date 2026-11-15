@@ -22,12 +22,12 @@ function digitsFor(v: number): number {
 
 /** « Poumons — non modélisé » → « Poumons » (la mention est rendue à part). */
 function shortName(name: string): string {
-  return sentenceCase(name.replace(/\s*[—–(-]\s*non modélisé\)?\s*$/i, '').trim());
+  return sentenceCase(name.replace(/\s*[—–(-]\s*(?:non modélisé|not modeled)\)?\s*$/i, '').trim());
 }
 
 /** Nom en milieu d'énumération : « Foie » → « foie » (un sigle reste en capitales). */
 function lowerFirst(name: string): string {
-  return /^\p{Lu}\p{Ll}/u.test(name) ? name.charAt(0).toLocaleLowerCase('fr-FR') + name.slice(1) : name;
+  return /^\p{Lu}\p{Ll}/u.test(name) ? name.charAt(0).toLocaleLowerCase('en-US') + name.slice(1) : name;
 }
 
 /** Métrique affichée sur la ligne : celle qui PORTE le statut de l'organe, sinon la première (jamais un « 0,00 » sans unité). */
@@ -45,21 +45,21 @@ function headline(o: OrganState): Metric | undefined {
  * `more` n'apparaît qu'en mode Détails.
  */
 const LAYER_NOTE: Partial<Record<LayerId, { short?: string; more?: string }>> = {
-  squelette: { short: 'Densité estimée, % du pré-vol', more: 'Modèle, bilan au sol et marqueurs urinaires. Aucun scanner à bord.' },
-  muscles: { short: 'Volume, % du pré-vol' },
-  nerveux: { more: 'Données partielles : nerf optique et vigilance (PVT). Sommeil et humeur : montre et check-in.' },
-  exposition: { more: 'Données partielles : dose globale seulement. La répartition sur le corps est illustrative.' },
+  squelette: { short: 'Est. density, % of preflight', more: 'Model, preflight ground assessment and urine markers. No scanner on board.' },
+  muscles: { short: 'Volume, % of preflight' },
+  nerveux: { more: 'Partial data: optic nerve and alertness (PVT). Sleep and mood: watch and check-in.' },
+  exposition: { more: 'Partial data: whole-body dose only. The distribution over the body is illustrative.' },
 };
 
 /** Libellé court des cases à cocher. */
 const SHORT: Record<LayerId, string> = {
-  squelette: 'Squelette', muscles: 'Muscles', organes: 'Organes', cardio: 'Cardio', nerveux: 'Nerveux', exposition: 'Exposition',
+  squelette: 'Skeleton', muscles: 'Muscles', organes: 'Organs', cardio: 'Cardio', nerveux: 'Nervous', exposition: 'Radiation',
 };
 
-const SOLO_HINT = 'Alt+clic ou double-clic : isoler';
+const SOLO_HINT = 'Alt+click or double-click: isolate';
 
 function alertsText(n: number): string {
-  return n === 0 ? 'aucune alerte' : `${n} alerte${n > 1 ? 's' : ''}`;
+  return n === 0 ? 'no alerts' : `${n} alert${n > 1 ? 's' : ''}`;
 }
 
 export function LayersPanel(): JSX.Element {
@@ -112,9 +112,9 @@ export function LayersPanel(): JSX.Element {
   };
 
   return (
-    <Panel title="Calques" provenance="SIMULÉ" className={projected ? 'lyr lyr--projected' : 'lyr'}>
+    <Panel title="Layers" provenance="SIMULÉ" className={projected ? 'lyr lyr--projected' : 'lyr'}>
       {/* Les six cases restent toujours visibles ; le détail des calques affichés défile dessous. */}
-      <div className="lyr__grid" role="group" aria-label="Calques">
+      <div className="lyr__grid" role="group" aria-label="Layers">
         {LAYER_ORDER.map((l) => {
           const meta = LAYER_META[l];
           const n = alertCount.get(l) ?? 0;
@@ -129,7 +129,7 @@ export function LayersPanel(): JSX.Element {
               aria-pressed={layers[l]}
               onClick={onLayerClick(l)}
               onDoubleClick={() => soloLayer(l)}
-              title={`${sentenceCase(meta.label)}${meta.mvp ? '' : ' (bêta)'} : ${alertsText(n)}. ${SOLO_HINT}.`}
+              title={`${sentenceCase(meta.label)}${meta.mvp ? '' : ' (beta)'}: ${alertsText(n)}. ${SOLO_HINT}.`}
             >
               <span className="lyr__box" aria-hidden="true">
                 <svg viewBox="0 0 14 14"><path d="M3.5 7.2l2.4 2.4 4.6-5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -142,7 +142,7 @@ export function LayersPanel(): JSX.Element {
       </div>
 
       <ul className="lyr__list sz-scroll" ref={listRef}>
-        {activeLayers.length === 0 ? <li className="lyr__empty">Aucun calque affiché</li> : null}
+        {activeLayers.length === 0 ? <li className="lyr__empty">No layer shown</li> : null}
         {activeLayers.map((l) => {
           const meta = LAYER_META[l];
           const organs = byLayer.get(l) ?? [];
@@ -161,10 +161,10 @@ export function LayersPanel(): JSX.Element {
                 aria-pressed="true"
                 onClick={onLayerClick(l)}
                 onDoubleClick={() => soloLayer(l)}
-                title={`Masquer le calque. ${SOLO_HINT}.`}
+                title={`Hide layer. ${SOLO_HINT}.`}
               >
                 <span className="lyr__label">{sentenceCase(meta.label)}</span>
-                {!meta.mvp ? <span className="lyr__beta sz-detail" title="Calque en cours de développement : données partielles">Bêta</span> : null}
+                {!meta.mvp ? <span className="lyr__beta sz-detail" title="Layer under development: partial data">Beta</span> : null}
                 <span className="lyr__fill" />
                 {n > 0 ? <span className="lyr__alerts sz-detail">{alertsText(n)}</span> : null}
                 {groupTag ? <span className="lyr__gtag sz-detail"><TagBadge tag={groupTag} /></span> : null}
@@ -200,7 +200,7 @@ export function LayersPanel(): JSX.Element {
                           onClick={() => setSelected(o.id)}
                           onDoubleClick={() => openOrganWindow(o.id)}
                           onKeyDown={onOrganKey(o.id)}
-                          title={m ? `${m.label}. Double-clic : ouvrir la fiche.` : 'Non modélisé : aucune donnée'}
+                          title={m ? `${m.label}. Double-click: open details.` : 'Not modeled: no data'}
                         >
                           <StatusDot color={o.status} />
                           <span className="lyr__oname">{shortName(o.name)}</span>
@@ -212,7 +212,7 @@ export function LayersPanel(): JSX.Element {
                               {groupTag ? <span /> : <TagBadge tag={m.tag} />}
                             </>
                           ) : (
-                            <span className="lyr__none">Non modélisé</span>
+                            <span className="lyr__none">Not modeled</span>
                           )}
                         </div>
                       </li>
@@ -221,16 +221,16 @@ export function LayersPanel(): JSX.Element {
                   {/* organes sans aucun chiffre : une seule ligne grise (rien n'est caché) */}
                   {withoutData.length > 0 ? (
                     <li>
-                      <div className="lyr__organ lyr__organ--plain lyr__organ--static" data-row data-below={sentenceCase(meta.label)} data-status="grey" title="Aucune mesure ni modèle : statut inconnu">
+                      <div className="lyr__organ lyr__organ--plain lyr__organ--static" data-row data-below={sentenceCase(meta.label)} data-status="grey" title="No measurement or model: status unknown">
                         <StatusDot color="grey" />
                         <span className="lyr__oname">{withoutData.map((o, i) => (i === 0 ? shortName(o.name) : lowerFirst(shortName(o.name)))).join(', ')}</span>
-                        <span className="lyr__none">Non modélisé</span>
+                        <span className="lyr__none">Not modeled</span>
                       </div>
                     </li>
                   ) : null}
                 </ul>
               ) : (
-                <div className="lyr__empty" data-row data-below={sentenceCase(meta.label)}>Aucune donnée ce jour</div>
+                <div className="lyr__empty" data-row data-below={sentenceCase(meta.label)}>No data for this day</div>
               )}
             </li>
           );
@@ -242,7 +242,7 @@ export function LayersPanel(): JSX.Element {
           className="lyr__below"
           onClick={() => listRef.current?.scrollBy({ top: listRef.current.clientHeight * 0.8, behavior: 'smooth' })}
         >
-          Plus bas : {below.map((b, i) => (i === 0 ? b : b.toLowerCase())).join(', ')}
+          More below: {below.map((b, i) => (i === 0 ? b : b.toLowerCase())).join(', ')}
         </button>
       ) : null}
     </Panel>

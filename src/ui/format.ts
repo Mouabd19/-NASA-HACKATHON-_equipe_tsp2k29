@@ -1,4 +1,4 @@
-// Formats d'affichage partagés (français : virgule décimale).
+// Formats d'affichage partagés (anglais : point décimal, virgule des milliers).
 import { MISSION_START_DATE } from '../mocks/mission';
 
 const DAY_MS = 86_400_000;
@@ -8,14 +8,14 @@ function formatter(min: number, max: number): Intl.NumberFormat {
   const key = `${min}:${max}`;
   let f = cache.get(key);
   if (!f) {
-    f = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: min, maximumFractionDigits: max, useGrouping: true });
+    f = new Intl.NumberFormat('en-US', { minimumFractionDigits: min, maximumFractionDigits: max, useGrouping: true });
     cache.set(key, f);
   }
   return f;
 }
 
 /**
- * Nombre au format français. `digits` donné → décimales fixes (fmt(8.7, 2) = '8,70').
+ * Nombre au format anglais (en-US). `digits` donné → décimales fixes (fmt(8.7, 2) = '8.70').
  * Sans `digits` → au plus 2 décimales, sans zéros inutiles. Valeur non finie → '—'.
  */
 export function fmt(n: number, digits?: number): string {
@@ -23,12 +23,12 @@ export function fmt(n: number, digits?: number): string {
   const d = digits === undefined ? undefined : Math.max(0, Math.min(20, Math.trunc(digits)));
   const out = d === undefined ? formatter(0, 2).format(n) : formatter(d, d).format(n);
   // « -0 » → « 0 » ; signe moins typographique d'Intl ramené au tiret simple pour la police mono.
-  return out.replace(/−/g, '-').replace(/^-(0(?:,0+)?)$/, '$1');
+  return out.replace(/−/g, '-').replace(/^-(0(?:\.0+)?)$/, '$1');
 }
 
-/** Jour de mission : 94 → 'J94'. */
+/** Jour de mission : 94 → 'D94' (Day 94). */
 export function fmtDay(day: number): string {
-  return `J${Math.round(day)}`;
+  return `D${Math.round(day)}`;
 }
 
 /** Date ISO (AAAA-MM-JJ) d'un jour de mission, à partir de MISSION_START_DATE (J0), en UTC. */
@@ -38,7 +38,7 @@ export function dayToDate(day: number): string {
 }
 
 // Sigles conservés en capitales par sentenceCase (le reste passe en minuscules).
-const KEEP_UPPER = new Set(['NASA', 'CRP', 'IDR', 'VGM', 'ARED', 'SANS', 'ONSD', 'US', 'IA', 'UV', 'FC', 'VFC', 'PTH', 'ECG', 'IRM', 'J0']);
+const KEEP_UPPER = new Set(['NASA', 'CRP', 'IDR', 'VGM', 'ARED', 'SANS', 'ONSD', 'US', 'IA', 'UV', 'FC', 'VFC', 'PTH', 'ECG', 'IRM', 'J0', 'D0', 'AI', 'HR', 'HRV', 'MRI', 'CMO', 'PVT', 'CEVIS', 'ISS', 'BMD', 'CO₂']);
 const SPECIAL: Record<string, string> = { 'VO₂MAX': 'VO₂max', 'SPO₂': 'SpO₂', 'O₂': 'O₂' };
 
 /**
@@ -50,8 +50,8 @@ export function sentenceCase(s: string): string {
   let first = true;
   return s.split(/(\s+|—|·|\(|\)|\/)/).map((w) => {
     if (!/\p{L}/u.test(w)) return w;
-    let out = SPECIAL[w] ?? (KEEP_UPPER.has(w) || /^J\d+$/.test(w) ? w : w.toLocaleLowerCase('fr-FR'));
-    if (first) { first = false; out = out.charAt(0).toLocaleUpperCase('fr-FR') + out.slice(1); }
+    let out = SPECIAL[w] ?? (KEEP_UPPER.has(w) || /^[JD]\d+$/.test(w) ? w : w.toLocaleLowerCase('en-US'));
+    if (first) { first = false; out = out.charAt(0).toLocaleUpperCase('en-US') + out.slice(1); }
     return out;
   }).join('');
 }

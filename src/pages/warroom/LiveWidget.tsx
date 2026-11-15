@@ -17,7 +17,7 @@ import { Btn, Dot, Segmented } from './ui';
 type LiveType = 'HeartRate' | 'OxygenSaturation';
 const TYPES = ['HeartRate', 'OxygenSaturation'] as const;
 // Mêmes libellés et mêmes arrondis que la page Corps.
-const LABEL: Record<LiveType, string> = { HeartRate: 'FC', OxygenSaturation: 'SpO₂' };
+const LABEL: Record<LiveType, string> = { HeartRate: 'HR', OxygenSaturation: 'SpO₂' };
 const UNIT: Record<LiveType, string> = { HeartRate: 'bpm', OxygenSaturation: '%' };
 const DIGITS: Record<LiveType, number> = { HeartRate: 0, OxygenSaturation: 0 };
 const RANGE: Record<LiveType, [number, number]> = { HeartRate: [20, 250], OxygenSaturation: [50, 100] };
@@ -30,12 +30,12 @@ const TRACE_MAX = 60;             // points de la séance en cours (≈ 2 min à
 /** « il y a 40 s », « il y a 4 min », « il y a 3 h », « il y a 2 j ». */
 function ago(ms: number): string {
   const s = Math.max(0, Math.floor(ms / 1000));
-  if (s < 60) return `il y a ${s} s`;
+  if (s < 60) return `${s} s ago`;
   const min = Math.floor(s / 60);
-  if (min < 60) return `il y a ${min} min`;
+  if (min < 60) return `${min} min ago`;
   const h = Math.floor(min / 60);
-  if (h < 48) return `il y a ${h} h`;
-  return `il y a ${Math.floor(h / 24)} j`;
+  if (h < 48) return `${h} h ago`;
+  return `${Math.floor(h / 24)} d ago`;
 }
 
 const keyOf = (m: Measurement | null | undefined) => (m ? `${m.value}@${m.date}` : '');
@@ -105,7 +105,7 @@ export function LiveWidget({ dataVersion, onImported }: { dataVersion: number; o
   const anyReal = shown.some((x) => x.m && !x.simulated);
 
   return (
-    <Panel title="Dernière mesure" provenance={anyReal ? 'RÉEL' : 'SIMULÉ'}>
+    <Panel title="Latest reading" provenance={anyReal ? 'RÉEL' : 'SIMULÉ'}>
       {shown.map((x) => (
         <LiveRow key={x.type} type={x.type} m={x.m} simulated={x.simulated} flag={anyReal && x.simulated} dataVersion={dataVersion} now={now}
           trace={x.type === 'HeartRate' ? trace : undefined} />
@@ -129,7 +129,7 @@ function LiveRow({ type, m, simulated, flag, dataVersion, now, trace }: {
     return (
       <div className="wr-metric">
         <span className="sz-label">{LABEL[type]}</span>
-        <span className="wr-note wr-metric__side">{type === 'HeartRate' ? 'Aucune mesure · lance le pouls sur la montre' : 'Aucune mesure'}</span>
+        <span className="wr-note wr-metric__side">{type === 'HeartRate' ? 'No reading · start heart rate on the watch' : 'No reading'}</span>
       </div>
     );
   }
@@ -140,19 +140,19 @@ function LiveRow({ type, m, simulated, flag, dataVersion, now, trace }: {
   const isLive = watch && age < LIVE_MS;
   const z = !simulated && b && b.n > 0 ? zScore(m.value, b) : null;
   const zLevel = z == null ? undefined : Math.abs(z) >= 3 ? 'red' : Math.abs(z) >= 2 ? 'amber' : undefined;
-  const when = fresh ? new Date(m.date).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : ago(age);
-  const origin = watch ? (isLive ? 'En direct' : `Montre · ${ago(age)}`)
-    : m.source === 'manual' ? `Saisie manuelle · ${when}`
+  const when = fresh ? new Date(m.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }) : ago(age);
+  const origin = watch ? (isLive ? 'Live' : `Watch · ${ago(age)}`)
+    : m.source === 'manual' ? `Manual entry · ${when}`
     // série simulée : pas d'heure (elle serait calculée contre l'horloge réelle, donc fausse) et la mention reste visible
-    : simulated ? 'Série simulée'
+    : simulated ? 'Simulated series'
     : `Export · ${when}`;
 
   const unit = UNIT[type];
   const d = DIGITS[type];
   // L'absence de référence personnelle n'est expliquée qu'en mode Détails.
   const ref = b && b.n > 0 && !simulated
-    ? { real: true, text: `Habituel 30 j : ${fmt(b.mean, d)} ± ${fmt(b.sd, d)} ${unit}` }
-    : { real: false, text: simulated ? 'Pas de référence personnelle' : 'Pas assez de mesures pour comparer' };
+    ? { real: true, text: `30-d usual: ${fmt(b.mean, d)} ± ${fmt(b.sd, d)} ${unit}` }
+    : { real: false, text: simulated ? 'No personal baseline' : 'Not enough readings to compare' };
 
   return (
     <div className="wr-metric">
@@ -177,11 +177,11 @@ function LiveRow({ type, m, simulated, flag, dataVersion, now, trace }: {
 // Instantané santé envoyé par l'app montre (« Envoyer mes données ») : dernière valeur de chaque mesure dans Santé.
 // N'apparaît que si de vraies mesures sont arrivées ; une mesure absente n'est pas affichée (rien d'inventé).
 const SNAPSHOT: { type: Measurement['type']; label: string; digits: number }[] = [
-  { type: 'RestingHeartRate', label: 'FC repos', digits: 0 },
-  { type: 'HeartRateVariabilitySDNN', label: 'VFC', digits: 0 },
+  { type: 'RestingHeartRate', label: 'Resting HR', digits: 0 },
+  { type: 'HeartRateVariabilitySDNN', label: 'HRV', digits: 0 },
   { type: 'VO2Max', label: 'VO₂max', digits: 1 },
-  { type: 'SleepAnalysis', label: 'Sommeil', digits: 1 },
-  { type: 'AppleSleepingWristTemperature', label: 'Temp. poignet', digits: 2 },
+  { type: 'SleepAnalysis', label: 'Sleep', digits: 1 },
+  { type: 'AppleSleepingWristTemperature', label: 'Wrist temp.', digits: 2 },
 ];
 const SNAPSHOT_POLL_MS = 5000;
 
@@ -207,8 +207,8 @@ function WatchSnapshot({ now }: { now: number }) {
   if (ms.length === 0) return null;
   return (
     <div className="wr-metric">
-      <span className="sz-label">Envoyé par la montre</span>
-      <span className="wr-note wr-metric__side">Dernières valeurs de Santé</span>
+      <span className="sz-label">Sent by the watch</span>
+      <span className="wr-note wr-metric__side">Latest values from Health</span>
       <dl className="wr-snapshot wr-metric__full">
         {SNAPSHOT.map((s) => {
           const m = ms.find((x) => x.type === s.type);
@@ -237,7 +237,7 @@ function Trace({ values, stale }: { values: number[]; stale: boolean }) {
   const pts = values.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
   return (
     <svg className="wr-trace wr-metric__full" data-stale={stale} viewBox={`0 0 ${W} ${H}`} width="100%" height={H} preserveAspectRatio="none"
-      role="img" aria-label={`${values.length} pouls reçus de la montre, de ${fmt(Math.min(...values), 0)} à ${fmt(Math.max(...values), 0)} bpm`}>
+      role="img" aria-label={`${values.length} heart-rate readings from the watch, ${fmt(Math.min(...values), 0)} to ${fmt(Math.max(...values), 0)} bpm`}>
       <polyline points={pts} fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
     </svg>
   );
@@ -278,18 +278,18 @@ function Feed({ onSave, onImported }: { onSave: (m: Measurement) => void; onImpo
     try {
       const ms = await parseHealthExport(f, setPct);
       if (ms.length === 0) {
-        setMsg({ text: 'Aucune mesure de montre trouvée dans ce fichier', warn: true });
+        setMsg({ text: 'No watch readings found in this file', warn: true });
         return;
       }
       setRealData(ms);
       const count = (t: Measurement['type']) => fmt(ms.filter((m) => m.type === t).length, 0);
       setMsg({
-        text: `${fmt(ms.length, 0)} mesures importées : FC repos ${count('RestingHeartRate')} · VFC ${count('HeartRateVariabilitySDNN')} · VO₂max ${count('VO2Max')} · SpO₂ ${count('OxygenSaturation')} · FC ${count('HeartRate')}`,
+        text: `${fmt(ms.length, 0)} readings imported: Resting HR ${count('RestingHeartRate')} · HRV ${count('HeartRateVariabilitySDNN')} · VO₂max ${count('VO2Max')} · SpO₂ ${count('OxygenSaturation')} · HR ${count('HeartRate')}`,
         warn: false,
       });
       onImported();
     } catch (e) {
-      setMsg({ text: `Import impossible : ${(e as Error).message}`, warn: true });
+      setMsg({ text: `Import failed: ${(e as Error).message}`, warn: true });
     } finally {
       busy.current = false;
       setPct(null);
@@ -300,11 +300,11 @@ function Feed({ onSave, onImported }: { onSave: (m: Measurement) => void; onImpo
     <div className="wr-manual">
       {open ? (
         <>
-          <Segmented values={TYPES} value={type} onChange={setType} ariaLabel="Type de mesure" render={(t) => LABEL[t]} />
+          <Segmented values={TYPES} value={type} onChange={setType} ariaLabel="Reading type" render={(t) => LABEL[t]} />
           <input
             className="sz-input"
             inputMode="decimal"
-            aria-label={`Valeur (${UNIT[type]})`}
+            aria-label={`Value (${UNIT[type]})`}
             aria-describedby={helpId}
             aria-invalid={outOfRange || undefined}
             placeholder={UNIT[type]}
@@ -312,15 +312,15 @@ function Feed({ onSave, onImported }: { onSave: (m: Measurement) => void; onImpo
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && save()}
           />
-          <span id={helpId} className={`wr-note${outOfRange ? ' wr-warn' : ''}`}>Plage {lo}–{hi} {UNIT[type]}</span>
-          <Btn disabled={!ok} onClick={save}>Enregistrer</Btn>
-          <Btn kind="quiet" onClick={() => setOpen(false)}>Annuler</Btn>
+          <span id={helpId} className={`wr-note${outOfRange ? ' wr-warn' : ''}`}>Range {lo}–{hi} {UNIT[type]}</span>
+          <Btn disabled={!ok} onClick={save}>Save</Btn>
+          <Btn kind="quiet" onClick={() => setOpen(false)}>Cancel</Btn>
         </>
       ) : (
         <>
-          <Btn onClick={() => setOpen(true)}>Saisie manuelle</Btn>
-          <label className="sz-btn wr-file" aria-busy={running} title="Export Santé de la montre, au format .zip ou .xml">
-            {running ? 'Import en cours…' : 'Importer un export'}
+          <Btn onClick={() => setOpen(true)}>Manual entry</Btn>
+          <label className="sz-btn wr-file" aria-busy={running} title="Health export from the watch, .zip or .xml">
+            {running ? 'Importing…' : 'Import an export'}
             <input
               type="file"
               className="wr-sr-only"
@@ -332,7 +332,7 @@ function Feed({ onSave, onImported }: { onSave: (m: Measurement) => void; onImpo
         </>
       )}
       {running && (
-        <div className="wr-progress" role="progressbar" aria-label="Progression de l'import" aria-valuenow={pct ?? 0} aria-valuemin={0} aria-valuemax={100}>
+        <div className="wr-progress" role="progressbar" aria-label="Import progress" aria-valuenow={pct ?? 0} aria-valuemin={0} aria-valuemax={100}>
           <div style={{ width: `${pct ?? 0}%` }} />
         </div>
       )}

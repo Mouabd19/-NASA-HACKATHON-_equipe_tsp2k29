@@ -1,27 +1,27 @@
 {
  "id": "organ-forecast",
  "version": 1,
- "title": "Projection des organes — régression quantile (10 / 50 / 90 %)",
- "learning": "Supervisé (régression quantile linéaire, perte « pinball »). Entrée : mesures J0–J94. Cible : perte vraie à Sol 0 et J860.",
- "data": "Cohorte SIMULÉE de 2000 astronautes virtuels calibrée sur les ordres de grandeur NASA publiés (os, muscle, VO₂max), variabilité entre astronautes, 75 % entraînement / 25 % test.",
+ "title": "Organ projection — quantile regression (10 / 50 / 90%)",
+ "learning": "Supervised (linear quantile regression, “pinball” loss). Input: measurements D0–D94. Target: true loss at Sol 0 and D860.",
+ "data": "SIMULATED cohort of 2000 virtual astronauts calibrated on published NASA orders of magnitude (bone, muscle, VO₂max), inter-astronaut variability, 75% training / 25% test.",
  "tag": "H",
  "units": {
-  "hanche": "% de perte de densité",
-  "cuisse": "% de perte de volume",
-  "coeur": "% de déficit de VO₂max"
+  "hanche": "% density loss",
+  "cuisse": "% volume loss",
+  "coeur": "% VO₂max deficit"
  },
  "features_doc": {
-  "uca_rise": "calcium urinaire : moyenne J88–J94 − moyenne J0–J6 (mg/24 h)",
-  "ctx_rise": "CTX urinaire : moyenne J88–J94 − moyenne J0–J6",
-  "thigh_loss_now": "perte de volume de la cuisse, moyenne des 7 derniers jours (%)",
-  "thigh_slope28": "pente de la perte de la cuisse sur 28 jours (points de %/semaine)",
-  "vo2_def_now": "déficit de VO₂max vs pré-vol, moyenne des 7 derniers jours (%)",
-  "vo2_slope28": "pente du déficit de VO₂max sur 28 jours (points de %/semaine)"
+  "uca_rise": "urinary calcium: mean D88–D94 − mean D0–D6 (mg/24 h)",
+  "ctx_rise": "urinary CTX: mean D88–D94 − mean D0–D6",
+  "thigh_loss_now": "thigh volume loss, mean of the last 7 days (%)",
+  "thigh_slope28": "slope of thigh loss over 28 days (% points/week)",
+  "vo2_def_now": "VO₂max deficit vs preflight, mean of the last 7 days (%)",
+  "vo2_slope28": "slope of VO₂max deficit over 28 days (% points/week)"
  },
  "limits": [
-  "Entraîné sur une cohorte SIMULÉE : il apprend les relations que nous avons calibrées, pas des données d'astronautes réels.",
-  "La bande 10–90 % couvre la variabilité entre astronautes de la cohorte (couverture mesurée sur le test).",
-  "Scénario « plan » : réponse au plan inconnue à J94 → incluse dans l'incertitude."
+  "Trained on a SIMULATED cohort: it learns the relationships we calibrated, not real astronaut data.",
+  "The 10–90% band covers inter-astronaut variability in the cohort (coverage measured on the test set).",
+  "“Plan” scenario: response to the plan unknown at D94 → included in the uncertainty."
  ],
  "models": {
   "hanche/210/cur": {

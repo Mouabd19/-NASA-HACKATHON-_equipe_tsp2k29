@@ -124,16 +124,16 @@ export function WarRoom() {
     location.reload();
   };
 
-  const dateLabel = new Date(DATE + 'T12:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+  const dateLabel = new Date(DATE + 'T12:00:00').toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
 
   return (
     <div className="sz-page wr-page">
       {/* La barre haute porte déjà le nom de l'onglet : le titre reste pour les lecteurs d'écran. */}
       <header className="wr-head">
-        <h1 className="wr-sr-only">Plan du jour</h1>
-        <span className="wr-head__day">Jour {DAY} · {dateLabel}</span>
-        <span className="wr-head__clock sz-mono">Heure de bord 07:00</span>
-        <span className="sz-detail"> · Haddad <TagBadge tag="Persona" /> · en route vers Mars</span>
+        <h1 className="wr-sr-only">Today's plan</h1>
+        <span className="wr-head__day">Day {DAY} · {dateLabel}</span>
+        <span className="wr-head__clock sz-mono">Onboard time 07:00</span>
+        <span className="sz-detail"> · Haddad <TagBadge tag="Persona" /> · en route to Mars</span>
       </header>
 
       <div className="wr-grid">
@@ -153,7 +153,7 @@ export function WarRoom() {
       </div>
       {DEMO && (
         <footer className="wr-foot">
-          <Btn kind="quiet" size="sm" onClick={resetDemo}>Réinitialiser la démo</Btn>
+          <Btn kind="quiet" size="sm" onClick={resetDemo}>Reset demo</Btn>
         </footer>
       )}
     </div>

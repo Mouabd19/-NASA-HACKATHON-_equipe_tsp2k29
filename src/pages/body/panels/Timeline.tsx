@@ -30,13 +30,13 @@ const Y = {
   tickLabel: 66,
 } as const;
 const RIBBON_H = 3;
-const RIBBON_LABEL = 'Alertes';
+const RIBBON_LABEL = 'Alerts';
 const MARK_CHAR = 5.9;   // largeur approx. d'un caractère de jalon (Inter 11 px)
 const DAY_CHAR = 7.6;    // largeur approx. (majorée) d'un caractère du jour de l'étiquette (Inter 12 px, 600)
 const DATE_CHAR = 6.4;   // idem pour la date (Inter 12 px)
 const EDGE = 8;          // marge minimale entre l'étiquette du curseur et le bord de la piste
 
-const DATE_FMT = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+const DATE_FMT = new Intl.DateTimeFormat('en-US', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
 /** Date lisible d'un jour de mission : 94 → « 14 nov. 2026 ». */
 const dayLabelDate = (day: number): string => DATE_FMT.format(new Date(`${dayToDate(day)}T00:00:00Z`));
 
@@ -85,10 +85,10 @@ interface Landmark { day: number; key: string; labels: string[]; alignEnd?: bool
 
 // Libellés courts : le numéro du jour est déjà sur la graduation et sur les boutons d'accès direct.
 const LANDMARKS: Landmark[] = [
-  { day: 0, key: 'depart', labels: ['Départ', ''] },
-  { day: DAY_TODAY, key: 'today', labels: ["Aujourd'hui", ''] },
+  { day: 0, key: 'depart', labels: ['Departure', ''] },
+  { day: DAY_TODAY, key: 'today', labels: ['Today', ''] },
   { day: DAY_SOL0, key: 'sol0', labels: ['Sol 0', ''] },   // date provisoire (mocks/mission.ts)
-  { day: DAY_END, key: 'fin', labels: ['Fin de mission', ''], alignEnd: true },
+  { day: DAY_END, key: 'fin', labels: ['End of mission', ''], alignEnd: true },
 ];
 
 interface FittedMark { lm: Landmark; x: number; text: string }
@@ -143,7 +143,7 @@ const Ruler = memo(function Ruler({ width, runs, marks, hidden, cursorX }: { wid
     if (d % labelStep === 0) {
       labels.push(
         <text key={d} className="tl__ticklabel" x={x(d)} y={Y.tickLabel} textAnchor="middle">
-          {d === 0 ? 'J0' : d}
+          {d === 0 ? 'D0' : d}
         </text>,
       );
     }
@@ -180,7 +180,7 @@ const Ruler = memo(function Ruler({ width, runs, marks, hidden, cursorX }: { wid
           strokeWidth={RIBBON_H}
           style={{ stroke: statusVar[s.color] }}
         >
-          <title>{`Alertes J${Math.ceil(s.from)}–J${Math.floor(s.to)} : ${statusLabel[s.color]}${s.projected ? ' (projeté)' : ''}`}</title>
+          <title>{`Alerts D${Math.ceil(s.from)}–D${Math.floor(s.to)}: ${statusLabel[s.color]}${s.projected ? ' (projected)' : ''}`}</title>
         </line>
       ))}
 
@@ -253,7 +253,7 @@ export function Timeline(): JSX.Element {
   const iaB = useMemo(() => {
     const cur = organForecast('hanche', DAY_END as 860, 0);
     const plan = organForecast('hanche', DAY_END as 860, 1);
-    return cur && plan ? `${lossText(cur.p50)} et ${lossText(plan.p50)}` : null;
+    return cur && plan ? `${lossText(cur.p50)} and ${lossText(plan.p50)}` : null;
   }, []);
 
   // Lecture : J0 → J860 en ~PLAY_SECONDS s, arrêt en fin de mission.
@@ -365,7 +365,7 @@ export function Timeline(): JSX.Element {
   };
 
   return (
-    <div className="tl" data-projected={projected} data-playing={playing} role="group" aria-label="Chronologie de la mission">
+    <div className="tl" data-projected={projected} data-playing={playing} role="group" aria-label="Mission timeline">
       {/* ── Lecture et accès directs ── */}
       <div className="tl__side tl__side--left">
         <div className="tl__row">
@@ -373,20 +373,20 @@ export function Timeline(): JSX.Element {
             type="button"
             className="sz-btn sz-btn--sm tl__play"
             aria-pressed={playing}
-            aria-label={playing ? 'Pause' : 'Lecture'}
-            title={playing ? 'Pause (Espace)' : `Lecture (Espace) : J0 à J${DAY_END} en ${PLAY_SECONDS} s`}
+            aria-label={playing ? 'Pause' : 'Play'}
+            title={playing ? 'Pause (Space)' : `Play (Space): D0 to D${DAY_END} in ${PLAY_SECONDS} s`}
             onClick={() => setPlaying(!playing)}
           >
             <PlayGlyph playing={playing} />
           </button>
-          <button type="button" className="sz-btn sz-btn--sm" aria-pressed={day === DAY_TODAY} onClick={() => jump(DAY_TODAY)} title="Dernier jour mesuré (T)">
-            Aujourd'hui
+          <button type="button" className="sz-btn sz-btn--sm" aria-pressed={day === DAY_TODAY} onClick={() => jump(DAY_TODAY)} title="Last measured day (T)">
+            Today
           </button>
-          <button type="button" className="sz-btn sz-btn--sm" aria-pressed={day === DAY_SOL0} onClick={() => jump(DAY_SOL0)} title={`Arrivée sur Mars, J${DAY_SOL0}`}>
+          <button type="button" className="sz-btn sz-btn--sm" aria-pressed={day === DAY_SOL0} onClick={() => jump(DAY_SOL0)} title={`Mars arrival, D${DAY_SOL0}`}>
             Sol 0
           </button>
-          <button type="button" className="sz-btn sz-btn--sm" aria-pressed={day === DAY_END} onClick={() => jump(DAY_END)} title="Fin de mission (Fin)">
-            J{DAY_END}
+          <button type="button" className="sz-btn sz-btn--sm" aria-pressed={day === DAY_END} onClick={() => jump(DAY_END)} title="End of mission (End)">
+            D{DAY_END}
           </button>
           {/* place réservée même hors Détails : la frise ne se décale pas quand on presse D */}
           <span className="tl__prov"><ProvenanceBadge value="SIMULÉ" /></span>
@@ -400,13 +400,13 @@ export function Timeline(): JSX.Element {
         data-dragging={dragging}
         role="slider"
         tabIndex={0}
-        aria-label="Jour de mission"
+        aria-label="Mission day"
         aria-orientation="horizontal"
         aria-valuemin={0}
         aria-valuemax={DAY_END}
         aria-valuenow={day}
-        aria-valuetext={`${dayText}, ${date}, ${projected ? 'projeté' : 'mesuré'}`}
-        title="Glisser pour changer de jour. Flèches : ±1 jour · Maj+flèches : ±10 jours · Début, Fin · T : aujourd'hui · Espace : lecture"
+        aria-valuetext={`${dayText}, ${date}, ${projected ? 'projected' : 'measured'}`}
+        title="Drag to change the day. Arrows: ±1 day · Shift+arrows: ±10 days · Home, End · T: today · Space: play"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={endDrag}
@@ -432,20 +432,20 @@ export function Timeline(): JSX.Element {
           <span className="sz-label" id="tl-projection-label">Projection</span>
           <div className="sz-seg" role="radiogroup" aria-labelledby="tl-projection-label">
             <button type="button" role="radio" aria-checked={adherence === 0} className="sz-seg__opt" onClick={() => setAdherence(0)}>
-              Rythme actuel
+              Current pace
             </button>
             <button type="button" role="radio" aria-checked={adherence === 1} className="sz-seg__opt" onClick={() => setAdherence(1)}>
-              Avec le plan
+              With the plan
             </button>
           </div>
           <PanelClose className="tl__close" />
         </div>
         <p
           className="tl__note tl__impact sz-detail"
-          title={`Perte de densité de la hanche projetée à J${DAY_END} par la courbe de l'équipe (formule calée, hypothèse) : ${lossText(impact.rythme)} au rythme actuel, ${lossText(impact.plan)} avec le plan.${iaB ? ` Le modèle d'IA B, cité dans « Pourquoi ? », donne ${iaB}. Deux méthodes, même ordre de grandeur.` : ''}`}
+          title={`Hip bone density loss projected at D${DAY_END} by the team's curve (fitted formula, hypothesis): ${lossText(impact.rythme)} at current pace, ${lossText(impact.plan)} with the plan.${iaB ? ` AI model B, cited in “Why?”, gives ${iaB}. Two methods, same order of magnitude.` : ''}`}
         >
-          <span className="tl__impact-label">Hanche J{DAY_END}, courbe de l'équipe</span>
-          <span className="tl__impact-val" data-on={adherence === 0}>rythme {lossText(impact.rythme)}</span>
+          <span className="tl__impact-label">Hip D{DAY_END}, team curve</span>
+          <span className="tl__impact-val" data-on={adherence === 0}>pace {lossText(impact.rythme)}</span>
           <span className="tl__impact-val" data-on={adherence === 1}>plan {lossText(impact.plan)}</span>
         </p>
       </div>
@@ -454,5 +454,5 @@ export function Timeline(): JSX.Element {
 }
 
 function lossText(v: number): string {
-  return Number.isFinite(v) ? `${fmt(v, 1)} %` : '— %';
+  return Number.isFinite(v) ? `${fmt(v, 1)}%` : '—%';
 }

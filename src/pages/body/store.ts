@@ -12,12 +12,12 @@ export const LAYER_ORDER: LayerId[] = ['squelette', 'muscles', 'organes', 'cardi
 
 /** Libellés en casse de phrase. `mvp: false` = calque encore partiel. */
 export const LAYER_META: Record<LayerId, { label: string; mvp: boolean }> = {
-  squelette: { label: 'Squelette', mvp: true },
+  squelette: { label: 'Skeleton', mvp: true },
   muscles: { label: 'Muscles', mvp: true },
-  organes: { label: 'Organes', mvp: true },
-  cardio: { label: 'Cardio / sang', mvp: true },
-  nerveux: { label: 'Nerveux + yeux', mvp: false },
-  exposition: { label: 'Exposition', mvp: false },
+  organes: { label: 'Organs', mvp: true },
+  cardio: { label: 'Cardio / blood', mvp: true },
+  nerveux: { label: 'Nervous + eyes', mvp: false },
+  exposition: { label: 'Radiation', mvp: false },
 };
 
 export interface BodyState {

@@ -58,10 +58,10 @@ function spo2Color(v: number): Color {
 }
 
 const VITALS: { type: Measurement['type']; label: string; full: string; digits: number }[] = [
-  { type: 'RestingHeartRate', label: 'FC repos', full: 'Fréquence cardiaque de repos', digits: 0 },
-  { type: 'HeartRateVariabilitySDNN', label: 'VFC', full: 'Variabilité de la fréquence cardiaque', digits: 0 },
-  { type: 'AppleSleepingWristTemperature', label: 'Temp.', full: 'Température au poignet pendant le sommeil', digits: 1 },
-  { type: 'SleepAnalysis', label: 'Sommeil', full: 'Durée de sommeil', digits: 1 },
+  { type: 'RestingHeartRate', label: 'Resting HR', full: 'Resting heart rate', digits: 0 },
+  { type: 'HeartRateVariabilitySDNN', label: 'HRV', full: 'Heart rate variability', digits: 0 },
+  { type: 'AppleSleepingWristTemperature', label: 'Temp.', full: 'Wrist temperature during sleep', digits: 1 },
+  { type: 'SleepAnalysis', label: 'Sleep', full: 'Sleep duration', digits: 1 },
 ];
 
 /** Unités d'export Apple Santé → affichage. */
@@ -92,12 +92,12 @@ export function Spo2Widget(): JSX.Element {
   const x1 = cur ? Math.max(cur.day, x0 + 1) : WINDOW;
   // Une seule mesure : ni courbe ni intervalle sur 7 jours, la valeur suffit.
   const hasTrend = win.length >= 2;
-  const baseText = base.n > 0 && Number.isFinite(base.mean) ? `${fmt(base.mean, 1)} ± ${fmt(base.sd, 1)} %` : 'indisponible';
+  const baseText = base.n > 0 && Number.isFinite(base.mean) ? `${fmt(base.mean, 1)} ± ${fmt(base.sd, 1)}%` : 'unavailable';
 
   return (
-    <Panel title="Constantes" provenance={provenance} className="sw">
+    <Panel title="Vitals" provenance={provenance} className="sw">
       {!cur ? (
-        <p className="sw-none">Aucune mesure à cette date.</p>
+        <p className="sw-none">No measurement at this date.</p>
       ) : (
         <>
           <div className="sw-head">
@@ -106,24 +106,24 @@ export function Spo2Widget(): JSX.Element {
               <div className="sw-big">
                 <span className="sz-readout" style={low ? { color: statusVar[color] } : undefined}>{fmt(cur.value, 0)}</span>
                 <span className="sz-unit">%</span>
-                {low ? <StatusChip color={color} label={color === 'red' ? 'Basse' : 'Attention'} /> : null}
+                {low ? <StatusChip color={color} label={color === 'red' ? 'Low' : 'Caution'} /> : null}
               </div>
             </div>
             {hasTrend ? (
               <div className="sw-week">
-                <span className="sz-label">7 j</span>
+                <span className="sz-label">7 d</span>
                 <span className="sw-week__val">{fmt(wMin, 0) === fmt(wMax, 0) ? fmt(wMin, 0) : `${fmt(wMin, 0)} – ${fmt(wMax, 0)}`} <span className="sz-unit">%</span></span>
               </div>
             ) : null}
           </div>
-          {stale ? <p className="sw-stale">Dernière mesure : {fmtDay(cur.day)}</p> : null}
+          {stale ? <p className="sw-stale">Last measurement: {fmtDay(cur.day)}</p> : null}
 
           {hasTrend ? (
             <div
               className="sw-chart sz-ecg"
               role="img"
-              aria-label={`SpO₂ sur ${WINDOW} jours, jusqu’à ${fmtDay(cur.day)}`}
-              title={`Repère d’attention ${SPO2_REF} % (hypothèse de l’équipe) · référence personnelle 30 j : ${baseText}`}
+              aria-label={`SpO₂ over ${WINDOW} days, through ${fmtDay(cur.day)}`}
+              title={`Caution marker ${SPO2_REF}% (team hypothesis) · 30-day personal baseline: ${baseText}`}
             >
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={win} margin={{ top: 8, right: 16, bottom: 2, left: 2 }}>
@@ -164,16 +164,16 @@ export function Spo2Widget(): JSX.Element {
           ) : null}
 
           {/* Mode Détails : une seule ligne (le détail complet est dans l'infobulle du graphique) */}
-          <p className="sw-meta sz-detail" title={spo2.real ? 'Source : export de la montre' : 'Source : série du scénario de mission (fictive)'}>
-            <span>Repère {SPO2_REF} % <TagBadge tag="H" /></span>
-            <span>Réf. 30 j <span className="sw-meta__val">{baseText}</span></span>
+          <p className="sw-meta sz-detail" title={spo2.real ? 'Source: watch export' : 'Source: mission scenario series (fictional)'}>
+            <span>Marker {SPO2_REF}% <TagBadge tag="H" /></span>
+            <span>30-d baseline <span className="sw-meta__val">{baseText}</span></span>
           </p>
 
           <dl className="sw-vitals">
             {vitals.map((v) => {
               const p = lastAtOrBefore(v.series.points, day);
               return (
-                <div className="sw-vital" key={v.type} title={p ? `${v.full} · ${fmtDay(p.day)} (${v.series.real ? 'réel' : 'simulé'})` : v.full}>
+                <div className="sw-vital" key={v.type} title={p ? `${v.full} · ${fmtDay(p.day)} (${v.series.real ? 'real' : 'simulated'})` : v.full}>
                   <dt className="sz-label">{v.label}</dt>
                   {p ? (
                     <dd className="sw-vital__val">

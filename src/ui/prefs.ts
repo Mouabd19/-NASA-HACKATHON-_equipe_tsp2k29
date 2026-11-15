@@ -7,12 +7,12 @@ import { create } from 'zustand';
 export type BodyPanelId = 'header' | 'blood' | 'spo2' | 'layers' | 'alerts' | 'timeline';
 
 export const BODY_PANEL_LABEL: Record<BodyPanelId, string> = {
-  header: 'En-tête',
-  blood: 'Analyses',
+  header: 'Header',
+  blood: 'Labs',
   spo2: 'SpO₂',
-  layers: 'Calques',
-  alerts: 'Alertes',
-  timeline: 'Chronologie',
+  layers: 'Layers',
+  alerts: 'Alerts',
+  timeline: 'Timeline',
 };
 
 const KEY = 'sz-prefs-v1';

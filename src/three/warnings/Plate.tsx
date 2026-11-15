@@ -36,8 +36,8 @@ export function Plate({ item, register }: { item: WarnItem; register: (el: HTMLD
       style={{ height: warnKnobs.plateH, '--sz-status': statusVar[item.color] } as CSSProperties}
       role="button"
       tabIndex={0}
-      title={`${item.num}. ${alarmText(item.level, item.projected)} · ${item.ruleLabel} — clic : épingler, double-clic : ouvrir le détail`}
-      aria-label={`Repère ${item.num}, ${item.alert.title} — ${alarmText(item.level, item.projected)}. ${item.alert.message}`}
+      title={`${item.num}. ${alarmText(item.level, item.projected)} · ${item.ruleLabel} — click: pin, double-click: open details`}
+      aria-label={`Marker ${item.num}, ${item.alert.title} — ${alarmText(item.level, item.projected)}. ${item.alert.message}`}
       onPointerEnter={() => useBody.getState().setHovered(item.organId)}
       onPointerLeave={() => {
         if (useBody.getState().hovered === item.organId) useBody.getState().setHovered(null);

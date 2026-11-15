@@ -357,41 +357,6 @@ export function createBodyRig(): BodyRig {
   const vent = new THREE.LineSegments(ventGeo, track(new THREE.LineBasicMaterial({ color: tokens.color.bg, transparent: true, depthWrite: false }), 0.9));
   vent.renderOrder = -1; floorSet.add(vent);
 
-  // pupitre sur le côté droit : boîtier, petit écran lumineux, voyants
-  const panel = new THREE.Group();
-  panel.position.set(CR + 0.3, 1.02, 0.22);
-  panel.rotation.set(-0.35, -0.25, 0);                      // plateau incliné vers l'opérateur
-  const standGeo = keep(new THREE.CylinderGeometry(0.012, 0.014, 1.0, 12).translate(0, 0.5, 0));
-  const stand = new THREE.Mesh(standGeo, track(new THREE.MeshBasicMaterial({ color: tokens.color.textDim, transparent: true, depthWrite: false }), 0.6));
-  stand.position.set(CR + 0.3, 0, 0.2); stand.renderOrder = -1; floorSet.add(stand);
-  const standFootGeo = keep(new THREE.CylinderGeometry(0.07, 0.08, 0.015, 24));
-  const standFoot = new THREE.Mesh(standFootGeo, metal(1));
-  standFoot.position.set(CR + 0.3, 0.0075, 0.2); standFoot.renderOrder = -1; floorSet.add(standFoot);
-  const boxGeo = keep(new THREE.BoxGeometry(0.2, 0.15, 0.025));
-  metalShade(boxGeo);
-  const box = new THREE.Mesh(boxGeo, metal(1)); box.renderOrder = -1; panel.add(box);
-  if (typeof document !== 'undefined') {
-    const cv = document.createElement('canvas'); cv.width = 128; cv.height = 96;
-    const cx = cv.getContext('2d');
-    if (cx) {
-      cx.fillStyle = tokens.color.bg; cx.fillRect(0, 0, 128, 96);
-      cx.fillStyle = tokens.color.water; cx.font = '600 15px monospace'; cx.fillText('USCT', 8, 20);
-      cx.fillStyle = tokens.color.textDim; cx.font = '11px monospace'; cx.fillText('37,0 °C', 8, 40);
-      for (let i = 0; i < 6; i++) { cx.fillStyle = tokens.color.water; cx.globalAlpha = 0.35 + i * 0.1; cx.fillRect(8 + i * 18, 80 - i * 6, 12, 8 + i * 6); }
-      const tex = new THREE.CanvasTexture(cv);
-      const scrGeo = keep(new THREE.PlaneGeometry(0.13, 0.095).translate(-0.02, 0.01, 0.0135));
-      const scr = new THREE.Mesh(scrGeo, track(new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false }), 1));
-      scr.renderOrder = 0; panel.add(scr);
-    }
-  }
-  const ledGeoS = keep(new THREE.CircleGeometry(0.007, 12));
-  [tokens.color.ok, tokens.color.water, tokens.color.amber].forEach((c, i) => {
-    const led = new THREE.Mesh(ledGeoS, track(new THREE.MeshBasicMaterial({ color: c, transparent: true, depthWrite: false }), 1));
-    led.position.set(0.075, 0.04 - i * 0.03, 0.0135);
-    led.renderOrder = 0; panel.add(led);
-  });
-  floorSet.add(panel);
-
   // gaine de câbles qui part du socle vers l'arrière
   const cable = new THREE.CatmullRomCurve3([
     new THREE.Vector3(Math.sin(Math.PI - 0.3) * (CR + 0.02), 0.18, Math.cos(Math.PI - 0.3) * (CR + 0.02)),

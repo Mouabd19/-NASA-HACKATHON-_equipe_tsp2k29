@@ -14,14 +14,14 @@ import './Windows.css';
 export const BODY_PANELS: BodyPanelId[] = ['header', 'blood', 'spo2', 'layers', 'alerts', 'timeline'];
 
 // Le panneau spo2 s'intitule « Constantes ».
-const PANEL_LABEL: Record<BodyPanelId, string> = { ...BODY_PANEL_LABEL, spo2: 'Constantes' };
+const PANEL_LABEL: Record<BodyPanelId, string> = { ...BODY_PANEL_LABEL, spo2: 'Vitals' };
 
 const RANK: Record<Color, number> = { grey: 0, green: 1, amber: 2, red: 3 };
 
 const closeAll = (): void => { const { closePanel } = usePrefs.getState(); BODY_PANELS.forEach(closePanel); };
 
 const shortDate = (iso: string): string =>
-  new Date(`${iso}T12:00:00`).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+  new Date(`${iso}T12:00:00`).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
 
 /** Écran épuré = tous les panneaux fermés. */
 export function useCleanScreen(): boolean {
@@ -63,17 +63,17 @@ export function ViewMenu(): JSX.Element {
       <div className="bv__row">
         {clean ? (
           <div className="bv__status" role="status">
-            <span>Jour {day} · {shortDate(date)}</span>
+            <span>Day {day} · {shortDate(date)}</span>
             <StatusChip color={worst} />
-            <span>Délai Terre {fmt(lightTimeMin(date), 1)} min</span>
+            <span>Earth delay {fmt(lightTimeMin(date), 1)} min</span>
           </div>
         ) : null}
         <button type="button" className="sz-btn sz-btn--sm" data-active={menu} onClick={() => setMenu(!menu)} aria-expanded={menu} aria-haspopup="true" aria-controls="bv-menu">
-          Affichage
+          Display
         </button>
       </div>
       {menu ? (
-        <div className="bv__menu" id="bv-menu" role="group" aria-label="Panneaux affichés">
+        <div className="bv__menu" id="bv-menu" role="group" aria-label="Visible panels">
           {BODY_PANELS.map((id) => {
             const open = !closed.includes(id);
             return (
@@ -87,8 +87,8 @@ export function ViewMenu(): JSX.Element {
           })}
           <div className="bv__sep" role="separator" />
           {anyOpen
-            ? <button type="button" className="sz-btn sz-btn--ghost sz-btn--sm bv__all" onClick={closeAll}>Tout masquer</button>
-            : <button type="button" className="sz-btn sz-btn--ghost sz-btn--sm bv__all" onClick={openAll}>Tout afficher</button>}
+            ? <button type="button" className="sz-btn sz-btn--ghost sz-btn--sm bv__all" onClick={closeAll}>Hide all</button>
+            : <button type="button" className="sz-btn sz-btn--ghost sz-btn--sm bv__all" onClick={openAll}>Show all</button>}
         </div>
       ) : null}
     </div>

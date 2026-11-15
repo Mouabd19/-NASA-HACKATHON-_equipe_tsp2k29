@@ -37,7 +37,7 @@ export function isValidCheckIn(c: unknown): c is CheckIn {
 }
 
 export function saveCheckIn(c: CheckInZones): void {
-  if (!isValidCheckIn(c)) throw new Error('Check-in invalide');
+  if (!isValidCheckIn(c)) throw new Error('Invalid check-in');
   const raw = JSON.stringify(c);
   memory.set(key(c.day), raw);
   try { storage()?.setItem(key(c.day), raw); } catch { /* quota / mode privé : on garde la mémoire */ }
@@ -79,7 +79,7 @@ export function painZonesOf(c: Zones): OrganId[] {
   return c.painZones?.length ? c.painZones : c.painZone ? [c.painZone] : [];
 }
 
-const ZONE_LABEL: Record<string, string> = { hanche: 'hanche', rachis: 'dos', cuisse: 'cuisse', mollet: 'mollet', cerveau: 'tête', yeux: 'yeux' };
+const ZONE_LABEL: Record<string, string> = { hanche: 'hip', rachis: 'back', cuisse: 'thigh', mollet: 'calf', cerveau: 'head', yeux: 'eyes' };
 /** Ajout : zones douloureuses en clair (« hanche, dos »), pour les textes de triage et de to-do. */
 export const painZonesText = (c: Zones): string =>
   painZonesOf(c).map((z) => ZONE_LABEL[z] ?? z).join(', ');

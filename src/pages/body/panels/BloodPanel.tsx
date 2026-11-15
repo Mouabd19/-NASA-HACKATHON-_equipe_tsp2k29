@@ -15,27 +15,27 @@ import './BloodPanel.css';
 const isUrine = (analyte: string): boolean => (getAnalyteMeta(analyte)?.cadence ?? (analyte === 'calcium_urinaire' ? 'quotidien' : 'hebdo')) === 'quotidien';
 /** Analytes mis en avant : anémie spatiale et fuite calcique (os). */
 const WATCHED: Record<string, string> = {
-  hemoglobine: 'À surveiller : anémie spatiale',
-  calcium_urinaire: 'À surveiller : fuite calcique (os)',
+  hemoglobine: 'Watch: space anemia',
+  calcium_urinaire: 'Watch: calcium loss (bone)',
 };
 
 const LABELS: Record<string, { short: string; digits: number }> = {
-  hemoglobine: { short: 'Hémoglobine', digits: 1 },
-  hematocrite: { short: 'Hématocrite', digits: 1 },
-  leucocytes: { short: 'Leucocytes', digits: 1 },
+  hemoglobine: { short: 'Hemoglobin', digits: 1 },
+  hematocrite: { short: 'Hematocrit', digits: 1 },
+  leucocytes: { short: 'WBC', digits: 1 },
   lymphocytes_pct: { short: 'Lymphocytes', digits: 1 },
-  vgm: { short: 'VGM', digits: 1 },
-  idr: { short: 'IDR', digits: 1 },
+  vgm: { short: 'MCV', digits: 1 },
+  idr: { short: 'RDW', digits: 1 },
   crp: { short: 'CRP', digits: 1 },
   calcium: { short: 'Calcium', digits: 2 },
-  vitamine_d: { short: 'Vitamine D', digits: 0 },
-  creatinine: { short: 'Créatinine', digits: 0 },
-  albumine: { short: 'Albumine', digits: 1 },
-  phosphatases_alcalines: { short: 'Phosph. alc.', digits: 0 },
+  vitamine_d: { short: 'Vitamin D', digits: 0 },
+  creatinine: { short: 'Creatinine', digits: 0 },
+  albumine: { short: 'Albumin', digits: 1 },
+  phosphatases_alcalines: { short: 'Alk. phos.', digits: 0 },
   glucose: { short: 'Glucose', digits: 1 },
   cortisol: { short: 'Cortisol', digits: 0 },
-  calcium_urinaire: { short: 'Calcium urin.', digits: 0 },
-  urine_ctx: { short: 'CTX urin.', digits: 0 },
+  calcium_urinaire: { short: 'Urine calcium', digits: 0 },
+  urine_ctx: { short: 'Urine CTX', digits: 0 },
 };
 
 function labelOf(analyte: string): string {
@@ -100,7 +100,7 @@ function RangeBar({ t }: { t: BloodTest }): JSX.Element {
   const out = outOfRange(t);
   const style = { '--bp-pos': `${(pos * 100).toFixed(1)}%`, '--bp-mark': out ? statusVar[out] : 'var(--sz-text)' } as CSSProperties;
   return (
-    <span className="bp-range" style={style} title={`Référence ${refText(t)}`}>
+    <span className="bp-range" style={style} title={`Reference ${refText(t)}`}>
       <span className="bp-range__ref" />
       <span className="bp-range__mark" />
     </span>
@@ -119,11 +119,11 @@ function Detail({ row, day }: { row: Row; day: number }): JSX.Element {
   const xMax = Math.max(Math.min(day, DAY_TODAY), last.day, 7);
   const tick = { fontFamily: tokens.font.text, fontSize: tokens.size.xs, fill: tokens.color.textMuted } as const;
   const out = outOfRange(last);
-  const sample = row.daily ? 'recueil' : 'prélèvement';
+  const sample = row.daily ? 'collection' : 'draw';
   return (
     <div className="bp-detail" data-row>
       <div className="bp-detail__line">
-        <span className="bp-detail__key">Référence</span>
+        <span className="bp-detail__key">Reference</span>
         <span className="bp-detail__val">{refText(last)}</span>
       </div>
       <div className="bp-detail__chart">
@@ -172,8 +172,8 @@ function Detail({ row, day }: { row: Row; day: number }): JSX.Element {
         <p className="bp-detail__note">{WATCHED[row.analyte]} <TagBadge tag="H" /></p>
       ) : null}
       <div className="bp-detail__line sz-detail">
-        <span className="bp-detail__key">{day > last.day ? `Dernier ${sample}` : sample.charAt(0).toUpperCase() + sample.slice(1)}</span>
-        <span className="bp-detail__val">{fmtDay(last.day)} · {data.length} {data.length > 1 ? 'résultats' : 'résultat'} · <TagBadge tag={last.tag} /></span>
+        <span className="bp-detail__key">{day > last.day ? `Last ${sample}` : sample.charAt(0).toUpperCase() + sample.slice(1)}</span>
+        <span className="bp-detail__val">{fmtDay(last.day)} · {data.length} {data.length > 1 ? 'results' : 'result'} · <TagBadge tag={last.tag} /></span>
       </div>
     </div>
   );
@@ -192,7 +192,7 @@ function RowView({ row, day, open, onToggle }: { row: Row; day: number; open: bo
       <li className="bp-item">
         <div className="bp-row bp-row--empty" data-row>
           <span className="bp-row__label">{label}</span>
-          <span className="bp-row__empty">Aucun résultat</span>
+          <span className="bp-row__empty">No result</span>
         </div>
       </li>
     );
@@ -203,7 +203,7 @@ function RowView({ row, day, open, onToggle }: { row: Row; day: number; open: bo
   const spark = row.history.slice(row.daily ? -42 : -14).map((h) => h.value);
   const stale = day > last.day && (row.daily || day > DAY_TODAY);
   const below = last.value < last.refLow;
-  const trendText = trend.dir > 0 ? 'en hausse' : trend.dir < 0 ? 'en baisse' : 'stable';
+  const trendText = trend.dir > 0 ? 'rising' : trend.dir < 0 ? 'falling' : 'stable';
   // Trait coloré seulement si la valeur est hors intervalle ou si la tendance la rapproche d'une borne.
   const sparkStatus = out ?? trend.color;
   return (
@@ -214,11 +214,11 @@ function RowView({ row, day, open, onToggle }: { row: Row; day: number; open: bo
         data-row
         aria-expanded={open}
         onClick={onToggle}
-        title={`${getAnalyteMeta(row.analyte)?.label ?? label} · ${fmtDay(last.day)}${stale ? ' (dernier résultat)' : ''} · référence ${refText(last)}`}
+        title={`${getAnalyteMeta(row.analyte)?.label ?? label} · ${fmtDay(last.day)}${stale ? ' (last result)' : ''} · reference ${refText(last)}`}
       >
         <span className="bp-row__label">{label}</span>
         <span className="bp-row__value" style={out ? { color: statusVar[out] } : undefined}>
-          {out ? <span className="bp-row__flag" role="img" aria-label={below ? 'sous l’intervalle' : 'au-dessus de l’intervalle'}>{below ? '↓' : '↑'}</span> : null}
+          {out ? <span className="bp-row__flag" role="img" aria-label={below ? 'below range' : 'above range'}>{below ? '↓' : '↑'}</span> : null}
           {fmt(last.value, digits)}
         </span>
         <span className="bp-row__unit">{last.unit}</span>
@@ -228,7 +228,7 @@ function RowView({ row, day, open, onToggle }: { row: Row; day: number; open: bo
           width={56}
           height={16}
           color={sparkStatus ? statusVar[sparkStatus] : undefined}
-          label={`Tendance : ${trendText}`}
+          label={`Trend: ${trendText}`}
         />
       </button>
       {open ? <Detail row={row} day={day} /> : null}
@@ -283,24 +283,24 @@ export function BloodPanel(): JSX.Element {
   ));
 
   return (
-    <Panel title="Analyses" provenance="SIMULÉ" className="bp">
+    <Panel title="Labs" provenance="SIMULÉ" className="bp">
       {all.length === 0 || lastAny < 0 ? (
-        <p className="bp-none">Aucun résultat à cette date.</p>
+        <p className="bp-none">No results at this date.</p>
       ) : (
         <>
-          {projected ? <p className="bp-banner">Derniers résultats mesurés : {fmtDay(drawDay ?? lastAny)}</p> : null}
+          {projected ? <p className="bp-banner">Latest measured results: {fmtDay(drawDay ?? lastAny)}</p> : null}
           <div className="bp-cols" aria-hidden="true">
             <span>Analyte</span>
-            <span className="bp-cols__num">Valeur</span>
+            <span className="bp-cols__num">Value</span>
             <span />
-            <span>Réf.</span>
-            <span>Tendance</span>
+            <span>Ref.</span>
+            <span>Trend</span>
           </div>
           <div className="bp-scroll sz-scroll" ref={scrollRef}>
-            {group('Sang', drawDay, capillary)}
+            {group('Blood', drawDay, capillary)}
             {group('Urine', urineDay, urine)}
             <p className="bp-legend sz-detail">
-              Réf. : position dans l’intervalle de référence (<TagBadge tag="Publié" />). Tendance : 14 derniers prélèvements, 42 derniers jours pour l’urine.
+              Ref.: position within the reference range (<TagBadge tag="Publié" />). Trend: last 14 draws; last 42 days for urine.
             </p>
           </div>
         </>

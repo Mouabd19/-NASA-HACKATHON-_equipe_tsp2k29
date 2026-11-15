@@ -163,7 +163,7 @@ function urineTests(rng: Rng): BloodTest[] {
     out.push({ day, analyte: 'calcium_urinaire', value: round(urineCalciumMg(day) + rng.gauss(12), 0),
       unit: 'mg/24 h', refLow: 100, refHigh: 300, tag: SIM_TAG });
     out.push({ day, analyte: 'urine_ctx', value: round(180 + 140 * sat(day, 30) + rng.gauss(15), 0),
-      unit: 'µg/mmol créat.', refLow: 100, refHigh: 300, tag: SIM_TAG });
+      unit: 'µg/mmol creat.', refLow: 100, refHigh: 300, tag: SIM_TAG });
   }
   return out;
 }
@@ -202,9 +202,9 @@ export function generateSim(seed = SIM_SEED): SimData {
     meta: {
       seed, version: SIM_VERSION, persona: PERSONA, days: [0, DAY_TODAY], phenoAgeTarget: PHENOAGE_TARGET,
       notes: [
-        `Haddad, ${CHRONO_AGE_J0} ans [Persona]. Toutes les valeurs sont SIMULÉES.`,
-        'Le scanner ne mesure que muscles, fluides, reins, nerf optique et cœur ; la densité osseuse vient du modèle bone [H].',
-        'CRP calibrée pour PhenoAge(J91) = 43,1 ans (mock roadmap §7).',
+        `Haddad, age ${CHRONO_AGE_J0} [Persona]. All values are SIMULATED.`,
+        'The scanner only measures muscles, fluids, kidneys, optic nerve and heart; bone density comes from the bone model [H].',
+        'CRP calibrated for PhenoAge(D91) = 43.1 years (mock roadmap §7).',
       ],
     },
     scan, blood, urine, checkins, watch,

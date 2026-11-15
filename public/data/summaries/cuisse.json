@@ -1,50 +1,50 @@
 {
  "organId": "cuisse",
  "generatedBy": "IA-sol",
- "model": "Claude (Anthropic), rédigé hors ligne",
+ "model": "Claude (Anthropic), written offline",
  "generatedAt": "2026-11-14",
  "reviewed": false,
- "note": "Synthèse IA rédigée au sol à partir des seuls chiffres du simulateur (src/sim, données de Mouad). À valider par le CMO. N'est jamais utilisée pour décider d'une alerte.",
+ "note": "AI summary written on the ground from the simulator figures only (src/sim, Mouad's data). To be validated by the CMO. Never used to decide on an alert.",
  "days": [
   {
    "day": 0,
    "adherence": 0,
-   "text": "Bilan de référence (J0) : volume des muscles de la cuisse de 2 451 cm³ au scan. C'est la base de comparaison de toute la mission. Statut nominal."
+   "text": "Baseline assessment (D0): thigh muscle volume of 2,451 cm³ on the scan. This is the reference for the whole mission. Status: nominal."
   },
   {
    "day": 30,
    "adherence": 0,
-   "text": "Volume de la cuisse à 97,84 % de J0 (2 397 cm³), tendance −0,58 % par semaine. C'est la phase de perte la plus rapide, attendue en début de vol. Statut nominal."
+   "text": "Thigh volume at 97.84% of D0 (2,397 cm³), trend −0.58% per week. This is the fastest loss phase, expected early in flight. Status: nominal."
   },
   {
    "day": 60,
    "adherence": 0,
-   "text": "Volume de la cuisse à 96,0 % de J0 (2 352 cm³). La tendance ralentit à −0,40 % par semaine. Statut nominal."
+   "text": "Thigh volume at 96.0% of D0 (2,352 cm³). The trend slows to −0.40% per week. Status: nominal."
   },
   {
    "day": 94,
    "adherence": 0,
-   "text": "Volume de la cuisse à 94,05 % de J0 (2 304 cm³), tendance −0,32 % par semaine : statut à surveiller. L'alerte porte sur la tendance sur 7 jours, pas sur un point isolé. Conduite proposée : squat et soulevé de terre lourds sur l'ARED, protéines réparties dans la journée."
+   "text": "Thigh volume at 94.05% of D0 (2,304 cm³), trend −0.32% per week: status: monitor. The alert is based on the 7-day trend, not a single data point. Suggested action: heavy squats and deadlifts on ARED, protein spread through the day."
   },
   {
    "day": 210,
    "adherence": 0,
-   "text": "Projection à Sol 0 (J210) au rythme actuel : 88,77 % du volume de J0, statut hors seuil. Une cuisse affaiblie à l'arrivée complique les premières sorties sur Mars. Projection du modèle, pas une mesure."
+   "text": "Projection at Sol 0 (D210) at current pace: 88.77% of D0 volume, status out of limits. A weakened thigh on arrival complicates the first Mars EVAs. Model projection, not a measurement."
   },
   {
    "day": 210,
    "adherence": 1,
-   "text": "Projection à Sol 0 (J210) avec le plan suivi : 92,17 % du volume de J0, statut à surveiller. Le plan gagne plus de 3 points par rapport au rythme actuel. Projection du modèle, pas une mesure."
+   "text": "Projection at Sol 0 (D210) with the plan followed: 92.17% of D0 volume, status: monitor. The plan gains more than 3 points over the current pace. Model projection, not a measurement."
   },
   {
    "day": 860,
    "adherence": 0,
-   "text": "Projection au retour (J860) au rythme actuel : 78,96 % du volume de J0, statut hors seuil. C'est la plus forte perte de tous les organes suivis. Projection du modèle, pas une mesure."
+   "text": "Projection at return (D860) at current pace: 78.96% of D0 volume, status out of limits. This is the largest loss of all tracked organs. Model projection, not a measurement."
   },
   {
    "day": 860,
    "adherence": 1,
-   "text": "Projection au retour (J860) avec le plan suivi : 88,74 % du volume de J0, statut hors seuil. Le plan récupère près de 10 points, sans suffire à revenir dans la norme sur 860 jours. Projection du modèle, pas une mesure."
+   "text": "Projection at return (D860) with the plan followed: 88.74% of D0 volume, status out of limits. The plan recovers nearly 10 points, but not enough to return within limits over 860 days. Model projection, not a measurement."
   }
  ]
 }

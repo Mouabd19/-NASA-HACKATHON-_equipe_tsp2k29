@@ -33,7 +33,7 @@ class SceneBoundary extends Component<{ children: ReactNode }, { error: string |
   }
 
   componentDidCatch(err: unknown, info: ErrorInfo): void {
-    console.warn('[SOL ZÉRO] scène 3D indisponible :', err, info.componentStack);
+    console.warn('[SOL ZÉRO] 3D scene unavailable:', err, info.componentStack);
   }
 
   render(): ReactNode {
@@ -41,10 +41,10 @@ class SceneBoundary extends Component<{ children: ReactNode }, { error: string |
     return (
       <div className="body-noscene" role="status">
         <div className="body-noscene__box">
-          <h2 className="sz-section-title">Vue 3D indisponible</h2>
-          <p className="body-noscene__text">Les panneaux, les alertes et la chronologie restent exacts.</p>
+          <h2 className="sz-section-title">3D view unavailable</h2>
+          <p className="body-noscene__text">Panels, alerts and the timeline remain accurate.</p>
           <p className="body-noscene__err sz-detail">{this.state.error.slice(0, 160)}</p>
-          <button type="button" className="sz-btn" onClick={() => this.setState({ error: null })}>Réessayer</button>
+          <button type="button" className="sz-btn" onClick={() => this.setState({ error: null })}>Retry</button>
         </div>
       </div>
     );
@@ -57,7 +57,7 @@ class SceneBoundary extends Component<{ children: ReactNode }, { error: string |
  */
 /** « 2026-11-14 » → « 14 nov. 2026 » (même langue que l'en-tête de la page). */
 const frDate = (iso: string): string =>
-  new Date(`${iso}T12:00:00`).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+  new Date(`${iso}T12:00:00`).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
 
 function SceneCorners(): JSX.Element {
   const day = useBody((s) => s.day);
@@ -66,16 +66,16 @@ function SceneCorners(): JSX.Element {
   const shown = LAYER_ORDER.filter((l) => layers[l]).map((l) => LAYER_META[l].label.toLowerCase());
   // Une seule ligne, quelle que soit la largeur : elle ne doit jamais passer sur les pieds du modèle.
   // La liste des calques et la nature de l'image sont dans l'infobulle ; la nature de l'image aussi en mode Détails.
-  const count = shown.length === 0 ? 'aucun calque' : `${shown.length} calque${shown.length > 1 ? 's' : ''}`;
-  const tip = `Atlas anatomique Z-Anatomy, pas une image du patient. Calques affichés : ${shown.join(', ') || 'aucun'}.`;
+  const count = shown.length === 0 ? 'no layers' : `${shown.length} layer${shown.length > 1 ? 's' : ''}`;
+  const tip = `Z-Anatomy anatomical atlas, not an image of the patient. Layers shown: ${shown.join(', ') || 'none'}.`;
   return (
     <>
       <div className="body-corner body-corner--bl sz-mono">
         <span className="body-corner__atlas" title={tip}>Atlas Z-Anatomy · {count}</span>
-        <span className="sz-detail">Pas une image du patient</span>
+        <span className="sz-detail">Not an image of the patient</span>
       </div>
       <div className="body-corner body-corner--br sz-mono" aria-hidden="true">
-        <span>Délai Terre {fmt(lightTimeMin(date), 1)} min</span>
+        <span>Earth delay {fmt(lightTimeMin(date), 1)} min</span>
       </div>
     </>
   );
@@ -94,7 +94,7 @@ function ScanLabel(): JSX.Element {
       if (!el) return;
       const on = scanState.t >= 0;
       if (on) {
-        el.textContent = `Scan ${String(Math.round(scanState.t * 100)).padStart(3, '0')} %`;
+        el.textContent = `Scan ${String(Math.round(scanState.t * 100)).padStart(3, '0')}%`;
         el.style.transform = `translate(${Math.round(scanState.x + 10)}px, ${Math.round(scanState.y - 6)}px)`;
       }
       if (on !== shown) {
@@ -125,56 +125,56 @@ function SceneChrome(): JSX.Element {
     <div className="body-chrome" data-projected={projected}>
       <div className="body-id sz-mono">
         {/* le nom est déjà dans la barre haute ; il ne revient ici que sur téléphone, où la barre le masque */}
-        <span className="body-id__name">Cdt {sentenceCase(ASTRONAUT.name)}</span>
-        <span title="Jour de mission sur trois chiffres, comme l'incrustation d'un cliché">{fmtDayLong(day)} · {frDate(dayToDate(day))}</span>
+        <span className="body-id__name">Cmdr {sentenceCase(ASTRONAUT.name)}</span>
+        <span title="Three-digit mission day, like an imaging overlay">{fmtDayLong(day)} · {frDate(dayToDate(day))}</span>
       </div>
       {projected && (
-        <div className="body-ribbon" role="status" title="Jour futur : corps projeté par le modèle, pas une mesure">
+        <div className="body-ribbon" role="status" title="Future day: body projected by the model, not a measurement">
           <span className="body-ribbon__text">Projection</span>
           <span className="body-ribbon__sub">
-            {adherence === 1 ? 'Avec le plan' : 'Au rythme actuel'}
+            {adherence === 1 ? 'With the plan' : 'Current pace'}
           </span>
         </div>
       )}
 
       <dl className="body-tag sz-detail">
         <div className="body-tag__row">
-          <dt>{projected ? 'Corps projeté' : 'Scan du jour'}</dt>
+          <dt>{projected ? 'Projected body' : "Today's scan"}</dt>
           <dd>
-            {projected ? 'Modèles os, muscle, VO₂' : 'Échographie, centrifugeuse 0,1 g'} <TagBadge tag="H" />
+            {projected ? 'Bone, muscle, VO₂ models' : 'Ultrasound, 0.1 g centrifuge'} <TagBadge tag="H" />
           </dd>
           <ProvenanceBadge value={projected ? 'H' : 'SIMULÉ'} />
         </div>
         {/* Aucune métrique osseuse n'est attribuée au scanner : dit dans le cadre même de la scène. */}
         {bones ? (
           <div className="body-tag__row">
-            <dt>Os</dt>
-            <dd>Estimé par modèle, non mesuré par le scanner <TagBadge tag="H" /></dd>
+            <dt>Bone</dt>
+            <dd>Model estimate, not measured by the scanner <TagBadge tag="H" /></dd>
           </div>
         ) : null}
         {exposition ? (
           <div className="body-tag__row">
-            <dt>Exposition</dt>
+            <dt>Radiation</dt>
             <dd>
               <span className="body-heat" aria-hidden="true">
                 {steps.map((i) => <i key={i} style={{ opacity: 0.1 + (0.9 * i) / Math.max(1, steps.length - 1) }} />)}
               </span>
-              Faible à forte, carte illustrative <TagBadge tag="H" />
+              Low to high, illustrative map <TagBadge tag="H" />
             </dd>
           </div>
         ) : null}
         {exposition && doseDay && doseCum ? (
           <div className="body-tag__row">
-            <dt>Dose du jour</dt>
+            <dt>Today's dose</dt>
             <dd>
-              <span className="body-tag__num">{fmt(doseDay.value, 2)}</span> <span className="sz-unit">mSv/j</span>
-              {' · '}prévu {fmt(doseDay.ref?.high ?? NaN, 2)} <TagBadge tag="Publié" />
+              <span className="body-tag__num">{fmt(doseDay.value, 2)}</span> <span className="sz-unit">mSv/d</span>
+              {' · '}expected {fmt(doseDay.ref?.high ?? NaN, 2)} <TagBadge tag="Publié" />
             </dd>
           </div>
         ) : null}
         {exposition && doseDay && doseCum ? (
           <div className="body-tag__row">
-            <dt>Dose cumulée</dt>
+            <dt>Cumulative dose</dt>
             <dd>
               <span className="body-tag__num">{fmt(doseCum.value, 0)}</span> <span className="sz-unit">mSv</span>{' '}
               <TagBadge tag={doseCum.tag} />
@@ -187,7 +187,7 @@ function SceneChrome(): JSX.Element {
 }
 
 /** « J094 » : numéro de jour sur trois chiffres, comme un numéro de série d'examen. */
-const fmtDayLong = (day: number): string => `J${String(day).padStart(3, '0')}`;
+const fmtDayLong = (day: number): string => `D${String(day).padStart(3, '0')}`;
 
 /** Fournit le bouton × aux panneaux d'un emplacement. */
 function Closable({ id, children }: { id: BodyPanelId; children: ReactNode }): JSX.Element | null {
@@ -223,7 +223,7 @@ export function Body(): JSX.Element {
       {isOpen('header') ? <div className="body-top"><Closable id="header"><Header /></Closable></div> : null}
 
       {left ? (
-        <aside className="body-col body-col--left" aria-label="Analyses et constantes">
+        <aside className="body-col body-col--left" aria-label="Labs and vitals">
           {isOpen('blood') ? <div className="body-slot body-slot--grow"><Closable id="blood"><BloodPanel /></Closable></div> : null}
           {isOpen('spo2') ? <div className="body-slot"><Closable id="spo2"><Spo2Widget /></Closable></div> : null}
         </aside>
@@ -231,8 +231,8 @@ export function Body(): JSX.Element {
 
       <section
         className="body-scene"
-        aria-label="Corps 3D"
-        aria-description="Glisser : tourner. Molette : zoom. Clic : épingler un organe. Double-clic : ouvrir sa fenêtre. Espace : lecture. Flèches gauche et droite : changer de jour."
+        aria-label="3D body"
+        aria-description="Drag: rotate. Scroll wheel: zoom. Click: pin an organ. Double-click: open its window. Space: play. Left and right arrows: change day."
       >
         <SceneBoundary><BodyScene /></SceneBoundary>
         <LeaderLines />
@@ -244,7 +244,7 @@ export function Body(): JSX.Element {
       </section>
 
       {right ? (
-        <aside className="body-col body-col--right" aria-label="Calques et alertes">
+        <aside className="body-col body-col--right" aria-label="Layers and alerts">
           {isOpen('layers') ? <div className="body-slot body-slot--layers"><Closable id="layers"><LayersPanel /></Closable></div> : null}
           {isOpen('alerts') ? <div className="body-slot body-slot--grow"><Closable id="alerts"><AlertsPanel /></Closable></div> : null}
         </aside>

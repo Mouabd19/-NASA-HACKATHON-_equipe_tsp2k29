@@ -12,14 +12,14 @@ import './Header.css';
 
 /** Phase de mission (bornes du scénario, DAY_SOL0 provisoire dans mocks/mission). */
 function phaseLabel(day: number): string {
-  if (day <= 0) return 'Départ';
-  if (day < DAY_SOL0) return 'Croisière aller';
-  if (day === DAY_SOL0) return 'Arrivée sur Mars';
-  if (day < DAY_END) return 'Surface';
-  return 'Fin de mission';
+  if (day <= 0) return 'Departure';
+  if (day < DAY_SOL0) return 'Outbound transit';
+  if (day === DAY_SOL0) return 'Mars arrival';
+  if (day < DAY_END) return 'Surface operations';
+  return 'End of mission';
 }
 
-const DATE_FORMAT = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+const DATE_FORMAT = new Intl.DateTimeFormat('en-US', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 
 /** Date ISO → « 14 novembre 2026 ». */
 function longDate(iso: string): string {
@@ -48,8 +48,8 @@ function signed(n: number, digits: number): string {
 }
 
 /** « 4 en attention », « 7 nominaux » : même vocabulaire que les pastilles (src/ui/tokens.ts). */
-const countLabel = (color: Color, n: number): string =>
-  color === 'green' ? (n > 1 ? 'nominaux' : 'nominal') : { red: 'en alerte', amber: 'en attention', grey: 'sans donnée' }[color];
+const countLabel = (color: Color): string =>
+  color === 'green' ? 'nominal' : { red: 'warning', amber: 'caution', grey: 'no data' }[color];
 
 /** Décompte d'un statut ; rien si aucun organe n'est dans ce statut. */
 function Count({ color, n, projected }: { color: Color; n: number; projected?: boolean }): JSX.Element | null {
@@ -57,7 +57,7 @@ function Count({ color, n, projected }: { color: Color; n: number; projected?: b
   return (
     <span className="hdr__count" data-projected={projected || undefined}>
       <StatusDot color={color} size={6} />
-      <span>{n} {countLabel(color, n)}</span>
+      <span>{n} {countLabel(color)}</span>
     </span>
   );
 }
@@ -98,14 +98,14 @@ export function Header(): JSX.Element {
       {/* ── Jour de mission ── */}
       <div
         className="hdr__block hdr__block--day"
-        title={day < DAY_SOL0 ? `Arrivée sur Mars dans ${DAY_SOL0 - day} j` : `Fin de mission dans ${Math.max(0, DAY_END - day)} j`}
+        title={day < DAY_SOL0 ? `Mars arrival in ${DAY_SOL0 - day} d` : `End of mission in ${Math.max(0, DAY_END - day)} d`}
       >
         <span className="hdr__label">
-          <span className="sz-label">Jour de mission</span>
+          <span className="sz-label">Mission day</span>
           <span className="hdr__meta sz-detail">{phaseLabel(day)}</span>
         </span>
         <span className="hdr__line">
-          <span className="sz-value">Jour {day}</span>
+          <span className="sz-value">Day {day}</span>
           <span className="hdr__sub">{longDate(date)}</span>
         </span>
       </div>
@@ -119,12 +119,12 @@ export function Header(): JSX.Element {
         aria-expanded={globalOpen}
         style={{ '--hdr-delta': statusVar[dStatus] } as CSSProperties}
         onClick={() => openOrganWindow('global')}
-        title="Ouvrir le détail de l’âge biologique"
+        title="Open biological age details"
       >
         <span className="hdr__label">
-          <span className="sz-label">Âge biologique</span>
+          <span className="sz-label">Biological age</span>
           <span className="hdr__meta sz-detail">
-            {pheno ? (pheno.mock ? 'Valeur provisoire' : 'Levine 2018') : 'Aucun prélèvement'}
+            {pheno ? (pheno.mock ? 'Provisional value' : 'Levine 2018') : 'No blood draw'}
           </span>
           <svg className="hdr__chevron" viewBox="0 0 8 12" aria-hidden="true">
             <path d="M2 2l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -133,27 +133,27 @@ export function Header(): JSX.Element {
         {pheno && delta !== null ? (
           <span className="hdr__line">
             <span className="hdr__valunit">
-              <span className="sz-value">{fmt(pheno.phenoAge, 1)}</span> <span className="sz-unit">ans</span>
+              <span className="sz-value">{fmt(pheno.phenoAge, 1)}</span> <span className="sz-unit">yr</span>
             </span>
-            <span className="hdr__delta" title={`Âge réel ${fmt(pheno.chronoAge, Number.isInteger(pheno.chronoAge) ? 0 : 1)} ans`}>
+            <span className="hdr__delta" title={`Chronological age ${fmt(pheno.chronoAge, Number.isInteger(pheno.chronoAge) ? 0 : 1)} yr`}>
               <span className="hdr__delta-num">{signed(delta, 1)}</span>
-              <span className="hdr__sub"> vs âge réel</span>
+              <span className="hdr__sub"> vs chronological age</span>
             </span>
             {mode === 'projection' ? (
               // Jour futur : l'âge biologique n'est pas projeté, c'est celui du dernier prélèvement — dit en clair.
-              <span className="hdr__sub hdr__blood">Dernier prélèvement {fmtDay(pheno.day)}</span>
+              <span className="hdr__sub hdr__blood">Last blood draw {fmtDay(pheno.day)}</span>
             ) : blood ? (
               <span
                 className="hdr__sub hdr__blood"
-                title={`Âge sanguin estimé par régression entraînée sur NHANES 2015–2018 (hypothèse), prélèvement ${fmtDay(blood.day)} — âge réel ${fmt(blood.chronoAge, 1)} ans`}
+                title={`Blood age estimated by a regression trained on NHANES 2015–2018 (hypothesis), blood draw ${fmtDay(blood.day)} — chronological age ${fmt(blood.chronoAge, 1)} yr`}
               >
-                Âge sanguin estimé <span className="hdr__strong">{fmt(blood.bloodAge, 1)} ans</span>
+                Est. blood age <span className="hdr__strong">{fmt(blood.bloodAge, 1)} yr</span>
               </span>
             ) : null}
           </span>
         ) : (
           <span className="hdr__line">
-            <span className="hdr__none">Données insuffisantes</span>
+            <span className="hdr__none">Insufficient data</span>
           </span>
         )}
       </button>
@@ -163,11 +163,11 @@ export function Header(): JSX.Element {
       <div
         className="hdr__block hdr__block--status"
         data-projected={projected || undefined}
-        title={projected ? 'Statut projeté par le modèle : projection, pas une alarme' : undefined}
+        title={projected ? 'Status projected by the model: a projection, not an alarm' : undefined}
       >
         <span className="hdr__label">
-          <span className="sz-label">{projected ? 'Statut projeté' : 'Statut du jour'}</span>
-          <span className="hdr__meta sz-detail">{tracked} suivis · {unmodeled} non modélisés</span>
+          <span className="sz-label">{projected ? 'Projected status' : 'Today’s status'}</span>
+          <span className="hdr__meta sz-detail">{tracked} tracked · {unmodeled} not modeled</span>
         </span>
         <span className="hdr__line">
           <StatusChip color={worst} />

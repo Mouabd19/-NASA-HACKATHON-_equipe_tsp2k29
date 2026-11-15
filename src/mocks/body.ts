@@ -164,56 +164,56 @@ function build(day: number, a: number): DayBody {
   const bone = (id: string, name: string, extra: boolean) => {
     const st = boneStatus(id, day, a);
     const ms = [
-      metric(id, 'densite_osseuse', 'Densité osseuse estimée vs pré-vol', '%', day, a, st, 'H', 'H', {
+      metric(id, 'densite_osseuse', 'Estimated bone density vs preflight', '%', day, a, st, 'H', 'H', {
         ref: { low: BONE_THRESHOLD[id], standardId: 'V1 4027' },
       }),
-      metric(id, 'perte_osseuse', 'Perte cumulée estimée', '%', day, a, st, 'H', 'H', { trend: false }), // la pente est portée par la densité
+      metric(id, 'perte_osseuse', 'Estimated cumulative loss', '%', day, a, st, 'H', 'H', { trend: false }), // la pente est portée par la densité
     ];
     if (extra) {
       const proj = lossPct(id, DAY_END, a) as number;
-      ms.push(metric(id, 'projection_j860', 'Perte projetée à J860', '%', day, a,
+      ms.push(metric(id, 'projection_j860', 'Projected loss at D860', '%', day, a,
         100 - proj < BONE_THRESHOLD[id] ? 'red' : 'amber', 'H', 'H', { trend: false }));
     }
     organs.push(organ(id, 'squelette', name, st, ms, day, a));
   };
-  bone('hanche', 'Hanche', true);
-  bone('rachis', 'Rachis lombaire', false);
-  bone('femur', 'Col du fémur', false);
+  bone('hanche', 'Hip', true);
+  bone('rachis', 'Lumbar spine', false);
+  bone('femur', 'Femoral neck', false);
 
   // Muscles — volume au scan vs J0, bruit de mesure + tendance 7 j
   const muscle = (id: string, name: string) => {
     const st = muscleStatus(id, day, a);
     organs.push(organ(id, 'muscles', name, st, [
-      metric(id, 'volume', 'Volume vs J0 (scan)', '%', day, a, st, 'Persona', scan, { noise: MUSCLE_NOISE, ref: { low: 90 } }),
+      metric(id, 'volume', 'Volume vs D0 (scan)', '%', day, a, st, 'Persona', scan, { noise: MUSCLE_NOISE, ref: { low: 90 } }),
       metric(id, 'volume_cm3', 'Volume', 'cm³', day, a, st, 'Persona', scan, { digits: 0, noise: round(MUSCLE_REF_CM3[id] * MUSCLE_NOISE / 100, 0) }),
     ], day, a));
   };
-  muscle('cuisse', 'Cuisse (quadriceps)');
-  muscle('mollet', 'Mollet');
-  muscle('paravertebraux', 'Paravertébraux');
+  muscle('cuisse', 'Thigh (quadriceps)');
+  muscle('mollet', 'Calf');
+  muscle('paravertebraux', 'Paraspinal muscles');
 
   // Organes
   const heart = heartStatus(day, a);
   const vo2Metrics = (id: string) => [
     metric(id, 'vo2max', 'VO₂max', 'ml/kg/min', day, a, heart, 'Persona', scan, { digits: 1, ref: { low: VO2_SOL0, standardId: 'V1 4002' } }),
   ];
-  organs.push(organ('coeur', 'organes', 'Cœur', heart, [
+  organs.push(organ('coeur', 'organes', 'Heart', heart, [
     ...vo2Metrics('coeur'),
-    metric('coeur', 'vo2_pct', 'VO₂max vs pré-vol', '%', day, a, heart, 'Persona', scan, { ref: { low: 80, standardId: 'V1 4003' } }),
-    metric('coeur', 'fraction_ejection', "Fraction d'éjection (scan)", '%', day, a, 'green', 'Persona', scan, { digits: 1, noise: 0.8, ref: { low: 55, high: 70 } }),
-    metric('coeur', 'taille', 'Masse ventriculaire vs J0 (scan)', '%', day, a, 'green', 'Persona', scan, { digits: 1, noise: 0.3 }),
+    metric('coeur', 'vo2_pct', 'VO₂max vs preflight', '%', day, a, heart, 'Persona', scan, { ref: { low: 80, standardId: 'V1 4003' } }),
+    metric('coeur', 'fraction_ejection', 'Ejection fraction (scan)', '%', day, a, 'green', 'Persona', scan, { digits: 1, noise: 0.8, ref: { low: 55, high: 70 } }),
+    metric('coeur', 'taille', 'Ventricular mass vs D0 (scan)', '%', day, a, 'green', 'Persona', scan, { digits: 1, noise: 0.3 }),
   ], day, a));
 
   const caMean = mean7('reins', 'calcium_urinaire', day, a);
   const kidneys = level(caMean, 280, 350);
-  organs.push(organ('reins', 'organes', 'Reins', kidneys, [
-    metric('reins', 'calculs', 'Calculs détectés (scan)', '', day, a, 'green', 'Persona', scan, { digits: 0, ref: { high: 0 }, trend: false }),
-    metric('reins', 'calcium_urinaire', 'Calcium urinaire', 'mg/24 h', day, a, kidneys, 'Persona', scan, { digits: 0, noise: URINE_CA_NOISE, ref: { low: 100, high: 300 } }),
+  organs.push(organ('reins', 'organes', 'Kidneys', kidneys, [
+    metric('reins', 'calculs', 'Kidney stones detected (scan)', '', day, a, 'green', 'Persona', scan, { digits: 0, ref: { high: 0 }, trend: false }),
+    metric('reins', 'calcium_urinaire', 'Urinary calcium', 'mg/24 h', day, a, kidneys, 'Persona', scan, { digits: 0, noise: URINE_CA_NOISE, ref: { low: 100, high: 300 } }),
   ], day, a));
 
   // Non modélisés : gris, aucune métrique, bioAge = âge réel
-  for (const [id, name] of [['poumons', 'Poumons'], ['foie', 'Foie'], ['cerveau', 'Cerveau']] as const) {
-    organs.push(organ(id, 'organes', `${name} (non modélisé)`, 'grey', [], day, a));
+  for (const [id, name] of [['poumons', 'Lungs'], ['foie', 'Liver'], ['cerveau', 'Brain']] as const) {
+    organs.push(organ(id, 'organes', `${name} (not modeled)`, 'grey', [], day, a));
   }
 
   // Cardiovasculaire / sang
@@ -223,30 +223,30 @@ function build(day: number, a: number): DayBody {
   const spo2Color: Color = spo2 < 92 ? 'red' : spo2 < 95 ? 'amber' : 'green';
   const blood = [
     ...vo2Metrics('sang'),
-    metric('sang', 'fc_repos', 'FC de repos', 'bpm', day, a, 'green', 'Persona', scan, { digits: 0, noise: 1.5 }),
+    metric('sang', 'fc_repos', 'Resting HR', 'bpm', day, a, 'green', 'Persona', scan, { digits: 0, noise: 1.5 }),
     metric('sang', 'spo2', 'SpO₂', '%', day, a, spo2Color, 'Persona', scan, { digits: 1, ref: { low: 95 } }),
-    metric('sang', 'tension_sys', 'Tension systolique', 'mmHg', day, a, 'green', 'Persona', scan, { digits: 0, noise: 2, ref: { low: 90, high: 130 } }),
-    metric('sang', 'tension_dia', 'Tension diastolique', 'mmHg', day, a, 'green', 'Persona', scan, { digits: 0, noise: 1.5, ref: { low: 60, high: 85 } }),
-    metric('sang', 'hemoglobine', 'Hémoglobine', 'g/dL', day, a, hbColor, 'Persona', scan, { digits: 1, ref: { low: 13.5, high: 17.5 } }),
-    metric('sang', 'volume_jambes', 'Volume des jambes vs J0 (fluides)', '%', day, a, 'green', 'Persona', scan, { digits: 1, noise: 0.4 }),
+    metric('sang', 'tension_sys', 'Systolic BP', 'mmHg', day, a, 'green', 'Persona', scan, { digits: 0, noise: 2, ref: { low: 90, high: 130 } }),
+    metric('sang', 'tension_dia', 'Diastolic BP', 'mmHg', day, a, 'green', 'Persona', scan, { digits: 0, noise: 1.5, ref: { low: 60, high: 85 } }),
+    metric('sang', 'hemoglobine', 'Hemoglobin', 'g/dL', day, a, hbColor, 'Persona', scan, { digits: 1, ref: { low: 13.5, high: 17.5 } }),
+    metric('sang', 'volume_jambes', 'Leg volume vs D0 (fluid shift)', '%', day, a, 'green', 'Persona', scan, { digits: 1, noise: 0.4 }),
   ];
   // le VO₂max est rappelé ici mais son statut est porté par le cœur : il ne compte pas deux fois
-  organs.push(organ('sang', 'cardio', 'Sang / cardiovasculaire', worst(blood.filter((x) => x.key !== 'vo2max').map((x) => x.color)), blood, day, a));
+  organs.push(organ('sang', 'cardio', 'Blood / cardiovascular', worst(blood.filter((x) => x.key !== 'vo2max').map((x) => x.color)), blood, day, a));
 
   // Nerveux + yeux
   const sheath = level(mean7('yeux', 'gaine_nerf_optique', day, a), 5.5, 6.0);
-  organs.push(organ('yeux', 'nerveux', 'Yeux — nerf optique', sheath, [
-    metric('yeux', 'gaine_nerf_optique', 'Diamètre de la gaine du nerf optique (scan)', 'mm', day, a, sheath, 'Persona', scan, { noise: SHEATH_NOISE, ref: { high: 5.5 } }),
-    metric('yeux', 'pvt', 'Vigilance (PVT, temps de réaction)', 'ms', day, a, 'green', 'Persona', scan, { digits: 0, noise: 8 }),
+  organs.push(organ('yeux', 'nerveux', 'Eyes — optic nerve', sheath, [
+    metric('yeux', 'gaine_nerf_optique', 'Optic nerve sheath diameter (scan)', 'mm', day, a, sheath, 'Persona', scan, { noise: SHEATH_NOISE, ref: { high: 5.5 } }),
+    metric('yeux', 'pvt', 'Alertness (PVT, reaction time)', 'ms', day, a, 'green', 'Persona', scan, { digits: 0, noise: 8 }),
   ], day, a));
 
   // Exposition
   const cum = cumulativeDose(day);
   const dose = level(cum, 450, 600);
-  organs.push(organ('dose', 'exposition', 'Exposition — dose', dose, [
-    metric('dose', 'dose_cumulee', 'Dose cumulée', 'mSv', day, a, dose, 'H', scan, { digits: 1, ref: { high: 600 }, trend: false }),
-    metric('dose', 'dose_prevue', 'Dose prévue à ce jour', 'mSv', day, a, 'green', 'Publié', 'H', { digits: 1, trend: false }),
-    metric('dose', 'dose_jour', 'Dose du jour', 'mSv/j', day, a, 'green', 'Publié', scan, { noise: 0.12, ref: { high: 1.84 }, trend: false }),
+  organs.push(organ('dose', 'exposition', 'Radiation dose', dose, [
+    metric('dose', 'dose_cumulee', 'Cumulative dose', 'mSv', day, a, dose, 'H', scan, { digits: 1, ref: { high: 600 }, trend: false }),
+    metric('dose', 'dose_prevue', 'Planned dose to date', 'mSv', day, a, 'green', 'Publié', 'H', { digits: 1, trend: false }),
+    metric('dose', 'dose_jour', 'Daily dose', 'mSv/d', day, a, 'green', 'Publié', scan, { noise: 0.12, ref: { high: 1.84 }, trend: false }),
   ], day, a));
 
   return {

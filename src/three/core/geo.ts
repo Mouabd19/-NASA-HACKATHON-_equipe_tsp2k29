@@ -129,7 +129,7 @@ export function merge(geos: THREE.BufferGeometry[]): THREE.BufferGeometry {
     return o;
   });
   const out = clean.length === 1 ? clean[0] : mergeGeometries(clean, false);
-  if (!out) throw new Error('fusion de géométries impossible');
+  if (!out) throw new Error('geometry merge failed');
   return out;
 }
 

@@ -32,7 +32,7 @@ const SERIES: Record<string, Pt[]> = Object.values(seriesFiles)[0]?.scenarios ??
 const ONSET = 75;
 const SCENARIOS = ['drift', 'control'] as const;
 type Sc = (typeof SCENARIOS)[number];
-const SC_LABEL: Record<Sc, string> = { drift: `Trouble débutant à J${ONSET}`, control: 'Témoin en bonne santé' };
+const SC_LABEL: Record<Sc, string> = { drift: `Disorder starting D${ONSET}`, control: 'Healthy control' };
 
 const DATA: Record<Sc, DayFile[]> = { drift: [], control: [] };
 for (const f of Object.values(files)) if (f.scenario in DATA) DATA[f.scenario].push(f);
@@ -40,13 +40,13 @@ for (const sc of SCENARIOS) DATA[sc].sort((a, b) => a.day - b.day);
 const DAYS = [...new Set(SCENARIOS.flatMap((sc) => DATA[sc].map((d) => d.day)))].sort((a, b) => a - b);
 
 const NIV_LABEL: Record<Niveau, string> = {
-  rien: 'Rien à signaler', a_surveiller: 'À surveiller', proposer_un_echange: 'Proposer un échange', donnees_insuffisantes: 'Données insuffisantes',
+  rien: 'Nothing to report', a_surveiller: 'Monitor', proposer_un_echange: 'Offer a conversation', donnees_insuffisantes: 'Insufficient data',
 };
 /** Statut d'un niveau (gris = inconnu, jamais vert par défaut). */
 const nivColor = (n?: Niveau): Color =>
   n === 'proposer_un_echange' ? 'red' : n === 'a_surveiller' ? 'amber' : n === 'rien' ? 'green' : 'grey';
 const rank = (n?: Niveau): number => (n === 'proposer_un_echange' ? 2 : n === 'a_surveiller' ? 1 : 0);
-const CONF: Record<string, string> = { elevee: 'élevée', moyenne: 'moyenne', faible: 'faible' };
+const CONF: Record<string, string> = { elevee: 'high', moyenne: 'medium', faible: 'low' };
 const cap = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
 
 function Kpi({ label, value, note }: { label: string; value: string; note: string }): JSX.Element {
@@ -67,10 +67,10 @@ function smooth(v: number[]): number[] {
 }
 
 const METRICS: { k: keyof Pt; name: string; unit: string }[] = [
-  { k: 'humeur', name: 'Humeur déclarée', unit: '1 à 5' },
-  { k: 'sommeilH', name: 'Sommeil', unit: 'heures' },
-  { k: 'vfcMs', name: 'Variabilité cardiaque', unit: 'ms' },
-  { k: 'equipageMin', name: "Temps avec l'équipage", unit: 'min/jour' },
+  { k: 'humeur', name: 'Self-reported mood', unit: '1 to 5' },
+  { k: 'sommeilH', name: 'Sleep', unit: 'hours' },
+  { k: 'vfcMs', name: 'Heart rate variability', unit: 'ms' },
+  { k: 'equipageMin', name: 'Time with crew', unit: 'min/day' },
 ];
 
 /** Largeur réelle du conteneur : le SVG est dessiné à l'échelle 1, les textes gardent leur taille (11 px). */
@@ -132,11 +132,11 @@ function Frise({ sel, onSel, mlAlert }: { sel: { sc: Sc; day: number }; onSel: (
   const [ref, measured] = useWidth(1000);
   const drift = SERIES.drift ?? [];
   const ctrl = SERIES.control ?? [];
-  if (!drift.length) return <p className="mt-empty">Données insuffisantes : séries absentes.</p>;
+  if (!drift.length) return <p className="mt-empty">Insufficient data: series missing.</p>;
   const d0 = drift[0].day, d1 = drift[drift.length - 1].day;
   const W = Math.max(520, measured), L = W < 720 ? 124 : 168, R = 16;
   const x = (d: number): number => L + ((d - d0) / (d1 - d0)) * (W - L - R);
-  const TRACK = [{ sc: 'drift' as Sc, y: 36, name: 'Verdict · avec trouble' }, { sc: 'control' as Sc, y: 64, name: 'Verdict · témoin' }];
+  const TRACK = [{ sc: 'drift' as Sc, y: 36, name: 'Verdict · disorder' }, { sc: 'control' as Sc, y: 64, name: 'Verdict · control' }];
   const CH = 56, GAP = 20, TOP = 96;
   const BOTTOM = TOP + METRICS.length * (CH + GAP) - GAP;
   const H = BOTTOM + 24;
@@ -149,7 +149,7 @@ function Frise({ sel, onSel, mlAlert }: { sel: { sc: Sc; day: number }; onSel: (
   return (
     <div>
       <div className="mt-chart"><div className="mt-chart__in" ref={ref}>
-        <svg className="mt-frise" viewBox={`0 0 ${W} ${H}`} width={W} height={H} role="img" aria-label={`Frise J${d0} à J${d1} : humeur, sommeil, variabilité cardiaque et temps avec l'équipage, avec et sans trouble ; verdicts des agents aux jours analysés`}>
+        <svg className="mt-frise" viewBox={`0 0 ${W} ${H}`} width={W} height={H} role="img" aria-label={`Timeline D${d0} to D${d1}: mood, sleep, heart rate variability and time with crew, with and without the disorder; agent verdicts on analyzed days`}>
           {/* papier d'ECG : seulement derrière les quatre voies de courbes, pas derrière les verdicts */}
           <defs>
             <pattern id="mt-ecg" width="25" height="25" patternUnits="userSpaceOnUse" x={L} y={TOP}>
@@ -165,11 +165,11 @@ function Frise({ sel, onSel, mlAlert }: { sel: { sc: Sc; day: number }; onSel: (
           {/* grille */}
           {ticks.map((d) => <line key={d} className="mt-frise__grid" x1={x(d)} x2={x(d)} y1={20} y2={BOTTOM} />)}
           <line className="mt-frise__mark" x1={x(ONSET)} x2={x(ONSET)} y1={20} y2={BOTTOM} />
-          <text x={x(ONSET) + 6} y={12}>Trouble simulé à partir de J{ONSET}</text>
+          <text x={x(ONSET) + 6} y={12}>Simulated disorder from D{ONSET}</text>
           {mlAlert !== null ? (
             <g>
               <line className="mt-frise__mark mt-frise__mark--dash" x1={x(mlAlert)} x2={x(mlAlert)} y1={80} y2={BOTTOM} />
-              <text x={x(mlAlert) - 6} y={88} textAnchor="end">Signal d'humeur : alerte J{mlAlert}</text>
+              <text x={x(mlAlert) - 6} y={88} textAnchor="end">Mood signal: alert D{mlAlert}</text>
             </g>
           ) : null}
           {/* pistes des verdicts */}
@@ -182,10 +182,10 @@ function Frise({ sel, onSel, mlAlert }: { sel: { sc: Sc; day: number }; onSel: (
                 const color = nivColor(n);
                 const on = sel.sc === t.sc && sel.day === dd.day;
                 return (
-                  <g key={dd.day} className="mt-verdict" role="button" tabIndex={0} aria-pressed={on} aria-label={`${SC_LABEL[t.sc]}, J${dd.day} : ${NIV_LABEL[n]}. Descendre au dossier du jour`}
+                  <g key={dd.day} className="mt-verdict" role="button" tabIndex={0} aria-pressed={on} aria-label={`${SC_LABEL[t.sc]}, D${dd.day}: ${NIV_LABEL[n]}. Go to the day's file`}
                     onClick={() => onSel(t.sc, dd.day)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSel(t.sc, dd.day); } }}>
                     {/* point de couleur ; survol et sélection = anneau fin autour */}
-                    <title>{`J${dd.day} · ${NIV_LABEL[n]} — cliquer pour descendre au dossier`}</title>
+                    <title>{`D${dd.day} · ${NIV_LABEL[n]} — click to go to the file`}</title>
                     <rect className="mt-verdict__hit" x={x(dd.day) - 13} y={t.y - 13} width={26} height={26} />
                     <circle className="mt-verdict__ring" cx={x(dd.day)} cy={t.y} r={9} />
                     <VerdictMark cx={x(dd.day)} cy={t.y} color={color} />
@@ -213,49 +213,49 @@ function Frise({ sel, onSel, mlAlert }: { sel: { sc: Sc; day: number }; onSel: (
           })}
           {/* axe */}
           {ticks.map((d) => (
-            <text key={d} x={x(d)} y={H - 6} textAnchor="middle">J{d}</text>
+            <text key={d} x={x(d)} y={H - 6} textAnchor="middle">D{d}</text>
           ))}
         </svg>
       </div></div>
-      {measured < 520 ? <p className="mt-chart__hint">La frise est plus large que l’écran : faire défiler →</p> : null}
+      {measured < 520 ? <p className="mt-chart__hint">The timeline is wider than the screen: scroll →</p> : null}
       <ul className="mt-legend">
-        <li><svg width="20" height="4" aria-hidden="true"><line className="mt-frise__line" x1="0" x2="20" y1="2" y2="2" /></svg>Avec trouble</li>
-        <li><svg width="20" height="4" aria-hidden="true"><line className="mt-frise__line mt-frise__line--ctrl" x1="0" x2="20" y1="2" y2="2" /></svg>Témoin</li>
+        <li><svg width="20" height="4" aria-hidden="true"><line className="mt-frise__line" x1="0" x2="20" y1="2" y2="2" /></svg>With disorder</li>
+        <li><svg width="20" height="4" aria-hidden="true"><line className="mt-frise__line mt-frise__line--ctrl" x1="0" x2="20" y1="2" y2="2" /></svg>Control</li>
         {(['rien', 'a_surveiller', 'proposer_un_echange'] as Niveau[]).map((n) => (
           <li key={n}><VerdictDot color={nivColor(n)} />{NIV_LABEL[n]}</li>
         ))}
-        <li className="mt-legend__note">Moyenne sur 3 jours</li>
+        <li className="mt-legend__note">3-day average</li>
       </ul>
     </div>
   );
 }
 
 const STEPS = [
-  { n: '1', t: 'Lunettes et montre', d: 'Captent la journée : scènes, temps de parole, repas, sommeil, variabilité cardiaque.' },
-  { n: '2', t: '3 observateurs IA', d: "Relèvent des faits, sans interpréter : actions, paroles, liens avec l'équipage." },
-  { n: '3', t: '3 psychologues IA', d: 'Chacun donne un niveau. Le niveau retenu est celui d’au moins 2 sur 3.' },
-  { n: '4', t: 'Psychologue humain', d: "Reçoit le dossier au sol et décide. L'astronaute ne peut pas couper le signal." },
+  { n: '1', t: 'Glasses and watch', d: 'Capture the day: scenes, speaking time, meals, sleep, heart rate variability.' },
+  { n: '2', t: '3 AI observers', d: 'Record facts without interpreting: actions, words, interactions with the crew.' },
+  { n: '3', t: '3 AI psychologists', d: 'Each gives a level. The level kept is the one shared by at least 2 of 3.' },
+  { n: '4', t: 'Human psychologist', d: 'Receives the file on the ground and decides. The astronaut cannot switch off the signal.' },
 ];
 
 function HowItWorks(): JSX.Element {
   return (
-    <Panel title="Fonctionnement">
+    <Panel title="How it works">
       <ol className="mt-steps">
         {STEPS.map((s) => (
           <li key={s.n} className="mt-step">
-            <Label>Étape {s.n}</Label>
+            <Label>Step {s.n}</Label>
             <h3 className="sz-section-title">{s.t}</h3>
             <p className="mt-step__text">{s.d}</p>
           </li>
         ))}
       </ol>
       <div className="mt-sim">
-        <h3 className="sz-section-title">Ce qui est simulé</h3>
+        <h3 className="sz-section-title">What is simulated</h3>
         <ul className="mt-list">
-          <li><strong>Haddad, astronaute fictif.</strong> 49 jours de vie à bord (J46 à J94), aucune personne réelle.</li>
-          <li><strong>Un trouble à partir de J{ONSET}.</strong> Il s'isole, dort moins, saute des repas. Les agents ne le savent pas.</li>
-          <li><strong>Un témoin.</strong> Les mêmes journées sans trouble, pour vérifier l'absence de fausse alerte.</li>
-          <li><strong>{DAYS.length} jours analysés</strong> ({DAYS.map((d) => `J${d}`).join(', ')}), chacun avec les 7 jours précédents. Biomarqueurs simulés.</li>
+          <li><strong>Haddad, a fictional astronaut.</strong> 49 days of life onboard (D46 to D94), no real person.</li>
+          <li><strong>A disorder starting D{ONSET}.</strong> He withdraws, sleeps less, skips meals. The agents do not know this.</li>
+          <li><strong>A control.</strong> The same days without the disorder, to check for false alerts.</li>
+          <li><strong>{DAYS.length} days analyzed</strong> ({DAYS.map((d) => `D${d}`).join(', ')}), each with the 7 preceding days. Simulated biomarkers.</li>
         </ul>
       </div>
     </Panel>
@@ -267,13 +267,13 @@ function Dossier({ x }: { x: DayFile }): JSX.Element {
   const faits = x.observers.flatMap((o) => (o.output?.faits ?? []).slice(0, 3)).slice(0, 8);
   return (
     <Panel
-      title={`Dossier du jour · J${x.day}`}
+      title={`Day file · D${x.day}`}
       className="mt-dossier"
       right={<StatusChip color={nivColor(d.niveau)} label={NIV_LABEL[d.niveau]} />}
       provenance="SIMULÉ"
     >
       <p className="mt-dossier__meta">
-        {SC_LABEL[x.scenario]} · niveau retenu par au moins 2 psychologues sur 3 · votes : {d.votes.map((v) => NIV_LABEL[v.niveau].toLowerCase()).join(', ')}
+        {SC_LABEL[x.scenario]} · level kept by at least 2 of 3 psychologists · votes: {d.votes.map((v) => NIV_LABEL[v.niveau].toLowerCase()).join(', ')}
       </p>
       <div className="mt-psys">
         {x.psychologists.map((p) => {
@@ -281,11 +281,11 @@ function Dossier({ x }: { x: DayFile }): JSX.Element {
           const note = o.noteAuPsy ?? '';
           return (
             <section key={p.id} className="mt-psy">
-              <h3 className="sz-section-title">{cap(p.label.replace('Psychologue — ', ''))}</h3>
+              <h3 className="sz-section-title">{cap(p.label.replace(/^(?:Psychologue|Psychologist) — /, ''))}</h3>
               <div className="mt-psy__level">
                 <StatusDot color={nivColor(o.niveau)} />
                 <span>{o.niveau ? NIV_LABEL[o.niveau] : '—'}</span>
-                {o.confiance ? <span className="mt-psy__conf">· confiance {CONF[o.confiance] ?? o.confiance}</span> : null}
+                {o.confiance ? <span className="mt-psy__conf">· {CONF[o.confiance] ?? o.confiance} confidence</span> : null}
               </div>
               {o.hypotheses?.[0]?.schema ? <p className="mt-psy__hyp">{o.hypotheses[0].schema}</p> : null}
               <p className="mt-psy__note">{note.length > 260 ? note.slice(0, 257) + '…' : note}</p>
@@ -296,18 +296,18 @@ function Dossier({ x }: { x: DayFile }): JSX.Element {
       <details className="mt-more">
         <summary className="sz-btn sz-btn--ghost sz-btn--sm">
           <svg className="mt-more__chev" viewBox="0 0 8 8" aria-hidden="true"><path d="M2.5 1l3 3-3 3" fill="none" stroke="currentColor" strokeWidth="1.3" /></svg>
-          Faits relevés par les observateurs ({faits.length})
+          Facts recorded by the observers ({faits.length})
         </summary>
         <ul className="mt-facts">
           {faits.map((f, i) => (
             <li key={i}>
               <span className="mt-facts__time">{f.heure}</span>
-              <span>{f.fait}{f.citation ? <span className="mt-facts__quote"> « {f.citation} »</span> : null}</span>
+              <span>{f.fait}{f.citation ? <span className="mt-facts__quote"> “{f.citation}”</span> : null}</span>
             </li>
           ))}
         </ul>
       </details>
-      <p className="mt-dossier__foot">Dossier transmis au psychologue humain au sol, qui décide. L'IA ne décide pas.</p>
+      <p className="mt-dossier__foot">File sent to the human psychologist on the ground, who decides. The AI does not decide.</p>
     </Panel>
   );
 }
@@ -341,16 +341,16 @@ export function Mental(): JSX.Element {
     target.addEventListener('scroll', onScroll, { passive: true });
     return () => target.removeEventListener('scroll', onScroll);
   }, []);
-  const engine = SUMMARY.model ? SUMMARY.model.replace(/^claude-(\w+)-(\d+)-(\d+)$/, (_m, n: string, a: string, b: string) => `Claude ${cap(n)} ${a}.${b}`) : 'modèle de langage';
+  const engine = SUMMARY.model ? SUMMARY.model.replace(/^claude-(\w+)-(\d+)-(\d+)$/, (_m, n: string, a: string, b: string) => `Claude ${cap(n)} ${a}.${b}`) : 'language model';
 
-  const back = <Link className="sz-link mt-back" to="/body">‹ Corps</Link>;
+  const back = <Link className="sz-link mt-back" to="/body">‹ Body</Link>;
 
   if (!DAYS.length) {
     return (
       <div className="sz-page mt-page">
         {back}
-        <header className="sz-page__head"><h1 className="sz-page__title">Santé mentale</h1></header>
-        <p className="mt-empty">Données insuffisantes : aucun résultat disponible.</p>
+        <header className="sz-page__head"><h1 className="sz-page__title">Mental health</h1></header>
+        <p className="mt-empty">Insufficient data: no results available.</p>
       </div>
     );
   }
@@ -360,10 +360,10 @@ export function Mental(): JSX.Element {
       {back}
       <header className="sz-page__head mt-head">
         <div>
-          <h1 className="sz-page__title">Santé mentale</h1>
+          <h1 className="sz-page__title">Mental health</h1>
           <p className="sz-page__sub">
-            Repérer tôt, laisser l'humain décider.
-            <span className="sz-detail"> Agents : {engine} ; cible : modèle embarqué à bord.</span>
+            Spot early, let a human decide.
+            <span className="sz-detail"> Agents: {engine}; target: onboard embedded model.</span>
           </p>
         </div>
         <div className="mt-head__right">
@@ -373,19 +373,19 @@ export function Mental(): JSX.Element {
       </header>
 
       <div className="mt-grid">
-        <Panel title="Résultat">
+        <Panel title="Result">
           <dl className="mt-stats">
             <Kpi
-              label="Échange proposé"
-              value={detected ? `J${detected.day}` : '—'}
-              note={detected ? `${detected.day - ONSET} jours après le début du trouble (J${ONSET})` : 'Aucune proposition d’échange'}
+              label="Conversation offered"
+              value={detected ? `D${detected.day}` : '—'}
+              note={detected ? `${detected.day - ONSET} days after disorder onset (D${ONSET})` : 'No conversation offered'}
             />
-            <Kpi label="Alerte du signal d'humeur" value={mlAlert !== null ? `J${mlAlert}` : '—'} note="Modèle de signal d'humeur, méthode indépendante" />
-            <Kpi label="Fausses alertes" value={String(ctrlEsc)} note="Chez le témoin, sans trouble" />
+            <Kpi label="Mood signal alert" value={mlAlert !== null ? `D${mlAlert}` : '—'} note="Mood signal model, independent method" />
+            <Kpi label="False alerts" value={String(ctrlEsc)} note="In the control, without the disorder" />
           </dl>
         </Panel>
 
-        <Panel title="Frise" right="Cliquer un point descend au dossier du jour">
+        <Panel title="Timeline" right="Click a point to go to the day’s file">
           <Frise sel={sel} onSel={pick} mlAlert={mlAlert} />
         </Panel>
 
@@ -396,13 +396,13 @@ export function Mental(): JSX.Element {
         <HowItWorks />
       </div>
 
-      <p className="mt-honest">Données entièrement simulées · aucune personne réelle · un signal à regarder, jamais un diagnostic.</p>
+      <p className="mt-honest">Fully simulated data · no real person · a signal to look at, never a diagnosis.</p>
 
       {/* rendu dans <body> : la page est animée à l'entrée (transform), ce qui casserait position: fixed */}
       {createPortal(
         <button type="button" className="sz-btn mt-totop" data-show={showTop} onClick={toTop} tabIndex={showTop ? 0 : -1} aria-hidden={!showTop}>
           <ArrowUp />
-          Haut de page
+          Back to top
         </button>,
         document.body,
       )}

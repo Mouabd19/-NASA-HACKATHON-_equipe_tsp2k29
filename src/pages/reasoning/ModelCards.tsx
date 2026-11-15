@@ -13,15 +13,14 @@ const pct = (x: unknown) => isNum(x) ? fmt(x * 100, 0) : '—';
 const n = (x: unknown, d = 2) => isNum(x) ? fmt(x, d) : '—';
 
 /** Texte d'une fiche → affichage : casse de phrase, virgule décimale, milliers espacés. */
-const prose = (s: string): string => plain(s.replace(/\s+→\s+/g, ', ').replace(/\s*Entraîné hors ligne avant la démo\./, ''))
-  .replace(/(\d)\.(\d)/g, '$1,$2')
-  .replace(/(?<![\d,])(\d{4,})(?![\d,])(?= (?:adultes|astronautes))/g, (m) => fmt(Number(m), 0));
-const capital = (s: string): string => s.charAt(0).toLocaleUpperCase('fr-FR') + s.slice(1);
+const prose = (s: string): string => plain(s.replace(/\s+→\s+/g, ', ').replace(/\s*(?:Entraîné hors ligne avant la démo|Trained offline before the demo)\./, ''))
+  .replace(/(?<![\d,])(\d{4,})(?![\d,])(?= (?:adultes|astronautes|adults|astronauts|virtual astronauts))/g, (m) => fmt(Number(m), 0));
+const capital = (s: string): string => s.charAt(0).toLocaleUpperCase('en-US') + s.slice(1);
 
 interface Stat { label: string; value: string; unit?: string }
 interface Row { k: string; organ: string; day: string; scen: string; ml: number; base: number; cov: number }
 
-const ORGAN: Record<string, string> = { hanche: 'Hanche', cuisse: 'Cuisse', coeur: 'Cœur' };
+const ORGAN: Record<string, string> = { hanche: 'Hip', cuisse: 'Thigh', coeur: 'Heart' };
 
 /** Modèle B : une ligne par organe / échéance / scénario. */
 function forecastRows(metrics: Record<string, unknown>): Row[] {
@@ -31,8 +30,8 @@ function forecastRows(metrics: Record<string, unknown>): Row[] {
       const [organ, day, scen] = k.split('/');
       const x = v as Record<string, number>;
       return {
-        k, organ: ORGAN[organ] ?? organ, day: day === '210' ? 'Sol 0' : `J${day}`,
-        scen: scen === 'plan' ? 'Avec le plan' : 'Rythme actuel',
+        k, organ: ORGAN[organ] ?? organ, day: day === '210' ? 'Sol 0' : `D${day}`,
+        scen: scen === 'plan' ? 'With the plan' : 'Current pace',
         ml: x.mae_median, base: x.mae_baseline_without_ml, cov: x.coverage_10_90,
       };
     });
@@ -42,14 +41,14 @@ function forecastRows(metrics: Record<string, unknown>): Row[] {
 function headline(c: ModelCard): Stat[] {
   const m = c.metrics as Record<string, unknown>;
   if (c.id === 'blood-age') return [
-    { label: 'Précision (R²)', value: n(m.r2) },
-    { label: 'Erreur moyenne', value: `± ${n(m.mae_years, 1)}`, unit: 'ans' },
-    { label: 'Échantillon', value: isNum(m.n_test) ? fmt(m.n_test, 0) : '—' },
+    { label: 'Accuracy (R²)', value: n(m.r2) },
+    { label: 'Mean error', value: `± ${n(m.mae_years, 1)}`, unit: 'yr' },
+    { label: 'Sample', value: isNum(m.n_test) ? fmt(m.n_test, 0) : '—' },
   ];
   if (c.id === 'mood-risk') return [
-    { label: 'Détection', value: pct(m.detection_rate), unit: '%' },
-    { label: 'Délai médian', value: n(m.median_delay_days, 0), unit: 'j' },
-    { label: 'Fausses alertes', value: pct(m.false_alarm_rate_astronauts), unit: '%' },
+    { label: 'Detection', value: pct(m.detection_rate), unit: '%' },
+    { label: 'Median delay', value: n(m.median_delay_days, 0), unit: 'd' },
+    { label: 'False alarms', value: pct(m.false_alarm_rate_astronauts), unit: '%' },
     { label: 'AUC', value: n(m.auc_test, 3) },
   ];
   if (c.id === 'organ-forecast') {
@@ -59,8 +58,8 @@ function headline(c: ModelCard): Stat[] {
     const better = rows.filter((r) => r.ml < r.base).length;
     return [
       { label: 'Projections', value: fmt(rows.length, 0) },
-      { label: 'Gain vs référence', value: `${better} / ${rows.length}` },
-      ...(cov.length ? [{ label: 'Couverture', value: `${pct(Math.min(...cov))}–${pct(Math.max(...cov))}`, unit: '%' }] : []),
+      { label: 'Better than baseline', value: `${better} / ${rows.length}` },
+      ...(cov.length ? [{ label: 'Coverage', value: `${pct(Math.min(...cov))}–${pct(Math.max(...cov))}`, unit: '%' }] : []),
     ];
   }
   return Object.entries(m)
@@ -75,8 +74,8 @@ function ForecastTable({ rows }: { rows: Row[] }) {
       <table className="sz-table rs-table">
         <thead>
           <tr>
-            <th>Organe</th><th>Échéance</th><th>Scénario</th>
-            <th className="sz-num">Erreur du modèle</th><th className="sz-num">Sans modèle</th><th className="sz-num">Bande 10–90 %</th>
+            <th>Organ</th><th>Horizon</th><th>Scenario</th>
+            <th className="sz-num">Model error</th><th className="sz-num">Without model</th><th className="sz-num">10–90% band</th>
           </tr>
         </thead>
         <tbody>
@@ -85,12 +84,12 @@ function ForecastTable({ rows }: { rows: Row[] }) {
               <td>{r.organ}</td><td>{r.day}</td><td className="rs-table__dim">{r.scen}</td>
               <td className={r.ml < r.base ? 'sz-num' : 'sz-num rs-table__worse'}>{n(r.ml)}</td>
               <td className="sz-num rs-table__dim">{n(r.base)}</td>
-              <td className="sz-num rs-table__dim">{pct(r.cov)} %</td>
+              <td className="sz-num rs-table__dim">{pct(r.cov)}%</td>
             </tr>
           ))}
         </tbody>
       </table>
-      <p className="rs-table__note">Erreur absolue moyenne, en points de perte, sur l'échantillon de test.</p>
+      <p className="rs-table__note">Mean absolute error, in loss points, on the test sample.</p>
     </div>
   );
 }
@@ -125,32 +124,32 @@ function Card({ c }: { c: ModelCard }) {
         <details className="rs-more">
           <summary className="sz-btn sz-btn--ghost sz-btn--sm">
             <svg className="rs-more__chev" viewBox="0 0 8 8" aria-hidden="true"><path d="M2.5 1l3 3-3 3" fill="none" stroke="currentColor" strokeWidth="1.3" /></svg>
-            Méthode et limites
+            Method and limitations
           </summary>
           <dl className="rs-more__content">
             {method && (
               <div className="rs-def__row">
-                <dt><Label>Méthode</Label></dt>
+                <dt><Label>Method</Label></dt>
                 <dd>{capital(prose(method))}</dd>
               </div>
             )}
             <div className="rs-def__row">
-              <dt><Label>Apprentissage</Label></dt>
+              <dt><Label>Learning</Label></dt>
               <dd>{prose(c.learning)}</dd>
             </div>
             <div className="rs-def__row">
-              <dt><Label>Données</Label></dt>
+              <dt><Label>Data</Label></dt>
               <dd>{prose(c.data)}</dd>
             </div>
             {rows.length > 0 && (
               <div className="rs-def__row">
-                <dt><Label>Erreur sur le test</Label></dt>
+                <dt><Label>Test error</Label></dt>
                 <dd><ForecastTable rows={rows} /></dd>
               </div>
             )}
             {c.limits.length > 0 && (
               <div className="rs-def__row">
-                <dt><Label>Limites</Label></dt>
+                <dt><Label>Limitations</Label></dt>
                 <dd>
                   <ul className="rs-limits">
                     {c.limits.map((l) => <li key={l}>{prose(l)}</li>)}
@@ -170,9 +169,9 @@ export function ModelCards() {
   if (!cards.length) return null;
   return (
     <section className="rs-models" aria-labelledby="rs-models-title">
-      <h2 id="rs-models-title" className="rs-models__title">Modèles d'IA</h2>
+      <h2 id="rs-models-title" className="rs-models__title">AI models</h2>
       <p className="rs-models__sub sz-detail">
-        Entraînés avant la mission, calculés à bord sans réseau. Les seuils d'alerte restent des normes NASA.
+        Trained before the mission, run onboard without a network. Alert thresholds remain NASA standards.
       </p>
       <div className="rs-models__list">
         {cards.map((c) => <Card key={c.id} c={c} />)}

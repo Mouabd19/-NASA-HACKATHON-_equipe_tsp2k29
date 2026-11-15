@@ -3,20 +3,20 @@
  "date": "2026-11-05",
  "scenario": "control",
  "model": "claude-haiku-5-5",
- "label": "Prototype — données SIMULÉES — signal IA, pas un diagnostic",
+ "label": "Prototype — SIMULATED data — AI signal, not a diagnosis",
  "input": {
   "transcript": [
-   "06:41 — Réveil. Se lève directement.",
-   "07:30 — Petit-déjeuner avec l'équipage. Haddad : « On attaque le module 3 après le café ? » Échange suivi avec Okafor (3 répliques). Rit à une blague d'Okafor.",
-   "08:30 — Briefing avec la Terre (message différé). Haddad pose deux questions sur le planning et propose une modification.",
-   "10:00 — Maintenance du système de filtration d'air : abandonnée en cours, reportée à demain. Haddad : « C'est bon, j'ai pas besoin d'aide. »",
-   "12:40 — Mange seul dans sa cabine, ration à moitié entamée.",
-   "14:00 — Séance d'exercice : complète (60 min ARED + vélo). Dit se sentir reposé.",
-   "16:00 — Expérience de biologie avec Okafor. Haddad plaisante et propose une variante du protocole.",
-   "17:30 — Appel vidéo différé avec sa famille (messages enregistrés). Message enregistré de 9 min, sourit.",
-   "19:30 — Dîner commun. Haddad : « Ce soir film, c'est moi qui choisis. »",
-   "21:00 — Décline la soirée film proposée par Ito : « Faites sans moi ce soir. »",
-   "23:50 — Coucher."
+   "06:41 — Wakes up. Gets up right away.",
+   "07:30 — Breakfast with the crew. Haddad: “Shall we tackle module 3 after coffee?” Sustained exchange with Okafor (3 lines). Laughs at a joke by Okafor.",
+   "08:30 — Briefing with Earth (delayed message). Haddad asks two questions about the schedule and suggests a change.",
+   "10:00 — Air filtration system maintenance: abandoned midway, postponed to tomorrow. Haddad: “It's fine, I don't need help.”",
+   "12:40 — Eats alone in his cabin, ration half eaten.",
+   "14:00 — Exercise session: complete (60 min ARED + bike). Says he feels rested.",
+   "16:00 — Biology experiment with Okafor. Haddad jokes and suggests a variation of the protocol.",
+   "17:30 — Delayed video call with his family (recorded messages). 9-min recorded message, smiles.",
+   "19:30 — Shared dinner. Haddad: “Movie tonight, I'm choosing.”",
+   "21:00 — Declines the movie night suggested by Ito: “Go ahead without me tonight.”",
+   "23:50 — Goes to bed."
   ],
   "sensors": {
    "tempsDeParoleMin": 52,
@@ -35,121 +35,121 @@
  "observers": [
   {
    "id": "obs-actions",
-   "label": "Observateur — actions et comportements",
+   "label": "Observer — actions and behavior",
    "output": {
     "faits": [
      {
       "heure": "06:41",
-      "fait": "Se lève directement après le réveil.",
+      "fait": "Gets up right away after wake-up.",
       "citation": null
      },
      {
       "heure": "10:00",
-      "fait": "Abandonne en cours la maintenance du système de filtration d'air et la reporte au lendemain.",
-      "citation": "C'est bon, j'ai pas besoin d'aide."
+      "fait": "Abandons the air filtration system maintenance midway and postpones it to the next day.",
+      "citation": "It's fine, I don't need help."
      },
      {
       "heure": "12:40",
-      "fait": "Prend son repas seul dans sa cabine et ne consomme qu'à moitié sa ration.",
+      "fait": "Eats his meal alone in his cabin and only eats half his ration.",
       "citation": null
      },
      {
       "heure": "14:00",
-      "fait": "Effectue la séance d'exercice complète (60 min ARED et vélo).",
+      "fait": "Completes the full exercise session (60 min ARED and bike).",
       "citation": null
      },
      {
       "heure": "21:00",
-      "fait": "Décline la soirée film proposée par Ito.",
-      "citation": "Faites sans moi ce soir."
+      "fait": "Declines the movie night suggested by Ito.",
+      "citation": "Go ahead without me tonight."
      },
      {
       "heure": "23:50",
-      "fait": "Se couche.",
+      "fait": "Goes to bed.",
       "citation": null
      }
     ],
-    "resume": "Haddad s'est levé à 06:41 et s'est couché à 23:50, avec une séance d'exercice complète dans l'après-midi. Il a abandonné une maintenance en cours, pris un repas seul avec une ration à moitié consommée et décliné la soirée film de l'équipage."
+    "resume": "Haddad got up at 06:41 and went to bed at 23:50, with a full exercise session in the afternoon. He abandoned a maintenance task midway, ate a meal alone with a half-eaten ration and declined the crew's movie night."
    },
    "seconds": 4.4
   },
   {
    "id": "obs-paroles",
-   "label": "Observateur — paroles et interactions",
+   "label": "Observer — speech and interactions",
    "output": {
     "faits": [
      {
       "heure": "07:30",
-      "fait": "Prend l'initiative d'un échange avec l'équipage au petit-déjeuner, puis échange avec Okafor sur trois répliques.",
-      "citation": "On attaque le module 3 après le café ?"
+      "fait": "Takes the initiative to talk with the crew at breakfast, then exchanges three lines with Okafor.",
+      "citation": "Shall we tackle module 3 after coffee?"
      },
      {
       "heure": "10:00",
-      "fait": "Refuse l'aide proposée pour la maintenance du système de filtration d'air, qui est abandonnée et reportée.",
-      "citation": "C'est bon, j'ai pas besoin d'aide."
+      "fait": "Refuses the help offered for the air filtration system maintenance, which is abandoned and postponed.",
+      "citation": "It's fine, I don't need help."
      },
      {
       "heure": "12:40",
-      "fait": "Prend son repas seul dans sa cabine.",
+      "fait": "Eats his meal alone in his cabin.",
       "citation": null
      },
      {
       "heure": "17:30",
-      "fait": "Enregistre un message vidéo de 9 min pour sa famille lors de l'appel différé.",
+      "fait": "Records a 9-min video message for his family during the delayed call.",
       "citation": null
      },
      {
       "heure": "19:30",
-      "fait": "Propose au dîner commun de choisir le film de la soirée.",
-      "citation": "Ce soir film, c'est moi qui choisis."
+      "fait": "Offers at the shared dinner to choose the evening's movie.",
+      "citation": "Movie tonight, I'm choosing."
      },
      {
       "heure": "21:00",
-      "fait": "Décline la soirée film proposée par Ito et demande à l'équipage de continuer sans lui.",
-      "citation": "Faites sans moi ce soir."
+      "fait": "Declines the movie night suggested by Ito and asks the crew to go ahead without him.",
+      "citation": "Go ahead without me tonight."
      }
     ],
-    "resume": "Haddad prend l'initiative dans plusieurs échanges avec l'équipage (petit-déjeuner, dîner) mais refuse une aide et la soirée film proposée. Il mange seul à midi, enregistre un message de 9 min pour sa famille, et son temps de parole mesuré sur la journée est de 52 min."
+    "resume": "Haddad takes the initiative in several exchanges with the crew (breakfast, dinner) but refuses help and the suggested movie night. He eats alone at noon, records a 9-min message for his family, and his measured speaking time for the day is 52 min."
    },
    "seconds": 7.1
   },
   {
    "id": "obs-corps",
-   "label": "Observateur — corps et ressentis",
+   "label": "Observer — body and feelings",
    "output": {
     "faits": [
      {
       "heure": "06:41",
-      "fait": "Se lève directement après le réveil.",
+      "fait": "Gets up right away after wake-up.",
       "citation": null
      },
      {
       "heure": "10:00",
-      "fait": "Interrompt la maintenance du système de filtration d'air en cours et la reporte au lendemain.",
-      "citation": "C'est bon, j'ai pas besoin d'aide."
+      "fait": "Stops the air filtration system maintenance midway and postpones it to the next day.",
+      "citation": "It's fine, I don't need help."
      },
      {
       "heure": "12:40",
-      "fait": "Mange seul dans sa cabine, avec une ration à moitié entamée.",
+      "fait": "Eats alone in his cabin, with a half-eaten ration.",
       "citation": null
      },
      {
       "heure": "14:00",
-      "fait": "Réalise la séance d'exercice complète (60 min ARED et vélo) et indique se sentir reposé.",
+      "fait": "Completes the full exercise session (60 min ARED and bike) and says he feels rested.",
       "citation": null
      },
      {
       "heure": "17:30",
-      "fait": "Sourit pendant un message vidéo enregistré de 9 minutes.",
+      "fait": "Smiles during a 9-minute recorded video message.",
       "citation": null
      },
      {
       "heure": "23:50",
-      "fait": "Se couche après 7 heures de sommeil enregistrées dans la journée précédente selon les capteurs.",
+      "fait": "Goes to bed after 7 hours of sleep recorded over the previous day according to the sensors.",
       "citation": null
      }
     ],
-    "resume": "Haddad a effectué la séance d'exercice complète et déclare se sentir reposé, avec 4186 pas et 1 repas sauté selon les capteurs. Il a mangé seul à midi, ration à moitié entamée, et a sourit pendant le message enregistré de 17:30."
+    "resume": "Haddad completed the full exercise session and says he feels rested, with 4,186 steps and 1 skipped meal according to the sensors. He ate alone at noon, ration half eaten, and smiled during the recorded message at 17:30."
    },
    "seconds": 5.7
   }
@@ -157,136 +157,136 @@
  "psychologists": [
   {
    "id": "psy-physique",
-   "label": "Psychologue — état physico-psychique",
+   "label": "Psychologist — physical and psychological state",
    "output": {
     "niveau": "rien",
     "confiance": "moyenne",
     "hypotheses": [
      {
-      "schema": "Repli social ponctuel en fin de journée, à regarder au prochain jour. Il est concentré sur les repas et les moments communs, sans signal sur la parole ni sur l'humeur.",
+      "schema": "One-off social withdrawal at the end of the day, to watch tomorrow. It centers on meals and shared moments, with no signal on speech or mood.",
       "preuves": [
-       "Temps avec l'équipage à 104 min, soit -42 % vs référence 180.1 min, alors que la moyenne 7 j est stable (179.7 min)",
-       "Repas pris seul en cabine à 12:40, ration à moitié consommée, repas sauté compté à 1 (+100 % vs 0.5)",
-       "Refus de la soirée film (« Faites sans moi ce soir ») après une proposition d'Ito à 21:00"
+       "Time with the crew at 104 min, i.e. -42% vs baseline 180.1 min, while the 7-day average is stable (179.7 min)",
+       "Meal eaten alone in his cabin at 12:40, ration half eaten, skipped meals counted at 1 (+100% vs 0.5)",
+       "Declined the movie night (“Go ahead without me tonight”) after Ito suggested it at 21:00"
       ]
      },
      {
-      "schema": "Possible frustration liée à la maintenance technique, à vérifier. Le refus d'aide et l'abandon de la tâche sont observés le même matin.",
+      "schema": "Possible frustration related to the technical maintenance, to be checked. The refusal of help and the abandoned task are observed the same morning.",
       "preuves": [
-       "Maintenance du système de filtration d'air abandonnée à 10:00 et reportée au lendemain",
-       "Refus d'aide : « C'est bon, j'ai pas besoin d'aide. »",
-       "Les trois observateurs relèvent cet épisode, sans panne ni incident signalé"
+       "Air filtration system maintenance abandoned at 10:00 and postponed to the next day",
+       "Refusal of help: “It's fine, I don't need help.”",
+       "All three observers note this episode, with no equipment failure or incident reported"
       ]
      }
     ],
     "ecartsReference": [
-     "Temps avec l'équipage : 104 min aujourd'hui, -42 % vs référence 180.1 min (moyenne 7 j stable à 179.7 min)",
-     "Repas sautés : 1 aujourd'hui, +100 % vs référence 0.5 (moyenne 7 j à 0.3, soit -40 %)",
-     "Humeur déclarée : 5/5 aujourd'hui, +32 % vs référence 3.8 (moyenne 7 j à 3.9, soit +3 %)"
+     "Time with the crew: 104 min today, -42% vs baseline 180.1 min (7-day average stable at 179.7 min)",
+     "Skipped meals: 1 today, +100% vs baseline 0.5 (7-day average at 0.3, i.e. -40%)",
+     "Self-reported mood: 5/5 today, +32% vs baseline 3.8 (7-day average at 3.9, i.e. +3%)"
     ],
     "pointsRassurants": [
-     "Sommeil de 7 h, dans la référence (+1 %), stable sur 7 jours",
-     "VFC à 54.7 ms, -4 % vs référence, moyenne 7 j à -2 % : pas de dérive",
-     "Prise d'initiative au petit-déjeuner et au dîner, temps de parole à 52 min (+7 %)",
-     "Séance d'exercice complète à 14:00 et message vidéo de 9 min pour la famille à 17:30",
-     "Écart sur le temps avec l'équipage isolé à J85 : J83 à -26 %, J84 revenu à +23 %"
+     "Sleep of 7 h, at baseline (+1%), stable over 7 days",
+     "HRV at 54.7 ms, -4% vs baseline, 7-day average at -2%: no drift",
+     "Initiative at breakfast and dinner, speaking time at 52 min (+7%)",
+     "Full exercise session at 14:00 and a 9-min video message for his family at 17:30",
+     "Deviation in time with the crew isolated to D85: D83 at -26%, D84 back to +23%"
     ],
-    "noteAuPsy": "Journée isolée où le temps avec l'équipage et les repas sautés s'écartent, mais la veille (J84) était dans la norme et la tendance sur 7 jours reste stable. Le déclaratif (humeur 5/5, « reposé ») est en décalage avec le retrait observé et la fatigue à 3/5, à explorer lors d'un échange informel. Un point au prochain jour suffira si le repli sur les repas ou les temps communs se répète."
+    "noteAuPsy": "An isolated day on which time with the crew and skipped meals deviate, but the day before (D84) was within normal range and the 7-day trend remains stable. The self-report (mood 5/5, “rested”) is at odds with the observed withdrawal and fatigue at 3/5, to be explored in an informal conversation. A check-in tomorrow will be enough if the withdrawal from meals or shared time recurs."
    },
    "seconds": 12.9
   },
   {
    "id": "psy-anxiete",
-   "label": "Psychologue — rapport à l'anxiété",
+   "label": "Psychologist — anxiety",
    "output": {
     "niveau": "rien",
     "confiance": "moyenne",
     "hypotheses": [
      {
-      "schema": "Retrait social marqué aujourd'hui, sans persistance sur les 7 derniers jours. À regarder au prochain jour.",
+      "schema": "Marked social withdrawal today, not persisting over the last 7 days. To watch tomorrow.",
       "preuves": [
-       "Temps avec l'équipage à 104 min, soit -42 % vs référence 180.1 min (moyenne 7 j : 0 %)",
-       "Repas pris seul en cabine à 12:40, ration à moitié consommée",
-       "Décline la soirée film à 21:00 : «Faites sans moi ce soir.»"
+       "Time with the crew at 104 min, i.e. -42% vs baseline 180.1 min (7-day average: 0%)",
+       "Meal eaten alone in his cabin at 12:40, ration half eaten",
+       "Declines the movie night at 21:00: “Go ahead without me tonight.”"
       ]
      },
      {
-      "schema": "Refus d'aide et autonomie affirmée, possible signe de tension à surveiller. Non confirmé : aucun emportement rapporté.",
+      "schema": "Refusal of help and asserted autonomy, a possible sign of tension to monitor. Not confirmed: no outburst reported.",
       "preuves": [
-       "Refuse l'aide à 10:00 : «C'est bon, j'ai pas besoin d'aide.»",
-       "Maintenance du filtre d'air abandonnée et reportée au lendemain",
-       "Aucun fait d'irritabilité ou d'emportement rapporté par les trois observateurs"
+       "Refuses help at 10:00: “It's fine, I don't need help.”",
+       "Air filter maintenance abandoned and postponed to the next day",
+       "No irritability or outburst reported by the three observers"
       ]
      },
      {
-      "schema": "Écart entre humeur déclarée haute et comportement de retrait : incongruence à regarder.",
+      "schema": "Gap between high self-reported mood and withdrawal behavior: an inconsistency to watch.",
       "preuves": [
-       "Humeur déclarée à 5/5, contre 4/5 les jours précédents (J79 à J84)",
-       "Sourit pendant le message vidéo de 9 min à 17:30",
-       "Propose lui-même le choix du film au dîner à 19:30"
+       "Self-reported mood at 5/5, vs 4/5 on previous days (D79 to D84)",
+       "Smiles during the 9-min video message at 17:30",
+       "Offers to choose the movie himself at dinner at 19:30"
       ]
      }
     ],
     "ecartsReference": [
-     "Temps avec l'équipage : 104 min, -42 % vs référence 180.1 min",
-     "Repas sautés : 1, +100 % vs référence 0.5 (moyenne 7 j : -40 %)",
-     "Humeur déclarée : 5/5, +32 % vs référence 3.8 (écart positif, à lire avec le retrait)"
+     "Time with the crew: 104 min, -42% vs baseline 180.1 min",
+     "Skipped meals: 1, +100% vs baseline 0.5 (7-day average: -40%)",
+     "Self-reported mood: 5/5, +32% vs baseline 3.8 (positive deviation, to be read alongside the withdrawal)"
     ],
     "pointsRassurants": [
-     "Prend l'initiative d'un échange au petit-déjeuner, avec trois répliques avec Okafor",
-     "Séance d'exercice complète à 14:00, se dit reposé",
-     "Sommeil de 7 h, stable (moyenne 7 j : 6.9 h, écart 0 %)",
-     "VFC à 54.7 ms, seulement -4 % vs référence, moyenne 7 j -2 %",
-     "Temps de parole à 52 min, +7 % vs référence, et message de 9 min pour sa famille"
+     "Takes the initiative to talk at breakfast, with three lines exchanged with Okafor",
+     "Full exercise session at 14:00, says he feels rested",
+     "Sleep of 7 h, stable (7-day average: 6.9 h, 0% deviation)",
+     "HRV at 54.7 ms, only -4% vs baseline, 7-day average -2%",
+     "Speaking time at 52 min, +7% vs baseline, and a 9-min message for his family"
     ],
-    "noteAuPsy": "Retrait social et repas seul marqués sur J85 seulement : l'écart n'est pas persistant, donc niveau rien, les seuils (2 indicateurs sur au moins 2 des 3 derniers jours) n'étant pas atteints. Le refus d'aide et l'incongruence entre humeur haute et retrait sont à regarder au prochain jour, notamment J86. Le cortisol n'est pas mesuré aujourd'hui, ce qui limite la lecture."
+    "noteAuPsy": "Social withdrawal and eating alone marked on D85 only: the deviation is not persistent, so the level is nothing to report, since the thresholds (2 indicators on at least 2 of the last 3 days) are not met. The refusal of help and the inconsistency between high mood and withdrawal are worth watching tomorrow, especially D86. Cortisol was not measured today, which limits the reading."
    },
    "seconds": 14.3
   },
   {
    "id": "psy-social",
-   "label": "Psychologue — lien social et isolement",
+   "label": "Psychologist — social ties and isolation",
    "output": {
     "niveau": "rien",
     "confiance": "moyenne",
     "hypotheses": [
      {
-      "schema": "Retrait social ponctuel sur J85 : temps avec l'équipage nettement sous la référence, sans persistance sur les jours précédents.",
+      "schema": "One-off social withdrawal on D85: time with the crew clearly below baseline, not persisting from previous days.",
       "preuves": [
-       "Temps avec l'équipage de 104 min, soit -42 % par rapport à la référence de 180,1 min",
-       "Refus de la soirée film proposée par Ito avec la phrase « Faites sans moi ce soir »",
-       "Repas pris seul dans sa cabine à 12:40, ration à moitié consommée"
+       "Time with the crew of 104 min, i.e. -42% relative to the 180.1 min baseline",
+       "Declined the movie night suggested by Ito with the sentence “Go ahead without me tonight”",
+       "Meal eaten alone in his cabin at 12:40, ration half eaten"
       ]
      },
      {
-      "schema": "Concentration sur la tâche et refus d'aide à surveiller : maintenance abandonnée et fatigue déclarée un peu plus élevée ces deux derniers jours.",
+      "schema": "Focus on the task and refusal of help to monitor: maintenance abandoned and self-reported fatigue slightly higher over the last two days.",
       "preuves": [
-       "Maintenance du filtre d'air interrompue à 10:00 après le refus « C'est bon, j'ai pas besoin d'aide »",
-       "Fatigue déclarée de 3/5 sur J84 et J85, contre 1 à 2/5 les jours précédents",
-       "Sommeil stable à 7 h et VFC à 54,7 ms (-4 %), sans signe de dégradation physiologique"
+       "Air filter maintenance stopped at 10:00 after the refusal “It's fine, I don't need help”",
+       "Self-reported fatigue of 3/5 on D84 and D85, vs 1 to 2/5 on previous days",
+       "Sleep stable at 7 h and HRV at 54.7 ms (-4%), with no sign of physiological deterioration"
       ]
      }
     ],
     "ecartsReference": [
-     "Temps avec l'équipage : -42 % aujourd'hui (104 min contre 180,1 min de référence), moyenne 7 j stable à 0 %",
-     "Repas sautés : +100 % aujourd'hui (1 contre 0,5 de référence), mais moyenne 7 j à -40 %",
-     "Humeur déclarée : +32 % aujourd'hui (5 contre 3,8 de référence), écart positif"
+     "Time with the crew: -42% today (104 min vs 180.1 min baseline), 7-day average stable at 0%",
+     "Skipped meals: +100% today (1 vs 0.5 baseline), but 7-day average at -40%",
+     "Self-reported mood: +32% today (5 vs 3.8 baseline), positive deviation"
     ],
     "pointsRassurants": [
-     "Humeur déclarée à 5/5, la plus haute de l'historique récent, et sourire pendant le message à la famille",
-     "Initiative prise au petit-déjeuner (« On attaque le module 3 après le café ? ») et échanges avec Okafor",
-     "Séance d'exercice complète, 9 min de message vidéo pour la famille, sommeil stable à 7 h",
-     "Temps avec l'équipage de 222 min à J84, retour à un niveau proche de la référence après J83",
-     "VFC proche de la référence (-4 %) et temps de parole au-dessus de la référence (+7 %)"
+     "Self-reported mood at 5/5, the highest in recent history, and smiling during the message to his family",
+     "Initiative taken at breakfast (“Shall we tackle module 3 after coffee?”) and exchanges with Okafor",
+     "Full exercise session, 9-min video message for his family, sleep stable at 7 h",
+     "Time with the crew of 222 min on D84, back to a level close to baseline after D83",
+     "HRV close to baseline (-4%) and speaking time above baseline (+7%)"
     ],
-    "noteAuPsy": "Un seul jour (J85) présente un retrait social marqué : temps avec l'équipage à -42 % et repas pris seul, alors que les jours J79 à J84 restent dans la variation habituelle. Le critère de persistance n'est pas atteint, et l'humeur déclarée et les échanges de la journée sont plutôt positifs. À surveiller lors des prochains jours : si le temps avec l'équipage reste bas ou si les refus sociaux se répètent, un suivi sera pertinent."
+    "noteAuPsy": "Only one day (D85) shows marked social withdrawal: time with the crew at -42% and a meal eaten alone, while D79 to D84 remain within usual variation. The persistence criterion is not met, and the day's self-reported mood and exchanges are rather positive. To monitor over the next few days: if time with the crew stays low or social refusals recur, follow-up will be appropriate."
    },
    "seconds": 12.6
   }
  ],
  "dossierPourLePsyHumain": {
   "niveau": "rien",
-  "regle": "niveau atteint par au moins 2 psychologues sur 3",
+  "regle": "level reached by at least 2 of 3 psychologists",
   "votes": [
    {
     "psy": "psy-physique",

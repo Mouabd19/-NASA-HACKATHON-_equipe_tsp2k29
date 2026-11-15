@@ -13,15 +13,15 @@ type Draft = Partial<Pick<CheckInZones, Key>> & { painZones?: OrganId[] };
 
 // Échelles du contrat src/types.ts (CheckIn) : 1–5, douleur 0–3.
 const ROWS: { key: Key; label: string; low: string; high: string; scale: readonly number[] }[] = [
-  { key: 'mood', label: 'Humeur', low: 'très basse', high: 'excellente', scale: [1, 2, 3, 4, 5] },
-  { key: 'fatigue', label: 'Fatigue', low: 'aucune', high: 'épuisé', scale: [1, 2, 3, 4, 5] },
-  { key: 'pain', label: 'Douleur', low: 'aucune', high: 'maximale', scale: [0, 1, 2, 3] },
-  { key: 'sleepFelt', label: 'Sommeil', low: 'très mauvais', high: 'excellent', scale: [1, 2, 3, 4, 5] },
+  { key: 'mood', label: 'Mood', low: 'very low', high: 'excellent', scale: [1, 2, 3, 4, 5] },
+  { key: 'fatigue', label: 'Fatigue', low: 'none', high: 'exhausted', scale: [1, 2, 3, 4, 5] },
+  { key: 'pain', label: 'Pain', low: 'none', high: 'severe', scale: [0, 1, 2, 3] },
+  { key: 'sleepFelt', label: 'Sleep', low: 'very poor', high: 'excellent', scale: [1, 2, 3, 4, 5] },
 ];
 
 const ZONES: { id: OrganId; label: string }[] = [
-  { id: 'hanche', label: 'Hanche' }, { id: 'rachis', label: 'Dos' }, { id: 'cuisse', label: 'Cuisse' },
-  { id: 'mollet', label: 'Mollet' }, { id: 'cerveau', label: 'Tête' }, { id: 'yeux', label: 'Yeux' },
+  { id: 'hanche', label: 'Hip' }, { id: 'rachis', label: 'Back' }, { id: 'cuisse', label: 'Thigh' },
+  { id: 'mollet', label: 'Calf' }, { id: 'cerveau', label: 'Head' }, { id: 'yeux', label: 'Eyes' },
 ];
 
 /** Notes qui déclenchent le triage (mêmes seuils que triage / planDay, à confirmer par Mouad). */
@@ -43,14 +43,14 @@ export function CheckInCard({ day, done }: { day: number; done: CheckInZones | n
     const zone = zones.length ? zones.join(', ') : null;
     return (
       <Panel
-        title="Check-in du matin"
+        title="Morning check-in"
         provenance="RÉEL"
-        right={<Btn kind="quiet" size="sm" onClick={() => { setD({ ...done, painZones: painZonesOf(done) }); setOpen(true); }}>Modifier</Btn>}
+        right={<Btn kind="quiet" size="sm" onClick={() => { setD({ ...done, painZones: painZonesOf(done) }); setOpen(true); }}>Edit</Btn>}
       >
         <div className="wr-kv">
           {ROWS.map((r) => (
             <Summary key={r.key} label={r.label} v={done[r.key]} max={r.scale[r.scale.length - 1]} alert={TRIGGERS[r.key](done[r.key])} red={r.key === 'pain' && done.pain >= 3}
-              extra={r.key === 'pain' && done.pain > 0 ? (zone ?? 'zone non précisée') : undefined} />
+              extra={r.key === 'pain' && done.pain > 0 ? (zone ?? 'location not specified') : undefined} />
           ))}
         </div>
       </Panel>
@@ -73,18 +73,18 @@ export function CheckInCard({ day, done }: { day: number; done: CheckInZones | n
   };
 
   return (
-    <Panel title="Check-in du matin" provenance="RÉEL" className="wr-checkin">
+    <Panel title="Morning check-in" provenance="RÉEL" className="wr-checkin">
       <div className="wr-ci">
         {ROWS.map((r) => (
           <div key={r.key} className="wr-row">
             <div id={`ci-${r.key}`} className="wr-row__label">{r.label}</div>
-            <Segmented ariaLabel={`${r.label}, de ${r.scale[0]} à ${r.scale[r.scale.length - 1]}`} describedBy={`ci-${r.key}-hint`} values={r.scale} value={d[r.key]} onChange={(v) => set(r.key, v)} />
+            <Segmented ariaLabel={`${r.label}, ${r.scale[0]} to ${r.scale[r.scale.length - 1]}`} describedBy={`ci-${r.key}-hint`} values={r.scale} value={d[r.key]} onChange={(v) => set(r.key, v)} />
             <div id={`ci-${r.key}-hint`} className="wr-row__hint"><span>{r.scale[0]} {r.low}</span><span>{r.scale[r.scale.length - 1]} {r.high}</span></div>
           </div>
         ))}
         {d.pain !== undefined && d.pain > 0 && (
           <div className="wr-row">
-            <div className="wr-row__label">Zones</div>
+            <div className="wr-row__label">Locations</div>
             <ZonePicker zones={ZONES} value={d.painZones ?? []}
               onToggle={(id) => setD((p) => {
                 const cur = p.painZones ?? [];
@@ -94,10 +94,10 @@ export function CheckInCard({ day, done }: { day: number; done: CheckInZones | n
         )}
       </div>
       <div className="wr-actions">
-        <Btn kind="primary" disabled={!complete} onClick={submit}>Valider le check-in</Btn>
-        {done && <Btn onClick={() => setOpen(false)}>Annuler</Btn>}
-        {done && DEMO && <Btn kind="quiet" onClick={() => { clearCheckIn(day); setD({}); setOpen(false); }}>Effacer</Btn>}
-        <span aria-live="polite" className="wr-sr-only">{filled} {filled > 1 ? 'notes' : 'note'} sur {ROWS.length}</span>
+        <Btn kind="primary" disabled={!complete} onClick={submit}>Submit check-in</Btn>
+        {done && <Btn onClick={() => setOpen(false)}>Cancel</Btn>}
+        {done && DEMO && <Btn kind="quiet" onClick={() => { clearCheckIn(day); setD({}); setOpen(false); }}>Clear</Btn>}
+        <span aria-live="polite" className="wr-sr-only">{filled} of {ROWS.length} {ROWS.length > 1 ? 'ratings' : 'rating'}</span>
       </div>
     </Panel>
   );
@@ -109,7 +109,7 @@ function Summary({ label: l, v, max, extra, alert, red = false }: { label: strin
     <div className="wr-kv__row">
       <span className="wr-kv__label">
         {l}
-        {alert && <span className="wr-sr-only">{red ? ', déclenche l’alerte rouge' : ', déclenche une alerte'}</span>}
+        {alert && <span className="wr-sr-only">{red ? ', triggers the red alarm' : ', triggers an alert'}</span>}
       </span>
       {extra && <span className="wr-kv__extra" title={extra}>{extra}</span>}
       <span className="wr-kv__value">{alert && <Dot color={red ? 'red' : 'amber'} />}{v}<span className="sz-unit"> / {max}</span></span>

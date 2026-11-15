@@ -51,7 +51,7 @@ function part(key: string, organId: OrganId | null, layer: PartDef['layer'], geo
 /** Charge le manifeste et tous les calques. Rejette si un fichier manque (l'appelant garde alors le corps procédural). */
 export async function loadZAnatomy(base = `${import.meta.env.BASE_URL}models/`): Promise<{ parts: PartDef[]; manifest: ZAnatomyManifest }> {
   const res = await fetch(`${base}manifest.json`);
-  if (!res.ok) throw new Error(`manifest.json introuvable (${res.status})`);
+  if (!res.ok) throw new Error(`manifest.json not found (${res.status})`);
   const manifest = (await res.json()) as ZAnatomyManifest;
   const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
   const load = (file: string) => loader.loadAsync(`${base}${file}`);
@@ -82,6 +82,6 @@ export async function loadZAnatomy(base = `${import.meta.env.BASE_URL}models/`):
       parts.push(part('dose-carte', 'dose', 'exposition', shell, { fx: 'heat' }));
     }
   }
-  if (!parts.some((p) => p.layer === 'shell')) throw new Error('avatar manquant');
+  if (!parts.some((p) => p.layer === 'shell')) throw new Error('avatar missing');
   return { parts, manifest };
 }

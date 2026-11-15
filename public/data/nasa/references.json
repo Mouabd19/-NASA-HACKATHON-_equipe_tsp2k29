@@ -4,47 +4,47 @@
   "references": [
     {
       "id": "trudel2022",
-      "topic": "Anémie spatiale",
+      "topic": "Space anemia",
       "tag": "Publié",
       "title": "Trudel G. et al., Hemolysis contributes to anemia during long-duration space flight, Nature Medicine, 2022",
       "url": "https://www.eurekalert.org/news-releases/939794",
-      "claim": "Sur 14 astronautes en mission de 6 mois, l'organisme détruit 54 % de globules rouges en plus qu'au sol (≈ 3 millions/s au lieu de 2) pendant toute la mission ; réversible 3–4 mois après le retour.",
-      "usedFor": "Hémoglobine / hématocrite en baisse lente dans le générateur ; calque cardio",
+      "claim": "In 14 astronauts on 6-month missions, the body destroyed 54% more red blood cells than on the ground (≈ 3 million/s instead of 2) throughout the mission; reversible 3–4 months after return.",
+      "usedFor": "Slow hemoglobin / hematocrit decline in the generator; cardio layer",
       "verified": true,
-      "status": "Résumé de presse de l'institution (Ottawa Hospital) lu ; article Nature Medicine non relu"
+      "status": "Institution press summary (Ottawa Hospital) read; Nature Medicine article not re-read"
     },
     {
       "id": "okada2022",
-      "topic": "Calcium urinaire et calculs rénaux",
+      "topic": "Urinary calcium and kidney stones",
       "tag": "Publié",
       "title": "Okada A. et al., Bisphosphonate use may reduce the risk of urolithiasis in astronauts on long-term spaceflights, JBMR Plus, 2022 (PMID 35079672)",
       "url": "https://www.pubmed.gov/35079672/",
-      "claim": "17 astronautes ISS (6 mois). Groupe ARED seul : calcium urinaire en hausse dès J15–J30 et marqueurs de résorption osseuse urinaires (NTX, HP) élevés ; groupe ARED + alendronate : pas de hausse. Risque élevé de calculs d'oxalate et de phosphate de calcium.",
-      "usedFor": "Urine quotidienne (calcium, NTX) ; règle « calcium en hausse → hydratation + scan des reins »",
+      "claim": "17 ISS astronauts (6 months). ARED-only group: urinary calcium rising from D15–D30 and elevated urinary bone resorption markers (NTX, HP); ARED + alendronate group: no rise. High risk of calcium oxalate and calcium phosphate stones.",
+      "usedFor": "Daily urine (calcium, NTX); rule “rising calcium → hydration + kidney scan”",
       "verified": true,
-      "status": "Résumé PubMed lu"
+      "status": "PubMed abstract read"
     },
     {
       "id": "smith-calcium",
-      "topic": "Calcium urinaire et calculs rénaux",
+      "topic": "Urinary calcium and kidney stones",
       "tag": "NASA",
       "title": "Smith S.M., Calcium and Bone Metabolism During Spaceflight, NASA Johnson Space Center (NTRS 20100030546)",
       "url": "https://ntrs.nasa.gov/api/citations/20100030546/downloads/20100030546.pdf",
-      "claim": "La hausse de l'excrétion de calcium urinaire est un contributeur majeur du risque de calculs rénaux en vol ; le calcium sanguin reste régulé.",
-      "usedFor": "Pourquoi on suit le calcium dans l'URINE et pas dans le sang",
+      "claim": "Increased urinary calcium excretion is a major contributor to in-flight kidney stone risk; blood calcium stays regulated.",
+      "usedFor": "Why calcium is tracked in URINE rather than blood",
       "verified": true,
-      "status": "Extrait lu"
+      "status": "Excerpt read"
     },
     {
       "id": "buckey-urine",
-      "topic": "Calcium urinaire et calculs rénaux",
+      "topic": "Urinary calcium and kidney stones",
       "tag": "Publié",
       "title": "Thamer S., Buckey J.C., First void urinary calcium for tracking bone loss and kidney stone risk in space, Aerosp. Med. Hum. Perform. 93(7), 2022",
       "url": "https://asma.kglmeridian.com/downloadpdf/view/journals/amhp/93/7/article-p546.pdf",
-      "claim": "Le calcium de la première urine du matin permet de suivre la perte osseuse et le risque de calcul en vol, en temps réel.",
-      "usedFor": "Justifie le prélèvement urinaire quotidien du matin (réaliste en vol)",
+      "claim": "First-morning urinary calcium allows real-time tracking of bone loss and stone risk in flight.",
+      "usedFor": "Justifies the daily first-morning urine sample (realistic in flight)",
       "verified": true,
-      "status": "Extrait lu"
+      "status": "Excerpt read"
     },
     {
       "id": "leblanc2013",
@@ -52,155 +52,155 @@
       "tag": "Publié",
       "title": "LeBlanc A. et al., Bisphosphonates as a supplement to exercise to protect bone during long-duration spaceflight, Osteoporos. Int. 24(7):2105-14, 2013 (NASA–JAXA)",
       "url": "https://pubmed.ncbi.nlm.nih.gov/23334732/",
-      "claim": "7 astronautes ISS (5,5 mois), alendronate 70 mg/semaine + ARED : la combinaison atténue la baisse de quasiment tous les indices osseux, comparé à 18 + 11 astronautes avec exercice seul.",
-      "usedFor": "Sol-routine hanche (« parler des bisphosphonates au médecin »). REMPLACE l'attribution erronée à la justification de V1 4027",
+      "claim": "7 ISS astronauts (5.5 months), alendronate 70 mg/week + ARED: the combination attenuates the decline of nearly all bone indices, compared with 18 + 11 astronauts on exercise alone.",
+      "usedFor": "Hip ground routine (“discuss bisphosphonates with the flight surgeon”). REPLACES the incorrect attribution to the V1 4027 rationale",
       "verified": true,
-      "status": "Résumé PubMed lu"
+      "status": "PubMed abstract read"
     },
     {
       "id": "leblanc-ntrs-5pct",
-      "topic": "Perte osseuse en vol",
+      "topic": "In-flight bone loss",
       "tag": "NASA",
       "title": "LeBlanc A., Bisphosphonate as a Countermeasure to Space Flight-Induced Bone Loss (NTRS 20090041838)",
       "url": "https://ntrs.nasa.gov/citations/20090041838",
-      "claim": "Sur Mir et l'ISS (vols ~171 j), plus de 90 % des astronautes avaient perdu au moins 5 % sur au moins un site osseux, et 40 % au moins 10 %.",
-      "usedFor": "Contexte du risque osseux (pitch, Raisonnement)",
+      "claim": "On Mir and the ISS (~171-day flights), over 90% of astronauts lost at least 5% at one or more bone sites, and 40% at least 10%.",
+      "usedFor": "Bone risk context (pitch, Reasoning)",
       "verified": true,
-      "status": "Extrait lu. NB : le chiffre « < 5 % de perte à la hanche avec l'ARED » de la fiche reste NON SOURCÉ"
+      "status": "Excerpt read. NB: the sheet's figure “< 5% hip loss with ARED” remains UNSOURCED"
     },
     {
       "id": "fall2022-onsd",
-      "topic": "Nerf optique / SANS",
+      "topic": "Optic nerve / SANS",
       "tag": "Publié",
       "title": "Fall D.A. et al., Optic nerve sheath diameter and spaceflight: defining shortcomings and future directions, npj Microgravity 8:42, 2022",
       "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9537149/",
-      "claim": "Le diamètre de la gaine du nerf optique (DGNO), mesuré par échographie au sol comme en apesanteur, sert d'indicateur indirect de la pression intracrânienne. Jusqu'à 60 % des astronautes de longue durée développent des changements neuro-oculaires (SANS). Les mesures publiées sont hétérogènes : la revue appelle à standardiser.",
-      "usedFor": "Métrique « gaine du nerf optique » du scanner ; limite à afficher (indicateur indirect, bruité)",
+      "claim": "Optic nerve sheath diameter (ONSD), measured by ultrasound on the ground and in microgravity, serves as an indirect marker of intracranial pressure. Up to 60% of long-duration astronauts develop neuro-ocular changes (SANS). Published measurements are heterogeneous: the review calls for standardization.",
+      "usedFor": "Scanner “optic nerve sheath” metric; limitation to display (indirect, noisy marker)",
       "verified": true,
-      "status": "Résumé lu"
+      "status": "Abstract read"
     },
     {
       "id": "nasa-eye-us",
-      "topic": "Nerf optique / SANS",
+      "topic": "Optic nerve / SANS",
       "tag": "NASA",
-      "title": "NASA, Vision Changes on Space Station (Science in Space, juillet 2025)",
+      "title": "NASA, Vision Changes on Space Station (Science in Space, July 2025)",
       "url": "https://www.nasa.gov/missions/station/iss-research/vision-changes-on-space-station",
-      "claim": "Photo et description d'une échographie de l'œil réalisée par des astronautes sur l'ISS ; SANS = œdème du disque optique et aplatissement du globe.",
-      "usedFor": "Preuve que l'échographie oculaire se fait DÉJÀ à bord (pitch)",
+      "claim": "Photo and description of an eye ultrasound performed by astronauts on the ISS; SANS = optic disc edema and globe flattening.",
+      "usedFor": "Proof that ocular ultrasound is ALREADY done onboard (pitch)",
       "verified": true,
-      "status": "Page lue"
+      "status": "Page read"
     },
     {
       "id": "us-bone",
-      "topic": "Limites de l'échographie sur l'os",
+      "topic": "Limits of ultrasound on bone",
       "tag": "Publié",
-      "title": "Revue « bone ultrasound » (PMC12082152) + Shung, Diagnostic Ultrasound (2005)",
+      "title": "“Bone ultrasound” review (PMC12082152) + Shung, Diagnostic Ultrasound (2005)",
       "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12082152",
-      "claim": "L'imagerie ultrasonore de l'os est traditionnellement limitée : impédance acoustique et densité élevées → forte réflexion, absorption, diffusion, faible pénétration. Atténuation de l'os ≈ 6–9 dB/(MHz·cm) contre 0,5 pour le foie.",
-      "usedFor": "Pourquoi le scanner NE mesure PAS la densité osseuse (v3.2) ; slide « honnêteté »",
+      "claim": "Ultrasound imaging of bone is traditionally limited: high acoustic impedance and density → strong reflection, absorption, scattering, poor penetration. Bone attenuation ≈ 6–9 dB/(MHz·cm) versus 0.5 for liver.",
+      "usedFor": "Why the scanner does NOT measure bone density (v3.2); “honesty” slide",
       "verified": true,
-      "status": "Extraits lus"
+      "status": "Excerpts read"
     },
     {
       "id": "agbresa",
-      "topic": "Centrifugeuse à bras court",
+      "topic": "Short-arm centrifuge",
       "tag": "NASA",
       "title": "AGBRESA (Artificial Gravity Bed Rest – ESA), DLR :envihab, Cologne, 2019 — NASA / DLR / ESA",
       "url": "https://www.dlr.de/en/latest/news/2019/01/20190321_learning-by-resting",
-      "claim": "Première étude d'alitement commune DLR–ESA–NASA (60 jours, 2019) testant une centrifugeuse humaine à bras court comme contre-mesure à l'apesanteur : 30 min/j à 1 g au centre de masse, en continu ou fractionné ; 960 rotations, 10 arrêtées (malaises), surtout pas de mal des transports.",
-      "usedFor": "Base réelle de l'hypothèse « centrifugeuse embarquée » [H]",
+      "claim": "First joint DLR–ESA–NASA bed-rest study (60 days, 2019) testing a short-arm human centrifuge as a microgravity countermeasure: 30 min/day at 1 g at the center of mass, continuous or intermittent; 960 runs, 10 stopped (discomfort), mostly no motion sickness.",
+      "usedFor": "Real-world basis for the “onboard centrifuge” hypothesis [H]",
       "verified": true,
-      "status": "Pages DLR, NASA et Frett 2020 (PLOS ONE) lues"
+      "status": "DLR, NASA and Frett 2020 (PLOS ONE) pages read"
     },
     {
       "id": "oh2023",
-      "topic": "Âge des organes",
+      "topic": "Organ age",
       "tag": "Publié",
       "title": "Oh H.S.-H. et al., Organ aging signatures in the plasma proteome track health and disease, Nature 624:164–172, 2023",
       "url": "https://pubmed.ncbi.nlm.nih.gov/38057571/",
-      "claim": "À partir de protéines du plasma propres à chaque organe, âge estimé pour 11 organes chez 5 676 adultes ; ~20 % de la population a un organe au vieillissement fortement accéléré ; un cœur « plus vieux » multiplie le risque d'insuffisance cardiaque.",
-      "usedFor": "Caution scientifique de l'idée « âge par organe ». Notre écart d'âge [H] est un indicateur bien plus simple, pas cette méthode",
+      "claim": "Using organ-specific plasma proteins, age was estimated for 11 organs in 5,676 adults; ~20% of the population has an organ with strongly accelerated aging; an “older” heart multiplies the risk of heart failure.",
+      "usedFor": "Scientific backing for the “age per organ” idea. Our age gap [H] is a much simpler indicator, not this method",
       "verified": true,
-      "status": "Résumé lu"
+      "status": "Abstract read"
     },
     {
       "id": "phenoage",
-      "topic": "Âge biologique global",
+      "topic": "Overall biological age",
       "tag": "Publié",
       "title": "Levine 2018 (Aging) + correction Liu/Levine 2019 (PLOS Med)",
       "url": "https://doi.org/10.1371/journal.pmed.1002760",
-      "claim": "Voir docs/sources/phenoage.md",
+      "claim": "See docs/sources/phenoage.md",
       "usedFor": "PhenoAge",
       "verified": true,
-      "status": "Équation lue dans la correction"
+      "status": "Equation read in the correction"
     },
     {
       "id": "fleg2005",
-      "topic": "Vieillissement terrestre — VO₂max",
+      "topic": "Terrestrial aging — VO₂max",
       "tag": "Publié",
       "title": "Fleg J.L. et al., Accelerated longitudinal decline of aerobic capacity in healthy older adults, Circulation 112:674-682, 2005",
       "url": "https://pubmed.ncbi.nlm.nih.gov/16043637/",
-      "claim": "Baisse longitudinale du VO₂ pic : 3–6 % par décennie dans la vingtaine et la trentaine, s'accélère à chaque décennie (> 20 % après 70 ans), plus forte chez l'homme dès 40 ans. « ~10 %/décennie » est la simplification courante.",
-      "usedFor": "Vitesse terrestre cœur pour l'écart d'âge [H]",
+      "claim": "Longitudinal decline in peak VO₂: 3–6% per decade in the twenties and thirties, accelerating each decade (> 20% after 70), steeper in men from age 40. “~10%/decade” is the common simplification.",
+      "usedFor": "Terrestrial heart aging rate for the age gap [H]",
       "verified": true,
-      "status": "Résumé lu",
+      "status": "Abstract read",
       "value": {
         "pctPerYear": 0.6,
         "range": [
           0.3,
           1.0
         ],
-        "note": "homme de 42 ans : ~5–10 %/décennie"
+        "note": "42-year-old man: ~5–10%/decade"
       }
     },
     {
       "id": "minos-hip",
-      "topic": "Vieillissement terrestre — hanche",
+      "topic": "Terrestrial aging — hip",
       "tag": "Publié",
-      "title": "Étude prospective MINOS (725 hommes de 50–85 ans, 90 mois) ; MrOS (Cawthon 2009, JBMR)",
+      "title": "MINOS prospective study (725 men aged 50–85, 90 months); MrOS (Cawthon 2009, JBMR)",
       "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC1820756/",
-      "claim": "Perte de densité de la hanche totale ≈ 0,5 %/an et du col du fémur ≈ 0,3 %/an chez l'homme de plus de 50 ans ; MrOS : ~0,3 %/an au col (hommes ≥ 65 ans), qui s'accélère avec l'âge.",
-      "usedFor": "Vitesse terrestre hanche pour l'écart d'âge [H]",
+      "claim": "Total hip density loss ≈ 0.5%/year and femoral neck ≈ 0.3%/year in men over 50; MrOS: ~0.3%/year at the femoral neck (men ≥ 65), accelerating with age.",
+      "usedFor": "Terrestrial hip rate for the age gap [H]",
       "verified": true,
-      "status": "Tableaux lus",
+      "status": "Tables read",
       "value": {
         "pctPerYear": 0.5,
         "range": [
           0.3,
           0.8
         ],
-        "note": "mesuré après 50 ans ; plus faible à 42 ans"
+        "note": "measured after age 50; lower at 42"
       }
     },
     {
       "id": "muscle-aging",
-      "topic": "Vieillissement terrestre — muscle",
+      "topic": "Terrestrial aging — muscle",
       "tag": "Publié",
-      "title": "Méta-analyse de 47 études transversales (≈ 25 vs 75 ans, PMC10069966) ; Cameron 2019 (thigh MRI, 70+)",
+      "title": "Meta-analysis of 47 cross-sectional studies (≈ 25 vs 75 years, PMC10069966); Cameron 2019 (thigh MRI, 70+)",
       "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10069966/",
-      "claim": "Perte de taille musculaire ≈ 0,4 %/an en moyenne entre 25 et 75 ans selon les groupes musculaires ; ≈ 1 %/an pour la cuisse après 70 ans (−5 % en 5 ans à l'IRM).",
-      "usedFor": "Vitesse terrestre cuisse/mollet pour l'écart d'âge [H]",
+      "claim": "Muscle size loss ≈ 0.4%/year on average between 25 and 75 depending on the muscle group; ≈ 1%/year for the thigh after 70 (−5% in 5 years on MRI).",
+      "usedFor": "Terrestrial thigh/calf rate for the age gap [H]",
       "verified": true,
-      "status": "Résumés lus",
+      "status": "Abstracts read",
       "value": {
         "pctPerYear": 0.4,
         "range": [
           0.3,
           1.0
         ],
-        "note": "0,4 %/an en moyenne adulte ; 1 %/an après 70 ans"
+        "note": "0.4%/year adult average; 1%/year after 70"
       }
     },
     {
       "id": "ochmo-exercise",
-      "topic": "Exercice en vol",
+      "topic": "In-flight exercise",
       "tag": "NASA",
-      "title": "NASA OCHMO Technical Brief — Exercise (déc. 2023)",
+      "title": "NASA OCHMO Technical Brief — Exercise (Dec. 2023)",
       "url": "https://www.nasa.gov/wp-content/uploads/2023/12/ochmo-tb-031-exercise-overview.pdf",
-      "claim": "Sur l'ISS : ~600 min d'exercice par semaine ; prescription ≈ 30 min d'aérobie (T2, CEVIS, 70–100 % FCmax ou VO₂pic) + 30–60 min de musculation sur l'ARED (squat, mollets, soulevé de terre). Recommandation : au moins 3 séances par semaine > 70 % FCmax, > 20 min.",
-      "usedFor": "Bibliothèque d'exercices (src/content/library.ts)",
+      "claim": "On the ISS: ~600 min of exercise per week; prescription ≈ 30 min aerobic (T2, CEVIS, 70–100% HRmax or peak VO₂) + 30–60 min resistance training on ARED (squat, calf raises, deadlift). Recommendation: at least 3 sessions per week > 70% HRmax, > 20 min.",
+      "usedFor": "Exercise library (src/content/library.ts)",
       "verified": true,
-      "status": "Document lu"
+      "status": "Document read"
     }
   ]
 }
