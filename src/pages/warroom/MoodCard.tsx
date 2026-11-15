@@ -1,7 +1,7 @@
 // Propriétaire : Ahmed (B). Carte « Signal d'humeur » du Plan du jour (demande de Mouad, modèle C).
 // Signal à regarder, jamais un diagnostic : il PROPOSE un point psy, n'impose rien (ROADMAP §11).
 import { modelCards, moodSignals, type MoodSignal } from '../../models/ml';
-import { Panel, StatusChip, fmt } from '../../ui';
+import { Panel, fmt, tokens } from '../../ui';
 import { T } from './ui';
 
 const W = 320;
@@ -18,8 +18,8 @@ function Chart({ s, threshold }: { s: MoodSignal[]; threshold: number }) {
   return (
     <svg viewBox={`0 0 ${W} ${H}`} width="100%" height={H} preserveAspectRatio="none" role="img"
       aria-label={`Score d'humeur du jour ${d0} au jour ${d1}, seuil ${fmt(threshold, 2)}${first ? `, alerte depuis le jour ${first.day}` : ', aucune alerte'}`}>
-      <line x1={PAD} x2={W - PAD} y1={y(threshold)} y2={y(threshold)} stroke={T.status.amber} strokeDasharray="4 3" strokeWidth={1} vectorEffect="non-scaling-stroke" />
-      {first && <rect x={x(first.day)} y={PAD} width={W - PAD - x(first.day)} height={H - 2 * PAD} fill={T.status.amber} opacity={0.1} />}
+      {/* Seuil en gris : la couleur ne sert qu'au score, quand il le dépasse. */}
+      <line x1={PAD} x2={W - PAD} y1={y(threshold)} y2={y(threshold)} stroke={tokens.color.textMuted} strokeDasharray="4 3" strokeWidth={1} vectorEffect="non-scaling-stroke" />
       <polyline points={line} fill="none" stroke={T.text} strokeWidth={1.5} vectorEffect="non-scaling-stroke" />
     </svg>
   );
@@ -39,11 +39,7 @@ export function MoodCard() {
   const last = s[s.length - 1];
   const first = s.find((p) => p.alert);
   return (
-    <Panel
-      title="Signal d'humeur"
-      provenance="SIMULÉ"
-      right={last.alert ? <StatusChip color="amber" label="À regarder" /> : undefined}
-    >
+    <Panel title="Signal d'humeur" provenance="SIMULÉ">
       <div className="wr-metric">
         <span className="sz-label wr-metric__full">Score J{last.day}</span>
         <span className="sz-value" data-alert={last.alert || undefined}>{fmt(last.score, 2)}</span>

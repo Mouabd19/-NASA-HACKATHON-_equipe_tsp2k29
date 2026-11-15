@@ -43,7 +43,8 @@ body {
   font-family: var(--sz-font-text);
   font-size: var(--sz-fs-data);
   line-height: 1.45;
-  font-feature-settings: 'tnum' 1, 'cv11' 1;
+  /* Pas de 'tnum' global : dans Inter il élargit aussi le trait d'union (« Check - in »). Chiffres tabulaires ciblés plus bas. */
+  font-feature-settings: 'cv11' 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -52,6 +53,8 @@ body {
 
 h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd { margin: 0; }
 h1, h2, h3, h4, h5, h6 { font-size: inherit; font-weight: 600; }
+/* Chiffres alignés là où ils se lisent en colonne ou changent en direct. */
+time, td, th, svg text { font-variant-numeric: tabular-nums; }
 ul, ol { margin: 0; padding: 0; list-style: none; }
 img, svg, canvas, video { display: block; max-width: 100%; }
 a { color: inherit; text-decoration: none; }
@@ -100,7 +103,6 @@ button:disabled { cursor: default; }
   line-height: 1.4;
   font-weight: 500;
   color: var(--sz-text-dim);
-  font-variant-numeric: tabular-nums;
 }
 
 .sz-dim { color: var(--sz-text-dim); }
@@ -130,10 +132,12 @@ button:disabled { cursor: default; }
 }
 
 .sz-link {
-  color: var(--sz-accent);
+  color: var(--sz-text-dim);
   cursor: pointer;
+  text-underline-offset: 3px;
+  transition: color 120ms;
 }
-.sz-link:hover { text-decoration: underline; }
+.sz-link:hover { color: var(--sz-text); text-decoration: underline; }
 
 /* ── Panneau ─────────────────────────────────────────────────────────── */
 
@@ -237,26 +241,22 @@ html[data-details='off'] .sz-detail { display: none !important; }
   border: 1.5px solid var(--sz-unknown);
 }
 
+/* Statut : la pastille porte la couleur, le mot porte le sens. Pas de fond teinté ni de texte coloré,
+   sauf l'alerte (rouge), seule à colorer son texte. */
 .sz-chip {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   flex: none;
   height: 20px;
-  padding: 0 8px;
-  border-radius: var(--sz-radius-xs);
-  background: color-mix(in srgb, var(--sz-status, var(--sz-unknown)) 14%, transparent);
-  color: var(--sz-status, var(--sz-unknown));
+  color: var(--sz-text);
   font-size: var(--sz-fs-small);
   line-height: 1;
   font-weight: 500;
   white-space: nowrap;
 }
-.sz-chip .sz-dot { width: 6px; height: 6px; }
-.sz-chip[data-color='grey'] {
-  color: var(--sz-text-dim);
-  background: var(--sz-panel-hover);
-}
+.sz-chip[data-color='red'] { color: var(--sz-red); }
+.sz-chip[data-color='grey'] { color: var(--sz-text-dim); }
 
 /* ── Boutons ─────────────────────────────────────────────────────────── */
 /* .sz-btn = secondaire. Variantes : --primary (action principale, une par écran), --ghost (sans contour),

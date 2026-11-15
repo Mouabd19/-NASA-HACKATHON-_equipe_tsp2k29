@@ -138,14 +138,16 @@ export function WarRoom() {
       <div className="wr-grid">
         {/* 1. La consigne d'abord (Maintenant puis Ensuite), toujours en haut. */}
         <NowNextCard triage={t} out={out} delayMin={delay} delayTag={delayTag} summary={summary} summaryReceivedAt={summaryAt} pending={!checkin} missionNow={MISSION_NOW} />
-        {/* 2. Colonne gauche : check-in et montre. Colonne droite : la journée. */}
+        {/* 2. Colonne gauche : check-in et montre. Colonne droite : la journée, puis le signal d'humeur. */}
         <div className="wr-main">
           <div className="wr-side">
             <CheckInCard day={DAY} done={checkin} />
             <LiveWidget dataVersion={dataVersion} onImported={() => setDataVersion((v) => v + 1)} />
+          </div>
+          <div className="wr-side">
+            <TodoList items={items} onToggle={toggle} synced={synced} level={t.level} />
             <MoodCard key={version} />
           </div>
-          <TodoList items={items} onToggle={toggle} synced={synced} level={t.level} />
         </div>
       </div>
       {DEMO && (

@@ -47,7 +47,9 @@ function signed(n: number, digits: number): string {
   return `${n < 0 ? '−' : '+'}${s}`;
 }
 
-const COUNT_LABEL: Record<Color, string> = { red: 'rouge', amber: 'ambre', green: 'nominal', grey: 'inconnu' };
+/** « 4 en attention », « 7 nominaux » : même vocabulaire que les pastilles (src/ui/tokens.ts). */
+const countLabel = (color: Color, n: number): string =>
+  color === 'green' ? (n > 1 ? 'nominaux' : 'nominal') : { red: 'en alerte', amber: 'en attention', grey: 'sans donnée' }[color];
 
 /** Décompte d'un statut ; rien si aucun organe n'est dans ce statut. */
 function Count({ color, n }: { color: Color; n: number }): JSX.Element | null {
@@ -55,7 +57,7 @@ function Count({ color, n }: { color: Color; n: number }): JSX.Element | null {
   return (
     <span className="hdr__count">
       <StatusDot color={color} size={6} />
-      <span>{n} {COUNT_LABEL[color]}</span>
+      <span>{n} {countLabel(color, n)}</span>
     </span>
   );
 }

@@ -1,5 +1,5 @@
 // Design system SOL ZÉRO — point d'entrée unique : import { Panel, Label, fmt, tokens } from '../../ui'.
-export { tokens, statusColor, statusLabel, levelColor, applyTokens } from './tokens';
+export { tokens, statusColor, statusLabel, levelLabel, levelColor, applyTokens } from './tokens';
 export {
   Panel, PanelCloseContext, PanelClose, CloseButton, Label, TagBadge, ProvenanceBadge, StatusDot, StatusChip, statusVar, TAG_TEXT, PROVENANCE_TEXT,
 } from './primitives';

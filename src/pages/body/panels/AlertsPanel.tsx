@@ -7,18 +7,12 @@ import type { Alert, Color, DayBody, Level, OrganId } from '../../../types';
 import { trend7d } from '../../../models/trend';
 import { getStandard } from '../../../content/standards';
 import { getAnchor } from '../../../three/anatomy';
-import { Panel, TagBadge, fmt, levelColor, sentenceCase, statusVar } from '../../../ui';
+import { Panel, TagBadge, fmt, levelColor, levelLabel, sentenceCase, statusVar } from '../../../ui';
 import { useBody, useDayAlerts, useDayBody, useRowClip } from '../store';
 import './AlertsPanel.css';
 
 const LEVEL_RANK: Record<Level, number> = { ROUGE: 0, ORANGE: 1, AMBRE: 2, DONNEES_INSUFFISANTES: 3, VERT: 4 };
-const LEVEL_LABEL: Record<Level, string> = {
-  ROUGE: 'Rouge',
-  ORANGE: 'Orange',
-  AMBRE: 'Ambre',
-  DONNEES_INSUFFISANTES: 'Données insuffisantes',
-  VERT: 'Nominal',
-};
+const LEVEL_LABEL: Record<Level, string> = levelLabel;
 
 /** Une règle « V1 4027 » / « V2 7038 » vient de NASA-STD-3001 ; tout le reste est une règle de l'équipe (hypothèse). */
 const isNasaRule = (rule: string): boolean => /^V\d\s*\d+/i.test(rule.trim());

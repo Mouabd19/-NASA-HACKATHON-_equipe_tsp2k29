@@ -1,7 +1,7 @@
 // Design tokens — SEULE source des couleurs et des typos (règle 8).
 // Les variables CSS (--sz-*) sont injectées depuis ce fichier par applyTokens() ; aucun hex ailleurs.
-// Direction : logiciel clinique sobre. Surfaces neutres opaques, une seule couleur d'accent pour
-// l'interaction, couleurs vives réservées aux statuts, une seule police (Inter).
+// Direction : logiciel clinique sobre. Surfaces neutres opaques, interaction en blanc cassé (aucune teinte),
+// couleurs vives réservées aux statuts, une seule police (Inter).
 import type { Color, Level } from '../types';
 
 export const tokens = {
@@ -15,7 +15,7 @@ export const tokens = {
     text: '#E6E8EB',
     textDim: '#959CA6',       // texte secondaire
     textMuted: '#69707B',     // texte tertiaire, graduations
-    accent: '#6EA8E0',        // interaction : lien, focus, sélection
+    accent: '#E6E8EB',        // interaction : case cochée, focus, sélection — blanc cassé, la couleur reste aux statuts
     holo: '#A9B8C6',          // corps 3D uniquement
     ok: '#3DB46D',
     amber: '#E3A22E',
@@ -42,11 +42,21 @@ export const statusColor: Record<Color, string> = {
   grey: tokens.color.unknown,
 };
 
+/** Le mot porte le sens, la pastille porte la couleur (vocabulaire des voyants de bord). */
 export const statusLabel: Record<Color, string> = {
   green: 'Nominal',
-  amber: 'Ambre',
-  red: 'Rouge',
-  grey: 'Inconnu',
+  amber: 'Attention',
+  red: 'Alerte',
+  grey: 'Sans donnée',
+};
+
+/** Libellé d'un niveau de triage, le même sur toutes les pages (ORANGE : à confirmer par Mouad). */
+export const levelLabel: Record<Level, string> = {
+  VERT: 'Nominal',
+  AMBRE: 'Attention',
+  ORANGE: 'Attention renforcée',
+  ROUGE: 'Alerte',
+  DONNEES_INSUFFISANTES: 'Données insuffisantes',
 };
 
 export const levelColor: Record<Level, Color> = {

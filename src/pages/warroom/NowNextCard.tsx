@@ -78,7 +78,7 @@ export function NowNextCard(props: {
         right={<span className="sz-num">Délai Terre {fmt(delayMin, 1)} min <TagBadge tag={props.delayTag} /></span>}
       >
         {pending ? (
-          <p className="wr-text sz-dim" aria-label="En attente du check-in">—</p>
+          <p className="wr-text sz-dim">Après le check-in</p>
         ) : (
           <div className="wr-next">
             <div className="wr-next__who">
@@ -97,8 +97,8 @@ export function NowNextCard(props: {
           <details className="wr-fold" open={details}>
             <summary>
               <span>
-                Synthèse IA · {ZONE[props.summary.organId] ?? props.summary.organId}
-                <span className="sz-detail"> · reçue à {hhmm(props.summaryReceivedAt)} · à valider par le médecin de bord</span>
+                Synthèse IA · {ZONE[props.summary.organId] ?? props.summary.organId} · reçue à {hhmm(props.summaryReceivedAt)}
+                <span className="sz-detail"> · à valider par le médecin de bord</span>
               </span>
             </summary>
             <p>{props.summary.text}</p>

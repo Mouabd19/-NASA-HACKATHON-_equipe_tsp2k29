@@ -1,6 +1,7 @@
 // Propriétaire : Ahmed (B). Dernière mesure (FC / SpO₂) vs référence 30 j du présentateur.
 // Repli 1 : dernière mesure enregistrée (export). Repli 2 : montre simulée du jour, la même série que la page Corps.
 // Jamais de vert par défaut. Référence simulée → aucun écart affiché. Mesure de plus de 10 min → chiffre en gris.
+// « En direct » (pastille verte) seulement si la montre a envoyé la mesure il y a moins de 15 s, comme sur la montre.
 // Le pied du panneau alimente les mesures : saisie manuelle ou import d'un export Santé.
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import type { Measurement } from '../../types';
@@ -11,7 +12,7 @@ import { zScore } from '../../ingest/baseline30d';
 import { parseHealthExport } from '../../ingest/healthExport';
 import { getWatchSeries } from '../../sim/load';
 import { Panel, ProvenanceBadge, fmt } from '../../ui';
-import { Btn, Segmented } from './ui';
+import { Btn, Dot, Segmented } from './ui';
 
 type LiveType = 'HeartRate' | 'OxygenSaturation';
 const TYPES = ['HeartRate', 'OxygenSaturation'] as const;
@@ -21,12 +22,16 @@ const UNIT: Record<LiveType, string> = { HeartRate: 'bpm', OxygenSaturation: '%'
 const DIGITS: Record<LiveType, number> = { HeartRate: 0, OxygenSaturation: 0 };
 const RANGE: Record<LiveType, [number, number]> = { HeartRate: [20, 250], OxygenSaturation: [50, 100] };
 const POLL_MS = 3000;
-const FRESH_MS = 10 * 60 * 1000;
-const CLOCK_MS = 30 * 1000;
+const FRESH_MS = 10 * 60 * 1000; // au-delà, le chiffre passe en gris
+const LIVE_MS = 15 * 1000;        // « En direct » : pas de faux direct
+const CLOCK_MS = 3000;            // fait vieillir « En direct » et « il y a … »
+const TRACE_MAX = 60;             // points de la séance en cours (≈ 2 min à un envoi / 2 s)
 
-/** « il y a 4 min », « il y a 3 h », « il y a 2 j ». */
+/** « il y a 40 s », « il y a 4 min », « il y a 3 h », « il y a 2 j ». */
 function ago(ms: number): string {
-  const min = Math.max(0, Math.floor(ms / 60000));
+  const s = Math.max(0, Math.floor(ms / 1000));
+  if (s < 60) return `il y a ${s} s`;
+  const min = Math.floor(s / 60);
   if (min < 60) return `il y a ${min} min`;
   const h = Math.floor(min / 60);
   if (h < 48) return `il y a ${h} h`;
@@ -51,7 +56,10 @@ export function LiveWidget({ dataVersion, onImported }: { dataVersion: number; o
   const [live, setLive] = useState<Partial<Record<LiveType, Measurement>>>({});
   const [manual, setManual] = useState<Partial<Record<LiveType, Measurement>>>({});
   const [now, setNow] = useState(() => Date.now());
+  // Pouls reçus de la montre pendant que la page est ouverte : de vraies mesures, rien d'interpolé.
+  const [trace, setTrace] = useState<number[]>([]);
   const lastKey = useRef('');
+  const lastHr = useRef('');
 
   useEffect(() => {
     let stop = false;
@@ -66,6 +74,11 @@ export function LiveWidget({ dataVersion, onImported }: { dataVersion: number; o
         if (k !== lastKey.current) {
           lastKey.current = k;
           setLive({ ...(hr ? { HeartRate: hr } : {}), ...(spo2 ? { OxygenSaturation: spo2 } : {}) });
+          setNow(Date.now());
+        }
+        if (hr && hr.source === 'apple-watch-live' && hr.date !== lastHr.current) {
+          lastHr.current = hr.date;
+          setTrace((t) => [...t, hr.value].slice(-TRACE_MAX));
         }
       } finally {
         running = false;
@@ -94,8 +107,10 @@ export function LiveWidget({ dataVersion, onImported }: { dataVersion: number; o
   return (
     <Panel title="Dernière mesure" provenance={anyReal ? 'RÉEL' : 'SIMULÉ'}>
       {shown.map((x) => (
-        <LiveRow key={x.type} type={x.type} m={x.m} simulated={x.simulated} flag={anyReal && x.simulated} dataVersion={dataVersion} now={now} />
+        <LiveRow key={x.type} type={x.type} m={x.m} simulated={x.simulated} flag={anyReal && x.simulated} dataVersion={dataVersion} now={now}
+          trace={x.type === 'HeartRate' ? trace : undefined} />
       ))}
+      <WatchSnapshot now={now} />
       <Feed
         onSave={(m) => { setNow(Date.now()); setManual((s) => ({ ...s, [m.type as LiveType]: m })); }}
         onImported={onImported}
@@ -104,8 +119,8 @@ export function LiveWidget({ dataVersion, onImported }: { dataVersion: number; o
   );
 }
 
-function LiveRow({ type, m, simulated, flag, dataVersion, now }: {
-  type: LiveType; m: Measurement | null; simulated: boolean; flag: boolean; dataVersion: number; now: number;
+function LiveRow({ type, m, simulated, flag, dataVersion, now, trace }: {
+  type: LiveType; m: Measurement | null; simulated: boolean; flag: boolean; dataVersion: number; now: number; trace?: number[];
 }) {
   // Référence personnelle : seulement sur des mesures réelles (pas d'écart contre du simulé : fausse précision).
   const b = useMemo(() => (getRealSeries(type).length ? getRealBaseline(type) : null), [type, dataVersion]);
@@ -114,17 +129,19 @@ function LiveRow({ type, m, simulated, flag, dataVersion, now }: {
     return (
       <div className="wr-metric">
         <span className="sz-label">{LABEL[type]}</span>
-        <span className="wr-metric__side sz-muted" aria-label="Aucune mesure">—</span>
+        <span className="wr-note wr-metric__side">{type === 'HeartRate' ? 'Aucune mesure · lance le pouls sur la montre' : 'Aucune mesure'}</span>
       </div>
     );
   }
 
   const age = now - Date.parse(m.date);
   const fresh = age < FRESH_MS;
+  const watch = m.source === 'apple-watch-live';
+  const isLive = watch && age < LIVE_MS;
   const z = !simulated && b && b.n > 0 ? zScore(m.value, b) : null;
   const zLevel = z == null ? undefined : Math.abs(z) >= 3 ? 'red' : Math.abs(z) >= 2 ? 'amber' : undefined;
   const when = fresh ? new Date(m.date).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : ago(age);
-  const origin = m.source === 'apple-watch-live' ? (fresh ? 'En direct' : `Montre · ${ago(age)}`)
+  const origin = watch ? (isLive ? 'En direct' : `Montre · ${ago(age)}`)
     : m.source === 'manual' ? `Saisie manuelle · ${when}`
     : simulated ? when
     : `Export · ${when}`;
@@ -139,18 +156,89 @@ function LiveRow({ type, m, simulated, flag, dataVersion, now }: {
   return (
     <div className="wr-metric">
       <span className="sz-label">{LABEL[type]}</span>
-      <span className="wr-note wr-metric__side">
+      <span className="wr-note wr-metric__side" role={watch ? 'status' : undefined}>
+        {isLive && <Dot color="green" />}
         {origin}
         {flag && <ProvenanceBadge value="SIMULÉ" />}
       </span>
-      <span className="sz-value" data-stale={!fresh}>
+      <span className={`sz-value${watch ? ' sz-value--lg' : ''}`} data-stale={!fresh}>
         {fmt(m.value, d)} <span className="sz-unit">{unit}</span>
       </span>
       <span className={`wr-note wr-metric__side${ref.real ? '' : ' sz-detail'}`}>
         {ref.text}
         {z != null && <span className="wr-z" data-z={zLevel}> · {z > 0 ? '+' : ''}{fmt(z, 1)} σ</span>}
       </span>
+      {watch && trace && trace.length >= 3 && <Trace values={trace} stale={!isLive} />}
     </div>
+  );
+}
+
+// Instantané santé envoyé par l'app montre (« Envoyer mes données ») : dernière valeur de chaque mesure dans Santé.
+// N'apparaît que si de vraies mesures sont arrivées ; une mesure absente n'est pas affichée (rien d'inventé).
+const SNAPSHOT: { type: Measurement['type']; label: string; digits: number }[] = [
+  { type: 'RestingHeartRate', label: 'FC repos', digits: 0 },
+  { type: 'HeartRateVariabilitySDNN', label: 'VFC', digits: 0 },
+  { type: 'VO2Max', label: 'VO₂max', digits: 1 },
+  { type: 'SleepAnalysis', label: 'Sommeil', digits: 1 },
+  { type: 'AppleSleepingWristTemperature', label: 'Temp. poignet', digits: 2 },
+];
+const SNAPSHOT_POLL_MS = 5000;
+
+function WatchSnapshot({ now }: { now: number }) {
+  const [ms, setMs] = useState<Measurement[]>([]);
+  const lastKey = useRef('');
+
+  useEffect(() => {
+    let stop = false;
+    const tick = async () => {
+      if (document.hidden) return;
+      const got = await Promise.all(SNAPSHOT.map((s) => latestLive(s.type)));
+      if (stop) return;
+      const real = got.filter((m): m is Measurement => !!m && m.source !== 'simulated');
+      const k = real.map(keyOf).join('|');
+      if (k !== lastKey.current) { lastKey.current = k; setMs(real); }
+    };
+    tick();
+    const id = setInterval(tick, SNAPSHOT_POLL_MS);
+    return () => { stop = true; clearInterval(id); };
+  }, []);
+
+  if (ms.length === 0) return null;
+  return (
+    <div className="wr-metric">
+      <span className="sz-label">Envoyé par la montre</span>
+      <span className="wr-note wr-metric__side">Dernières valeurs de Santé</span>
+      <dl className="wr-snapshot wr-metric__full">
+        {SNAPSHOT.map((s) => {
+          const m = ms.find((x) => x.type === s.type);
+          if (!m) return null;
+          return (
+            <div key={s.type} className="wr-snapshot__row">
+              <dt className="wr-note">{s.label}</dt>
+              <dd className="wr-snapshot__value">{fmt(m.value, s.digits)} <span className="sz-unit">{m.unit}</span></dd>
+              <dd className="wr-note">{ago(now - Date.parse(m.date))}</dd>
+            </div>
+          );
+        })}
+      </dl>
+    </div>
+  );
+}
+
+/** Tracé de la séance en cours : les pouls reçus de la montre, à l'échelle de leurs propres min et max. */
+function Trace({ values, stale }: { values: number[]; stale: boolean }) {
+  const W = 320;
+  const H = 32;
+  const lo = Math.min(...values) - 2;
+  const hi = Math.max(...values) + 2;
+  const x = (i: number) => (i / (values.length - 1)) * W;
+  const y = (v: number) => 2 + (1 - (v - lo) / (hi - lo)) * (H - 4);
+  const pts = values.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+  return (
+    <svg className="wr-trace wr-metric__full" data-stale={stale} viewBox={`0 0 ${W} ${H}`} width="100%" height={H} preserveAspectRatio="none"
+      role="img" aria-label={`${values.length} pouls reçus de la montre, de ${fmt(Math.min(...values), 0)} à ${fmt(Math.max(...values), 0)} bpm`}>
+      <polyline points={pts} fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+    </svg>
   );
 }
 

@@ -2,15 +2,14 @@
 // Panneau, étiquettes et formats viennent de src/ui (mêmes composants que les pages Corps et Raisonnement).
 import { useRef, type CSSProperties, type KeyboardEvent, type ReactNode } from 'react';
 import type { Color, Level } from '../../types';
-import { statusColor, tokens } from '../../ui/tokens';
+import { levelLabel, statusColor, tokens } from '../../ui/tokens';
 import { statusVar } from '../../ui/primitives';
 
 /** Couleurs pour les attributs SVG (dérivées des tokens). */
 export const T = { text: tokens.color.text, status: statusColor } as const;
 
-export const LEVEL_LABEL: Record<Level, string> = {
-  VERT: 'Vert', AMBRE: 'Ambre', ORANGE: 'Orange', ROUGE: 'Rouge', DONNEES_INSUFFISANTES: 'Données insuffisantes',
-};
+/** Même vocabulaire que les autres pages (src/ui/tokens.ts). */
+export const LEVEL_LABEL: Record<Level, string> = levelLabel;
 
 /** Pastille de statut décorative (.sz-dot) : le texte voisin porte le sens. Gris = inconnu : pastille creuse. */
 export function Dot({ color, size = 8 }: { color: Color; size?: number }) {

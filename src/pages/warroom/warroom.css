@@ -6,7 +6,7 @@
 
 /* ── Grilles de la page ──────────────────────────────────────────────── */
 /* En-tête : une ligne (le nom de la page est déjà l'onglet actif de la barre haute). */
-.wr-head { margin-bottom: 12px; font-size: var(--sz-fs-data); line-height: 1.4; color: var(--sz-text-dim); font-variant-numeric: tabular-nums; }
+.wr-head { margin-bottom: 12px; font-size: var(--sz-fs-data); line-height: 1.4; color: var(--sz-text-dim); }
 /* Le contenu de droite des en-têtes s'aligne sur la marge des panneaux (pas de bouton × sur cette page). */
 .wr-page .sz-panel__head { padding-right: var(--sz-pad); }
 .wr-grid { display: grid; gap: var(--sz-gap); }
@@ -25,7 +25,8 @@
 .wr-flush > .sz-panel__body { padding: 0; }
 /* Texte courant d'un panneau. */
 .wr-text { font-size: var(--sz-fs-body); line-height: 1.5; color: var(--sz-text); }
-.wr-note { font-size: var(--sz-fs-small); line-height: 1.45; color: var(--sz-text-dim); font-variant-numeric: tabular-nums; }
+/* Texte courant : pas de chiffres tabulaires (dans Inter, ils élargissent aussi le trait d'union). */
+.wr-note { font-size: var(--sz-fs-small); line-height: 1.45; color: var(--sz-text-dim); }
 .wr-warn { color: var(--sz-amber); }
 
 /* ── Maintenant / Ensuite ────────────────────────────────────────────── */
@@ -119,6 +120,9 @@
 .wr-metric__full { grid-column: 1 / -1; }
 .wr-metric__side { display: inline-flex; align-items: center; gap: 8px; justify-self: end; text-align: right; }
 .wr-metric .sz-value[data-stale='true'] { color: var(--sz-text-dim); }
+/* Tracé de la séance montre : blanc tant que c'est en direct, gris ensuite. */
+.wr-trace { display: block; margin-top: 4px; color: var(--sz-text); }
+.wr-trace[data-stale='true'] { color: var(--sz-text-muted); }
 /* Valeur hors seuil : couleur du statut. */
 .wr-metric .sz-value[data-alert] { color: var(--sz-amber); }
 .wr-z[data-z='amber'] { color: var(--sz-amber); }
@@ -141,3 +145,10 @@
 .wr-chart__mark { position: absolute; right: 0; transform: translateY(-50%); font-size: var(--sz-fs-label); line-height: 1; color: var(--sz-text-muted); font-variant-numeric: tabular-nums; }
 .wr-chart__axis { display: flex; justify-content: space-between; margin-top: 4px; padding-right: 32px; font-size: var(--sz-fs-label); color: var(--sz-text-muted); font-variant-numeric: tabular-nums; }
 .wr-chart + .wr-note { margin-top: 8px; }
+
+/* Instantané santé envoyé par l'app montre (LiveWidget › WatchSnapshot) */
+.wr-snapshot { display: grid; gap: 6px; margin: 4px 0 0; }
+.wr-snapshot__row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 12px; align-items: baseline; }
+.wr-snapshot__row dd { margin: 0; }
+.wr-snapshot__value { font-variant-numeric: tabular-nums; color: var(--sz-text); }
+.wr-snapshot__row dd.wr-note { min-width: 7ch; text-align: right; font-variant-numeric: tabular-nums; }

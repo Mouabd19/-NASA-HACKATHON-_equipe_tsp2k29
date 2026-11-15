@@ -109,7 +109,7 @@
   align-items: baseline;
   gap: 12px;
   font-size: var(--sz-fs-small);
-  color: var(--sz-text);
+  color: var(--sz-text-dim);
   font-variant-numeric: tabular-nums;
 }
 .hdr__count {

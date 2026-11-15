@@ -1,7 +1,7 @@
 // Dérive la liste des warnings à afficher (pur) : alertes du jour × calques actifs × ancres 3D.
 import { sentenceCase } from '../../ui/format';
 import type { Alert, Color, LayerId, Level, OrganId } from '../../types';
-import { levelColor } from '../../ui/tokens';
+import { levelColor, levelLabel } from '../../ui/tokens';
 import { DAY_TODAY } from '../../mocks/mission';
 import { alertsForDayPlan } from '../../models/alerts';
 import { getDayBodyPlan } from '../../sim/load';
@@ -25,13 +25,7 @@ export interface WarnItem {
   leaving: boolean;
 }
 
-const LEVEL_LABEL: Record<Level, string> = {
-  VERT: 'Nominal',
-  AMBRE: 'Ambre',
-  ORANGE: 'Orange',
-  ROUGE: 'Rouge',
-  DONNEES_INSUFFISANTES: 'Données insuffisantes',
-};
+const LEVEL_LABEL: Record<Level, string> = levelLabel;
 
 /** Étiquettes par colonne : toutes à droite tant que la colonne tient, la gauche ne sert qu'au débordement. */
 const COLUMN_MAX = 9;

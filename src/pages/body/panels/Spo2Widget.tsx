@@ -106,7 +106,7 @@ export function Spo2Widget(): JSX.Element {
               <div className="sw-big">
                 <span className="sz-value sz-value--lg" style={low ? { color: statusVar[color] } : undefined}>{fmt(cur.value, 0)}</span>
                 <span className="sz-unit">%</span>
-                {low ? <StatusChip color={color} label={color === 'red' ? 'Basse' : 'À surveiller'} /> : null}
+                {low ? <StatusChip color={color} label={color === 'red' ? 'Basse' : 'Attention'} /> : null}
               </div>
             </div>
             {hasTrend ? (
