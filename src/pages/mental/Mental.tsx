@@ -1,12 +1,14 @@
 // Propriétaire : Steve (D). Page « Santé mentale » — prototype §11 (3 observateurs → 3 psychologues IA → psychologue humain).
-// Même DA que la War Room (briques de src/pages/warroom/ui.tsx, tokens de Walid). Données figées : public/data/mental/.
-// Ouverte par un double-clic sur le cerveau dans la page Body.
-import { useMemo, useState } from 'react';
-import type { JSX } from 'react';
+// Présentation : socle commun (src/ui) + mental.css (préfixe mt-). Données figées : public/data/mental/.
+// Ouverte par un double-clic sur le cerveau dans la page Corps.
+import { useEffect, useMemo, useRef, useState } from 'react';
+import type { JSX, RefObject } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
+import type { Color } from '../../types';
 import { moodSignals } from '../../models/ml';
-import { Btn, Dot, Panel, Prov, T, label } from '../warroom/ui';
-import '../warroom/warroom.css';
+import { Label, Panel, ProvenanceBadge, StatusChip, StatusDot, statusVar } from '../../ui';
+import './mental.css';
 
 type Niveau = 'rien' | 'a_surveiller' | 'proposer_un_echange' | 'donnees_insuffisantes';
 interface Fait { heure?: string; fait?: string; citation?: string | null }
@@ -30,7 +32,7 @@ const SERIES: Record<string, Pt[]> = Object.values(seriesFiles)[0]?.scenarios ??
 const ONSET = 75;
 const SCENARIOS = ['drift', 'control'] as const;
 type Sc = (typeof SCENARIOS)[number];
-const SC_LABEL: Record<Sc, string> = { drift: `Trouble débutant à J${ONSET}`, control: 'Témoin en bonne santé' };
+const SC_LABEL: Record<Sc, string> = { drift: `Disorder starting D${ONSET}`, control: 'Healthy control' };
 
 const DATA: Record<Sc, DayFile[]> = { drift: [], control: [] };
 for (const f of Object.values(files)) if (f.scenario in DATA) DATA[f.scenario].push(f);
@@ -38,19 +40,23 @@ for (const sc of SCENARIOS) DATA[sc].sort((a, b) => a.day - b.day);
 const DAYS = [...new Set(SCENARIOS.flatMap((sc) => DATA[sc].map((d) => d.day)))].sort((a, b) => a - b);
 
 const NIV_LABEL: Record<Niveau, string> = {
-  rien: 'Rien à signaler', a_surveiller: 'À surveiller', proposer_un_echange: 'Proposer un échange', donnees_insuffisantes: 'Données insuffisantes',
+  rien: 'Nothing to report', a_surveiller: 'Monitor', proposer_un_echange: 'Offer a conversation', donnees_insuffisantes: 'Insufficient data',
 };
-const nivColor = (n?: Niveau): string =>
-  n === 'proposer_un_echange' ? T.status.red : n === 'a_surveiller' ? T.status.amber : n === 'rien' ? T.status.green : T.status.grey;
+/** Statut d'un niveau (gris = inconnu, jamais vert par défaut). */
+const nivColor = (n?: Niveau): Color =>
+  n === 'proposer_un_echange' ? 'red' : n === 'a_surveiller' ? 'amber' : n === 'rien' ? 'green' : 'grey';
 const rank = (n?: Niveau): number => (n === 'proposer_un_echange' ? 2 : n === 'a_surveiller' ? 1 : 0);
-const CONF: Record<string, string> = { elevee: 'élevée', moyenne: 'moyenne', faible: 'faible' };
+const CONF: Record<string, string> = { elevee: 'high', moyenne: 'medium', faible: 'low' };
 const cap = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
 
-function Kpi({ value, text }: { value: string; text: string }): JSX.Element {
+function Kpi({ label, value, note }: { label: string; value: string; note: string }): JSX.Element {
   return (
-    <div style={{ minWidth: 0 }}>
-      <div style={{ fontSize: 40, fontWeight: 500, letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums', lineHeight: 1.1 }}>{value}</div>
-      <div style={{ fontSize: T.fs.md, color: T.textDim, marginTop: 8, lineHeight: 1.4 }}>{text}</div>
+    <div className="mt-stat">
+      <dt><Label>{label}</Label></dt>
+      <dd>
+        <span className="sz-value">{value}</span>
+        <span className="mt-stat__note">{note}</span>
+      </dd>
     </div>
   );
 }
@@ -61,169 +67,238 @@ function smooth(v: number[]): number[] {
 }
 
 const METRICS: { k: keyof Pt; name: string; unit: string }[] = [
-  { k: 'humeur', name: 'Humeur déclarée', unit: '1 à 5' },
-  { k: 'sommeilH', name: 'Sommeil', unit: 'heures' },
-  { k: 'vfcMs', name: 'Variabilité cardiaque', unit: 'ms' },
-  { k: 'equipageMin', name: "Temps avec l'équipage", unit: 'min/jour' },
+  { k: 'humeur', name: 'Self-reported mood', unit: '1 to 5' },
+  { k: 'sommeilH', name: 'Sleep', unit: 'hours' },
+  { k: 'vfcMs', name: 'Heart rate variability', unit: 'ms' },
+  { k: 'equipageMin', name: 'Time with crew', unit: 'min/day' },
 ];
 
+/** Largeur réelle du conteneur : le SVG est dessiné à l'échelle 1, les textes gardent leur taille (11 px). */
+function useWidth(fallback: number): [RefObject<HTMLDivElement | null>, number] {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [w, setW] = useState(fallback);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(() => { const cw = Math.round(el.clientWidth); if (cw > 0) setW(cw); });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  return [ref, w];
+}
+
+/**
+ * Verdict = point de couleur (vert : rien à signaler, ambre : à surveiller, rouge : proposer un échange, gris creux : inconnu).
+ * Un clic sur le point descend au dossier du jour.
+ */
+function VerdictMark({ cx, cy, color }: { cx: number; cy: number; color: Color }): JSX.Element {
+  const c = statusVar[color];
+  // contour de la couleur du panneau : le point « coupe » l'axe au lieu de s'y superposer
+  return color === 'grey'
+    ? <circle className="mt-verdict__pt" data-color={color} cx={cx} cy={cy} r={4} fill="var(--sz-panel)" stroke={c} strokeWidth={1.5} />
+    : <circle className="mt-verdict__pt" data-color={color} cx={cx} cy={cy} r={4.5} fill={c} stroke="var(--sz-panel)" strokeWidth={2} paintOrder="stroke" />;
+}
+
+/** Point de légende, mêmes couleurs que la frise. */
+function VerdictDot({ color }: { color: Color }): JSX.Element {
+  const c = statusVar[color];
+  return (
+    <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
+      {color === 'grey' ? <circle cx="5" cy="5" r="3.5" fill="none" stroke={c} strokeWidth="1.4" /> : <circle cx="5" cy="5" r="4" fill={c} />}
+    </svg>
+  );
+}
+
+/** Flèche vers le haut du bouton « Haut de page ». */
+function ArrowUp(): JSX.Element {
+  return (
+    <svg width="12" height="14" viewBox="0 0 12 14" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 13 V2 M1.5 6.5 L6 2 L10.5 6.5" />
+    </svg>
+  );
+}
+
+/** Conteneur qui défile autour de la page (la coquille fait défiler .sz-main__scroll, pas la fenêtre). */
+function scrollParent(el: HTMLElement | null): HTMLElement | null {
+  for (let p = el?.parentElement ?? null; p; p = p.parentElement) {
+    const o = getComputedStyle(p).overflowY;
+    if ((o === 'auto' || o === 'scroll') && p.scrollHeight > p.clientHeight) return p;
+  }
+  return null;
+}
+const smoothOr = (): ScrollBehavior => (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth');
+
 function Frise({ sel, onSel, mlAlert }: { sel: { sc: Sc; day: number }; onSel: (sc: Sc, day: number) => void; mlAlert: number | null }): JSX.Element {
+  const [ref, measured] = useWidth(1000);
   const drift = SERIES.drift ?? [];
   const ctrl = SERIES.control ?? [];
-  if (!drift.length) return <p style={{ color: T.textDim }}>Données insuffisantes : séries absentes.</p>;
+  if (!drift.length) return <p className="mt-empty">Insufficient data: series missing.</p>;
   const d0 = drift[0].day, d1 = drift[drift.length - 1].day;
-  const W = 1000, L = 190, R = 24;
+  const W = Math.max(520, measured), L = W < 720 ? 124 : 168, R = 16;
   const x = (d: number): number => L + ((d - d0) / (d1 - d0)) * (W - L - R);
-  const TRACK = [{ sc: 'drift' as Sc, y: 34, name: 'Verdict des agents · avec trouble' }, { sc: 'control' as Sc, y: 66, name: 'Verdict des agents · témoin' }];
-  const CH = 64, GAP = 22, TOP = 100;
-  const H = TOP + METRICS.length * (CH + GAP) + 24;
+  const TRACK = [{ sc: 'drift' as Sc, y: 36, name: 'Verdict · disorder' }, { sc: 'control' as Sc, y: 64, name: 'Verdict · control' }];
+  const CH = 56, GAP = 20, TOP = 96;
+  const BOTTOM = TOP + METRICS.length * (CH + GAP) - GAP;
+  const H = BOTTOM + 24;
   const ticks: number[] = [];
   for (let d = d0; d <= d1; d += 4) ticks.push(d);
   const path = (pts: Pt[], k: keyof Pt, y: (v: number) => number): string => {
     const v = smooth(pts.map((p) => Number(p[k])));
     return pts.map((p, i) => `${i ? 'L' : 'M'}${x(p.day).toFixed(1)},${y(v[i]).toFixed(1)}`).join(' ');
   };
-  const txt = { fill: T.textDim, fontSize: 12, fontFamily: T.fontText } as const;
   return (
     <div>
-      <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={`Frise J${d0} à J${d1} : humeur, sommeil, variabilité cardiaque et temps avec l'équipage, avec et sans trouble ; verdicts des agents aux jours analysés`} style={{ display: 'block', overflow: 'visible' }}>
-        {/* zone du trouble */}
-        <rect x={x(ONSET)} y={14} width={x(d1) - x(ONSET)} height={H - 38} fill={T.status.amber} opacity={0.07} />
-        <text x={x(ONSET) + 6} y={10} {...txt} fill={T.status.amber}>trouble injecté à J{ONSET} (scénario « avec trouble »)</text>
-        {mlAlert !== null ? (
-          <g>
-            <line x1={x(mlAlert)} x2={x(mlAlert)} y1={84} y2={H - 24} stroke={T.holo} strokeDasharray="4 4" />
-            <text x={x(mlAlert) - 6} y={94} {...txt} fill={T.holo} textAnchor="end">modèle de Mouad : alerte J{mlAlert}</text>
-          </g>
-        ) : null}
-        {/* pistes des verdicts */}
-        {TRACK.map((t) => (
-          <g key={t.sc}>
-            <text x={0} y={t.y + 4} {...txt}>{t.name}</text>
-            <line x1={L} x2={W - R} y1={t.y} y2={t.y} stroke={T.border} />
-            {DATA[t.sc].map((dd) => {
-              const n = dd.dossierPourLePsyHumain.niveau;
-              const on = sel.sc === t.sc && sel.day === dd.day;
-              return (
-                <g key={dd.day} role="button" tabIndex={0} aria-label={`${SC_LABEL[t.sc]}, J${dd.day} : ${NIV_LABEL[n]}`} style={{ cursor: 'pointer' }}
-                  onClick={() => onSel(t.sc, dd.day)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSel(t.sc, dd.day); } }}>
-                  <circle cx={x(dd.day)} cy={t.y} r={14} fill="transparent" />
-                  {on ? <circle cx={x(dd.day)} cy={t.y} r={11} fill="none" stroke={T.text} strokeWidth={1.5} /> : null}
-                  <circle cx={x(dd.day)} cy={t.y} r={7} fill={nivColor(n)} />
-                </g>
-              );
-            })}
-          </g>
-        ))}
-        {/* courbes */}
-        {METRICS.map((m, i) => {
-          const top = TOP + i * (CH + GAP);
-          const all = [...drift, ...ctrl].map((p) => Number(p[m.k]));
-          let lo = Math.min(...all), hi = Math.max(...all);
-          const pad = (hi - lo) * 0.1 || 1; lo -= pad; hi += pad;
-          const y = (v: number): number => top + CH - ((v - lo) / (hi - lo)) * CH;
-          return (
-            <g key={m.k}>
-              <text x={0} y={top + CH / 2 - 2} fill={T.text} fontSize={13} fontFamily={T.fontText}>{m.name}</text>
-              <text x={0} y={top + CH / 2 + 15} {...txt}>{m.unit}</text>
-              <line x1={L} x2={W - R} y1={top + CH} y2={top + CH} stroke={T.border} />
-              {ctrl.length ? <path d={path(ctrl, m.k, y)} fill="none" stroke={T.textDim} strokeWidth={1.5} strokeDasharray="5 4" /> : null}
-              <path d={path(drift, m.k, y)} fill="none" stroke={T.text} strokeWidth={2} />
+      <div className="mt-chart"><div className="mt-chart__in" ref={ref}>
+        <svg className="mt-frise" viewBox={`0 0 ${W} ${H}`} width={W} height={H} role="img" aria-label={`Timeline D${d0} to D${d1}: mood, sleep, heart rate variability and time with crew, with and without the disorder; agent verdicts on analyzed days`}>
+          {/* papier d'ECG : seulement derrière les quatre voies de courbes, pas derrière les verdicts */}
+          <defs>
+            <pattern id="mt-ecg" width="25" height="25" patternUnits="userSpaceOnUse" x={L} y={TOP}>
+              <path className="mt-ecg__minor" d="M5 0V25M10 0V25M15 0V25M20 0V25M0 5H25M0 10H25M0 15H25M0 20H25" />
+              <path className="mt-ecg__major" d="M0.5 0V25M0 0.5H25" />
+            </pattern>
+          </defs>
+          {METRICS.map((m, i) => (
+            <rect key={m.k} x={L} y={TOP + i * (CH + GAP)} width={W - L - R} height={CH} fill="url(#mt-ecg)" />
+          ))}
+          {/* période du trouble : aplat neutre */}
+          <rect className="mt-frise__zone" x={x(ONSET)} y={20} width={x(d1) - x(ONSET)} height={BOTTOM - 20} />
+          {/* grille */}
+          {ticks.map((d) => <line key={d} className="mt-frise__grid" x1={x(d)} x2={x(d)} y1={20} y2={BOTTOM} />)}
+          <line className="mt-frise__mark" x1={x(ONSET)} x2={x(ONSET)} y1={20} y2={BOTTOM} />
+          <text x={x(ONSET) + 6} y={12}>Disorder onset D{ONSET}</text>
+          {mlAlert !== null ? (
+            <g>
+              <line className="mt-frise__mark mt-frise__mark--dash" x1={x(mlAlert)} x2={x(mlAlert)} y1={80} y2={BOTTOM} />
+              <text x={x(mlAlert) - 6} y={88} textAnchor="end">Mood signal: alert D{mlAlert}</text>
             </g>
-          );
-        })}
-        {/* axe */}
-        {ticks.map((d) => (
-          <text key={d} x={x(d)} y={H - 6} {...txt} textAnchor="middle" style={{ fontVariantNumeric: 'tabular-nums' }}>J{d}</text>
-        ))}
-      </svg>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, marginTop: 12, fontSize: T.fs.sm, color: T.textDim }}>
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><svg width="24" height="4" aria-hidden><line x1="0" x2="24" y1="2" y2="2" stroke={T.text} strokeWidth="2" /></svg>Avec trouble</span>
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><svg width="24" height="4" aria-hidden><line x1="0" x2="24" y1="2" y2="2" stroke={T.textDim} strokeWidth="1.5" strokeDasharray="5 4" /></svg>Témoin (sans trouble)</span>
+          ) : null}
+          {/* pistes des verdicts */}
+          {TRACK.map((t) => (
+            <g key={t.sc}>
+              <text className="mt-frise__name" x={0} y={t.y + 4}>{t.name}</text>
+              <line className="mt-frise__axis" x1={L} x2={W - R} y1={t.y} y2={t.y} />
+              {DATA[t.sc].map((dd) => {
+                const n = dd.dossierPourLePsyHumain.niveau;
+                const color = nivColor(n);
+                const on = sel.sc === t.sc && sel.day === dd.day;
+                return (
+                  <g key={dd.day} className="mt-verdict" role="button" tabIndex={0} aria-pressed={on} aria-label={`${SC_LABEL[t.sc]}, D${dd.day}: ${NIV_LABEL[n]}. Go to the day's file`}
+                    onClick={() => onSel(t.sc, dd.day)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSel(t.sc, dd.day); } }}>
+                    {/* point de couleur ; survol et sélection = anneau fin autour */}
+                    <title>{`D${dd.day} · ${NIV_LABEL[n]} — click to go to the file`}</title>
+                    <rect className="mt-verdict__hit" x={x(dd.day) - 13} y={t.y - 13} width={26} height={26} />
+                    <circle className="mt-verdict__ring" cx={x(dd.day)} cy={t.y} r={9} />
+                    <VerdictMark cx={x(dd.day)} cy={t.y} color={color} />
+                  </g>
+                );
+              })}
+            </g>
+          ))}
+          {/* courbes */}
+          {METRICS.map((m, i) => {
+            const top = TOP + i * (CH + GAP);
+            const all = [...drift, ...ctrl].map((p) => Number(p[m.k]));
+            let lo = Math.min(...all), hi = Math.max(...all);
+            const pad = (hi - lo) * 0.1 || 1; lo -= pad; hi += pad;
+            const y = (v: number): number => top + CH - ((v - lo) / (hi - lo)) * CH;
+            return (
+              <g key={m.k}>
+                <text className="mt-frise__name" x={0} y={top + CH / 2 - 2}>{m.name}</text>
+                <text x={0} y={top + CH / 2 + 13}>{m.unit}</text>
+                <line className="mt-frise__axis" x1={L} x2={W - R} y1={top + CH} y2={top + CH} />
+                {ctrl.length ? <path className="mt-frise__line mt-frise__line--ctrl" d={path(ctrl, m.k, y)} /> : null}
+                <path className="mt-frise__line" d={path(drift, m.k, y)} />
+              </g>
+            );
+          })}
+          {/* axe */}
+          {ticks.map((d) => (
+            <text key={d} x={x(d)} y={H - 6} textAnchor="middle">D{d}</text>
+          ))}
+        </svg>
+      </div></div>
+      {measured < 520 ? <p className="mt-chart__hint">The timeline is wider than the screen: scroll →</p> : null}
+      <ul className="mt-legend">
+        <li><svg width="20" height="4" aria-hidden="true"><line className="mt-frise__line" x1="0" x2="20" y1="2" y2="2" /></svg>With disorder</li>
+        <li><svg width="20" height="4" aria-hidden="true"><line className="mt-frise__line mt-frise__line--ctrl" x1="0" x2="20" y1="2" y2="2" /></svg>Control</li>
         {(['rien', 'a_surveiller', 'proposer_un_echange'] as Niveau[]).map((n) => (
-          <span key={n} style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><Dot color={nivColor(n)} />{NIV_LABEL[n]}</span>
+          <li key={n}><VerdictDot color={nivColor(n)} />{NIV_LABEL[n]}</li>
         ))}
-        <span>Courbes : moyenne sur 3 jours</span>
-      </div>
+        <li className="mt-legend__note">3-day average</li>
+      </ul>
     </div>
   );
 }
 
 const STEPS = [
-  { n: '1', t: 'Lunettes et montre', d: 'Captent la journée : scènes, temps de parole, repas, sommeil, variabilité cardiaque.' },
-  { n: '2', t: '3 observateurs IA', d: "Relèvent des faits, sans interpréter : actions, paroles, liens avec l'équipage." },
-  { n: '3', t: '3 psychologues IA', d: 'Chacun donne un niveau. On retient celui d’au moins 2 sur 3.' },
-  { n: '4', t: 'Psychologue humain', d: "Reçoit le dossier au sol et décide. L'astronaute ne peut pas couper le signal." },
+  { n: '1', t: 'Glasses and watch', d: 'Capture the day: scenes, speaking time, meals, sleep, heart rate variability.' },
+  { n: '2', t: '3 AI observers', d: 'Record facts without interpreting: actions, words, interactions with the crew.' },
+  { n: '3', t: '3 AI psychologists', d: 'Each gives a level. The level kept is the one shared by at least 2 of 3.' },
+  { n: '4', t: 'Human psychologist', d: 'Receives the file on the ground and decides. The astronaut cannot switch off the signal.' },
 ];
 
 function HowItWorks(): JSX.Element {
   return (
-    <Panel title="Comment ça marche">
-      <ol style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
-        {STEPS.map((s, i) => (
-          <li key={s.n} style={{ position: 'relative', background: T.panelRaised, border: `1px solid ${s.n === '4' ? T.holo : T.border}`, borderRadius: T.radius.inset, padding: 16 }}>
-            <div style={{ ...label, marginBottom: 6 }}>Étape {s.n}{i < STEPS.length - 1 ? ' →' : ''}</div>
-            <div style={{ fontSize: T.fs.lg, fontWeight: 600, marginBottom: 6 }}>{s.t}</div>
-            <div style={{ fontSize: T.fs.sm, color: T.textDim, lineHeight: 1.45 }}>{s.d}</div>
+    <Panel title="How it works">
+      <ol className="mt-steps">
+        {STEPS.map((s) => (
+          <li key={s.n} className="mt-step">
+            <Label>Step {s.n}</Label>
+            <h3 className="sz-section-title">{s.t}</h3>
+            <p className="mt-step__text">{s.d}</p>
           </li>
         ))}
       </ol>
-      <div style={{ marginTop: 16, padding: 16, borderRadius: T.radius.inset, border: `1px dashed ${T.borderStrong}` }}>
-        <div style={{ ...label, marginBottom: 8 }}>Ce qu'on simule ici</div>
-        <ul style={{ margin: 0, paddingLeft: 18, fontSize: T.fs.md, color: T.textDim, lineHeight: 1.6 }}>
-          <li><strong style={{ color: T.text, fontWeight: 500 }}>Haddad, astronaute fictif</strong> : 49 jours de vie à bord simulés (J46 → J94), aucune personne réelle.</li>
-          <li><strong style={{ color: T.text, fontWeight: 500 }}>Un trouble injecté à J{ONSET}</strong> : il s'isole, dort moins, saute des repas, de plus en plus. Les agents ne le savent pas.</li>
-          <li><strong style={{ color: T.text, fontWeight: 500 }}>Un témoin</strong> : les mêmes journées sans trouble, pour vérifier que l'IA ne donne pas de fausse alerte.</li>
-          <li><strong style={{ color: T.text, fontWeight: 500 }}>Les agents analysent 5 jours</strong> (J65, J74, J78, J85, J94), chacun avec les 7 jours précédents. Biomarqueurs : simulation de Mouad.</li>
-        </ul>
-      </div>
     </Panel>
   );
 }
 
 function Dossier({ x }: { x: DayFile }): JSX.Element {
-  const [open, setOpen] = useState(false);
   const d = x.dossierPourLePsyHumain;
   const faits = x.observers.flatMap((o) => (o.output?.faits ?? []).slice(0, 3)).slice(0, 8);
   return (
-    <Panel title={`Dossier du jour · ${SC_LABEL[x.scenario]}`} accent={nivColor(d.niveau)} prov={<Prov p="SIMULÉ" />}>
-      <h2 style={{ margin: '0 0 4px', fontSize: 24, fontWeight: 600, letterSpacing: '-0.01em' }}>
-        J{x.day} · <span style={{ color: nivColor(d.niveau) }}>{NIV_LABEL[d.niveau]}</span>
-      </h2>
-      <div style={{ fontSize: T.fs.md, color: T.textDim, marginBottom: 24 }}>
-        Règle : niveau retenu par au moins 2 psychologues sur 3 · votes {d.votes.map((v) => NIV_LABEL[v.niveau].toLowerCase()).join(' / ')}
-      </div>
-      <div style={{ display: 'grid', gap: 16, gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))' }}>
+    <Panel
+      title={`Day file · D${x.day}`}
+      className="mt-dossier"
+      right={<StatusChip color={nivColor(d.niveau)} label={NIV_LABEL[d.niveau]} />}
+      provenance="SIMULÉ"
+    >
+      <p className="mt-dossier__meta">
+        {SC_LABEL[x.scenario]} · level kept by at least 2 of 3 psychologists · votes: {d.votes.map((v) => NIV_LABEL[v.niveau].toLowerCase()).join(', ')}
+      </p>
+      <div className="mt-psys">
         {x.psychologists.map((p) => {
           const o = p.output ?? {};
           const note = o.noteAuPsy ?? '';
           return (
-            <section key={p.id} style={{ background: T.panelRaised, border: `1px solid ${T.border}`, borderRadius: T.radius.inset, padding: 20, minWidth: 0 }}>
-              <h3 style={{ margin: 0, fontSize: T.fs.md, fontWeight: 600 }}>{cap(p.label.replace('Psychologue — ', ''))}</h3>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '8px 0 12px', fontSize: T.fs.sm, color: nivColor(o.niveau) }}>
-                <Dot color={nivColor(o.niveau)} />{o.niveau ? NIV_LABEL[o.niveau] : '—'}
-                {o.confiance ? <span style={{ color: T.textDim }}>· confiance {CONF[o.confiance] ?? o.confiance}</span> : null}
+            <section key={p.id} className="mt-psy">
+              <h3 className="sz-section-title">{cap(p.label.replace(/^(?:Psychologue|Psychologist) — /, ''))}</h3>
+              <div className="mt-psy__level">
+                <StatusDot color={nivColor(o.niveau)} />
+                <span>{o.niveau ? NIV_LABEL[o.niveau] : '—'}</span>
+                {o.confiance ? <span className="mt-psy__conf">· {CONF[o.confiance] ?? o.confiance} confidence</span> : null}
               </div>
-              {o.hypotheses?.[0]?.schema ? <p style={{ margin: '0 0 8px', fontSize: T.fs.md, lineHeight: 1.45 }}>{o.hypotheses[0].schema}</p> : null}
-              <p style={{ margin: 0, fontSize: T.fs.sm, color: T.textDim, lineHeight: 1.45 }}>{note.length > 260 ? note.slice(0, 257) + '…' : note}</p>
+              {o.hypotheses?.[0]?.schema ? <p className="mt-psy__hyp">{o.hypotheses[0].schema}</p> : null}
+              <p className="mt-psy__note">{note.length > 260 ? note.slice(0, 257) + '…' : note}</p>
             </section>
           );
         })}
       </div>
-      <div style={{ marginTop: 20 }}>
-        <Btn kind="quiet" onClick={() => setOpen(!open)}>{open ? '▾' : '▸'} Faits relevés par les 3 observateurs ({faits.length})</Btn>
-        {open ? (
-          <ul style={{ margin: '8px 0 0', paddingLeft: 20, fontSize: T.fs.md, color: T.textDim, lineHeight: 1.5 }}>
-            {faits.map((f, i) => (
-              <li key={i}><span style={{ fontVariantNumeric: 'tabular-nums', color: T.text }}>{f.heure}</span> · {f.fait}{f.citation ? <> — « {f.citation} »</> : null}</li>
-            ))}
-          </ul>
-        ) : null}
-      </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 20, paddingTop: 16, borderTop: `1px solid ${T.border}`, fontSize: T.fs.md, color: T.textDim }}>
-        <Dot color={T.holo} />
-        <span><strong style={{ color: T.text, fontWeight: 600 }}>Psychologue humain au sol</strong> : reçoit ce dossier et décide. L'IA ne décide pas, et l'astronaute ne peut pas couper le signal.</span>
-      </div>
+      <details className="mt-more">
+        <summary className="sz-btn sz-btn--ghost sz-btn--sm">
+          <svg className="mt-more__chev" viewBox="0 0 8 8" aria-hidden="true"><path d="M2.5 1l3 3-3 3" fill="none" stroke="currentColor" strokeWidth="1.3" /></svg>
+          Facts recorded by the observers ({faits.length})
+        </summary>
+        <ul className="mt-facts">
+          {faits.map((f, i) => (
+            <li key={i}>
+              <span className="mt-facts__time">{f.heure}</span>
+              <span>{f.fait}{f.citation ? <span className="mt-facts__quote"> “{f.citation}”</span> : null}</span>
+            </li>
+          ))}
+        </ul>
+      </details>
+      <p className="mt-dossier__foot">File sent to the human psychologist on the ground, who decides. The AI does not decide.</p>
     </Panel>
   );
 }
@@ -236,51 +311,91 @@ export function Mental(): JSX.Element {
   const mlAlert = useMemo(() => moodSignals().find((s) => s.alert)?.day ?? null, []);
   const [sel, setSel] = useState<{ sc: Sc; day: number }>(() => ({ sc: 'drift', day: detected?.day ?? DAYS[DAYS.length - 1] }));
   const current = DATA[sel.sc].find((d) => d.day === sel.day);
-  const engine = SUMMARY.model ? SUMMARY.model.replace(/^claude-(\w+)-(\d+)-(\d+)$/, (_m, n: string, a: string, b: string) => `Claude ${cap(n)} ${a}.${b}`) : 'modèle de langage';
+  const pageRef = useRef<HTMLDivElement>(null);
+  const [showTop, setShowTop] = useState(false);
+  // un verdict cliqué : son dossier s'affiche, puis la page descend jusqu'aux blocs de texte
+  const pick = (sc: Sc, day: number): void => {
+    setSel({ sc, day });
+    setTimeout(() => document.getElementById('mt-dossier')?.scrollIntoView({ behavior: smoothOr(), block: 'start' }), 0);
+  };
+  const toTop = (): void => {
+    const sp = scrollParent(pageRef.current);
+    if (sp) sp.scrollTo({ top: 0, behavior: smoothOr() });
+    else window.scrollTo({ top: 0, behavior: smoothOr() });
+  };
+  // le bouton « Haut de page » n'apparaît qu'une fois la page descendue
+  useEffect(() => {
+    const sp = scrollParent(pageRef.current);
+    const target: HTMLElement | Window = sp ?? window;
+    const onScroll = (): void => setShowTop((sp ? sp.scrollTop : window.scrollY) > 240);
+    onScroll();
+    target.addEventListener('scroll', onScroll, { passive: true });
+    return () => target.removeEventListener('scroll', onScroll);
+  }, []);
+  const engine = SUMMARY.model ? SUMMARY.model.replace(/^claude-(\w+)-(\d+)-(\d+)$/, (_m, n: string, a: string, b: string) => `Claude ${cap(n)} ${a}.${b}`) : 'language model';
+
+  const back = <Link className="sz-link mt-back" to="/body">‹ Body</Link>;
 
   if (!DAYS.length) {
-    return <main style={{ padding: 32, color: T.textDim }}>Données insuffisantes : aucun résultat figé dans public/data/mental/.</main>;
+    return (
+      <div className="sz-page mt-page">
+        {back}
+        <header className="sz-page__head"><h1 className="sz-page__title">Mental health</h1></header>
+        <p className="mt-empty">Insufficient data: no results available.</p>
+      </div>
+    );
   }
 
   return (
-    <main style={{ background: T.bg, color: T.text, fontFamily: T.fontText, minHeight: '100vh', WebkitFontSmoothing: 'antialiased' }}>
-      <div style={{ maxWidth: 1440, margin: '0 auto', padding: '32px clamp(16px, 3vw, 32px) 48px', boxSizing: 'border-box', display: 'grid', gap: 16 }}>
-        <header style={{ display: 'flex', flexWrap: 'wrap', gap: '16px 32px', alignItems: 'flex-end', marginBottom: 16 }}>
-          <div>
-            <div style={{ ...label, marginBottom: 8 }}>Santé mentale · prototype · vision</div>
-            <h1 style={{ fontSize: 'clamp(24px, 2.4vw, 30px)', fontWeight: 600, letterSpacing: '-0.015em', lineHeight: 1.1, margin: 0 }}>
-              Repérer tôt. Laisser l'humain décider.
-            </h1>
-            <div style={{ fontSize: T.fs.md, color: T.textDim, marginTop: 8 }}>
-              3 observateurs → 3 psychologues IA → 1 psychologue humain · prototype : {engine} · vision : modèle embarqué à bord
-            </div>
-          </div>
-          <div style={{ marginLeft: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
-            <Prov p="SIMULÉ" />
-            <Link to="/body" className="wr-link" style={{ padding: '0 8px' }}>← Retour au corps</Link>
-          </div>
-        </header>
+    <div className="sz-page mt-page" ref={pageRef}>
+      {back}
+      <header className="sz-page__head mt-head">
+        <div>
+          <h1 className="sz-page__title">Mental health</h1>
+          <p className="sz-page__sub">
+            Spot early, let a human decide.
+            <span className="sz-detail"> Agents: {engine}; target: onboard embedded model.</span>
+          </p>
+        </div>
+        <div className="mt-head__right">
+          <ProvenanceBadge value="SIMULÉ" />
+        </div>
+      </header>
+
+      <div className="mt-grid">
+        <Panel title="Result">
+          <dl className="mt-stats">
+            <Kpi
+              label="Conversation offered"
+              value={detected ? `D${detected.day}` : '—'}
+              note={detected ? `${detected.day - ONSET} days after disorder onset (D${ONSET})` : 'No conversation offered'}
+            />
+            <Kpi label="Mood signal alert" value={mlAlert !== null ? `D${mlAlert}` : '—'} note="Mood signal model, independent method" />
+            <Kpi label="False alerts" value={String(ctrlEsc)} note="In the control, without the disorder" />
+          </dl>
+        </Panel>
+
+        <Panel title="Timeline" right="Click a point to go to the day’s file">
+          <Frise sel={sel} onSel={pick} mlAlert={mlAlert} />
+        </Panel>
+
+        <div id="mt-dossier" className="mt-anchor">
+          {current ? <Dossier key={`${sel.sc}${sel.day}`} x={current} /> : null}
+        </div>
 
         <HowItWorks />
-
-        <Panel title="Résultat">
-          <div style={{ display: 'grid', gap: 32, gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
-            <Kpi value={detected ? `J${detected.day}` : '—'} text={detected ? `nos agents proposent un échange, ${detected.day - ONSET} jours après le début du trouble (J${ONSET})` : 'aucune proposition d’échange'} />
-            <Kpi value={mlAlert !== null ? `J${mlAlert}` : '—'} text="le modèle d'IA de Mouad (signal d'humeur, méthode indépendante) alerte" />
-            <Kpi value={String(ctrlEsc)} text="fausse alerte chez le témoin, sans trouble" />
-          </div>
-        </Panel>
-
-        <Panel title="La frise · cliquez un verdict pour ouvrir le dossier du jour">
-          <Frise sel={sel} onSel={(sc, day) => setSel({ sc, day })} mlAlert={mlAlert} />
-        </Panel>
-
-        {current ? <Dossier key={`${sel.sc}${sel.day}`} x={current} /> : null}
-
-        <p style={{ margin: '8px 0 0', fontSize: T.fs.sm, color: T.textDim }}>
-          Données entièrement simulées (biomarqueurs : simulation de Mouad) · aucune personne réelle · signal à regarder, jamais un diagnostic.
-        </p>
       </div>
-    </main>
+
+      <p className="mt-honest">A signal to look at, never a diagnosis.</p>
+
+      {/* rendu dans <body> : la page est animée à l'entrée (transform), ce qui casserait position: fixed */}
+      {createPortal(
+        <button type="button" className="sz-btn mt-totop" data-show={showTop} onClick={toTop} tabIndex={showTop ? 0 : -1} aria-hidden={!showTop}>
+          <ArrowUp />
+          Back to top
+        </button>,
+        document.body,
+      )}
+    </div>
   );
 }

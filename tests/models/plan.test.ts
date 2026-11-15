@@ -41,7 +41,7 @@ describe('explain — donnée → modèle → norme → décision', () => {
       for (const id of [topic, `${topic}@20`, `${topic}@860`]) {
         const r = explain(id);
         expect(r.id).toBe(id);
-        expect(r.title).not.toBe('Raisonnement introuvable');
+        expect(r.title).not.toBe('Reasoning not found');
         expect(r.steps.map(s => s.kind)).toEqual(['donnee', 'modele', 'norme', 'decision']);
         expect(r.steps.some(s => s.source)).toBe(true);
         for (const s of r.steps) expect(s.text).not.toMatch(/undefined|NaN/);
@@ -49,14 +49,14 @@ describe('explain — donnée → modèle → norme → décision', () => {
     }
   });
   it('les modèles d\'IA apparaissent dans les raisonnements (A, B, C)', () => {
-    expect(explain('r-hanche-ared').steps[1].text).toMatch(/Modèle d'IA B.*J860/);
-    expect(explain('r-vo2-intervalles').steps[1].text).toMatch(/Modèle d'IA B/);
-    expect(explain('r-prelevement').steps[1].text).toMatch(/Modèle d'IA A/);
-    expect(explain('r-psy').steps[1].text).toMatch(/Modèle d'IA C/);
+    expect(explain('r-hanche-ared').steps[1].text).toMatch(/AI model B.*D860/);
+    expect(explain('r-vo2-intervalles').steps[1].text).toMatch(/AI model B/);
+    expect(explain('r-prelevement').steps[1].text).toMatch(/AI model A/);
+    expect(explain('r-psy').steps[1].text).toMatch(/AI model C/);
   });
   it('un jour d\'une autre date porte son suffixe ; identifiant inconnu → 4 maillons « introuvable »', () => {
     expect(planDay(50).every(i => i.reasoningId.endsWith('@50'))).toBe(true);
-    expect(explain('r-hanche-ared@9999').title).toBe('Raisonnement introuvable');
+    expect(explain('r-hanche-ared@9999').title).toBe('Reasoning not found');
     expect(explain('inconnu').steps).toHaveLength(4);
   });
 });
@@ -80,7 +80,7 @@ describe('cas limites + vraies données montre', () => {
     setRealData(ms);
     const w = realWatchCheck()!;
     expect(w.level).toBe('AMBRE');
-    expect(w.reason).toMatch(/RÉELLE.*75 bpm.*recontrôler/);
-    expect(triage(94).reasons.some(r => /Montre RÉELLE/.test(r))).toBe(true);
+    expect(w.reason).toMatch(/^Watch: .*75 bpm.*recheck/);
+    expect(triage(94).reasons.some(r => /^Watch: resting HR/.test(r))).toBe(true);
   });
 });

@@ -9,72 +9,72 @@ import { fr } from './util';
 const LEVEL: Partial<Record<Color, Level>> = { amber: 'AMBRE', red: 'ROUGE' };
 const get = (o: OrganState, key: string): Metric | undefined => o.metrics.find((m) => m.key === key);
 const trendTxt = (m?: Metric) =>
-  m?.trend7d === undefined ? 'tendance 7 j indisponible' : `tendance 7 j ${m.trend7d > 0 ? '+' : '−'}${fr(Math.abs(m.trend7d), 2)} %/sem`;
+  m?.trend7d === undefined ? '7-day trend unavailable' : `7-day trend ${m.trend7d > 0 ? '+' : '−'}${fr(Math.abs(m.trend7d), 2)}%/wk`;
 
 function boneAlert(o: OrganState, level: Level, name: string, day: number, a: number): Alert {
-  const pace = a >= 0.5 ? 'avec le plan' : 'au rythme actuel';
+  const pace = a >= 0.5 ? 'with the plan' : 'at current pace';
   const thr = BONE_THRESHOLD[o.id];
   const dens = get(o, 'densite_osseuse')?.value ?? NaN;
   const loss = get(o, 'perte_osseuse')?.value ?? NaN;
   const end = 100 - (lossPct(o.id, DAY_END, a) as number);
-  const endLevel = end < thr ? '→ ROUGE' : '→ reste au-dessus du seuil';
+  const endLevel = end < thr ? '→ RED' : '→ stays above the threshold';
   const message = level === 'ROUGE'
-    ? `Densité estimée ${fr(dens, 2)} % du pré-vol (perte ${fr(loss, 2)} %) : sous le seuil NASA ≥ ${thr} %. Estimation du modèle [H], pas une mesure du scanner.`
-    : `Projection J${DAY_END} ${pace} : ${fr(end, 2)} % ${endLevel} (seuil NASA ≥ ${thr} %). ${day > DAY_TODAY ? `À J${day}` : "Aujourd'hui"} : densité estimée ${fr(dens, 2)} % du pré-vol (perte ${fr(loss, 2)} %), modèle [H].`;
-  return { id: `alert-${o.id}`, organId: o.id, level, title: `${name} — PERTE OSSEUSE ESTIMÉE`, message, rule: 'V1 4027' };
+    ? `Estimated density ${fr(dens, 2)}% of preflight (loss ${fr(loss, 2)}%): below the NASA threshold ≥ ${thr}%. Model estimate [H], not a scanner measurement.`
+    : `Projection D${DAY_END} ${pace}: ${fr(end, 2)}% ${endLevel} (NASA threshold ≥ ${thr}%). ${day > DAY_TODAY ? `At D${day}` : 'Today'}: estimated density ${fr(dens, 2)}% of preflight (loss ${fr(loss, 2)}%), model [H].`;
+  return { id: `alert-${o.id}`, organId: o.id, level, title: `${name} — ESTIMATED BONE LOSS`, message, rule: 'V1 4027' };
 }
 
 function muscleAlert(o: OrganState, level: Level, name: string): Alert {
   const vol = get(o, 'volume');
   return {
-    id: `alert-${o.id}`, organId: o.id, level, title: `${name} — ATROPHIE MUSCULAIRE`,
-    message: `Volume au scan ${fr(vol?.value ?? NaN, 1)} % de J0, ${trendTxt(vol)} (bruit de mesure ± ${fr(vol?.noise ?? 0, 1)}). Alerte sur la tendance 7 j, pas sur le point du jour.`,
+    id: `alert-${o.id}`, organId: o.id, level, title: `${name} — MUSCLE ATROPHY`,
+    message: `Scan volume ${fr(vol?.value ?? NaN, 1)}% of D0, ${trendTxt(vol)} (measurement noise ± ${fr(vol?.noise ?? 0, 1)}). Alert based on the 7-day trend, not on today's data point.`,
     rule: 'TENDANCE-7J',
   };
 }
 
 function organAlert(o: OrganState, level: Level, day: number, a: number): Alert | null {
   switch (o.id) {
-    case 'hanche': return boneAlert(o, level, 'HANCHE', day, a);
-    case 'rachis': return boneAlert(o, level, 'RACHIS', day, a);
-    case 'femur': return boneAlert(o, level, 'COL DU FÉMUR', day, a);
-    case 'cuisse': return muscleAlert(o, level, 'CUISSE');
-    case 'mollet': return muscleAlert(o, level, 'MOLLET');
-    case 'paravertebraux': return muscleAlert(o, level, 'PARAVERTÉBRAUX');
+    case 'hanche': return boneAlert(o, level, 'HIP', day, a);
+    case 'rachis': return boneAlert(o, level, 'LUMBAR SPINE', day, a);
+    case 'femur': return boneAlert(o, level, 'FEMORAL NECK', day, a);
+    case 'cuisse': return muscleAlert(o, level, 'THIGH');
+    case 'mollet': return muscleAlert(o, level, 'CALF');
+    case 'paravertebraux': return muscleAlert(o, level, 'PARASPINAL MUSCLES');
     case 'coeur': {
       const v = get(o, 'vo2max')?.value ?? NaN;
       const pct = get(o, 'vo2_pct')?.value ?? NaN;
       const sol0 = vo2max(DAY_SOL0, a);
       const tail = day < DAY_SOL0
-        ? ` Projection Sol 0 (J${DAY_SOL0}) ${a >= 0.5 ? 'avec le plan' : 'au rythme actuel'} : ${fr(sol0, 1)} — ${sol0 - VO2_SOL0 < 0.5 ? 'à la limite du' : 'au-dessus du'} seuil ${fr(VO2_SOL0, 1)} [NASA V1 4002].`
-        : ` Seuils : ≥ 80 % du pré-vol [NASA V1 4003], ≥ ${fr(VO2_SOL0, 1)} [NASA V1 4002].`;
+        ? ` Projection Sol 0 (D${DAY_SOL0}) ${a >= 0.5 ? 'with the plan' : 'at current pace'}: ${fr(sol0, 1)} — ${sol0 - VO2_SOL0 < 0.5 ? 'at the limit of the' : 'above the'} ${fr(VO2_SOL0, 1)} threshold [NASA V1 4002].`
+        : ` Thresholds: ≥ 80% of preflight [NASA V1 4003], ≥ ${fr(VO2_SOL0, 1)} [NASA V1 4002].`;
       return {
-        id: 'alert-coeur', organId: 'coeur', level, title: 'CŒUR — VO₂MAX EN BAISSE',
-        message: `VO₂max ${fr(v, 1)} ml/kg/min (−${fr(100 - pct, 2)} % vs pré-vol).${tail}`,
+        id: 'alert-coeur', organId: 'coeur', level, title: 'HEART — VO₂MAX DECLINING',
+        message: `VO₂max ${fr(v, 1)} ml/kg/min (−${fr(100 - pct, 2)}% vs preflight).${tail}`,
         rule: 'V1 4003',
       };
     }
     case 'yeux': {
       const g = get(o, 'gaine_nerf_optique');
       return {
-        id: 'alert-yeux', organId: 'yeux', level, title: 'NERF OPTIQUE — GAINE EN HAUSSE',
-        message: `Diamètre de la gaine ${fr(g?.value ?? NaN, 2)} mm (seuil de vigilance 5,5 mm [H]), ${trendTxt(g)}. Reflet de la pression intracrânienne : risque SANS à surveiller.`,
+        id: 'alert-yeux', organId: 'yeux', level, title: 'OPTIC NERVE — SHEATH WIDENING',
+        message: `Sheath diameter ${fr(g?.value ?? NaN, 2)} mm (5.5 mm watch threshold [H]), ${trendTxt(g)}. Reflects intracranial pressure: SANS risk to monitor.`,
         rule: 'SANS-ONSD',
       };
     }
     case 'reins': {
       const c = get(o, 'calcium_urinaire');
       return {
-        id: 'alert-reins', organId: 'reins', level, title: 'REINS — CALCIUM URINAIRE ÉLEVÉ',
-        message: `Calcium urinaire ${fr(c?.value ?? NaN, 0)} mg/24 h (référence < 300), ${trendTxt(c)}. Risque de calculs : hydratation renforcée, scan des reins demain.`,
+        id: 'alert-reins', organId: 'reins', level, title: 'KIDNEYS — ELEVATED URINARY CALCIUM',
+        message: `Urinary calcium ${fr(c?.value ?? NaN, 0)} mg/24 h (reference < 300), ${trendTxt(c)}. Stone risk: increased hydration, kidney scan tomorrow.`,
         rule: 'CALCIUM-U',
       };
     }
     case 'dose': {
       const d = get(o, 'dose_cumulee');
       return {
-        id: 'alert-dose', organId: 'dose', level, title: 'EXPOSITION — DOSE CUMULÉE',
-        message: `Dose cumulée ${fr(d?.value ?? NaN, 0)} mSv (repère 600 mSv [H], 1,84 mSv/j en croisière [Publié RAD]).`,
+        id: 'alert-dose', organId: 'dose', level, title: 'RADIATION — CUMULATIVE DOSE',
+        message: `Cumulative dose ${fr(d?.value ?? NaN, 0)} mSv (600 mSv threshold [H], 1.84 mSv/d in cruise [Published RAD]).`,
         rule: 'RAD-DOSE',
       };
     }
@@ -84,7 +84,7 @@ function organAlert(o: OrganState, level: Level, day: number, a: number): Alert 
       if (!bad.length) return null;
       const lvl: Level = bad.some((m) => m.color === 'red') ? 'ROUGE' : 'AMBRE';
       return {
-        id: 'alert-sang', organId: 'sang', level: lvl, title: 'SANG — VALEUR HORS RÉFÉRENCE',
+        id: 'alert-sang', organId: 'sang', level: lvl, title: 'BLOOD — VALUE OUT OF RANGE',
         message: bad.map((m) => `${m.label} ${fr(m.value, 1)} ${m.unit}`).join(' · '),
         rule: 'SANG-REF',
       };
@@ -117,7 +117,7 @@ export function mockAlertsForDay(day: number, adherence = 0): Alert[] {
   return out;
 }
 
-const PAIN_ZONE: Record<string, string> = { paravertebraux: 'bas du dos' };
+const PAIN_ZONE: Record<string, string> = { paravertebraux: 'lower back' };
 
 export function mockTriage(day: number): TriageResult {
   const alerts = mockAlertsForDay(day);
@@ -125,26 +125,26 @@ export function mockTriage(day: number): TriageResult {
   const level: Level = alerts.some((a) => a.level === 'ROUGE') ? 'ROUGE' : alerts.length ? 'AMBRE' : 'VERT';
   const reasons = alerts.map((a) => `${a.title} [${a.rule}]`);
   if (ci) {
-    const pain = ci.pain > 0 ? `douleur ${ci.pain}/3${ci.painZone ? ` (${PAIN_ZONE[ci.painZone] ?? ci.painZone})` : ''}` : 'aucune douleur';
-    reasons.push(`Check-in : humeur ${ci.mood}/5, fatigue ${ci.fatigue}/5, ${pain}`);
+    const pain = ci.pain > 0 ? `pain ${ci.pain}/3${ci.painZone ? ` (${PAIN_ZONE[ci.painZone] ?? ci.painZone})` : ''}` : 'no pain';
+    reasons.push(`Check-in: mood ${ci.mood}/5, fatigue ${ci.fatigue}/5, ${pain}`);
   } else if (day <= DAY_TODAY) {
-    reasons.push('Check-in du matin manquant');
+    reasons.push('Morning check-in missing');
   }
   const groundRoutine: string[] = [];
   const has = (id: string) => alerts.some((a) => a.organId === id);
-  if (has('hanche') || has('rachis') || has('femur')) groundRoutine.push('Os : réévaluer les bisphosphonates avec le médecin au sol');
-  if (has('coeur')) groundRoutine.push('Aérobie : faire valider le protocole par intervalles');
-  if (has('yeux')) groundRoutine.push('Risque SANS : transmettre les mesures de la gaine du nerf optique');
-  if (has('reins')) groundRoutine.push('Reins : avis sur le risque de calculs');
+  if (has('hanche') || has('rachis') || has('femur')) groundRoutine.push('Bone: reassess bisphosphonates with the ground flight surgeon');
+  if (has('coeur')) groundRoutine.push('Aerobic: get the interval protocol approved');
+  if (has('yeux')) groundRoutine.push('SANS risk: send the optic nerve sheath measurements');
+  if (has('reins')) groundRoutine.push('Kidneys: advice on kidney stone risk');
   return { level, reasons, groundRoutine };
 }
 
 const NOW: Record<Level, string> = {
-  VERT: 'Suivre le protocole du jour. Aucune action immédiate.',
-  AMBRE: 'Appliquer la to-do du jour : contre-mesures renforcées (ARED charge lourde, intervalles). Pas d’urgence.',
-  ORANGE: 'Appliquer la to-do du jour sans report et prévenir le CMO de bord dans la journée.',
-  ROUGE: 'Arrêter l’activité en cours, prévenir le CMO de bord, appliquer la fiche de conduite à tenir.',
-  DONNEES_INSUFFISANTES: 'Données insuffisantes : refaire la mesure (check-in, prélèvement) avant toute décision.',
+  VERT: 'Follow today’s protocol. No immediate action.',
+  AMBRE: 'Carry out today’s plan: reinforced countermeasures (ARED heavy loading, intervals). Not urgent.',
+  ORANGE: 'Carry out today’s plan without delay and notify the CMO today.',
+  ROUGE: 'Stop the current activity, notify the CMO, follow the contingency procedure card.',
+  DONNEES_INSUFFISANTES: 'Insufficient data: repeat the measurement (check-in, blood draw) before any decision.',
 };
 const PROCESSING_MIN = 30; // temps de traitement au sol [H]
 
@@ -152,11 +152,11 @@ const PROCESSING_MIN = 30; // temps de traitement au sol [H]
 export function mockRouter(t: TriageResult, pos: LinkPos, delayMin: number): RouterOutput {
   const maintenant = NOW[t.level];
   if (t.level === 'VERT') {
-    return { maintenant, ensuite: { decideur: 'moi', texte: 'Rien à transmettre en priorité. Bilan envoyé avec la télémétrie du jour.' } };
+    return { maintenant, ensuite: { decideur: 'moi', texte: 'Nothing urgent to transmit. Summary sent with today’s telemetry.' } };
   }
   if (t.level === 'ROUGE' || pos === 'Conjonction') {
-    const why = pos === 'Conjonction' ? 'Pas de lien Terre (conjonction) : ' : '';
-    return { maintenant, ensuite: { decideur: 'CMO', texte: `${why}le CMO de bord décide. La Terre est informée dès que le lien le permet.` } };
+    const why = pos === 'Conjonction' ? 'No Earth link (solar conjunction): ' : '';
+    return { maintenant, ensuite: { decideur: 'CMO', texte: `${why}${why ? 'the' : 'The'} CMO decides. Earth is informed as soon as the link allows.` } };
   }
   const reponseMin = Math.round(2 * Math.max(0, delayMin) + PROCESSING_MIN);
   return {
@@ -164,7 +164,7 @@ export function mockRouter(t: TriageResult, pos: LinkPos, delayMin: number): Rou
     ensuite: {
       decideur: 'sol',
       reponseMin,
-      texte: `Synthèse IA et avis du médecin au sol attendus dans ≈ ${reponseMin} min (aller-retour radio 2 × ${fr(Math.max(0, delayMin), 1)} min + traitement).`,
+      texte: `AI summary and ground flight surgeon’s advice expected in ≈ ${reponseMin} min (radio round trip 2 × ${fr(Math.max(0, delayMin), 1)} min + processing).`,
     },
   };
 }

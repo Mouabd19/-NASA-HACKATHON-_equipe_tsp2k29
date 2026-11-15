@@ -36,12 +36,20 @@ export function isValidCheckIn(c: unknown): c is CheckIn {
   );
 }
 
+/** Ajout : copie le check-in du jour au serveur local (pour la montre : GET /api/watch/summary). Navigateur seulement. */
+function pushToServer(body: CheckIn | { clear: true } | null): void {
+  if (typeof window === 'undefined' || typeof fetch === 'undefined' || !body) return;
+  fetch('/api/checkin', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+    .catch(() => { /* serveur absent (build statique) : la War Room marche sans */ });
+}
+
 export function saveCheckIn(c: CheckInZones): void {
-  if (!isValidCheckIn(c)) throw new Error('Check-in invalide');
+  if (!isValidCheckIn(c)) throw new Error('Invalid check-in');
   const raw = JSON.stringify(c);
   memory.set(key(c.day), raw);
   try { storage()?.setItem(key(c.day), raw); } catch { /* quota / mode privé : on garde la mémoire */ }
   listeners.forEach((f) => f());
+  if (c.day === MISSION_TODAY) pushToServer(c);
 }
 
 /** Ajout : check-in saisi pour un jour donné (null si aucun). */
@@ -66,7 +74,11 @@ export function clearCheckIn(day = MISSION_TODAY): void {
   memory.delete(key(day));
   try { storage()?.removeItem(key(day)); } catch { /* rien */ }
   listeners.forEach((f) => f());
+  if (day === MISSION_TODAY) pushToServer({ clear: true });
 }
+
+// au chargement de la page, le serveur (peut-être redémarré) récupère le check-in déjà saisi
+if (typeof window !== 'undefined') pushToServer(todayCheckIn());
 
 /** Ajout : notifie les composants quand le check-in change. Renvoie la fonction de désabonnement. */
 export function onCheckInChange(f: () => void): () => void {
@@ -79,7 +91,7 @@ export function painZonesOf(c: Zones): OrganId[] {
   return c.painZones?.length ? c.painZones : c.painZone ? [c.painZone] : [];
 }
 
-const ZONE_LABEL: Record<string, string> = { hanche: 'hanche', rachis: 'dos', cuisse: 'cuisse', mollet: 'mollet', cerveau: 'tête', yeux: 'yeux' };
+const ZONE_LABEL: Record<string, string> = { hanche: 'hip', rachis: 'back', cuisse: 'thigh', mollet: 'calf', cerveau: 'head', yeux: 'eyes' };
 /** Ajout : zones douloureuses en clair (« hanche, dos »), pour les textes de triage et de to-do. */
 export const painZonesText = (c: Zones): string =>
   painZonesOf(c).map((z) => ZONE_LABEL[z] ?? z).join(', ');

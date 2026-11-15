@@ -14,7 +14,7 @@ describe('triage — check-in du matin (règles R13)', () => {
     expect(checkInLevel(ci({ pain: 3 })).level).toBe('ROUGE');
     expect(checkInLevel(ci({ pain: 2 })).level).toBe('ORANGE');
     expect(checkInLevel(ci({ pain: 1 })).level).toBe('VERT');
-    expect(checkInLevel(ci({ pain: 2, painZone: 'paravertebraux' })).reasons[0]).toMatch(/bas du dos.*CMO/);
+    expect(checkInLevel(ci({ pain: 2, painZone: 'paravertebraux' })).reasons[0]).toMatch(/lower back.*CMO/);
   });
   it('humeur ≤ 2 ET fatigue ≥ 4 → ORANGE ; l\'un sans l\'autre → rien', () => {
     expect(checkInLevel(ci({ mood: 2, fatigue: 4 })).level).toBe('ORANGE');
@@ -34,13 +34,13 @@ describe('triage — journée', () => {
   it('le signal d\'humeur (modèle C) propose un point psy sans changer le niveau', () => {
     const first = moodSignals().find(s => s.alert)!.day;
     const t = triage(first);
-    expect(t.reasons.some(r => /modèle C/.test(r))).toBe(true);
-    expect(t.groundRoutine.some(g => /point psy/.test(g))).toBe(true);
-    expect(triage(first - 10).reasons.some(r => /modèle C/.test(r))).toBe(false);
+    expect(t.reasons.some(r => /model C/.test(r))).toBe(true);
+    expect(t.groundRoutine.some(g => /psych session/.test(g))).toBe(true);
+    expect(triage(first - 10).reasons.some(r => /model C/.test(r))).toBe(false);
   });
   it('les jours projetés n\'attendent pas de check-in', () => {
-    expect(triage(300).reasons.some(r => /Projection J300/.test(r))).toBe(true);
-    expect(triage(300).reasons.some(r => /manquant/.test(r))).toBe(false);
+    expect(triage(300).reasons.some(r => /Projection D300/.test(r))).toBe(true);
+    expect(triage(300).reasons.some(r => /missing/.test(r))).toBe(false);
   });
   it('copie défensive : modifier le résultat ne change pas le suivant', () => {
     const t = triage(94);

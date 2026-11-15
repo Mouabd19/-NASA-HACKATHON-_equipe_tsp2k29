@@ -31,7 +31,7 @@ const meal = (id: string, time: string, topic: string, priority: 1 | 2 | 3): Dra
   return {
     id, kind: 'repas', time, topic, priority,
     title: m?.title ?? id,
-    detail: m ? `${m.items.join(' · ')} — ${m.kcal} kcal · ${m.proteinsG} g protéines · ${m.calciumMg} mg calcium` : '',
+    detail: m ? `${m.items.join(' · ')} — ${m.kcal} kcal · ${m.proteinsG} g protein · ${m.calciumMg} mg calcium` : '',
   };
 };
 const test = (id: string, time: string, topic: string, priority: 1 | 2 | 3, extra = ''): Draft => {
@@ -49,17 +49,17 @@ function drafts(day: number, alerts: Alert[], ci: CheckIn | null, psy: boolean):
   // --- médical en tête ---
   const ciLevel = ci ? checkInLevel(ci).level : 'VERT';
   if (alerts.some(a => a.level === 'ROUGE') || ciLevel === 'ROUGE' || ciLevel === 'ORANGE') {
-    const why = ci && ciLevel !== 'VERT' ? checkInLevel(ci).reasons[0] : 'Seuil rouge franchi';
-    out.push(medical('prevenir-cmo', '06:45', 'r-cmo', 1, 'Prévenir le CMO de bord', `${why.replace(/ :.*$/, '')} : point avec le CMO avant toute séance.`));
+    const why = ci && ciLevel !== 'VERT' ? checkInLevel(ci).reasons[0] : 'Red threshold crossed';
+    out.push(medical('prevenir-cmo', '06:45', 'r-cmo', 1, 'Notify the Crew Medical Officer (CMO)', `${why.replace(/\s*:.*$/, '')}: consult the CMO before any exercise session.`));
   }
 
   // --- tests ---
   if (measured) {
-    out.push(test('test-checkin', '07:00', 'r-checkin', ci ? 2 : 1, ci ? '' : ' Pas encore fait aujourd\'hui : sans lui, aucun statut vert.'));
+    out.push(test('test-checkin', '07:00', 'r-checkin', ci ? 2 : 1, ci ? '' : ' Not done yet today: without it, no green status.'));
     const age = bloodAgeDays(day);
     if (day % 7 === 0 || age > BLOOD_MAX_AGE_DAYS) {
       out.push(test('test-prelevement', '07:10', 'r-prelevement', age > BLOOD_MAX_AGE_DAYS ? 1 : 2,
-        age > BLOOD_MAX_AGE_DAYS && Number.isFinite(age) ? ` Dernier prélèvement il y a ${age} jours : donnée expirée.` : ''));
+        age > BLOOD_MAX_AGE_DAYS && Number.isFinite(age) ? ` Last blood draw ${age} days ago: data expired.` : ''));
     }
   }
   const bone = has('hanche', 'rachis', 'femur');
@@ -74,7 +74,7 @@ function drafts(day: number, alerts: Alert[], ci: CheckIn | null, psy: boolean):
     const tired = !!ci && (ci.fatigue >= 4 || ci.sleepFelt <= 2);
     if (missing || off || tired) {
       out.push(test('test-pvt', '09:30', 'r-pvt', missing || off ? 1 : 2,
-        missing ? ' Pas de mesure depuis plus d\'un jour : donnée expirée.' : off ? ' Temps de réaction au-dessus du repère sur 7 jours.' : ' Fatigue ou sommeil dégradés au check-in.'));
+        missing ? ' No measurement for more than a day: data expired.' : off ? ' 7-day reaction time above the threshold.' : ' Fatigue or poor sleep reported at check-in.'));
     }
   }
   if (has('reins')) out.push(test('test-echo-reins', '10:45', 'r-calcium-urinaire', 2));
@@ -100,16 +100,16 @@ function drafts(day: number, alerts: Alert[], ci: CheckIn | null, psy: boolean):
 
   // --- médical ---
   if (bone || has('yeux', 'coeur')) {
-    out.push(medical('sol-routine', '14:00', 'r-sol-routine', 2, 'Point « Sol-routine » avec le médecin au sol',
-      'Message différé : bisphosphonates, risque SANS, protocole aérobie. Réponse attendue dans ENSUITE.'));
+    out.push(medical('sol-routine', '14:00', 'r-sol-routine', 2, 'Ground routine consult with the flight surgeon',
+      'Delayed message: bisphosphonates, SANS risk, aerobic protocol. Reply expected under NEXT.'));
   }
   if (has('dose')) {
-    out.push(medical('revue-dose', '15:00', 'r-dose', 2, 'Revue de la dose cumulée avec le CMO',
-      'Dose cumulée au-dessus du repère : revoir le temps passé hors de la zone la mieux protégée.'));
+    out.push(medical('revue-dose', '15:00', 'r-dose', 2, 'Cumulative dose review with the CMO',
+      'Cumulative dose above the threshold: review time spent outside the best-shielded area.'));
   }
   if (psy) {
-    out.push(medical('point-psy', '17:30', 'r-psy', 3, 'Point psy (proposé, jamais imposé)',
-      'Le signal d\'humeur s\'écarte de votre référence : un échange est proposé, vous décidez.'));
+    out.push(medical('point-psy', '17:30', 'r-psy', 3, 'Psych session (offered, never imposed)',
+      'Your mood signal is drifting from your baseline: a conversation is offered; you decide.'));
   }
   return out;
 }
@@ -124,7 +124,7 @@ export function planDay(day: number): TodoItem[] {
   if (!items) {
     const t = triage(d);
     const ci = d <= DAY_TODAY ? getCheckIn(d) : null;
-    const psy = t.groundRoutine.some(g => /point psy/.test(g));
+    const psy = t.groundRoutine.some(g => /psych session/.test(g));
     const seen = new Set<string>();
     items = drafts(d, alertsForDay(d), ci, psy)
       .filter(x => (seen.has(x.id) ? false : (seen.add(x.id), true)))

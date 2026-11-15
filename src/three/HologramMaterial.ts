@@ -1,5 +1,5 @@
-// Matériau « hologramme médical » : blanc-bleuté désaturé, liseré fresnel, fines lignes
-// de balayage, léger scintillement, mélange additif (aucun artefact de tri), teinte de statut.
+// Matériau du corps : rendu translucide gris-bleu neutre, contour par effet de bord (fresnel),
+// mélange additif (aucun artefact de tri), teinte de statut mate. Aucun effet animé décoratif.
 // Les réglages par défaut viennent de look.ts ; les couleurs de tokens.ts.
 import * as THREE from 'three';
 import type { LayerId } from '../types';
@@ -44,31 +44,29 @@ uniform float uTintMix;
 uniform float uOpacity;
 uniform float uHighlight;
 uniform float uGhost;
-uniform float uScanY;
 uniform float uDim;
+uniform float uScanY;
+uniform vec4 uScanLook;   // épaisseur de bande, intensité, traîne, longueur de traîne
+uniform float uScanHide;  // opacité résiduelle AU-DESSUS du plan de scan (1 = le balayage ne masque rien)
 uniform float uCore;
 uniform float uRim;
 uniform float uFresnelPower;
 uniform float uFlow;
 uniform float uHeat;
 uniform float uBackFace;
-uniform vec3 uScanline;   // densité, contraste, vitesse
-uniform float uFlicker;
-uniform vec2 uTintLook;   // surbrillance, remplissage
-uniform vec2 uHoverLook;  // gain au survol, atténuation
-uniform vec3 uGhostLook;  // opacité, densité des tirets, remplissage
-uniform vec4 uScanLook;   // épaisseur de bande, intensité, traîne, longueur de traîne
+uniform vec2 uTintLook;   // (inutilisé), remplissage
+uniform vec3 uHoverLook;  // gain au survol, atténuation, aplat de la pièce mise en avant
+uniform vec3 uGhostLook;  // opacité, part du remplissage conservée, part de la teinte de statut conservée
 uniform vec3 uFlowLook;   // densité, vitesse, surbrillance
 uniform vec3 uHeatLook;   // paliers, luminosité par palier, lignes de niveau
 uniform float uAlphaMax;
 uniform float uDepthCue;   // 0 = aucun ; sinon opacité résiduelle de la moitié du corps opposée à la caméra
-uniform float uScanHide;   // opacité résiduelle AU-DESSUS du plan de scan (1 = le balayage ne masque rien)
 
 varying vec3 vWorldPos;
 varying vec3 vWorldNormal;
 varying vec2 vUv;
 
-// Répartition ILLUSTRATIVE [H] de la dose sur le corps : champ lisse et symétrique (gauche = droite).
+// Répartition ILLUSTRATIVE (hypothèse) de la dose sur le corps : champ lisse et symétrique (gauche = droite).
 // Plus exposé : tête, épaules, membres fins. Moins exposé : tronc et bassin (auto-blindage par les tissus).
 float heatField(vec3 p) {
   float ax = abs(p.x);
@@ -86,9 +84,9 @@ void main() {
   float ndv = abs(dot(N, V));
   float fres = pow(1.0 - ndv, uFresnelPower);
 
+  // organe non mis en avant : sa teinte de statut s'éteint à moitié (l'œil va à l'organe survolé / épinglé)
   // révélation des teintes par le plan de scan : sous le plan = teinté
   float reveal = smoothstep(0.0, 0.04, uScanY - vWorldPos.y);
-  // organe non mis en avant : sa teinte de statut s'éteint à moitié (l'œil va à l'organe survolé / épinglé)
   float tintMix = uTintMix * reveal * (1.0 - 0.5 * uDim);
   vec3 col = mix(uColor, uTint, tintMix);
 
@@ -106,11 +104,6 @@ void main() {
     // la teinte de statut (ambre / rouge si la dose dépasse le repère) ne colore que les zones les plus exposées
     col = mix(uColor, uTint, clamp(uTintMix * reveal * smoothstep(0.55, 0.8, q), 0.0, 1.0));
   }
-
-  // lignes de balayage + scintillement
-  float sl = 0.5 + 0.5 * sin(vWorldPos.y * uScanline.x * 6.2831853 - uTime * uScanline.z);
-  if (uHeat < 0.5) a *= 1.0 - uScanline.y * sl;   // pas de lignes sur la carte de dose (déjà en paliers)
-  a *= 1.0 - uFlicker * (0.5 + 0.5 * sin(uTime * 31.0 + sin(uTime * 7.3) * 3.0));
 
   if (!gl_FrontFacing) a *= uBackFace;
 
@@ -131,24 +124,23 @@ void main() {
     a *= 1.0 + uFlow * pulse * uFlowLook.z;
   }
 
-  // corps projeté : fantôme en tranches, surtout le liseré
+  // corps projeté : même rendu, plus léger, surtout le contour (pas de trame)
   if (uGhost > 0.001) {
-    float d = fract(vWorldPos.y * uGhostLook.y + uTime * 0.04);
-    float dash = smoothstep(0.0, 0.06, d) * (1.0 - smoothstep(uGhostLook.z, uGhostLook.z + 0.06, d));
-    float ga = (uCore * 0.35 + uRim * fres + tintMix * uTintLook.y * 0.5) * dash * uGhostLook.x;
+    float ga = (uCore * uGhostLook.y + uRim * fres + tintMix * uTintLook.y * uGhostLook.y) * uGhostLook.x;
     a = mix(a, ga, uGhost);
+    // une prévision n'est pas une alarme : la teinte de statut ne subsiste qu'en trace, comme les marqueurs en contour
+    col = mix(col, mix(uColor, uTint, tintMix * uGhostLook.z), uGhost);
   }
 
-  // survol / sélection
+  // survol / sélection : renfort d'opacité + aplat mat de la pièce (elle se détache même en nominal) ; la couleur ne change pas
   a *= 1.0 + uHighlight * uHoverLook.x;
+  a += uHighlight * uHoverLook.z * (0.45 + 0.55 * ndv) * (gl_FrontFacing ? 1.0 : uBackFace);
   a *= 1.0 - uDim * uHoverLook.y;
-  col *= 1.0 + tintMix * uTintLook.x + uHighlight * 0.25;
 
-  // bande lumineuse là où le plan de scan coupe le maillage
+  // bande lumineuse là où le plan de scan coupe le maillage, puis traîne sous le plan
   float band = exp(-abs(vWorldPos.y - uScanY) / uScanLook.x);
   col = mix(col, uColor * 1.6, band * 0.6);
   a += band * uScanLook.y * (0.25 + fres);
-  // traîne sous le plan : le liseré reste allumé un instant après le passage
   float below = uScanY - vWorldPos.y;
   a += uScanLook.z * (1.0 - smoothstep(0.0, uScanLook.w, below)) * step(0.0, below) * fres * step(uScanY, 100.0);
 
@@ -160,8 +152,8 @@ void main() {
 
 /**
  * Crée un matériau hologramme. Uniforms pilotables (contrat) : uTime, uColor, uTint, uTintMix,
- * uOpacity, uHighlight, uGhost, uScanY, uDim. Ajouts : uCore, uRim, uFresnelPower, uFlow, uHeat.
- * Penser à avancer uTime (secondes) à chaque frame.
+ * uOpacity, uHighlight, uGhost, uDim. Ajouts : uCore, uRim, uFresnelPower, uFlow, uHeat.
+ * uTime (secondes) n'anime plus que le flux sanguin, s'il est activé dans look.flow.
  */
 export function createHologramMaterial(opts: HologramOpts = {}): THREE.ShaderMaterial {
   const L = look.layers[opts.layer ?? 'organes'];
@@ -177,25 +169,23 @@ export function createHologramMaterial(opts: HologramOpts = {}): THREE.ShaderMat
       uOpacity: { value: opts.opacity ?? 1 },
       uHighlight: { value: 0 },
       uGhost: { value: opts.ghost ? 1 : 0 },
-      uScanY: { value: SCAN_Y_IDLE },
       uDim: { value: 0 },
+      uScanY: { value: SCAN_Y_IDLE },
       uCore: { value: L.core },
       uRim: { value: L.rim },
       uFresnelPower: { value: L.fresnelPower },
       uFlow: { value: opts.fx === 'flow' ? 1 : 0 },
       uHeat: { value: opts.fx === 'heat' ? 1 : 0 },
       uBackFace: { value: h.backFace },
-      uScanline: { value: new THREE.Vector3(h.scanlineDensity, h.scanlineStrength, h.scanlineSpeed) },
-      uFlicker: { value: h.flicker },
-      uTintLook: { value: new THREE.Vector2(h.tintBoost, h.tintCore) },
-      uHoverLook: { value: new THREE.Vector2(h.highlightBoost, h.dimFactor) },
-      uGhostLook: { value: new THREE.Vector3(look.ghost.opacity, look.ghost.dashDensity, look.ghost.dashFill) },
-      uScanLook: { value: new THREE.Vector4(look.scan.bandWidth, look.scan.bandBoost, look.scan.trail, look.scan.trailLength) },
+      uTintLook: { value: new THREE.Vector2(0, h.tintCore) },
+      uHoverLook: { value: new THREE.Vector3(h.highlightBoost, h.dimFactor, h.highlightFill) },
+      uGhostLook: { value: new THREE.Vector3(look.ghost.opacity, look.ghost.fill, look.ghost.tint) },
       uFlowLook: { value: new THREE.Vector3(look.flow.density, look.flow.speed, look.flow.boost) },
       uHeatLook: { value: new THREE.Vector3(look.heat.levels, look.heat.gain, look.heat.contour) },
       uAlphaMax: { value: h.alphaMax },
-      uDepthCue: { value: look.depthCue[opts.layer ?? 'organes'] ?? 0 },
+      uScanLook: { value: new THREE.Vector4(look.scan.bandWidth, look.scan.bandBoost, look.scan.trail, look.scan.trailLength) },
       uScanHide: { value: (opts.layer ?? 'organes') === 'shell' ? look.scan.hideShell : look.scan.hideInner },
+      uDepthCue: { value: look.depthCue[opts.layer ?? 'organes'] ?? 0 },
     },
     transparent: true,
     depthWrite: false,

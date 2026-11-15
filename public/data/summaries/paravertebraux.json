@@ -1,50 +1,50 @@
 {
  "organId": "paravertebraux",
  "generatedBy": "IA-sol",
- "model": "Claude (Anthropic), rédigé hors ligne",
+ "model": "Claude (Anthropic), written offline",
  "generatedAt": "2026-11-14",
  "reviewed": false,
- "note": "Synthèse IA rédigée au sol à partir des seuls chiffres du simulateur (src/sim, données de Mouad). À valider par le CMO. N'est jamais utilisée pour décider d'une alerte.",
+ "note": "AI summary written on the ground from the simulator figures only (src/sim, Mouad's data). To be validated by the CMO. Never used to decide on an alert.",
  "days": [
   {
    "day": 0,
    "adherence": 0,
-   "text": "Bilan de référence (J0) : volume des muscles du dos (paravertébraux) de 610 cm³ au scan. Ils tiennent la colonne. Statut nominal."
+   "text": "Baseline assessment (D0): back muscle (paraspinal) volume of 610 cm³ on the scan. They support the spine. Status: nominal."
   },
   {
    "day": 30,
    "adherence": 0,
-   "text": "Muscles du dos à 98,72 % du volume de J0 (602 cm³). La tendance est de −0,28 % par semaine. Statut nominal."
+   "text": "Back muscles at 98.72% of D0 volume (602 cm³). The trend is −0.28% per week. Status: nominal."
   },
   {
    "day": 60,
    "adherence": 0,
-   "text": "Muscles du dos à 97,63 % du volume de J0 (596 cm³). La perte reste régulière (−0,25 % par semaine). Statut nominal."
+   "text": "Back muscles at 97.63% of D0 volume (596 cm³). Loss remains steady (−0.25% per week). Status: nominal."
   },
   {
    "day": 94,
    "adherence": 0,
-   "text": "Muscles du dos à 96,51 % du volume de J0 (589 cm³), statut nominal. Leur perte peut expliquer une gêne au bas du dos signalée au check-in. La mobilité du dos fait partie du plan."
+   "text": "Back muscles at 96.51% of D0 volume (589 cm³), status: nominal. Their loss may explain the lower back discomfort reported at check-in. Back mobility is part of the plan."
   },
   {
    "day": 210,
    "adherence": 0,
-   "text": "Projection à Sol 0 (J210) au rythme actuel : 93,45 % du volume de J0. Statut à surveiller. Projection du modèle, pas une mesure."
+   "text": "Projection at Sol 0 (D210) at current pace: 93.45% of D0 volume. Status: monitor. Model projection, not a measurement."
   },
   {
    "day": 210,
    "adherence": 1,
-   "text": "Projection à Sol 0 (J210) avec le plan suivi : 95,43 % du volume de J0. Statut nominal. Projection du modèle, pas une mesure."
+   "text": "Projection at Sol 0 (D210) with the plan followed: 95.43% of D0 volume. Status: nominal. Model projection, not a measurement."
   },
   {
    "day": 860,
    "adherence": 0,
-   "text": "Projection au retour (J860) au rythme actuel : 87,73 % du volume de J0. Statut hors seuil. Projection du modèle, pas une mesure."
+   "text": "Projection at return (D860) at current pace: 87.73% of D0 volume. Status: out of limits. Model projection, not a measurement."
   },
   {
    "day": 860,
    "adherence": 1,
-   "text": "Projection au retour (J860) avec le plan suivi : 93,43 % du volume de J0. Statut à surveiller. Projection du modèle, pas une mesure."
+   "text": "Projection at return (D860) with the plan followed: 93.43% of D0 volume. Status: monitor. Model projection, not a measurement."
   }
  ]
 }

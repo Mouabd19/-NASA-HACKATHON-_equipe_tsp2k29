@@ -22,23 +22,23 @@ const s = (d: number) => (1 - Math.exp(-d / 60)) / (1 - Math.exp(-LAST_DRAW_DAY 
 
 // Valeurs de référence terrestres usuelles [Publié — à vérifier par Steve].
 const WEEKLY: AnalyteDef[] = [
-  { analyte: 'hemoglobine', label: 'Hémoglobine', unit: 'g/dL', refLow: 13.5, refHigh: 17.5, digits: 1, cadence: 'hebdo', v0: 15.2, v91: 14.1, amp: 0.12 },
-  { analyte: 'hematocrite', label: 'Hématocrite', unit: '%', refLow: 40, refHigh: 52, digits: 1, cadence: 'hebdo', v0: 45.5, v91: 42.3, amp: 0.4 },
-  { analyte: 'leucocytes', label: 'Leucocytes', unit: 'G/L', refLow: 4, refHigh: 10, digits: 1, cadence: 'hebdo', v0: 6.2, v91: 6.6, amp: 0.25 },
+  { analyte: 'hemoglobine', label: 'Hemoglobin', unit: 'g/dL', refLow: 13.5, refHigh: 17.5, digits: 1, cadence: 'hebdo', v0: 15.2, v91: 14.1, amp: 0.12 },
+  { analyte: 'hematocrite', label: 'Hematocrit', unit: '%', refLow: 40, refHigh: 52, digits: 1, cadence: 'hebdo', v0: 45.5, v91: 42.3, amp: 0.4 },
+  { analyte: 'leucocytes', label: 'White blood cells', unit: 'G/L', refLow: 4, refHigh: 10, digits: 1, cadence: 'hebdo', v0: 6.2, v91: 6.6, amp: 0.25 },
   { analyte: 'lymphocytes_pct', label: 'Lymphocytes', unit: '%', refLow: 20, refHigh: 40, digits: 1, cadence: 'hebdo', v0: 31, v91: 28, amp: 0.8 },
-  { analyte: 'vgm', label: 'VGM', unit: 'fL', refLow: 80, refHigh: 100, digits: 1, cadence: 'hebdo', v0: 89, v91: 90.5, amp: 0.3 },
-  { analyte: 'idr', label: 'IDR', unit: '%', refLow: 11.5, refHigh: 14.5, digits: 1, cadence: 'hebdo', v0: 12.8, v91: 13.5, amp: 0.1 },
+  { analyte: 'vgm', label: 'MCV', unit: 'fL', refLow: 80, refHigh: 100, digits: 1, cadence: 'hebdo', v0: 89, v91: 90.5, amp: 0.3 },
+  { analyte: 'idr', label: 'RDW', unit: '%', refLow: 11.5, refHigh: 14.5, digits: 1, cadence: 'hebdo', v0: 12.8, v91: 13.5, amp: 0.1 },
   { analyte: 'crp', label: 'CRP', unit: 'mg/L', refLow: 0, refHigh: 5, digits: 1, cadence: 'hebdo', v0: 0.9, v91: 1.6, amp: 0.2 },
   { analyte: 'calcium', label: 'Calcium', unit: 'mmol/L', refLow: 2.2, refHigh: 2.6, digits: 2, cadence: 'hebdo', v0: 2.36, v91: 2.48, amp: 0.02 },
-  { analyte: 'vitamine_d', label: 'Vitamine D', unit: 'ng/mL', refLow: 30, refHigh: 60, digits: 0, cadence: 'hebdo', v0: 38, v91: 31, amp: 1 },
-  { analyte: 'creatinine', label: 'Créatinine', unit: 'µmol/L', refLow: 60, refHigh: 110, digits: 0, cadence: 'hebdo', v0: 82, v91: 86, amp: 2 },
-  { analyte: 'albumine', label: 'Albumine', unit: 'g/L', refLow: 35, refHigh: 50, digits: 1, cadence: 'hebdo', v0: 44, v91: 42, amp: 0.5 },
-  { analyte: 'phosphatases_alcalines', label: 'Phosphatases alcalines', unit: 'U/L', refLow: 40, refHigh: 130, digits: 0, cadence: 'hebdo', v0: 68, v91: 84, amp: 2 },
+  { analyte: 'vitamine_d', label: 'Vitamin D', unit: 'ng/mL', refLow: 30, refHigh: 60, digits: 0, cadence: 'hebdo', v0: 38, v91: 31, amp: 1 },
+  { analyte: 'creatinine', label: 'Creatinine', unit: 'µmol/L', refLow: 60, refHigh: 110, digits: 0, cadence: 'hebdo', v0: 82, v91: 86, amp: 2 },
+  { analyte: 'albumine', label: 'Albumin', unit: 'g/L', refLow: 35, refHigh: 50, digits: 1, cadence: 'hebdo', v0: 44, v91: 42, amp: 0.5 },
+  { analyte: 'phosphatases_alcalines', label: 'Alkaline phosphatase', unit: 'U/L', refLow: 40, refHigh: 130, digits: 0, cadence: 'hebdo', v0: 68, v91: 84, amp: 2 },
   { analyte: 'glucose', label: 'Glucose', unit: 'mmol/L', refLow: 3.9, refHigh: 5.5, digits: 1, cadence: 'hebdo', v0: 4.9, v91: 5.2, amp: 0.1 },
   { analyte: 'cortisol', label: 'Cortisol', unit: 'nmol/L', refLow: 170, refHigh: 540, digits: 0, cadence: 'hebdo', v0: 340, v91: 420, amp: 15 },
 ];
 const URINE: AnalyteMeta = {
-  analyte: 'calcium_urinaire', label: 'Calcium urinaire', unit: 'mg/24 h', refLow: 100, refHigh: 300, digits: 0, cadence: 'quotidien',
+  analyte: 'calcium_urinaire', label: 'Urinary calcium', unit: 'mg/24 h', refLow: 100, refHigh: 300, digits: 0, cadence: 'quotidien',
 };
 export const URINE_CA_NOISE = 12;
 

@@ -1,4 +1,4 @@
-/* Warnings ancrés en 3D — plaques hexagonales superposées au canvas. Préfixe : w3d-. */
+/* Annotations d'alerte superposées au canvas : étiquette, trait de liaison, point d'ancrage. Préfixe : w3d-. */
 
 .w3d-layer {
   position: absolute;
@@ -18,158 +18,84 @@
   pointer-events: none;
 }
 
+/* Trait de liaison : neutre, 1 px. Pointillé = jour projeté (seul le trait le dit : l'étiquette garde un cadre plein). */
 .w3d-line {
   fill: none;
+  stroke: var(--sz-text-muted);
   stroke-width: 1;
   shape-rendering: crispEdges;
   opacity: 0;
 }
-.w3d-line--amber { stroke: var(--sz-amber); }
-.w3d-line--red { stroke: var(--sz-red); }
-.w3d-line--grey { stroke: var(--sz-unknown); }
 .w3d-line.is-projected { stroke-dasharray: 3 3; }
 
-/* ── Plaque ─────────────────────────────────────────────────────────── */
+/* Point d'ancrage sur l'organe : seule touche de couleur, celle du statut. */
+.w3d-dot {
+  fill: var(--sz-unknown);
+  stroke: var(--sz-bg);
+  stroke-width: 1.5;
+  paint-order: stroke;
+  opacity: 0;
+}
+.w3d-dot--amber { fill: var(--sz-amber); }
+.w3d-dot--red { fill: var(--sz-red); }
+/* Projection : point creux (contour de la couleur), comme le marqueur de l'étiquette. */
+.w3d-dot.is-projected { fill: var(--sz-bg); stroke-width: 1.5; paint-order: normal; }
+.w3d-dot--amber.is-projected { stroke: var(--sz-amber); }
+.w3d-dot--red.is-projected { stroke: var(--sz-red); }
+.w3d-dot--grey.is-projected { stroke: var(--sz-unknown); }
+
+/* ── Étiquette ──────────────────────────────────────────────────────── */
 
 .w3d-plate {
-  --w3d-c: var(--sz-unknown);
-  --w3d-period: 4s;
   position: absolute;
   left: 0;
   top: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 300px;
+  padding: 0 6px 0 0;
+  border: 1px solid var(--sz-border-strong);
+  border-radius: var(--sz-radius-xs);
+  /* Pas de fond 100 % opaque au-dessus du canevas WebGL (voir HoverCard.css). */
+  background: color-mix(in srgb, var(--sz-bg) 96%, transparent);
+  color: var(--sz-text);
+  font-size: var(--sz-fs-data);
+  line-height: 1;
+  font-weight: 400;
+  white-space: nowrap;
   opacity: 0;
   pointer-events: none;
   cursor: pointer;
   user-select: none;
-  will-change: transform, opacity;
-  color: var(--w3d-c);
-  font-family: var(--sz-font-text);
-  text-transform: none;
-  font-weight: 500;
+  transition: background-color 120ms var(--sz-ease), border-color 120ms var(--sz-ease);
 }
-.w3d-plate--amber { --w3d-c: var(--sz-amber); --w3d-period: 2.4s; }
-.w3d-plate--red { --w3d-c: var(--sz-red); --w3d-period: 1s; }
-.w3d-plate--grey { --w3d-c: var(--sz-unknown); }
-.w3d-plate--left { transform-origin: 100% 50%; }
-.w3d-plate--right { transform-origin: 0 50%; }
-.w3d-plate:focus-visible { outline: none; }
-
-.w3d-plate__inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 0 11px 0 13px;
+.w3d-plate.is-hot,
+.w3d-plate:focus-visible {
+  background: var(--sz-panel-hover);
+  border-color: var(--sz-text-dim);
 }
 
-.w3d-plate__hex {
-  position: absolute;
-  inset: 0;
-  max-width: none;
-  overflow: visible;
+/* Numéro de repère, repris dans la liste « Alertes » (comme les repères d'un compte rendu d'imagerie). */
+.w3d-plate__num {
+  display: inline-grid;
+  place-items: center;
+  align-self: stretch;
+  min-width: 24px;
+  padding: 0 4px;
+  border-right: 1px solid var(--sz-border-strong);
+  font-family: var(--sz-font-mono);
+  font-size: var(--sz-fs-small);
+  color: var(--sz-text-dim);
 }
-.w3d-plate__fill {
-  fill: color-mix(in srgb, color-mix(in srgb, var(--w3d-c) 9%, var(--sz-bg)) 90%, transparent);
-  stroke: none;
-  transition: fill 120ms linear;
-}
-.w3d-plate__stroke {
-  fill: none;
-  stroke: var(--w3d-c);
-  stroke-width: 1;
-  animation: w3d-pulse var(--w3d-period) ease-in-out infinite;
-}
-.w3d-plate--grey .w3d-plate__stroke { animation: none; opacity: 0.8; }
-.w3d-plate.is-projected .w3d-plate__stroke { stroke-dasharray: 4 3; }
-.w3d-plate.is-projected .w3d-plate__fill {
-  fill: color-mix(in srgb, color-mix(in srgb, var(--w3d-c) 4%, var(--sz-bg)) 78%, transparent);
-}
-.w3d-plate.is-hot .w3d-plate__fill,
-.w3d-plate:focus-visible .w3d-plate__fill {
-  fill: color-mix(in srgb, color-mix(in srgb, var(--w3d-c) 24%, var(--sz-bg)) 94%, transparent);
-}
-.w3d-plate.is-hot .w3d-plate__stroke,
-.w3d-plate:focus-visible .w3d-plate__stroke {
-  animation: none;
-  opacity: 1;
-  stroke-width: 1.5;
-}
-
-.w3d-glyph {
-  position: relative;
-  flex: none;
-  max-width: none;
-  animation: w3d-pulse var(--w3d-period) ease-in-out infinite;
-}
-.w3d-plate--grey .w3d-glyph { animation: none; }
-
-.w3d-plate__text {
-  position: relative;
+.w3d-plate.is-hot .w3d-plate__num { color: var(--sz-text); }
+.w3d-plate__label { flex: none; }
+.w3d-plate__meta {
   min-width: 0;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-.w3d-plate__label {
-  color: var(--sz-text);
-  font-size: 13px;
-  line-height: 16px;
-  margin: -2px 0;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-.w3d-plate__sub {
-  display: flex;
-  gap: 5px;
-  font-size: 11px;
-  line-height: 11px;
-  margin: -1px 0;
-  letter-spacing: 0.03em;
-  white-space: nowrap;
-  overflow: hidden;
-}
-.w3d-plate__sub b { font-weight: 600; color: var(--w3d-c); }
-.w3d-plate__sub i { font-style: normal; color: var(--sz-text-dim); overflow: hidden; text-overflow: ellipsis; }
-.w3d-plate--grey .w3d-plate__sub b { color: var(--sz-text-dim); }
-.w3d-plate.is-projected .w3d-plate__label { color: color-mix(in srgb, var(--sz-text) 72%, transparent); }
-
-/* Bande hachurée (ROUGE) : sous la plaque, entre les deux pointes */
-.w3d-plate__hatch {
-  position: absolute;
-  left: 11px;
-  right: 11px;
-  top: calc(100% + 2px);
-  height: 4px;
-  background-image: repeating-linear-gradient(-45deg, var(--sz-red) 0, var(--sz-red) 2px, transparent 2px, transparent 5px);
-  opacity: 0.85;
-}
-.w3d-plate.is-projected .w3d-plate__hatch { opacity: 0.45; }
-
-/* Étiquette « PROJ. » : jour projeté, pas une mesure */
-.w3d-plate__proj {
-  position: absolute;
-  right: 11px;
-  top: -5px;
-  padding: 1px 4px 1px 5px;
-  font-size: 11px;
-  line-height: 1;
-  letter-spacing: var(--sz-tracking);
+  font-family: var(--sz-font-mono);
+  font-size: var(--sz-fs-label);
+  font-weight: 400;
   color: var(--sz-text-dim);
-  background: var(--sz-bg);
-  border: 1px dashed var(--sz-border-strong);
-}
-
-@keyframes w3d-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.42; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .w3d-plate__stroke, .w3d-glyph { animation: none; }
 }

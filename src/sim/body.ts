@@ -178,86 +178,86 @@ function build(day: number, a: number): DayBody {
     const dens = round(100 - boneLossPct(id, day, a), 2);
     const st = boneColor(id, dens, a);
     const ms = [
-      metric(id, 'densite_osseuse', 'Densité osseuse estimée vs pré-vol', '%', day, a, st, 'H', 'H',
+      metric(id, 'densite_osseuse', 'Estimated bone density vs preflight', '%', day, a, st, 'H', 'H',
         { ref: { low: BONE_RED[id], standardId: BONE_STANDARD } }),
-      metric(id, 'perte_osseuse', 'Perte cumulée estimée', '%', day, a, st, 'H', 'H', { trend: false }),
+      metric(id, 'perte_osseuse', 'Estimated cumulative loss', '%', day, a, st, 'H', 'H', { trend: false }),
     ];
     if (id === 'hanche') {
       const end = 100 - boneLossPct(id, DAY_END, a);
-      ms.push(metric(id, 'projection_j860', 'Perte projetée à J860', '%', day, a, end < BONE_RED[id] ? 'red' : 'amber', 'H', 'H', { trend: false }));
+      ms.push(metric(id, 'projection_j860', 'Projected loss at D860', '%', day, a, end < BONE_RED[id] ? 'red' : 'amber', 'H', 'H', { trend: false }));
     }
     organs.push(organ(id, 'squelette', name, st, keep(ms), day, a));
   };
-  bone('hanche', 'Hanche');
-  bone('rachis', 'Rachis lombaire');
-  bone('femur', 'Col du fémur');
+  bone('hanche', 'Hip');
+  bone('rachis', 'Lumbar spine');
+  bone('femur', 'Femoral neck');
 
   // Muscles — volume au scan vs J0 ; statut sur la perte moyenne des 7 derniers jours.
   const muscle = (id: MuscleSite, name: string) => {
     const st = withImmediateRed(muscleColor(100 - mean7(id, 'volume', day, a)), id, 'volume', day);
     organs.push(organ(id, 'muscles', name, st, keep([
-      metric(id, 'volume', 'Volume vs J0 (scan)', '%', day, a, st, P, S, { noise: MUSCLE_NOISE, ref: { low: 95 } }),
+      metric(id, 'volume', 'Volume vs D0 (scan)', '%', day, a, st, P, S, { noise: MUSCLE_NOISE, ref: { low: 95 } }),
       metric(id, 'volume_cm3', 'Volume', 'cm³', day, a, st, P, S, { digits: 0, noise: round(MUSCLE_REF_CM3[id] * MUSCLE_NOISE / 100, 1) }),
     ]), day, a));
   };
-  muscle('cuisse', 'Cuisse (quadriceps)');
-  muscle('mollet', 'Mollet');
-  muscle('paravertebraux', 'Paravertébraux');
+  muscle('cuisse', 'Thigh (quadriceps)');
+  muscle('mollet', 'Calf');
+  muscle('paravertebraux', 'Paraspinal muscles');
 
   // Cœur — statut sur le modèle aerobic (estimation lissée), la mesure montre est affichée.
   const heart = vo2Color(vo2max(day, a));
   const vo2Metric = (id: OrganId) =>
     metric(id, 'vo2max', 'VO₂max', 'ml/kg/min', day, a, heart, P, S, { digits: 1, noise: 0.03, ref: { low: VO2_MIN_ABS, standardId: 'V1 4002' } });
-  organs.push(organ('coeur', 'organes', 'Cœur', heart, keep([
+  organs.push(organ('coeur', 'organes', 'Heart', heart, keep([
     vo2Metric('coeur'),
-    metric('coeur', 'vo2_pct', `VO₂max vs pré-vol (${VO2_PREFLIGHT})`, '%', day, a, heart, 'H', 'H', { ref: { low: 80, standardId: 'V1 4003' } }),
-    metric('coeur', 'fraction_ejection', "Fraction d'éjection (scan hebdo)", '%', day, a, inBand(VALUES.coeur!.fraction_ejection(day, a), BANDS.fraction_ejection), P, S, { digits: 1, noise: 0.8, ref: { low: 55, high: 70 }, trend: false }),
-    metric('coeur', 'taille', 'Masse ventriculaire vs J0 (scan hebdo)', '%', day, a, inBand(VALUES.coeur!.taille(day, a), BANDS.taille), P, S, { digits: 1, noise: 0.3, trend: false }),
+    metric('coeur', 'vo2_pct', `VO₂max vs preflight (${VO2_PREFLIGHT})`, '%', day, a, heart, 'H', 'H', { ref: { low: 80, standardId: 'V1 4003' } }),
+    metric('coeur', 'fraction_ejection', 'Ejection fraction (weekly scan)', '%', day, a, inBand(VALUES.coeur!.fraction_ejection(day, a), BANDS.fraction_ejection), P, S, { digits: 1, noise: 0.8, ref: { low: 55, high: 70 }, trend: false }),
+    metric('coeur', 'taille', 'Ventricular mass vs D0 (weekly scan)', '%', day, a, inBand(VALUES.coeur!.taille(day, a), BANDS.taille), P, S, { digits: 1, noise: 0.3, trend: false }),
   ]), day, a));
 
   // Reins — calcium urinaire quotidien (moyenne 7 j, ou 2 mesures rouges) + calculs au scan (1 ou plus → ambre).
   const calcium = withImmediateRed(levelUp(mean7('reins', 'calcium_urinaire', day, a), URINE_CA.amber, URINE_CA.red), 'reins', 'calcium_urinaire', day);
   const stones = measured(day) ? stonesColor(VALUES.reins!.calculs(day, a)) : 'grey';
   const kidneys = worstColor([calcium, stones]);
-  organs.push(organ('reins', 'organes', 'Reins', kidneys, keep([
-    metric('reins', 'calculs', 'Calculs détectés (scan hebdo)', '', day, a, stones, P, S, { digits: 0, ref: { high: 0 }, trend: false }),
-    metric('reins', 'calcium_urinaire', 'Calcium urinaire', 'mg/24 h', day, a, calcium, P, S, { digits: 0, noise: URINE_CA.noise, ref: { low: 100, high: 300 } }),
+  organs.push(organ('reins', 'organes', 'Kidneys', kidneys, keep([
+    metric('reins', 'calculs', 'Kidney stones detected (weekly scan)', '', day, a, stones, P, S, { digits: 0, ref: { high: 0 }, trend: false }),
+    metric('reins', 'calcium_urinaire', 'Urinary calcium', 'mg/24 h', day, a, calcium, P, S, { digits: 0, noise: URINE_CA.noise, ref: { low: 100, high: 300 } }),
   ]), day, a));
 
   // Non modélisés : gris, aucune métrique, bioAge = âge réel.
-  for (const [id, name] of [['poumons', 'Poumons'], ['foie', 'Foie'], ['cerveau', 'Cerveau']] as const) {
-    organs.push(organ(id, 'organes', `${name} (non modélisé)`, 'grey', [], day, a));
+  for (const [id, name] of [['poumons', 'Lungs'], ['foie', 'Liver'], ['cerveau', 'Brain']] as const) {
+    organs.push(organ(id, 'organes', `${name} (not modeled)`, 'grey', [], day, a));
   }
 
   // Sang / cardiovasculaire — le VO₂max est rappelé mais son statut est porté par le cœur.
   const blood = keep([
     vo2Metric('sang'),
-    metric('sang', 'fc_repos', 'FC de repos', 'bpm', day, a, inBand(VALUES.sang!.fc_repos(day, a), BANDS.fc_repos), P, S, { digits: 0, noise: 1.5 }),
+    metric('sang', 'fc_repos', 'Resting HR', 'bpm', day, a, inBand(VALUES.sang!.fc_repos(day, a), BANDS.fc_repos), P, S, { digits: 0, noise: 1.5 }),
     (() => { const v = VALUES.sang!.spo2(day, a); return metric('sang', 'spo2', 'SpO₂', '%', day, a, v < 92 ? 'red' : v < 95 ? 'amber' : 'green', P, S, { digits: 1, ref: { low: 95 } }); })(),
-    metric('sang', 'tension_sys', 'Tension systolique', 'mmHg', day, a, inBand(VALUES.sang!.tension_sys(day, a), BANDS.tension_sys), P, S, { digits: 0, noise: 2, ref: { low: 90, high: 130 } }),
-    metric('sang', 'tension_dia', 'Tension diastolique', 'mmHg', day, a, inBand(VALUES.sang!.tension_dia(day, a), BANDS.tension_dia), P, S, { digits: 0, noise: 1.5, ref: { low: 60, high: 85 } }),
-    (() => { const v = VALUES.sang!.hemoglobine(day, a); return metric('sang', 'hemoglobine', 'Hémoglobine (prélèvement hebdo)', 'g/dL', day, a, v < 12 ? 'red' : v < 13.5 ? 'amber' : 'green', P, S, { digits: 1, ref: { low: 13.5, high: 17.5 }, trend: false }); })(),
-    metric('sang', 'volume_jambes', 'Volume des jambes vs J0 (fluides, scan)', '%', day, a, inBand(VALUES.sang!.volume_jambes(day, a), BANDS.volume_jambes), P, S, { digits: 1, noise: 0.4 }),
+    metric('sang', 'tension_sys', 'Systolic BP', 'mmHg', day, a, inBand(VALUES.sang!.tension_sys(day, a), BANDS.tension_sys), P, S, { digits: 0, noise: 2, ref: { low: 90, high: 130 } }),
+    metric('sang', 'tension_dia', 'Diastolic BP', 'mmHg', day, a, inBand(VALUES.sang!.tension_dia(day, a), BANDS.tension_dia), P, S, { digits: 0, noise: 1.5, ref: { low: 60, high: 85 } }),
+    (() => { const v = VALUES.sang!.hemoglobine(day, a); return metric('sang', 'hemoglobine', 'Hemoglobin (weekly draw)', 'g/dL', day, a, v < 12 ? 'red' : v < 13.5 ? 'amber' : 'green', P, S, { digits: 1, ref: { low: 13.5, high: 17.5 }, trend: false }); })(),
+    metric('sang', 'volume_jambes', 'Leg volume vs D0 (fluid shift, scan)', '%', day, a, inBand(VALUES.sang!.volume_jambes(day, a), BANDS.volume_jambes), P, S, { digits: 1, noise: 0.4 }),
   ]);
-  organs.push(organ('sang', 'cardio', 'Sang / cardiovasculaire', worstColor(blood.filter(m => m.key !== 'vo2max').map(m => m.color)), blood, day, a));
+  organs.push(organ('sang', 'cardio', 'Blood / cardiovascular', worstColor(blood.filter(m => m.key !== 'vo2max').map(m => m.color)), blood, day, a));
 
   // Yeux — gaine du nerf optique (moyenne 7 j : indicateur indirect, on n'alerte jamais sur un point).
   const sheath = measured(day)
     ? withImmediateRed(levelUp(mean7('yeux', 'gaine_nerf_optique', day, a), SHEATH.amber, SHEATH.red), 'yeux', 'gaine_nerf_optique', day)
     : 'grey';
   const pvt = measured(day) ? inBand(mean7('yeux', 'pvt', day, a), BANDS.pvt) : 'grey';
-  organs.push(organ('yeux', 'nerveux', 'Yeux — nerf optique', sheath, keep([
-    metric('yeux', 'gaine_nerf_optique', 'Diamètre de la gaine du nerf optique (scan)', 'mm', day, a, sheath, P, S, { noise: SHEATH.noise, ref: { high: SHEATH.amber } }),
-    metric('yeux', 'pvt', 'Vigilance (PVT, temps de réaction)', 'ms', day, a, pvt, P, S, { digits: 0, noise: 8 }),
+  organs.push(organ('yeux', 'nerveux', 'Eyes — optic nerve', sheath, keep([
+    metric('yeux', 'gaine_nerf_optique', 'Optic nerve sheath diameter (scan)', 'mm', day, a, sheath, P, S, { noise: SHEATH.noise, ref: { high: SHEATH.amber } }),
+    metric('yeux', 'pvt', 'Alertness (PVT, reaction time)', 'ms', day, a, pvt, P, S, { digits: 0, noise: 8 }),
   ]), day, a));
 
   // Exposition — dose prévue (RAD, croisière 1,84 mSv/j, surface 0,64) [Publié].
   const cum = cumulativeDoseMSv(day);
   const dose = levelUp(cum, DOSE.amber, DOSE.red);
-  organs.push(organ('dose', 'exposition', 'Exposition — dose', dose, keep([
-    metric('dose', 'dose_cumulee', 'Dose cumulée', 'mSv', day, a, dose, 'H', 'H', { digits: 1, ref: { high: 600, standardId: 'V1 4030' }, trend: false }),
-    metric('dose', 'dose_prevue', 'Dose prévue à ce jour', 'mSv', day, a, dose, 'Publié', 'H', { digits: 1, trend: false }),
-    metric('dose', 'dose_jour', 'Dose du jour', 'mSv/j', day, a, inBand(dailyDoseMSv(day), BANDS.dose_jour), 'Publié', 'H', { digits: 2, ref: { high: 1.84 }, trend: false }),
+  organs.push(organ('dose', 'exposition', 'Radiation dose', dose, keep([
+    metric('dose', 'dose_cumulee', 'Cumulative dose', 'mSv', day, a, dose, 'H', 'H', { digits: 1, ref: { high: 600, standardId: 'V1 4030' }, trend: false }),
+    metric('dose', 'dose_prevue', 'Planned dose to date', 'mSv', day, a, dose, 'Publié', 'H', { digits: 1, trend: false }),
+    metric('dose', 'dose_jour', 'Daily dose', 'mSv/d', day, a, inBand(dailyDoseMSv(day), BANDS.dose_jour), 'Publié', 'H', { digits: 2, ref: { high: 1.84 }, trend: false }),
   ]), day, a));
 
   return {

@@ -48,11 +48,11 @@ export interface AnalyteMeta {
   cadence: 'hebdo' | 'quotidien';
 }
 const LABELS: Record<string, [string, number]> = {
-  hemoglobine: ['Hémoglobine', 1], hematocrite: ['Hématocrite', 1], leucocytes: ['Leucocytes', 1],
-  lymphocytes_pct: ['Lymphocytes', 1], vgm: ['VGM', 1], idr: ['IDR', 1], crp: ['CRP', 1], calcium: ['Calcium', 2],
-  vitamine_d: ['Vitamine D', 0], creatinine: ['Créatinine', 0], albumine: ['Albumine', 1],
-  phosphatases_alcalines: ['Phosphatases alcalines', 0], glucose: ['Glucose', 1], cortisol: ['Cortisol', 0],
-  calcium_urinaire: ['Calcium urinaire', 0], urine_ctx: ['CTX urinaire (résorption osseuse)', 0],
+  hemoglobine: ['Hemoglobin', 1], hematocrite: ['Hematocrit', 1], leucocytes: ['White blood cells', 1],
+  lymphocytes_pct: ['Lymphocytes', 1], vgm: ['MCV', 1], idr: ['RDW', 1], crp: ['CRP', 1], calcium: ['Calcium', 2],
+  vitamine_d: ['Vitamin D', 0], creatinine: ['Creatinine', 0], albumine: ['Albumin', 1],
+  phosphatases_alcalines: ['Alkaline phosphatase', 0], glucose: ['Glucose', 1], cortisol: ['Cortisol', 0],
+  calcium_urinaire: ['Urinary calcium', 0], urine_ctx: ['Urinary CTX (bone resorption)', 0],
 };
 
 export function analyteMetaSim(analyte: string): AnalyteMeta | null {

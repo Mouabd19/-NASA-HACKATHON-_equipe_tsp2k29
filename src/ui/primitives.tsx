@@ -1,9 +1,9 @@
-// Primitives du design system — ROADMAP §1 « Direction artistique ».
+// Primitives du design system (styles : src/ui/global.css).
 // Aucune couleur en dur : tout passe par les variables CSS injectées par tokens.ts.
 import { createContext, useContext } from 'react';
 import type { CSSProperties, JSX, ReactNode } from 'react';
-import type { Color, Provenance, Tag } from '../types';
-import { statusLabel } from './tokens';
+import type { Color, Level, Provenance, Tag } from '../types';
+import { levelLabel, levelPriority, priorityLabel, priorityMark, statusLabel } from './tokens';
 
 /** Variable CSS d'un statut (gris = inconnu, jamais vert par défaut). */
 export const statusVar: Record<Color, string> = {
@@ -19,41 +19,46 @@ function cx(...parts: (string | false | null | undefined)[]): string {
 
 export interface LabelProps { children?: ReactNode; dim?: boolean; className?: string }
 
-/** Petit texte mono, majuscules espacées. */
+/** Libellé de champ ou de section : petit, secondaire, casse de phrase. */
 export function Label({ children, dim, className }: LabelProps): JSX.Element {
   return <span className={cx('sz-label', dim && 'sz-dim', className)}>{children}</span>;
 }
 
 export interface TagBadgeProps { tag: Tag; id?: string }
 
-/** Étiquette d'honnêteté d'un chiffre : [NASA V1 4027] / [Publié] / [H] / [Persona]. */
-export function TagBadge({ tag, id }: TagBadgeProps): JSX.Element {
-  const text = id ? `${tag} ${id}` : tag;
+/** Source d'un chiffre : NASA V1 4027 / Publié / Hypothèse / Persona. */
+export function TagBadge({ tag, id }: TagBadgeProps): JSX.Element | null {
+  if (tag === 'Persona') return null; // origine des données expliquée à l'oral, pas à l'écran
+  const text = id ? `${TAG_TEXT[tag]} ${id}` : TAG_TEXT[tag];
   return (
     <span className="sz-tag" data-tag={tag} title={TAG_TITLE[tag]}>
-      [{text}]
+      {text}
     </span>
   );
 }
 
+/** Libellé affiché d'une étiquette (les crochets et le sigle « H » ne sont plus affichés). */
+export const TAG_TEXT: Record<Tag, string> = { NASA: 'NASA', 'Publié': 'Published', H: 'Hypothesis', Persona: 'Persona' };
+
 const TAG_TITLE: Record<Tag, string> = {
-  NASA: 'Seuil issu d’une norme NASA',
-  'Publié': 'Valeur issue d’une publication scientifique',
-  H: 'Hypothèse de l’équipe',
-  Persona: 'Donnée du scénario de mission (fictive)',
+  NASA: 'Threshold from a NASA standard',
+  'Publié': 'Value from a peer-reviewed publication',
+  H: 'Team hypothesis',
+  Persona: 'Mission scenario data (fictional)',
 };
 
-const PROVENANCE_TEXT: Record<Provenance, string> = { 'RÉEL': 'RÉEL', 'SIMULÉ': 'SIMULÉ', H: '[H]' };
+export const PROVENANCE_TEXT: Record<Provenance, string> = { 'RÉEL': 'Real', 'SIMULÉ': 'Simulated', H: 'Hypothesis' };
 const PROVENANCE_TITLE: Record<Provenance, string> = {
-  'RÉEL': 'Données réelles',
-  'SIMULÉ': 'Données simulées',
-  H: 'Hypothèse de l’équipe',
+  'RÉEL': 'Real data',
+  'SIMULÉ': 'Simulated data',
+  H: 'Team hypothesis',
 };
 
 export interface ProvenanceBadgeProps { value: Provenance }
 
-/** Provenance d'un panneau : RÉEL / SIMULÉ / [H]. */
-export function ProvenanceBadge({ value }: ProvenanceBadgeProps): JSX.Element {
+/** Provenance d'un panneau : Réel / Simulé / Hypothèse. */
+export function ProvenanceBadge({ value }: ProvenanceBadgeProps): JSX.Element | null {
+  if (value !== 'H') return null; // seule la projection (hypothèse) reste signalée
   return (
     <span className="sz-prov" data-prov={value} title={PROVENANCE_TITLE[value]}>
       {PROVENANCE_TEXT[value]}
@@ -61,14 +66,14 @@ export function ProvenanceBadge({ value }: ProvenanceBadgeProps): JSX.Element {
   );
 }
 
-export interface StatusDotProps { color: Color; pulse?: boolean; size?: number }
+export interface StatusDotProps { color: Color; size?: number }
 
-/** Pastille de statut (carrée, comme tout le reste). */
-export function StatusDot({ color, pulse, size = 6 }: StatusDotProps): JSX.Element {
+/** Pastille de statut ronde. */
+export function StatusDot({ color, size = 8 }: StatusDotProps): JSX.Element {
   const style = { '--sz-status': statusVar[color], width: size, height: size } as CSSProperties;
   return (
     <span
-      className={cx('sz-dot', pulse && 'sz-dot--pulse')}
+      className="sz-dot"
       data-color={color}
       style={style}
       role="img"
@@ -84,22 +89,67 @@ export function StatusChip({ color, label }: StatusChipProps): JSX.Element {
   const style = { '--sz-status': statusVar[color] } as CSSProperties;
   return (
     <span className="sz-chip" data-color={color} style={style}>
-      <span className="sz-dot" style={{ width: 5, height: 5 }} aria-hidden="true" />
+      <span className="sz-dot" aria-hidden="true" />
       {label ?? statusLabel[color]}
     </span>
   );
 }
 
-export interface HatchBandProps { color?: 'red' | 'amber'; height?: number; className?: string }
+export interface AlarmMarkProps {
+  level: Level;
+  /** Jour projeté : une prévision n'est pas une alarme. Marqueur en contour seulement, sans aplat. */
+  projected?: boolean;
+  /** Affiche le mot du niveau à côté du marqueur (« ! Attention »). */
+  withLabel?: boolean;
+  className?: string;
+}
 
-/** Bande hachurée en diagonale pour les alertes. */
-export function HatchBand({ color = 'red', height = 6, className }: HatchBandProps): JSX.Element {
-  return <div className={cx(color === 'red' ? 'sz-hatch-red' : 'sz-hatch-amber', className)} style={{ height }} aria-hidden="true" />;
+/** « Attention · priorité basse », ou « Attention · projection » pour un jour futur. Même texte pour l'aria et l'infobulle. */
+export function alarmText(level: Level, projected = false): string {
+  const p = levelPriority[level];
+  const word = levelLabel[level];
+  if (projected) return `${word} · projection, not an alarm`;
+  return p ? `${word} · ${priorityLabel[p].toLowerCase()}` : word;
+}
+
+/**
+ * Marqueur de priorité d'alarme (« ! » rouge, triangle « attention », « ! » jaune), comme dans le champ d'alarme d'un moniteur :
+ * aplat de la couleur d'alarme, texte sombre. En projection, contour seulement. Rien pour un niveau nominal ou inconnu.
+ * Le mot du niveau (Attention, Attention renforcée, Alerte) reste le vocabulaire de l'app ; la priorité
+ * IEC 60601-1-8 (haute, moyenne, basse) n'est donnée qu'en complément, dans l'infobulle et l'aria.
+ */
+export function AlarmMark({ level, projected = false, withLabel = false, className }: AlarmMarkProps): JSX.Element | null {
+  const p = levelPriority[level];
+  if (!p) return null;
+  const text = alarmText(level, projected);
+  const mark = (
+    <span
+      className={cx('sz-alarm', !withLabel && className)}
+      data-priority={p}
+      data-projected={projected || undefined}
+      {...(withLabel ? { 'aria-hidden': true } : { role: 'img', 'aria-label': text, title: text })}
+    >
+      {p === 'moyenne' ? (
+        // priorité moyenne : triangle « attention » (pictogramme ISO 7010 W001) à la place de « !! »
+        <svg className="sz-alarm__tri" viewBox="0 0 18 16" aria-hidden="true">
+          <path className="sz-alarm__tri-bg" d="M9 1.2 L17 14.8 H1 Z" strokeLinejoin="round" />
+          <path className="sz-alarm__tri-mark" d="M9 5.6 V10 M9 12.2 V12.4" strokeLinecap="round" />
+        </svg>
+      ) : priorityMark[p]}
+    </span>
+  );
+  if (!withLabel) return mark;
+  return (
+    <span className={cx('sz-alarm-l', className)} data-projected={projected || undefined} title={text}>
+      {mark}
+      <span className="sz-alarm-l__word">{levelLabel[level]}</span>
+      <span className="sz-sr">{projected ? ' · projection, not an alarm' : ` · ${priorityLabel[p].toLowerCase()}`}</span>
+    </span>
+  );
 }
 
 export interface PanelProps {
   title?: string;
-  sys?: string;
   provenance?: Provenance;
   right?: ReactNode;
   className?: string;
@@ -116,7 +166,7 @@ export const PanelCloseContext = createContext<(() => void) | null>(null);
 export interface CloseButtonProps { onClose: () => void; label?: string; className?: string }
 
 /** Bouton × discret. */
-export function CloseButton({ onClose, label = 'Fermer le panneau', className }: CloseButtonProps): JSX.Element {
+export function CloseButton({ onClose, label = 'Close panel', className }: CloseButtonProps): JSX.Element {
   return (
     <button type="button" className={cx('sz-close', className)} onClick={onClose} aria-label={label} title={label}>
       <svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 1l8 8M9 1l-8 8" stroke="currentColor" strokeWidth="1.3" /></svg>
@@ -130,16 +180,14 @@ export function PanelClose({ className }: { className?: string }): JSX.Element |
   return onClose ? <CloseButton onClose={onClose} className={className} /> : null;
 }
 
-/** Panneau, bordure 1 px. En-tête : n° de système · titre · emplacement libre · provenance · fermer. */
-export function Panel({ title, sys, provenance, right, className, style, children }: PanelProps): JSX.Element {
+/** Panneau. En-tête : titre · emplacement libre · provenance · fermer. */
+export function Panel({ title, provenance, right, className, style, children }: PanelProps): JSX.Element {
   const closable = useContext(PanelCloseContext) !== null;
-  const hasHead = Boolean(title || sys || provenance || right || closable);
+  const hasHead = Boolean(title || provenance || right || closable);
   return (
     <section className={cx('sz-panel', className)} style={style}>
       {hasHead ? (
         <header className="sz-panel__head">
-          {sys ? <span className="sz-panel__sys">{sys}</span> : null}
-          {sys && title ? <span className="sz-panel__sep" aria-hidden="true">/</span> : null}
           {title ? <h2 className="sz-panel__title">{title}</h2> : null}
           <span className="sz-panel__fill" />
           {right ? <span className="sz-panel__right">{right}</span> : null}

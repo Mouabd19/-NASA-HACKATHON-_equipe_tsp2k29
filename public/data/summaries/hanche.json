@@ -1,50 +1,50 @@
 {
  "organId": "hanche",
  "generatedBy": "IA-sol",
- "model": "Claude (Anthropic), rédigé hors ligne",
+ "model": "Claude (Anthropic), written offline",
  "generatedAt": "2026-11-14",
  "reviewed": false,
- "note": "Synthèse IA rédigée au sol à partir des seuls chiffres du simulateur (src/sim, données de Mouad). À valider par le CMO. N'est jamais utilisée pour décider d'une alerte.",
+ "note": "AI summary written on the ground from the simulator figures only (src/sim, Mouad's data). To be validated by the CMO. Never used to decide on an alert.",
  "days": [
   {
    "day": 0,
    "adherence": 0,
-   "text": "Bilan de référence au sol (J0) : densité osseuse de la hanche à 100 % de la valeur pré-vol. C'est le point de départ de toutes les comparaisons. Le seuil NASA est de 95 % du pré-vol [V1 4027]."
+   "text": "Baseline ground assessment (D0): hip bone density at 100% of the preflight value. This is the starting point for all comparisons. The NASA threshold is 95% of preflight [V1 4027]."
   },
   {
    "day": 30,
    "adherence": 0,
-   "text": "Densité estimée à 99,32 % du pré-vol, soit une perte de 0,68 %. La perte suit la pente attendue en apesanteur (−0,16 point par semaine). Statut nominal, au-dessus du seuil NASA de 95 % [V1 4027]."
+   "text": "Estimated density at 99.32% of preflight, a loss of 0.68%. Loss follows the expected microgravity slope (−0.16 point per week). Status: nominal, above the NASA threshold of 95% [V1 4027]."
   },
   {
    "day": 60,
    "adherence": 0,
-   "text": "Densité estimée à 98,68 % du pré-vol (perte de 1,32 %), tendance −0,15 point par semaine. Toujours au-dessus du seuil de 95 % [V1 4027]. Mais au rythme actuel, la perte atteindrait 8,7 % au retour (J860), hors norme."
+   "text": "Estimated density at 98.68% of preflight (loss of 1.32%), trend −0.15 point per week. Still above the 95% threshold [V1 4027]. But at current pace, loss would reach 8.7% at return (D860), out of limits."
   },
   {
    "day": 94,
    "adherence": 0,
-   "text": "Densité estimée à 98,01 % du pré-vol (perte de 1,99 %), statut à surveiller. Le problème n'est pas aujourd'hui mais la trajectoire : au rythme actuel, 8,7 % de perte au retour (J860), sous le seuil NASA de 95 % [V1 4027]. Conduite proposée : ARED en charge lourde, calcium et vitamine D, et question des bisphosphonates au médecin au sol."
+   "text": "Estimated density at 98.01% of preflight (loss of 1.99%), status: monitor. The problem is not today but the trajectory: at current pace, 8.7% loss at return (D860), below the NASA threshold of 95% [V1 4027]. Suggested action: heavy-load ARED, calcium and vitamin D, and raise bisphosphonates with the ground flight surgeon."
   },
   {
    "day": 210,
    "adherence": 0,
-   "text": "Projection à l'arrivée sur Mars (Sol 0, J210) au rythme actuel : 96,09 % du pré-vol, soit une perte de 3,91 %. Encore dans la norme mais à surveiller, et la pente mène à 8,7 % de perte au retour. Projection du modèle, pas une mesure."
+   "text": "Projection on arrival at Mars (Sol 0, D210) at current pace: 96.09% of preflight, a loss of 3.91%. Still within the standard but to monitor, and the slope leads to 8.7% loss at return. Model projection, not a measurement."
   },
   {
    "day": 210,
    "adherence": 1,
-   "text": "Projection à Sol 0 (J210) avec le plan suivi : 97,37 % du pré-vol, soit une perte de 2,63 %, statut nominal. Le plan ralentit nettement la perte par rapport au rythme actuel (3,91 %). Projection du modèle, pas une mesure."
+   "text": "Projection at Sol 0 (D210) with the plan followed: 97.37% of preflight, a loss of 2.63%, status: nominal. The plan clearly slows the loss compared with the current pace (3.91%). Model projection, not a measurement."
   },
   {
    "day": 860,
    "adherence": 0,
-   "text": "Projection au retour (J860) au rythme actuel : 91,30 % du pré-vol, soit une perte de 8,70 %. C'est sous le seuil NASA de 95 % [V1 4027] : statut hors seuil. Ce scénario justifie d'en parler dès maintenant avec le médecin au sol."
+   "text": "Projection at return (D860) at current pace: 91.30% of preflight, a loss of 8.70%. This is below the NASA threshold of 95% [V1 4027]: status out of limits. This scenario warrants discussing it now with the ground flight surgeon."
   },
   {
    "day": 860,
    "adherence": 1,
-   "text": "Projection au retour (J860) avec le plan suivi : 95,78 % du pré-vol, soit une perte de 4,22 %. C'est juste au-dessus du seuil NASA de 95 % [V1 4027] : statut à surveiller. Le plan divise la perte par deux, mais la marge reste mince (bisphosphonates : LeBlanc 2013)."
+   "text": "Projection at return (D860) with the plan followed: 95.78% of preflight, a loss of 4.22%. This is just above the NASA threshold of 95% [V1 4027]: status: monitor. The plan halves the loss, but the margin stays thin (bisphosphonates: LeBlanc 2013)."
   }
  ]
 }

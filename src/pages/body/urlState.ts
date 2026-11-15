@@ -28,7 +28,7 @@ const DAY_ALIASES: Record<string, number> = { today: DAY_TODAY, sol0: DAY_SOL0, 
 function parseDay(raw: string): number | null {
   const alias = DAY_ALIASES[raw.toLowerCase()];
   if (alias !== undefined) return alias;
-  const n = Number(raw.replace(/^j/i, ''));
+  const n = Number(raw.replace(/^[jd]/i, ''));
   return Number.isFinite(n) ? Math.max(0, Math.min(DAY_END, Math.round(n))) : null;
 }
 

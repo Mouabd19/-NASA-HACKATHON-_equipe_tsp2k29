@@ -1,10 +1,10 @@
-// Liste des systèmes (esprit « Cyberware ») : un calque par ligne, ses organes dessous quand il est actif.
-// Le survol d'une ligne allume l'organe en 3D, et inversement (store.hovered / store.selected).
-import { useMemo } from 'react';
+// Calques du corps : six cases à cocher, puis, pour chaque calque affiché, la liste de ses organes.
+// Le survol d'une ligne met l'organe en évidence en 3D, et inversement (store.hovered / store.selected).
+import { useMemo, useRef } from 'react';
 import type { JSX, KeyboardEvent, MouseEvent } from 'react';
 import type { Color, LayerId, Metric, OrganState } from '../../../types';
 import { Panel, StatusDot, TagBadge, fmt, sentenceCase } from '../../../ui';
-import { LAYER_META, LAYER_ORDER, useBody, useDayAlerts, useDayBody } from '../store';
+import { LAYER_META, LAYER_ORDER, useBody, useDayAlerts, useDayBody, useRowClip, useRowsBelow } from '../store';
 import './LayersPanel.css';
 
 const SEVERITY: Record<Color, number> = { red: 3, amber: 2, green: 1, grey: 0 };
@@ -17,15 +17,17 @@ function worstOf(organs: OrganState[]): Color {
 }
 
 function digitsFor(v: number): number {
-  const a = Math.abs(v);
-  if (a >= 100) return 1;
-  if (a >= 10) return 1;
-  return 2;
+  return Math.abs(v) >= 10 ? 1 : 2;
 }
 
-/** « POUMONS — NON MODÉLISÉ » → « POUMONS » (le suffixe est rendu à part). */
+/** « Poumons — non modélisé » → « Poumons » (la mention est rendue à part). */
 function shortName(name: string): string {
-  return name.replace(/\s*[—–(-]\s*non modélisé\)?\s*$/i, '').trim();
+  return sentenceCase(name.replace(/\s*[—–(-]\s*(?:non modélisé|not modeled)\)?\s*$/i, '').trim());
+}
+
+/** Nom en milieu d'énumération : « Foie » → « foie » (un sigle reste en capitales). */
+function lowerFirst(name: string): string {
+  return /^\p{Lu}\p{Ll}/u.test(name) ? name.charAt(0).toLocaleLowerCase('en-US') + name.slice(1) : name;
 }
 
 /** Métrique affichée sur la ligne : celle qui PORTE le statut de l'organe, sinon la première (jamais un « 0,00 » sans unité). */
@@ -37,17 +39,28 @@ function headline(o: OrganState): Metric | undefined {
     ?? withUnit[0] ?? o.metrics[0];
 }
 
-/** Ce que chaque calque dit de sa source ou de ses limites (honnêteté : rien n'est sous-entendu). */
-const LAYER_NOTE: Partial<Record<LayerId, JSX.Element>> = {
-  squelette: <><b>ESTIMÉ</b> : MODÈLE + BILAN AU SOL + MARQUEURS URINAIRES [H] — PAS LE SCANNER</>,
-  nerveux: <>BÊTA : NERF OPTIQUE + VIGILANCE (PVT). SOMMEIL ET HUMEUR : VOIR MONTRE ET CHECK-IN</>,
-  exposition: <>BÊTA : DOSE GLOBALE SEULEMENT. CARTE DU CORPS = RÉPARTITION ILLUSTRATIVE [H]</>,
+/**
+ * Ce que chaque calque dit de l'unité de lecture, de sa source ou de ses limites.
+ * `short` reste visible (à quoi se rapportent les pourcentages ; valeur estimée, non mesurée) ;
+ * `more` n'apparaît qu'en mode Détails.
+ */
+const LAYER_NOTE: Partial<Record<LayerId, { short?: string; more?: string }>> = {
+  squelette: { short: 'Est. density, % of preflight', more: 'Model, preflight ground assessment and urine markers. No scanner on board.' },
+  muscles: { short: 'Volume, % of preflight' },
+  nerveux: { more: 'Partial data: optic nerve and alertness (PVT). Sleep and mood: watch and check-in.' },
+  exposition: { more: 'Partial data: whole-body dose only. The distribution over the body is illustrative.' },
 };
 
-/** Libellé court des bascules (2 rangées de 3). */
+/** Libellé court des cases à cocher. */
 const SHORT: Record<LayerId, string> = {
-  squelette: 'Squelette', muscles: 'Muscles', organes: 'Organes', cardio: 'Cardio', nerveux: 'Nerveux', exposition: 'Exposition',
+  squelette: 'Skeleton', muscles: 'Muscles', organes: 'Organs', cardio: 'Cardio', nerveux: 'Nervous', exposition: 'Radiation',
 };
+
+const SOLO_HINT = 'Alt+click or double-click: isolate';
+
+function alertsText(n: number): string {
+  return n === 0 ? 'no alerts' : `${n} alert${n > 1 ? 's' : ''}`;
+}
 
 export function LayersPanel(): JSX.Element {
   const layers = useBody((s) => s.layers);
@@ -79,7 +92,13 @@ export function LayersPanel(): JSX.Element {
     return c;
   }, [alerts, body]);
 
-  const activeCount = LAYER_ORDER.filter((l) => layers[l]).length;
+  const activeLayers = LAYER_ORDER.filter((l) => layers[l]);
+  // Jamais de demi-ligne ni de titre de section orphelin en bas de liste.
+  const listRef = useRef<HTMLUListElement>(null);
+  useRowClip(listRef);
+  // calques dont des lignes sont cachées sous le bas de la liste (petits écrans, vidéoprojecteur 1280 × 720)
+  const below = useRowsBelow(listRef, activeLayers.join(','));
+  const projected = body.projected;
 
   const onLayerClick = (l: LayerId) => (e: MouseEvent) => {
     if (e.altKey) soloLayer(l);
@@ -93,15 +112,9 @@ export function LayersPanel(): JSX.Element {
   };
 
   return (
-    <Panel
-      sys="SYS"
-      title="Calques"
-      provenance="SIMULÉ"
-      className="lyr"
-      right={<span className="sz-dim sz-detail" title="Clic : afficher / masquer · Alt+clic ou double-clic : isoler">{activeCount}/{LAYER_ORDER.length}</span>}
-    >
-      {/* Les 6 bascules, toujours visibles (jamais sous la ligne de flottaison) ; le détail des calques actifs défile dessous. */}
-      <div className="lyr__grid" role="group" aria-label="Calques">
+    <Panel title="Layers" provenance="SIMULÉ" className={projected ? 'lyr lyr--projected' : 'lyr'}>
+      {/* Les six cases restent toujours visibles ; le détail des calques affichés défile dessous. */}
+      <div className="lyr__grid" role="group" aria-label="Layers">
         {LAYER_ORDER.map((l) => {
           const meta = LAYER_META[l];
           const n = alertCount.get(l) ?? 0;
@@ -116,57 +129,66 @@ export function LayersPanel(): JSX.Element {
               aria-pressed={layers[l]}
               onClick={onLayerClick(l)}
               onDoubleClick={() => soloLayer(l)}
-              title={`${meta.sys} ${meta.label}${meta.mvp ? '' : ' (BÊTA)'} — ${n} alerte${n > 1 ? 's' : ''} · clic : ${layers[l] ? 'masquer' : 'afficher'} · Alt+clic ou double-clic : isoler`}
+              title={`${sentenceCase(meta.label)}: ${alertsText(n)}. ${SOLO_HINT}.`}
             >
-              <span className="lyr__box" aria-hidden="true" />
+              <span className="lyr__box" aria-hidden="true">
+                <svg viewBox="0 0 14 14"><path d="M3.5 7.2l2.4 2.4 4.6-5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              </span>
               <span className="lyr__tog-l">{SHORT[l]}</span>
-              <StatusDot color={worst} size={6} />
+              <StatusDot color={worst} />
             </button>
           );
         })}
       </div>
-      <ul className="lyr__list sz-scroll">
-        {activeCount === 0 ? <li className="lyr__empty lyr__empty--all">AUCUN CALQUE ACTIF — ENVELOPPE DU CORPS SEULE</li> : null}
-        {LAYER_ORDER.filter((l) => layers[l]).map((l) => {
+
+      <ul className="lyr__list sz-scroll" ref={listRef}>
+        {activeLayers.length === 0 ? <li className="lyr__empty">No layer shown</li> : null}
+        {activeLayers.map((l) => {
           const meta = LAYER_META[l];
           const organs = byLayer.get(l) ?? [];
-          const active = layers[l];
           const n = alertCount.get(l) ?? 0;
-          const worst = worstOf(organs);
+          const note = LAYER_NOTE[l];
+          const withData = organs.filter((o) => o.metrics.length > 0);
+          const withoutData = organs.filter((o) => o.metrics.length === 0);
+          // une seule étiquette de source par groupe quand toutes les lignes ont la même (Détails)
+          const tags = new Set(withData.map((o) => headline(o)?.tag).filter(Boolean));
+          const groupTag = tags.size === 1 ? [...tags][0] : undefined;
           return (
-            <li key={l} className="lyr__layer" data-active={active}>
+            <li key={l} className="lyr__layer" data-active="true">
               <button
                 type="button"
-                className="lyr__head"
-                aria-pressed={active}
+                className="lyr__head sz-section-title"
+                aria-pressed="true"
                 onClick={onLayerClick(l)}
                 onDoubleClick={() => soloLayer(l)}
-                title={`${active ? 'Masquer' : 'Afficher'} le calque — Alt+clic ou double-clic : isoler`}
+                title={`Hide layer. ${SOLO_HINT}.`}
               >
-                <span className="lyr__box" aria-hidden="true" />
-                <span className="lyr__sys sz-detail">{meta.sys}</span>
                 <span className="lyr__label">{sentenceCase(meta.label)}</span>
-                {!meta.mvp ? <span className="lyr__beta" title="Calque hors MVP — données partielles">BÊTA</span> : null}
                 <span className="lyr__fill" />
-                <span className="lyr__alerts sz-detail" data-zero={n === 0} title={`${n} alerte${n > 1 ? 's' : ''} sur ce calque`}>
-                  {n > 0 ? `${n} ALR` : '—'}
-                </span>
-                <StatusDot color={worst} size={7} />
+                {n > 0 ? <span className="lyr__alerts sz-detail">{alertsText(n)}</span> : null}
+                {groupTag ? <span className="lyr__gtag sz-detail"><TagBadge tag={groupTag} /></span> : null}
               </button>
 
-              {active && LAYER_NOTE[l] ? <div className="lyr__src sz-detail">{LAYER_NOTE[l]}</div> : null}
-              {active && organs.length > 0 ? (
+              {note ? (
+                <p className={note.short ? 'lyr__src' : 'lyr__src sz-detail'}>
+                  {note.short}
+                  {note.more ? <span className="sz-detail">{note.short ? '. ' : ''}{note.more}</span> : null}
+                </p>
+              ) : null}
+
+              {organs.length > 0 ? (
                 <ul className="lyr__organs">
-                  {organs.filter((o) => o.metrics.length > 0).map((o) => {
+                  {withData.map((o) => {
                     const m = headline(o);
-                    const unmodeled = o.status === 'grey' && !m;
                     return (
                       <li key={o.id}>
                         <div
                           role="button"
                           tabIndex={0}
-                          className="lyr__organ"
+                          className={m ? 'lyr__organ' : 'lyr__organ lyr__organ--plain'}
                           data-organ-row={o.id}
+                          data-row
+                          data-below={sentenceCase(meta.label)}
                           data-hovered={hovered === o.id}
                           data-selected={selected === o.id}
                           data-status={o.status}
@@ -177,42 +199,51 @@ export function LayersPanel(): JSX.Element {
                           onClick={() => setSelected(o.id)}
                           onDoubleClick={() => openOrganWindow(o.id)}
                           onKeyDown={onOrganKey(o.id)}
-                          title={m ? `${m.label} — clic : épingler · double-clic : ouvrir la fenêtre organe` : 'Organe non modélisé : aucune donnée'}
+                          title={m ? `${m.label}. Double-click: open details.` : 'Not modeled: no data'}
                         >
                           <StatusDot color={o.status} />
                           <span className="lyr__oname">{shortName(o.name)}</span>
-                          {unmodeled || !m ? (
-                            <span className="lyr__none">NON MODÉLISÉ</span>
-                          ) : (
+                          {m ? (
                             <>
-                              <span className="lyr__val">
-                                {fmt(m.value, digitsFor(m.value))}
-                                <span className="lyr__unit">{m.unit}</span>
-                              </span>
-                              <TagBadge tag={m.tag} />
+                              {/* projection : la valeur reste en texte normal, la couleur passe à la pastille creuse */}
+                              <span className="lyr__val" data-color={!projected && m.color === o.status ? m.color : undefined}>{fmt(m.value, digitsFor(m.value))}</span>
+                              <span className="lyr__unit sz-unit">{m.unit}</span>
+                              {groupTag ? <span /> : <TagBadge tag={m.tag} />}
                             </>
+                          ) : (
+                            <span className="lyr__none">Not modeled</span>
                           )}
                         </div>
                       </li>
                     );
                   })}
-                  {/* organes sans aucun chiffre : une seule ligne grise (place gagnée, rien de caché) */}
-                  {organs.some((o) => o.metrics.length === 0) ? (
+                  {/* organes sans aucun chiffre : une seule ligne grise (rien n'est caché) */}
+                  {withoutData.length > 0 ? (
                     <li>
-                      <div className="lyr__organ lyr__organ--static" data-status="grey" title="Aucune mesure ni modèle : statut inconnu, jamais vert par défaut">
+                      <div className="lyr__organ lyr__organ--plain lyr__organ--static" data-row data-below={sentenceCase(meta.label)} data-status="grey" title="No measurement or model: status unknown">
                         <StatusDot color="grey" />
-                        <span className="lyr__oname">{organs.filter((o) => o.metrics.length === 0).map((o) => shortName(o.name)).join(' · ')}</span>
-                        <span className="lyr__none">NON MODÉLISÉ</span>
+                        <span className="lyr__oname">{withoutData.map((o, i) => (i === 0 ? shortName(o.name) : lowerFirst(shortName(o.name)))).join(', ')}</span>
+                        <span className="lyr__none">Not modeled</span>
                       </div>
                     </li>
                   ) : null}
                 </ul>
-              ) : null}
-              {active && organs.length === 0 ? <div className="lyr__empty">AUCUNE DONNÉE CE JOUR</div> : null}
+              ) : (
+                <div className="lyr__empty" data-row data-below={sentenceCase(meta.label)}>No data for this day</div>
+              )}
             </li>
           );
         })}
       </ul>
+      {below.length > 0 ? (
+        <button
+          type="button"
+          className="lyr__below"
+          onClick={() => listRef.current?.scrollBy({ top: listRef.current.clientHeight * 0.8, behavior: 'smooth' })}
+        >
+          More below: {below.map((b, i) => (i === 0 ? b : b.toLowerCase())).join(', ')}
+        </button>
+      ) : null}
     </Panel>
   );
 }

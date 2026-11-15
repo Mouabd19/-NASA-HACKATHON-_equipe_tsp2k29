@@ -2,7 +2,7 @@
  "engine": "claude",
  "model": "claude-haiku-5-5",
  "generatedAt": "2026-11-14T19:08:37.564Z",
- "label": "Prototype — données SIMULÉES — signal IA, pas un diagnostic",
+ "label": "Prototype — SIMULATED data — AI signal, not a diagnosis",
  "scenarios": {
   "drift": [
    {

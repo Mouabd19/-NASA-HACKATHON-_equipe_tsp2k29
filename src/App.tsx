@@ -1,85 +1,48 @@
-// Coquille de l'application : barre haute de 36 px + page routée qui remplit le reste.
+// Coquille de l'application : barre haute de 48 px + page routée qui remplit le reste.
 // Les styles (.sz-shell, .sz-topbar, .sz-nav, .sz-main) sont dans src/ui/global.css.
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import type { JSX } from 'react';
-import { BrowserRouter, Navigate, NavLink, Route, Routes } from 'react-router-dom';
-import { ASTRONAUT, DAY_TODAY } from './mocks/mission';
+import { BrowserRouter, Navigate, NavLink, Route, Routes, useLocation } from 'react-router-dom';
+import { ASTRONAUT } from './mocks/mission';
 import { Body } from './pages/body/Body';
 import { Mental } from './pages/mental/Mental';
 import { ReasoningPage } from './pages/reasoning/Reasoning';
 import { WarRoom } from './pages/warroom/WarRoom';
-import { TagBadge, dayToDate, fmtDay } from './ui';
+import { sentenceCase } from './ui';
 import { syncDetailsAttr, usePrefs } from './ui/prefs';
 
 const TABS = [
-  { to: '/body', label: 'Body Health' },
-  { to: '/warroom', label: 'War Room' },
-  { to: '/mental', label: 'Mental Health' },
+  { to: '/body', label: 'Body' },
+  { to: '/warroom', label: "Today's plan" },
+  { to: '/mental', label: 'Mental health' },
 ] as const;
 
-function utcClock(d: Date): string {
-  return d.toISOString().slice(11, 19);
-}
-
-/** Horloge UTC, recalée sur le début de chaque seconde. */
-function Clock(): JSX.Element {
-  const [now, setNow] = useState(() => new Date());
-  useEffect(() => {
-    let timer: ReturnType<typeof setTimeout>;
-    const tick = (): void => {
-      const d = new Date();
-      setNow(d);
-      timer = setTimeout(tick, 1000 - d.getMilliseconds() + 5);
-    };
-    tick();
-    return () => clearTimeout(timer);
-  }, []);
-  return (
-    <time className="sz-topbar__clock" dateTime={now.toISOString()}>
-      {utcClock(now)} <span className="sz-dim">UTC</span>
-    </time>
-  );
-}
-
 function TopBar(): JSX.Element {
+  // le raisonnement est une sous-page du plan du jour : son onglet reste actif
+  const inReasoning = useLocation().pathname.startsWith('/reasoning');
   return (
     <header className="sz-topbar">
       <div className="sz-topbar__left">
-        <span className="sz-wordmark">
-          <svg className="sz-wordmark__glyph" viewBox="0 0 12 12" aria-hidden="true">
-            <rect x="0.5" y="0.5" width="11" height="11" fill="none" stroke="currentColor" />
-            <line x1="2" y1="10" x2="10" y2="2" stroke="currentColor" />
-          </svg>
-          SOL ZÉRO
-        </span>
-        <span className="sz-topbar__rule sz-topbar__opt sz-detail" />
-        <span className="sz-dim sz-topbar__opt sz-detail">Mission {ASTRONAUT.id}</span>
+        {/* mot-symbole seul : pas de pictogramme santé générique */}
+        <span className="sz-wordmark">TriFlow</span>
+        <nav className="sz-nav" aria-label="Pages">
+          {TABS.map((t) => (
+            <NavLink
+              key={t.to}
+              to={t.to}
+              className={({ isActive }) => `sz-nav__tab${isActive || (inReasoning && t.to === '/warroom') ? ' active' : ''}`}
+            >
+              {t.label}
+            </NavLink>
+          ))}
+        </nav>
       </div>
 
-      <nav className="sz-nav" aria-label="Pages">
-        {TABS.map((t) => (
-          <NavLink key={t.to} to={t.to} className="sz-nav__tab">
-            {t.label}
-          </NavLink>
-        ))}
-      </nav>
-
       <div className="sz-topbar__right">
-        <span className="sz-detail sz-topbar__opt"><Clock /></span>
-        <span className="sz-topbar__rule sz-detail sz-topbar__opt" />
-        <span className="sz-topbar__day" title={`Jour de mission — ${dayToDate(DAY_TODAY)}`}>{fmtDay(DAY_TODAY)}</span>
-        <span className="sz-dim sz-topbar__opt sz-detail">{dayToDate(DAY_TODAY)}</span>
-        <span className="sz-topbar__rule sz-topbar__opt" />
-        <span className="sz-topbar__opt">
-          <span className="sz-dim sz-detail">{ASTRONAUT.role}</span> {ASTRONAUT.name}
-        </span>
-        <span className="sz-topbar__opt"><TagBadge tag="Persona" /></span>
-        {/* rappel d'honnêteté unique quand les étiquettes par chiffre sont masquées */}
-        <span
-          className="sz-topbar__sim sz-essential-only"
-          title="Données simulées (persona fictive) — activez « Détails » pour voir la provenance de chaque chiffre"
-        >
-          Données simulées
+        {/* identification du patient : grade et nom de la persona, rien d'inventé en plus */}
+        <span className="sz-patient">
+          <span className="sz-patient__role">Cmdr</span>
+          <strong className="sz-patient__name">{sentenceCase(ASTRONAUT.name)}</strong>
         </span>
         <DetailsToggle />
       </div>
@@ -94,12 +57,12 @@ function DetailsToggle(): JSX.Element {
   return (
     <button
       type="button"
-      className="sz-btn sz-topbar__details"
+      className="sz-btn sz-btn--sm"
       aria-pressed={details}
       onClick={() => setDetails(!details)}
-      title="Afficher les sources, la provenance de chaque chiffre et les textes d'aide (D)"
+      title="Show the source and provenance of each figure (D)"
     >
-      Détails
+      Details
     </button>
   );
 }

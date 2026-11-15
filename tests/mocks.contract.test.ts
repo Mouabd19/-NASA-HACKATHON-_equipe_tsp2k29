@@ -107,7 +107,7 @@ describe('sim/load', () => {
         const o = organ(day, id);
         expect(o.status).toBe('grey');
         expect(o.metrics).toEqual([]);
-        expect(o.name).toMatch(/non modélisé/);
+        expect(o.name).toMatch(/not modeled/);
         expect(o.bioAge).toBe(o.chronoAge);
       }
     }
@@ -301,12 +301,12 @@ describe('models', () => {
     for (const x of a) expect(x.level).toBe('AMBRE');
     const hanche = a.find((x) => x.organId === 'hanche')!;
     expect(hanche.rule).toBe('V1 4027');
-    expect(hanche.message).toMatch(/J860/);
-    expect(hanche.message).toMatch(/ROUGE/);
+    expect(hanche.message).toMatch(/D860/);
+    expect(hanche.message).toMatch(/RED/);
     const coeur = a.find((x) => x.organId === 'coeur')!;
     expect(coeur.rule).toBe('V1 4003');
-    expect(coeur.message).toMatch(/36,5/);
-    expect(a.find((x) => x.organId === 'cuisse')!.message).toMatch(/tendance 7 j/);
+    expect(coeur.message).toMatch(/36\.5/);
+    expect(a.find((x) => x.organId === 'cuisse')!.message).toMatch(/7-day trend/);
     expect(new Set(a.map((x) => x.id)).size).toBe(a.length);
   });
 
@@ -425,7 +425,7 @@ describe('content', () => {
     expect(getSummary('hanche', 90)!.day).toBe(94);
     expect(getSummary('hanche', 40)!.day).toBe(30);
     expect(getSummary('hanche', 700)!.day).toBe(860);
-    expect(getSummary('hanche', 94)!.text).toMatch(/1,99/);
+    expect(getSummary('hanche', 94)!.text).toMatch(/1\.99/);
     for (const id of UNMODELLED) expect(getSummary(id, 94)).toBeNull();
     expect(getSummary('inconnu', 94)).toBeNull();
   });
@@ -506,13 +506,13 @@ describe('scénario « avec le plan » — ajouts hors contrat (revue n° 2)', (
     const plan = alertsForDayPlan(860, 1).find((a) => a.organId === 'hanche');
     expect(pace?.level).toBe('ROUGE');
     expect(plan?.level).not.toBe('ROUGE');
-    if (plan) expect(plan.message).not.toMatch(/au rythme actuel/);
+    if (plan) expect(plan.message).not.toMatch(/at current pace/);
   });
   it('getSummaryPlan : le texte de projection nomme le bon scénario', async () => {
     const { getSummary, getSummaryPlan } = await import('../src/content/summaries');
     expect(getSummaryPlan('hanche', 94, 1)).toEqual(getSummary('hanche', 94));
-    expect(getSummaryPlan('hanche', 860, 0)?.text).toMatch(/au rythme actuel/);
-    expect(getSummaryPlan('hanche', 860, 1)?.text).toMatch(/avec le plan suivi/);
-    expect(getSummaryPlan('hanche', 860, 1)?.text).toMatch(/95,78 %/);
+    expect(getSummaryPlan('hanche', 860, 0)?.text).toMatch(/at current pace/);
+    expect(getSummaryPlan('hanche', 860, 1)?.text).toMatch(/with the plan followed/);
+    expect(getSummaryPlan('hanche', 860, 1)?.text).toMatch(/95\.78%/);
   });
 });
