@@ -61,21 +61,19 @@ struct ContentView: View {
                 }
             }
         }
-        // Synchro de secours tant que l'app est au premier plan : résumé toutes les 30 s, to-do toutes les 5 s
-        // (15 s quand le temps réel est connecté, ou quand le Mac est injoignable pour ménager le relais iPhone).
+        // Synchro de secours tant que l'app est au premier plan : résumé (zones à surveiller, niveau) et to-do
+        // toutes les 5 s. Sur la vraie montre, le flux temps réel passe souvent par le relais Bluetooth de l'iPhone,
+        // qui peut le retenir : cette boucle garantit que l'écran suit le site à quelques secondes près.
+        // 15 s seulement quand le serveur est injoignable, pour ménager le relais.
         .task(id: scenePhase) {
             guard scenePhase == .active else { return }
             if DemoMode.isOn && heart.phase == .idle {
                 await heart.start(simulated: true) // mode démo : pouls simulé, jamais envoyé
             }
-            var lastSummary = Date.distantPast
             while !Task.isCancelled {
-                if Date().timeIntervalSince(lastSummary) >= 30 {
-                    await summary.refresh()
-                    lastSummary = Date()
-                }
+                await summary.refresh()
                 await todo.refresh()
-                let slow = todo.unreachable || summary.isStale || events.connected
+                let slow = todo.unreachable || summary.isStale
                 try? await Task.sleep(nanoseconds: (slow ? 15 : 5) * 1_000_000_000)
             }
         }
