@@ -78,7 +78,7 @@ Organ and mood models are trained on **simulated** cohorts: they show that the m
 - Unknown means grey, never green by default. "Live" only appears for a fresh measurement.
 
 ## Apple Watch
-A native Apple Watch + iPhone app (SwiftUI, in the `night/watch-api` branch, folder `watch/`) sends the **real** heart rate to TriFlow, in near real time. It also shows the day's summary and the to-do list, and syncs ticks both ways.
+A native Apple Watch + iPhone app (SwiftUI, folder [`watch/`](watch/), build instructions in [`watch/README.md`](watch/README.md)) sends the **real** heart rate to TriFlow, in near real time. It also shows the day's summary and the to-do list, and syncs ticks both ways.
 The app talks to the TriFlow API: `POST /ingest`, `GET /api/watch/summary`, `/api/todo`, and real-time updates over Server-Sent Events (`GET /api/events`).
 
 ---
@@ -115,13 +115,14 @@ React 19 · TypeScript · Vite · Three.js / React Three Fiber · Zustand · Vit
 | `src/content/` | Exercises, meals, tests, NASA standards and references |
 | `src/ui/` | Design system (`tokens.ts` is the single source of colors and type) |
 | `server/`, `api/` | Watch API: local Vite plugin and Vercel function |
+| `watch/` | Native Apple Watch + iPhone app (SwiftUI, XcodeGen) |
 | `scripts/ml/` | Model training (Python) |
 | `scripts/mental-agents/` | Multi-agent mental-health analysis, precomputed with Claude |
 | `public/data/` | Simulated data, model cards, NASA standards, AI summaries |
 | `public/models/` | 3D anatomy models (glTF) |
 | `public/slides/` | Pitch deck (HTML, served at `/slides/`) |
 | `tests/` | Tests |
-| `docs/` | Screenshots, pitch PDF, NASA sources, and the team's hackathon notes (`docs/hackathon/`: roadmap, daily status, UI proposals) |
+| `docs/` | Screenshots, pitch PDF, NASA sources, and the team's hackathon notes (`docs/hackathon/`: roadmap, daily status, UI proposals, pitch scripts) |
 
 ## Team TSP2k29
 - **Walid**: Body page, 3D scene, design system, integration.
