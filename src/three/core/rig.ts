@@ -242,6 +242,47 @@ export function createBodyRig(): BodyRig {
   const platLedGeo = keep(new THREE.TorusGeometry(0.3, 0.006, 8, 128).rotateX(Math.PI / 2).translate(0, 0.002, 0));
   const platLed = new THREE.Mesh(platLedGeo, track(new THREE.MeshBasicMaterial({ color: tokens.color.water, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }), 0.9));
   platLed.renderOrder = -1; floorSet.add(platLed);
+  // caisson métallique autour du corps : cylindre brossé ouvert sur l'avant (coupe), cerclages haut et bas.
+  // Ombrage « cuit » dans les sommets : reflets verticaux de métal brossé, bords de l'ouverture éclairés.
+  const CH = S.casingHeight, CR = PR + 0.05, OPEN = S.casingOpening;
+  const metalDark = new THREE.Color(tokens.color.panelHover), metalLight = new THREE.Color(tokens.color.textDim);
+  const metalShade = (g: THREE.BufferGeometry): void => {
+    const pos = g.getAttribute('position');
+    const colr = new Float32Array(pos.count * 3);
+    const c = new THREE.Color();
+    for (let i = 0; i < pos.count; i++) {
+      const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
+      const a = Math.atan2(x, z);                                   // 0 = face caméra
+      const sheen = 0.5 + 0.5 * Math.cos(a * 3.0 + 0.6);            // bandes de reflet du métal brossé
+      const edge = 1 - THREE.MathUtils.smoothstep(Math.abs(Math.abs(a) - OPEN / 2), 0, 0.35);
+      const ao = THREE.MathUtils.smoothstep(y, 0, 0.35);
+      c.copy(metalDark).multiplyScalar(0.6 + 0.3 * ao).lerp(metalLight, 0.18 * sheen + 0.5 * edge);
+      colr[i * 3] = c.r; colr[i * 3 + 1] = c.g; colr[i * 3 + 2] = c.b;
+    }
+    g.setAttribute('color', new THREE.BufferAttribute(colr, 3));
+  };
+  const metal = (o: number): THREE.MeshBasicMaterial =>
+    track(new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, side: THREE.DoubleSide, depthWrite: false }), o);
+  const shellGeo = keep(new THREE.CylinderGeometry(CR, CR, CH, 160, 16, true, OPEN / 2, Math.PI * 2 - OPEN).translate(0, CH / 2, 0));
+  metalShade(shellGeo);
+  const shell = new THREE.Mesh(shellGeo, metal(0.97)); shell.renderOrder = -1; floorSet.add(shell);
+  for (const [y, h] of [[0.025, 0.05], [CH - 0.03, 0.06]] as const) {          // cerclages bas et haut
+    const bandGeo = keep(new THREE.CylinderGeometry(CR + 0.025, CR + 0.025, h, 160, 1, true).translate(0, y, 0));
+    metalShade(bandGeo);
+    const band = new THREE.Mesh(bandGeo, metal(1)); band.renderOrder = 14; floorSet.add(band);
+  }
+  const lipGeo = keep(new THREE.TorusGeometry(CR + 0.025, 0.004, 6, 160).rotateX(Math.PI / 2).translate(0, CH, 0));
+  const lip = new THREE.Mesh(lipGeo, track(new THREE.MeshBasicMaterial({ color: tokens.color.text, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }), 0.5));
+  lip.renderOrder = 15; floorSet.add(lip);
+  // arêtes verticales de l'ouverture
+  const edgeGeo = keep(new THREE.BoxGeometry(0.03, CH, 0.03).translate(0, CH / 2, 0));
+  metalShade(edgeGeo);
+  for (const a of [-OPEN / 2, OPEN / 2]) {
+    const post = new THREE.Mesh(edgeGeo, metal(1));
+    post.position.set(Math.sin(a) * CR, 0, Math.cos(a) * CR);
+    post.rotation.y = a;
+    post.renderOrder = 14; floorSet.add(post);
+  }
   scanGroup.add(floorSet);
 
   const setBoothFade = (k: number): void => {
@@ -250,9 +291,12 @@ export function createBodyRig(): BodyRig {
       else f.mat.opacity = f.o * k;
     }
   };
-  /** Place la surface à la hauteur `level` (m) ; le fond et la plateforme restent au sol. */
-  const setLevel = (level: number): void => {
-    scanGroup.position.y = level;
+  /**
+   * Place la surface à la hauteur `level` (m). Le fond, la plateforme et le caisson restent au sol, sauf à la sortie :
+   * `lift` (m) soulève tout l'appareil d'un bloc, qui part vers le haut et libère le corps par les pieds.
+   */
+  const setLevel = (level: number, lift = 0): void => {
+    scanGroup.position.y = level + lift;
     floorSet.position.y = S.yStart - level;
     col.scale.y = Math.max(0.001, level - S.yStart);
   };
@@ -260,8 +304,7 @@ export function createBodyRig(): BodyRig {
   scanGroup.visible = false;
   let scanT = -1;  // ≥ 0 : immersion en cours (0..1)
   let holdT = 0;   // > 0 : sur la plateforme, avant l'immersion
-  let riseT = 0;   // > 0 : le corps remonte (le niveau redescend)
-  let postT = 0;   // > 0 : le bassin s'efface
+  let exitT = 0;   // > 0 : scan fini, l'appareil part vers le haut et disparaît
   const scanInfo = { t: -1, y: 0 };
 
   const fade: Record<LayerId, number> = { squelette: 0, muscles: 0, organes: 0, cardio: 0, nerveux: 0, exposition: 0 };
@@ -311,7 +354,7 @@ export function createBodyRig(): BodyRig {
       scanT += dt / S.duration;
       if (scanT >= 1) {
         scanT = -1;
-        riseT = S.rise;
+        exitT = S.exit;
         scanInfo.t = -1;
         shared.scanY.value = SCAN_Y_IDLE;
       } else {
@@ -322,19 +365,13 @@ export function createBodyRig(): BodyRig {
         setLevel(y);
         setBoothFade(1);
       }
-    } else if (riseT > 0) {
-      // 3. le corps remonte, entièrement scanné
-      riseT -= dt;
-      const u = 1 - Math.max(0, riseT) / S.rise;
-      const k = u * u * (3 - 2 * u);
-      setLevel(S.yEnd + (S.yStart - S.yEnd) * k);
-      if (riseT <= 0) postT = S.post;
-    } else if (postT > 0) {
-      // 4. le bassin s'efface, le corps reste
-      postT -= dt;
-      setLevel(S.yStart);
-      setBoothFade(Math.max(0, postT / S.post));
-      if (postT <= 0) scanGroup.visible = false;
+    } else if (exitT > 0) {
+      // 3. scan fini : caisson, eau et anneau partent ensemble vers le haut (accélération douce) et s'effacent
+      exitT -= dt;
+      const u = 1 - Math.max(0, exitT) / S.exit;
+      setLevel(S.yEnd, S.exitDistance * u * u);
+      setBoothFade(1 - THREE.MathUtils.smoothstep(u, 0.35, 1));
+      if (exitT <= 0) scanGroup.visible = false;
     }
 
     // fondu des calques
@@ -404,7 +441,7 @@ export function createBodyRig(): BodyRig {
 
   return {
     staticGroup, pickGroup, scanGroup, setStatuses, update, pick,
-    startScan: () => { scanT = 0; holdT = look.scan.hold; riseT = 0; postT = 0; shared.scanY.value = look.scan.yStart; },
+    startScan: () => { scanT = 0; holdT = look.scan.hold; exitT = 0; shared.scanY.value = look.scan.yStart; },
     scan: () => scanInfo,
     layerFade: (l) => fade[l],
     dispose: () => {

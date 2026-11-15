@@ -130,8 +130,10 @@ export const look = {
     hideShell: 0.55,
     /** Bassin du scanner (façon Midjourney Medical) : plateforme, eau, anneau de capteurs à la surface. */
     hold: 0.8,            // secondes debout sur la plateforme avant l'immersion
-    rise: 1.4,            // secondes de remontée du corps après le scan
-    post: 0.6,            // secondes de fondu du bassin
+    exit: 1.6,            // secondes de sortie : l'appareil part vers le haut et disparaît
+    exitDistance: 2.6,    // hauteur parcourue pendant la sortie (m)
+    casingHeight: 2.06,   // hauteur du caisson métallique (m)
+    casingOpening: 2.2,   // ouverture du caisson face à la caméra (radians, ~125°), pour voir le corps
     poolRadius: 0.5,      // rayon du bassin et de l'anneau (m) — l'anneau réel fait ~70 cm de diamètre
     deckRadius: 1.15,     // rayon extérieur de la plage du bassin (m)
   },

@@ -264,5 +264,7 @@
 
 /* Étiquettes d'organes et traits de liaison masqués tant que le corps est dans le caisson du scanner */
 .body-scene .w3d-layer { transition: opacity 400ms; }
+/* tant que l'état du scan n'est pas connu (premières images), les étiquettes restent masquées aussi */
+.body-scene:not([data-scanning]) .w3d-layer,
 .body-scene[data-scanning='true'] .w3d-layer { opacity: 0; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .body-scene .w3d-layer { transition: none; } }

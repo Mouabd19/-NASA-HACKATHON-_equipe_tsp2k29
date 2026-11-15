@@ -87,7 +87,7 @@ function ScanLabel(): JSX.Element {
   const ref = useRef<HTMLSpanElement>(null);
   useEffect(() => {
     let raf = 0;
-    let shown = false;
+    let shown: boolean | null = null;   // null : la première image synchronise toujours l'état
     const frame = (): void => {
       raf = requestAnimationFrame(frame);
       const el = ref.current;
