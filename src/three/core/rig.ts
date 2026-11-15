@@ -283,6 +283,125 @@ export function createBodyRig(): BodyRig {
     post.rotation.y = a;
     post.renderOrder = -1; floorSet.add(post);
   }
+  // ── détails du caisson, pour qu'il ressemble à une vraie machine ──
+  const arc = (a0: number, a1: number, y: number, r: number, n = 48): THREE.Vector3[] => {
+    const pts: THREE.Vector3[] = [];
+    for (let i = 0; i < n; i++) {
+      const b0 = a0 + ((a1 - a0) * i) / n, b1 = a0 + ((a1 - a0) * (i + 1)) / n;
+      pts.push(new THREE.Vector3(Math.sin(b0) * r, y, Math.cos(b0) * r), new THREE.Vector3(Math.sin(b1) * r, y, Math.cos(b1) * r));
+    }
+    return pts;
+  };
+  const A0 = OPEN / 2, A1 = Math.PI * 2 - OPEN / 2;            // étendue de la paroi (hors ouverture)
+  // joints des panneaux : traits sombres + filet clair juste à côté (chanfrein)
+  const seamDark: THREE.Vector3[] = [], seamLight: THREE.Vector3[] = [];
+  for (let a = A0 + 0.45; a < A1 - 0.2; a += 0.52) {
+    for (const [arr, da] of [[seamDark, 0], [seamLight, 0.006]] as const) {
+      arr.push(new THREE.Vector3(Math.sin(a + da) * CR * 0.996, 0.06, Math.cos(a + da) * CR * 0.996),
+        new THREE.Vector3(Math.sin(a + da) * CR * 0.996, CH - 0.07, Math.cos(a + da) * CR * 0.996));
+    }
+  }
+  for (const y of [0.72, 1.42]) {
+    seamDark.push(...arc(A0, A1, y, CR * 0.996, 96));
+    seamLight.push(...arc(A0, A1, y + 0.005, CR * 0.996, 96));
+  }
+  const seamDGeo = keep(new THREE.BufferGeometry().setFromPoints(seamDark));
+  const seamLGeo = keep(new THREE.BufferGeometry().setFromPoints(seamLight));
+  const seamD = new THREE.LineSegments(seamDGeo, track(new THREE.LineBasicMaterial({ color: tokens.color.bg, transparent: true, depthWrite: false }), 0.85));
+  const seamL = new THREE.LineSegments(seamLGeo, track(new THREE.LineBasicMaterial({ color: tokens.color.textDim, transparent: true, depthWrite: false }), 0.4));
+  seamD.renderOrder = -1; seamL.renderOrder = -1; floorSet.add(seamD, seamL);
+
+  // rivets le long des cerclages
+  const rivetGeo = keep(new THREE.SphereGeometry(0.0065, 8, 6));
+  const rivetMat = track(new THREE.MeshBasicMaterial({ color: tokens.color.textDim, transparent: true, depthWrite: false }), 0.75);
+  const rivetPos: [number, number][] = [];
+  for (let a = -Math.PI; a < Math.PI; a += 0.16) for (const y of [0.025, CH - 0.03]) rivetPos.push([a, y]);
+  const rivets = new THREE.InstancedMesh(rivetGeo, rivetMat, rivetPos.length);
+  const m4 = new THREE.Matrix4();
+  rivetPos.forEach(([a, y], i) => rivets.setMatrixAt(i, m4.makeTranslation(Math.sin(a) * (CR + 0.028), y, Math.cos(a) * (CR + 0.028))));
+  rivets.renderOrder = -1; floorSet.add(rivets);
+
+  // socle : marche chanfreinée + 4 pieds de calage
+  const baseGeo = keep(new THREE.CylinderGeometry(CR + 0.07, CR + 0.1, 0.045, 160).translate(0, 0.0225 - 0.045, 0));
+  metalShade(baseGeo);
+  const base = new THREE.Mesh(baseGeo, metal(1)); base.renderOrder = -3; floorSet.add(base);
+  const footGeo = keep(new THREE.CylinderGeometry(0.03, 0.035, 0.03, 16).translate(0, -0.06, 0));
+  for (let i = 0; i < 4; i++) {
+    const a = Math.PI / 4 + (i * Math.PI) / 2;
+    const foot = new THREE.Mesh(footGeo, track(new THREE.MeshBasicMaterial({ color: tokens.color.panelHover, transparent: true, depthWrite: false }), 1));
+    foot.position.set(Math.sin(a) * (CR + 0.05), 0, Math.cos(a) * (CR + 0.05));
+    foot.renderOrder = -3; floorSet.add(foot);
+  }
+  // couronne supérieure : capot épais + couvercle
+  const crownGeo = keep(new THREE.CylinderGeometry(CR + 0.035, CR + 0.045, 0.09, 160).translate(0, CH + 0.045, 0));
+  metalShade(crownGeo);
+  const crown = new THREE.Mesh(crownGeo, metal(1)); crown.renderOrder = -1; floorSet.add(crown);
+  const lidGeo = keep(new THREE.CircleGeometry(CR + 0.035, 96).rotateX(-Math.PI / 2).translate(0, CH + 0.09, 0));
+  const lid = new THREE.Mesh(lidGeo, track(new THREE.MeshBasicMaterial({ color: tokens.color.panelHover, transparent: true, depthWrite: false, side: THREE.DoubleSide }), 0.95));
+  lid.renderOrder = -1; floorSet.add(lid);
+
+  // grille d'aération sur le côté gauche, en haut
+  const ventPts: THREE.Vector3[] = [];
+  const va = Math.PI;
+  for (let i = 0; i < 9; i++) ventPts.push(...arc(va - 0.22, va + 0.22, CH - 0.22 - i * 0.026, CR * 0.994, 8));
+  const ventGeo = keep(new THREE.BufferGeometry().setFromPoints(ventPts));
+  // rails verticaux intérieurs (profilés plats)
+  const railGeo = keep(new THREE.BoxGeometry(0.035, CH - 0.2, 0.012).translate(0, (CH - 0.2) / 2 + 0.1, 0));
+  metalShade(railGeo);
+  for (const a of [Math.PI - 0.75, Math.PI + 0.75]) {
+    const rail = new THREE.Mesh(railGeo, metal(1));
+    rail.position.set(Math.sin(a) * (CR - 0.012), 0, Math.cos(a) * (CR - 0.012));
+    rail.rotation.y = a;
+    rail.renderOrder = -1; floorSet.add(rail);
+  }
+  const vent = new THREE.LineSegments(ventGeo, track(new THREE.LineBasicMaterial({ color: tokens.color.bg, transparent: true, depthWrite: false }), 0.9));
+  vent.renderOrder = -1; floorSet.add(vent);
+
+  // pupitre sur le côté droit : boîtier, petit écran lumineux, voyants
+  const panel = new THREE.Group();
+  panel.position.set(CR + 0.3, 1.02, 0.22);
+  panel.rotation.set(-0.35, -0.25, 0);                      // plateau incliné vers l'opérateur
+  const standGeo = keep(new THREE.CylinderGeometry(0.012, 0.014, 1.0, 12).translate(0, 0.5, 0));
+  const stand = new THREE.Mesh(standGeo, track(new THREE.MeshBasicMaterial({ color: tokens.color.textDim, transparent: true, depthWrite: false }), 0.6));
+  stand.position.set(CR + 0.3, 0, 0.2); stand.renderOrder = -1; floorSet.add(stand);
+  const standFootGeo = keep(new THREE.CylinderGeometry(0.07, 0.08, 0.015, 24));
+  const standFoot = new THREE.Mesh(standFootGeo, metal(1));
+  standFoot.position.set(CR + 0.3, 0.0075, 0.2); standFoot.renderOrder = -1; floorSet.add(standFoot);
+  const boxGeo = keep(new THREE.BoxGeometry(0.2, 0.15, 0.025));
+  metalShade(boxGeo);
+  const box = new THREE.Mesh(boxGeo, metal(1)); box.renderOrder = -1; panel.add(box);
+  if (typeof document !== 'undefined') {
+    const cv = document.createElement('canvas'); cv.width = 128; cv.height = 96;
+    const cx = cv.getContext('2d');
+    if (cx) {
+      cx.fillStyle = tokens.color.bg; cx.fillRect(0, 0, 128, 96);
+      cx.fillStyle = tokens.color.water; cx.font = '600 15px monospace'; cx.fillText('USCT', 8, 20);
+      cx.fillStyle = tokens.color.textDim; cx.font = '11px monospace'; cx.fillText('37,0 °C', 8, 40);
+      for (let i = 0; i < 6; i++) { cx.fillStyle = tokens.color.water; cx.globalAlpha = 0.35 + i * 0.1; cx.fillRect(8 + i * 18, 80 - i * 6, 12, 8 + i * 6); }
+      const tex = new THREE.CanvasTexture(cv);
+      const scrGeo = keep(new THREE.PlaneGeometry(0.13, 0.095).translate(-0.02, 0.01, 0.0135));
+      const scr = new THREE.Mesh(scrGeo, track(new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false }), 1));
+      scr.renderOrder = 0; panel.add(scr);
+    }
+  }
+  const ledGeoS = keep(new THREE.CircleGeometry(0.007, 12));
+  [tokens.color.ok, tokens.color.water, tokens.color.amber].forEach((c, i) => {
+    const led = new THREE.Mesh(ledGeoS, track(new THREE.MeshBasicMaterial({ color: c, transparent: true, depthWrite: false }), 1));
+    led.position.set(0.075, 0.04 - i * 0.03, 0.0135);
+    led.renderOrder = 0; panel.add(led);
+  });
+  floorSet.add(panel);
+
+  // gaine de câbles qui part du socle vers l'arrière
+  const cable = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(Math.sin(Math.PI - 0.3) * (CR + 0.02), 0.18, Math.cos(Math.PI - 0.3) * (CR + 0.02)),
+    new THREE.Vector3(Math.sin(Math.PI - 0.3) * (CR + 0.12), 0.05, Math.cos(Math.PI - 0.3) * (CR + 0.12)),
+    new THREE.Vector3(Math.sin(Math.PI - 0.3) * (CR + 0.45), 0.012, Math.cos(Math.PI - 0.3) * (CR + 0.45)),
+  ]);
+  const cableGeo = keep(new THREE.TubeGeometry(cable, 24, 0.014, 8, false));
+  const cableMesh = new THREE.Mesh(cableGeo, track(new THREE.MeshBasicMaterial({ color: tokens.color.panelHover, transparent: true, depthWrite: false }), 1));
+  cableMesh.renderOrder = -3; floorSet.add(cableMesh);
+
   // l'ouverture du caisson et le bord du bassin font face à la caméra de trois quarts du scan
   floorSet.rotation.y = S.viewYaw;
   deck.rotation.y = S.viewYaw;
