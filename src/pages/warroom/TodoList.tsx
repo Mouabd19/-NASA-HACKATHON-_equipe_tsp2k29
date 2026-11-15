@@ -1,6 +1,7 @@
 // Propriétaire : Ahmed (B). Liste du jour : une seule liste, priorité 1 médicale en tête puis l'ordre de la journée.
 // Chaque ligne : case, heure, titre (détail en mode Détails), catégorie, chevron « Pourquoi » (comme les alertes de Corps).
 import { Link } from 'react-router-dom';
+import { useAnalysis } from '../../ingest/analysis';
 import type { Level, TodoItem } from '../../types';
 import { Panel } from '../../ui';
 import { Dot } from './ui';
@@ -27,6 +28,7 @@ export function TodoList({ items, onToggle, synced, level }: { items: TodoItem[]
       </Panel>
     );
   }
+  const analysis = useAnalysis();
   const list = [...items].sort(order);
   const doneCount = items.filter((t) => t.done).length;
 
@@ -37,14 +39,16 @@ export function TodoList({ items, onToggle, synced, level }: { items: TodoItem[]
       provenance="SIMULÉ"
       right={
         <>
-          {synced
+          {analysis.running
+            ? <span>Adjusting the plan…</span>
+            : synced
             ? <span className="sz-detail">List synced</span>
             : <span title="Checkmarks are kept on this screen">List not synced</span>}
           <span className="sz-num" aria-label={`${doneCount} of ${items.length} tasks done`}>{doneCount} / {items.length}</span>
         </>
       }
     >
-      <ul className="wr-todo">
+      <ul className="wr-todo" data-updating={analysis.running || undefined} aria-busy={analysis.running || undefined}>
         {list.map((t) => <Row key={t.id} t={t} onToggle={onToggle} suspended={isSuspended(t, level)} />)}
       </ul>
     </Panel>

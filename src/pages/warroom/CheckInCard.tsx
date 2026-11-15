@@ -1,7 +1,8 @@
 // Propriétaire : Ahmed (B). Check-in du matin : 4 lignes notées (humeur, fatigue, sommeil 1–5 ; douleur 0–3), un tap par ligne, ≤ 30 s (ROADMAP §1).
 import { useState } from 'react';
 import type { OrganId } from '../../types';
-import { saveCheckIn, clearCheckIn, painZonesOf, type CheckInZones } from '../../ingest/checkin';
+import { clearCheckIn, painZonesOf, type CheckInZones } from '../../ingest/checkin';
+import { ANALYSIS_STEPS, analyzeCheckIn, useAnalysis } from '../../ingest/analysis';
 import { Panel } from '../../ui';
 import { Btn, Dot, Segmented } from './ui';
 import { NOW_TITLE_ID } from './NowNextCard';
@@ -35,8 +36,11 @@ const DEMO = (typeof location !== 'undefined' && new URLSearchParams(location.se
 export function CheckInCard({ day, done }: { day: number; done: CheckInZones | null }) {
   const [d, setD] = useState<Draft>({});
   const [open, setOpen] = useState(false);
+  const analysis = useAnalysis();
   const filled = ROWS.filter((r) => d[r.key] !== undefined).length;
   const complete = filled === ROWS.length;
+
+  if (analysis.running) return <Analyzing step={analysis.step} />;
 
   if (done && !open) {
     const zones = painZonesOf(done).map((id) => ZONES.find((z) => z.id === id)?.label ?? id);
@@ -61,15 +65,15 @@ export function CheckInCard({ day, done }: { day: number; done: CheckInZones | n
 
   const submit = () => {
     if (!complete) return;
-    saveCheckIn({
+    const c = {
       day,
       mood: d.mood!, fatigue: d.fatigue!, pain: d.pain!, sleepFelt: d.sleepFelt!,
       ...(d.pain! > 0 && d.painZones?.length ? { painZone: d.painZones[0], painZones: d.painZones } : {}),
       source: 'manual',
-    } as CheckInZones);
+    } as CheckInZones;
     setOpen(false);
-    // La carte se démonte : on renvoie le focus sur la consigne qui vient de changer.
-    requestAnimationFrame(() => document.getElementById(NOW_TITLE_ID)?.focus());
+    // Le check-in n'est appliqué qu'à la fin de l'analyse ; le focus va ensuite sur la consigne qui a changé.
+    void analyzeCheckIn(c).then(() => requestAnimationFrame(() => document.getElementById(NOW_TITLE_ID)?.focus()));
   };
 
   return (
@@ -114,5 +118,26 @@ function Summary({ label: l, v, max, extra, alert, red = false }: { label: strin
       {extra && <span className="wr-kv__extra" title={extra}>{extra}</span>}
       <span className="wr-kv__value">{alert && <Dot color={red ? 'red' : 'amber'} />}{v}<span className="sz-unit"> / {max}</span></span>
     </div>
+  );
+}
+
+/** Pendant l'analyse : les étapes, faites / en cours / à venir, et une barre d'avancement. */
+function Analyzing({ step }: { step: number }) {
+  const pct = Math.round(((step + 0.5) / ANALYSIS_STEPS.length) * 100);
+  return (
+    <Panel title="Morning check-in" className="wr-checkin">
+      <div className="wr-analysis" role="status" aria-live="polite">
+        <p className="wr-analysis__title">Onboard AI is analyzing your check-in</p>
+        <div className="wr-progress wr-analysis__bar" aria-hidden><div style={{ width: `${pct}%` }} /></div>
+        <ol className="wr-analysis__steps">
+          {ANALYSIS_STEPS.map((s, i) => (
+            <li key={s.label} data-state={i < step ? 'done' : i === step ? 'current' : 'next'}>
+              <span className="wr-analysis__mark" aria-hidden>{i < step ? '✓' : i === step ? '•' : ''}</span>
+              {s.label}
+            </li>
+          ))}
+        </ol>
+      </div>
+    </Panel>
   );
 }

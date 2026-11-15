@@ -182,3 +182,16 @@
 .wr-snapshot__value { font-variant-numeric: tabular-nums; color: var(--sz-text); }
 .wr-snapshot__row dd.wr-note { min-width: 7ch; text-align: right; font-variant-numeric: tabular-nums; }
 .wr-todo { border-top: 1px solid var(--sz-border); }
+
+/* Analyse du check-in : étapes sobres, la barre avance d'étape en étape. */
+.wr-analysis { display: grid; gap: 12px; }
+.wr-analysis__title { margin: 0; color: var(--sz-text); }
+.wr-analysis__bar > div { transition: width 600ms ease-out; }
+.wr-analysis__steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: var(--sz-fs-label); }
+.wr-analysis__steps li { display: flex; gap: 8px; align-items: baseline; color: var(--sz-text-muted); }
+.wr-analysis__steps li[data-state='current'] { color: var(--sz-text); }
+.wr-analysis__steps li[data-state='next'] { opacity: 0.5; }
+.wr-analysis__mark { width: 1em; flex: none; text-align: center; }
+.wr-order__step { display: block; margin-top: 6px; font-size: var(--sz-fs-label); color: var(--sz-text-muted); }
+.wr-todo[data-updating] { opacity: 0.45; transition: opacity 300ms; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .wr-analysis__bar > div, .wr-todo[data-updating] { transition: none; } }

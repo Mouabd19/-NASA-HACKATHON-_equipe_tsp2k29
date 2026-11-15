@@ -10,6 +10,7 @@ import { DAY_TODAY } from '../../mocks/mission';
 import { alarmNumbers, sortAlarms } from '../body/alarmOrder';
 import { usePrefs } from '../../ui/prefs';
 import { Btn, LEVEL_LABEL, hhmm } from './ui';
+import { ANALYSIS_STEPS, useAnalysis } from '../../ingest/analysis';
 
 const DECIDEUR: Record<RouterOutput['ensuite']['decideur'], string> = {
   moi: 'You', CMO: 'Crew Medical Officer (CMO)', sol: 'Ground flight surgeon', equipage: 'Crew',
@@ -71,7 +72,10 @@ export function NowNextCard(props: {
   pending: boolean;
   missionNow: Date;
 }) {
-  const { triage: t, out, delayMin, pending } = props;
+  const analysis = useAnalysis();
+  const { triage: t, out, delayMin } = props;
+  // pendant l'analyse du check-in, l'ancienne consigne n'est plus valable : même rendu qu'« en attente »
+  const pending = props.pending || analysis.running;
   const insufficient = !pending && t.level === 'DONNEES_INSUFFISANTES';
   const grey = pending || insufficient; // l'inconnu se voit : puce grise, consigne atténuée
   const red = !pending && t.level === 'ROUGE';
@@ -83,7 +87,7 @@ export function NowNextCard(props: {
   const shownReasons = allReasons || reasons.length - kept.length <= 1 ? reasons : kept;
   const moreReasons = reasons.length - shownReasons.length;
   const reply = out.ensuite.reponseMin != null ? new Date(props.missionNow.getTime() + out.ensuite.reponseMin * 60_000) : null;
-  const levelText = pending ? 'Pending' : LEVEL_LABEL[t.level];
+  const levelText = analysis.running ? 'Analyzing' : pending ? 'Pending' : LEVEL_LABEL[t.level];
 
   return (
     <div className="wr-now">
@@ -104,7 +108,9 @@ export function NowNextCard(props: {
         <div className="sz-panel__body wr-now__body">
           <div role={red ? 'alert' : 'status'} aria-live={red ? 'assertive' : 'polite'}>
             <span className="wr-sr-only">{levelText}. </span>
-            {pending
+            {analysis.running
+              ? <p className="wr-order" data-muted="true">Updating the instruction… <span className="wr-order__step">{ANALYSIS_STEPS[analysis.step].label}</span></p>
+              : pending
               ? <p className="wr-order" data-muted="true">No instruction until the check-in</p>
               : (
                 <p className="wr-order" data-muted={grey}>
@@ -118,7 +124,7 @@ export function NowNextCard(props: {
                 </p>
               )}
           </div>
-          {pending && <div><Btn kind="primary" onClick={goToCheckIn}>Do the check-in</Btn></div>}
+          {pending && !analysis.running && <div><Btn kind="primary" onClick={goToCheckIn}>Do the check-in</Btn></div>}
           {shownReasons.length > 0 && (
             <ul className="wr-reasons">
               {shownReasons.map(({ r, num }) => {
