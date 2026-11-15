@@ -7,14 +7,14 @@
  "input": {
   "transcript": [
    "07:04 — Wakes up. Gets up right away.",
-   "07:30 — Breakfast with the crew. Haddad: “Shall we tackle module 3 after coffee?” Sustained exchange with Okafor (3 lines). Laughs at a joke by Okafor.",
-   "08:30 — Briefing with Earth (delayed message). Haddad does not speak.",
-   "10:00 — Air filtration system maintenance: abandoned midway, postponed to tomorrow. Haddad: “It's fine, I don't need help.”",
+   "07:30 — Breakfast with the crew. Kelly: “Shall we tackle module 3 after coffee?” Sustained exchange with Okafor (3 lines). Laughs at a joke by Okafor.",
+   "08:30 — Briefing with Earth (delayed message). Kelly does not speak.",
+   "10:00 — Air filtration system maintenance: abandoned midway, postponed to tomorrow. Kelly: “It's fine, I don't need help.”",
    "12:40 — Eats alone in his cabin, ration half eaten.",
    "14:00 — Exercise session: cut short at 25 of 60 min. Says he feels cold despite normal temperature.",
-   "16:00 — Biology experiment with Okafor. Haddad forgets a step; Okafor redoes it without comment.",
+   "16:00 — Biology experiment with Okafor. Kelly forgets a step; Okafor redoes it without comment.",
    "17:30 — Delayed video call with his family (recorded messages). Short recorded message (2 min), neutral tone.",
-   "19:30 — Shared dinner. Haddad: “Movie tonight, I'm choosing.”",
+   "19:30 — Shared dinner. Kelly: “Movie tonight, I'm choosing.”",
    "21:00 — Declines the movie night suggested by Ito: “Go ahead without me tonight.”",
    "00:50 — Goes to bed."
   ],
@@ -69,7 +69,7 @@
       "citation": null
      }
     ],
-    "resume": "Haddad interrupted a maintenance task, cut his exercise session short and ate a meal alone in his cabin. He declined the group evening and went to bed at 00:50."
+    "resume": "Kelly interrupted a maintenance task, cut his exercise session short and ate a meal alone in his cabin. He declined the group evening and went to bed at 00:50."
    },
    "seconds": 5.6
   },
@@ -109,7 +109,7 @@
       "citation": "Go ahead without me tonight."
      }
     ],
-    "resume": "Haddad starts a conversation with the crew in the morning and talks with Okafor, but refuses help and does not take part in the briefing. He eats alone at noon, declines the movie night at the end of the day and communicates with his family only through a 2-minute recorded message."
+    "resume": "Kelly starts a conversation with the crew in the morning and talks with Okafor, but refuses help and does not take part in the briefing. He eats alone at noon, declines the movie night at the end of the day and communicates with his family only through a 2-minute recorded message."
    },
    "seconds": 6
   },
@@ -149,7 +149,7 @@
       "citation": null
      }
     ],
-    "resume": "Haddad gets up right away and laughs at a joke at breakfast, then eats a half-eaten ration alone. He cuts his exercise short at 25 of 60 minutes, saying he feels cold, and his measured sleep is 6.3 hours."
+    "resume": "Kelly gets up right away and laughs at a joke at breakfast, then eats a half-eaten ration alone. He cuts his exercise short at 25 of 60 minutes, saying he feels cold, and his measured sleep is 6.3 hours."
    },
    "seconds": 5.4
   }
@@ -163,7 +163,7 @@
     "confiance": "moyenne",
     "hypotheses": [
      {
-      "schema": "Increasing social withdrawal: Haddad interacts less with the crew and with Earth, while keeping a few targeted contacts. Worth watching, without concluding a diagnosis.",
+      "schema": "Increasing social withdrawal: Kelly interacts less with the crew and with Earth, while keeping a few targeted contacts. Worth watching, without concluding a diagnosis.",
       "preuves": [
        "Time with the crew at 86 min today, i.e. -52% vs baseline, and 113 min on D83, i.e. -37%.",
        "Meal alone in his cabin at 12:40, ration half eaten, and declined the movie night at 21:00 (“Go ahead without me tonight”).",
@@ -197,7 +197,7 @@
      "Takes the initiative to talk with the crew in the morning and exchanges three lines with Okafor.",
      "Sends a message to his family at 17:30; sleep of 6.3 h, only -9%, and HRV at -14%, below the 20% threshold."
     ],
-    "noteAuPsy": "The signal has exceeded the threshold for 3 days (D83 to D85), with at least two indicators deviating by 20% or more and no one-off incident identified. It has not yet reached the 4-day duration required to offer a conversation, and today's cortisol is missing. An informal check-in with Haddad, focused on workload and accepting help, could be useful."
+    "noteAuPsy": "The signal has exceeded the threshold for 3 days (D83 to D85), with at least two indicators deviating by 20% or more and no one-off incident identified. It has not yet reached the 4-day duration required to offer a conversation, and today's cortisol is missing. An informal check-in with Kelly, focused on workload and accepting help, could be useful."
    },
    "seconds": 11.3
   },
@@ -209,7 +209,7 @@
     "confiance": "elevee",
     "hypotheses": [
      {
-      "schema": "Progressive social withdrawal: Haddad pulls back from the crew and avoids shared moments, which could be a pattern worth watching.",
+      "schema": "Progressive social withdrawal: Kelly pulls back from the crew and avoids shared moments, which could be a pattern worth watching.",
       "preuves": [
        "Time with the crew at 86 min today, i.e. -52% vs baseline, and -22% on the 7-day average",
        "Declines the movie night (“Go ahead without me tonight”) and does not speak at the briefing with Earth",
@@ -243,7 +243,7 @@
      "Laughs at a joke by Okafor at breakfast and starts a conversation with him about module 3",
      "Still sends a 2-minute message to his family at 17:30; sleep of 6.3 h stays close to his 6.9 h baseline"
     ],
-    "noteAuPsy": "The withdrawal indicators (crew, speech, eating alone, declined evening) have been present since D80 and are consistent with self-reported mood at 3/5. Haddad keeps occasional contact with the crew and his family, which suggests a partial rather than total withdrawal. An informal conversation with Haddad is offered, unrelated to any maintenance task or specific incident."
+    "noteAuPsy": "The withdrawal indicators (crew, speech, eating alone, declined evening) have been present since D80 and are consistent with self-reported mood at 3/5. Kelly keeps occasional contact with the crew and his family, which suggests a partial rather than total withdrawal. An informal conversation with Kelly is offered, unrelated to any maintenance task or specific incident."
    },
    "seconds": 14.3
   },
@@ -255,7 +255,7 @@
     "confiance": "moyenne",
     "hypotheses": [
      {
-      "schema": "Progressive social withdrawal to watch: Haddad reduces his interactions with the crew and keeps away from shared moments, while keeping a few occasional exchanges.",
+      "schema": "Progressive social withdrawal to watch: Kelly reduces his interactions with the crew and keeps away from shared moments, while keeping a few occasional exchanges.",
       "preuves": [
        "Time with the crew at 86 min today, i.e. -52% vs baseline, and -37% on D83 (113 min).",
        "Declines the movie night at 21:00: “Go ahead without me tonight”.",

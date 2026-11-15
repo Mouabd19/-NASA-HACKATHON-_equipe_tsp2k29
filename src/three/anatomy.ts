@@ -632,7 +632,7 @@ export const FALLBACK_MANIFEST: ModelManifest = {
     { id: 'exposition', file: '', organs: ['dose'] },
   ],
   organs: Object.entries(ANCHORS).map(([id, anchor]) => ({ id, anchor })),
-  credits: 'Procedural fallback body — TriFlow team (SIMULATED, stylized)',
+  credits: 'Procedural fallback body — TriFlow team (stylized)',
 };
 
 /** Position monde de l'ancre du warning d'un organe. */

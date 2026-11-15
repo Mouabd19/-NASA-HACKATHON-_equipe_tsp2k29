@@ -89,7 +89,7 @@ function ForecastTable({ rows }: { rows: Row[] }) {
           ))}
         </tbody>
       </table>
-      <p className="rs-table__note">Mean absolute error, in loss points, on the test sample.</p>
+      <p className="rs-table__note">Mean absolute error, in loss points, on held-out data.</p>
     </div>
   );
 }
@@ -143,7 +143,7 @@ function Card({ c }: { c: ModelCard }) {
             </div>
             {rows.length > 0 && (
               <div className="rs-def__row">
-                <dt><Label>Test error</Label></dt>
+                <dt><Label>Held-out error</Label></dt>
                 <dd><ForecastTable rows={rows} /></dd>
               </div>
             )}

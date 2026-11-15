@@ -4,7 +4,7 @@
  "title": "Blood age — ElasticNet regression trained on NHANES 2015–2018",
  "learning": "Supervised (regression). Target: chronological age. Regularized linear model (ElasticNet, 5-fold cross-validation). Trained offline before the demo.",
  "data": "NHANES 2015–2016 and 2017–2018 (CDC): 9326 adults aged 20 to 79, real blood tests (80% training, 20% test). Terrestrial data.",
- "use": "Track the CHANGE in Haddad's blood age from one draw to the next; PhenoAge remains the published reference.",
+ "use": "Track the CHANGE in Scott Kelly's blood age from one draw to the next; PhenoAge remains the published reference.",
  "tag": "Publié",
  "limits": [
   "Routine lab tests explain only part of age (R² = 0.279): mean error ± 11.76 years for an individual.",

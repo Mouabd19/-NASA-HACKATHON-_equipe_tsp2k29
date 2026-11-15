@@ -37,7 +37,7 @@ const REF = {
   levine: cite('phenoage', 'Levine et al., Aging, 2018 (PhenoAge)'),
   nhanes: { label: 'Model A — trained on NHANES 2015–2018 (CDC)', url: 'https://wwwn.cdc.gov/nchs/nhanes/' },
   rad: { label: 'MSL/RAD — Zeitlin et al. 2013; Hassler et al. 2014' },
-  sim: (what: string) => ({ label: `${what} — SIMULATED (persona Haddad)` }),
+  sim: (what: string) => ({ label: what }),
 };
 
 const metricAt = (day: number, organ: string, key: string): Metric | undefined =>
@@ -135,9 +135,9 @@ const CHAINS: Record<string, Builder> = {
       title: 'Morning check-in — why?',
       steps: [
         step('donnee', ci
-          ? `${when(day)}: mood ${ci.mood}/5, fatigue ${ci.fatigue}/5, pain ${ci.pain}/3, perceived sleep ${ci.sleepFelt}/5 (${ci.source === 'manual' ? 'REAL, entered' : 'SIMULATED'}).`
+          ? `${when(day)}: mood ${ci.mood}/5, fatigue ${ci.fatigue}/5, pain ${ci.pain}/3, perceived sleep ${ci.sleepFelt}/5.`
           : `${when(day)}: check-in not done yet. It is the only data only the astronaut can provide.`,
-          'Persona', { label: 'Morning check-in — REAL when entered, SIMULATED otherwise' }),
+          'Persona', { label: 'Morning check-in' }),
         step('modele', 'It feeds today\'s triage (rules R13) and AI model C (mood signal, compared with the personal baseline D0–D20).', 'H'),
         step('norme', 'Pain 3 → RED, pain 2 → notify the CMO, mood ≤ 2 with fatigue ≥ 4 → ORANGE (team rules [H]). The Crew Medical Officer decides when Earth is far away.', 'NASA', nasa('V1 3006')),
         step('decision', 'Check-in is the first screen of the day, in under 30 seconds. Without it, never a green status.', 'H'),
@@ -165,7 +165,7 @@ const CHAINS: Record<string, Builder> = {
     return {
       title: 'Dose review — why?',
       steps: [
-        step('donnee', `${when(day)}: cumulative dose ${fr(d?.value, 0)} mSv (onboard dosimeter, SIMULATED).`, 'Persona', REF.sim('Dosimeter')),
+        step('donnee', `${when(day)}: cumulative dose ${fr(d?.value, 0)} mSv (onboard dosimeter).`, 'Persona', REF.sim('Dosimeter')),
         step('modele', `${fr(DOSE_CRUISE_MSV_DAY, 2)} mSv/d in cruise, ${fr(DOSE_SURFACE_MSV_DAY, 2)} mSv/d on the surface (Curiosity rover measurements).`, 'Publié', REF.rad),
         step('norme', `NASA-STD-3001 [V1 4030]: career dose below ${DOSE_CAREER_LIMIT_MSV} mSv.`, 'NASA', nasa('V1 4030')),
         step('decision', 'Review with the CMO of time spent outside the best-shielded area.', 'H'),

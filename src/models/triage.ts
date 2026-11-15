@@ -80,11 +80,11 @@ export function realWatchCheck(): { level: Level; reason: string } | null {
   const last = rhr.at(-1);
   if (!last) return null;
   const z = zScore(last.value, getRealBaseline('RestingHeartRate'));
-  if (z === null) return { level: 'VERT', reason: `REAL watch: resting HR ${Math.round(last.value)} bpm (insufficient personal baseline)` };
+  if (z === null) return { level: 'VERT', reason: `Watch: resting HR ${Math.round(last.value)} bpm (insufficient personal baseline)` };
   const off = Math.abs(z) >= 2;
   return {
     level: off ? 'AMBRE' : 'VERT',
-    reason: `REAL watch: resting HR ${Math.round(last.value)} bpm, ${z >= 0 ? '+' : '−'}${Math.abs(z).toFixed(1)} SD vs 30-day personal baseline${off ? ' → recheck' : ''}`,
+    reason: `Watch: resting HR ${Math.round(last.value)} bpm, ${z >= 0 ? '+' : '−'}${Math.abs(z).toFixed(1)} SD vs 30-day personal baseline${off ? ' → recheck' : ''}`,
   };
 }
 
@@ -134,7 +134,7 @@ export function triage(day: number): TriageResult {
   const low3 = day <= DAY_TODAY && [0, 1, 2].every(k => (getCheckIn(day - k)?.mood ?? 5) <= 2);
   const mlMood = moodAlertDays().has(day);
   if (low3) reasons.push('Mood ≤ 2 three days in a row: psych session offered, never imposed');
-  if (mlMood) reasons.push('Mood signal (model C [H]): drift from personal baseline, psych session offered');
+  if (mlMood) reasons.push('Mood signal (model C): drift from personal baseline, psych session offered');
 
   const out: TriageResult = { level, reasons, groundRoutine: groundRoutineFor(alerts, low3 || mlMood) };
   if (cacheable) cache.set(key, out);

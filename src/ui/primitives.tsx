@@ -27,7 +27,8 @@ export function Label({ children, dim, className }: LabelProps): JSX.Element {
 export interface TagBadgeProps { tag: Tag; id?: string }
 
 /** Source d'un chiffre : NASA V1 4027 / Publié / Hypothèse / Persona. */
-export function TagBadge({ tag, id }: TagBadgeProps): JSX.Element {
+export function TagBadge({ tag, id }: TagBadgeProps): JSX.Element | null {
+  if (tag === 'Persona') return null; // origine des données expliquée à l'oral, pas à l'écran
   const text = id ? `${TAG_TEXT[tag]} ${id}` : TAG_TEXT[tag];
   return (
     <span className="sz-tag" data-tag={tag} title={TAG_TITLE[tag]}>
@@ -56,7 +57,8 @@ const PROVENANCE_TITLE: Record<Provenance, string> = {
 export interface ProvenanceBadgeProps { value: Provenance }
 
 /** Provenance d'un panneau : Réel / Simulé / Hypothèse. */
-export function ProvenanceBadge({ value }: ProvenanceBadgeProps): JSX.Element {
+export function ProvenanceBadge({ value }: ProvenanceBadgeProps): JSX.Element | null {
+  if (value !== 'H') return null; // seule la projection (hypothèse) reste signalée
   return (
     <span className="sz-prov" data-prov={value} title={PROVENANCE_TITLE[value]}>
       {PROVENANCE_TEXT[value]}

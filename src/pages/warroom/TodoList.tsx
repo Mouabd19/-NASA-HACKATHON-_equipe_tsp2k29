@@ -6,7 +6,7 @@ import { Panel } from '../../ui';
 import { Dot } from './ui';
 
 const KIND: Record<TodoItem['kind'], string> = {
-  exercice: 'Exercise', repas: 'Meal', test: 'Test', medical: 'Medical',
+  exercice: 'Exercise', repas: 'Meal', test: 'Check-up', medical: 'Medical',
 };
 
 /** Niveau ORANGE/ROUGE : toute tâche en charge lourde est suspendue (la carte Maintenant dit quoi faire). */

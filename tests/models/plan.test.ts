@@ -80,7 +80,7 @@ describe('cas limites + vraies données montre', () => {
     setRealData(ms);
     const w = realWatchCheck()!;
     expect(w.level).toBe('AMBRE');
-    expect(w.reason).toMatch(/REAL.*75 bpm.*recheck/);
-    expect(triage(94).reasons.some(r => /REAL watch/.test(r))).toBe(true);
+    expect(w.reason).toMatch(/^Watch: .*75 bpm.*recheck/);
+    expect(triage(94).reasons.some(r => /^Watch: resting HR/.test(r))).toBe(true);
   });
 });

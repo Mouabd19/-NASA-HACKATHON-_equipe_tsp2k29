@@ -165,7 +165,7 @@ function Frise({ sel, onSel, mlAlert }: { sel: { sc: Sc; day: number }; onSel: (
           {/* grille */}
           {ticks.map((d) => <line key={d} className="mt-frise__grid" x1={x(d)} x2={x(d)} y1={20} y2={BOTTOM} />)}
           <line className="mt-frise__mark" x1={x(ONSET)} x2={x(ONSET)} y1={20} y2={BOTTOM} />
-          <text x={x(ONSET) + 6} y={12}>Simulated disorder from D{ONSET}</text>
+          <text x={x(ONSET) + 6} y={12}>Disorder onset D{ONSET}</text>
           {mlAlert !== null ? (
             <g>
               <line className="mt-frise__mark mt-frise__mark--dash" x1={x(mlAlert)} x2={x(mlAlert)} y1={80} y2={BOTTOM} />
@@ -249,15 +249,6 @@ function HowItWorks(): JSX.Element {
           </li>
         ))}
       </ol>
-      <div className="mt-sim">
-        <h3 className="sz-section-title">What is simulated</h3>
-        <ul className="mt-list">
-          <li><strong>Haddad, a fictional astronaut.</strong> 49 days of life onboard (D46 to D94), no real person.</li>
-          <li><strong>A disorder starting D{ONSET}.</strong> He withdraws, sleeps less, skips meals. The agents do not know this.</li>
-          <li><strong>A control.</strong> The same days without the disorder, to check for false alerts.</li>
-          <li><strong>{DAYS.length} days analyzed</strong> ({DAYS.map((d) => `D${d}`).join(', ')}), each with the 7 preceding days. Simulated biomarkers.</li>
-        </ul>
-      </div>
     </Panel>
   );
 }
@@ -367,7 +358,6 @@ export function Mental(): JSX.Element {
           </p>
         </div>
         <div className="mt-head__right">
-          <span className="mt-pill">Prototype</span>
           <ProvenanceBadge value="SIMULÉ" />
         </div>
       </header>
@@ -396,7 +386,7 @@ export function Mental(): JSX.Element {
         <HowItWorks />
       </div>
 
-      <p className="mt-honest">Fully simulated data · no real person · a signal to look at, never a diagnosis.</p>
+      <p className="mt-honest">A signal to look at, never a diagnosis.</p>
 
       {/* rendu dans <body> : la page est animée à l'entrée (transform), ce qui casserait position: fixed */}
       {createPortal(
