@@ -13,7 +13,7 @@ struct PulseView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 6) {
                     if heart.isSimulated || (heart.phase == .idle && simulatedSetting) {
-                        Text("Simulé · non envoyé au Mac")
+                        Text("Non envoyé")
                             .font(.footnote.weight(.semibold))
                             .foregroundStyle(Palette.amber)
                             .fixedSize(horizontal: false, vertical: true)
@@ -101,7 +101,7 @@ struct PulseView: View {
         let ref: (Double, String)? = {
             if heart.isSimulated || (heart.phase == .idle && simulatedSetting) {
                 guard let v = personaResting?.value else { return nil }
-                return (v, "repos de Haddad, simulé")
+                return (v, "au repos")
             }
             guard let r = heart.restingRef else { return nil }
             return (r.value, "ton repos (Santé)")
@@ -127,7 +127,7 @@ struct PulseView: View {
     @ViewBuilder
     private var sendLine: some View {
         if serverURL.isEmpty && !heart.isSimulated {
-            Text("Règle l'adresse du Mac dans Réglages")
+            Text("Règle l'adresse du serveur dans Réglages")
                 .font(.footnote).foregroundStyle(Palette.amber)
         } else if let at = heart.lastSentAt {
             let route = heart.lastRoute.map { " \($0.label)" } ?? ""

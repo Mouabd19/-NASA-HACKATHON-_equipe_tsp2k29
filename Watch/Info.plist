@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>fr</string>
 	<key>CFBundleDisplayName</key>
-	<string>SOL ZÉRO</string>
+	<string>Triflow</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -29,11 +29,11 @@
 		<string>workout-processing</string>
 	</array>
 	<key>NSHealthShareUsageDescription</key>
-	<string>SOL ZÉRO lit ton pouls et tes mesures santé pour les envoyer au tableau de bord de la mission</string>
+	<string>Triflow lit ton pouls et tes mesures santé pour les envoyer au tableau de bord de la mission</string>
 	<key>NSHealthUpdateUsageDescription</key>
-	<string>SOL ZÉRO démarre une séance d'entraînement pour mesurer ton pouls en continu ; elle n'est pas enregistrée</string>
+	<string>Triflow démarre une séance d'entraînement pour mesurer ton pouls en continu ; elle n'est pas enregistrée</string>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>SOL ZÉRO envoie tes mesures au Mac de la War Room sur le réseau local</string>
+	<string>Triflow envoie tes mesures au tableau de bord de la mission</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsLocalNetworking</key>

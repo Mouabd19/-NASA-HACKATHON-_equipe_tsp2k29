@@ -19,9 +19,9 @@ struct TodoView: View {
             } footer: {
                 VStack(alignment: .leading, spacing: 2) {
                     if todo.synced {
-                        Text("Synchronisée avec le Mac")
+                        Text("Synchronisée")
                     } else {
-                        Text("Simulé · liste embarquée de J94")
+                        Text("Liste du jour · hors ligne")
                         Text("Non synchronisée : coches gardées sur la montre")
                     }
                     if let err = todo.lastError {

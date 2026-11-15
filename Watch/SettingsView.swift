@@ -23,17 +23,17 @@ struct SettingsView: View {
 
                 ConnectionTestRow(test: test)
             } header: {
-                Text("Adresse du Mac")
+                Text("Adresse du serveur")
             } footer: {
                 Text("Plus simple : saisis-la dans l'app iPhone, elle arrive ici toute seule")
             }
 
             Section {
-                Toggle("Mode simulé", isOn: $simulated)
+                Toggle("Pouls d'exemple", isOn: $simulated)
                     .tint(Palette.amber)
                     .frame(minHeight: 44)
             } footer: {
-                Text("Pouls inventé pour tester l'écran, jamais envoyé au Mac. Pris en compte au prochain démarrage")
+                Text("Pouls d'exemple pour l'écran, jamais envoyé. Pris en compte au prochain démarrage")
             }
         }
         .navigationTitle("Réglages")

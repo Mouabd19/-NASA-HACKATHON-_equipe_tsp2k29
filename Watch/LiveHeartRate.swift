@@ -77,7 +77,7 @@ final class LiveHeartRate: NSObject, ObservableObject {
         do {
             try await store.requestAuthorization(toShare: [HKObjectType.workoutType()], read: HealthTypes.read)
             if store.authorizationStatus(for: HKObjectType.workoutType()) == .sharingDenied {
-                fail("Autorise SOL ZÉRO dans Santé › Accès aux données")
+                fail("Autorise Triflow dans Santé › Accès aux données")
                 phase = .idle
                 return
             }

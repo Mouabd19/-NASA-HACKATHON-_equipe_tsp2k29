@@ -96,14 +96,14 @@ enum DataOrigin: Equatable {
     var label: String {
         switch self {
         case .loading: return "Chargement"
-        case .mac(let at): return "Simulé · Mac à \(at.hm)"
-        case .embedded: return "Simulé · instantané embarqué"
+        case .mac(let at): return "Mis à jour à \(at.hm)"
+        case .embedded: return "Données du matin"
         }
     }
 
     /// Même chose, quand le Mac ne répond plus : on montre l'heure de la dernière réponse, pas une synchro en cours
     func label(stale: Bool) -> String {
-        if stale, case .mac(let at) = self { return "Simulé · dernière réponse du Mac à \(at.hm)" }
+        if stale, case .mac(let at) = self { return "Dernière synchro à \(at.hm)" }
         return label
     }
 
@@ -111,7 +111,8 @@ enum DataOrigin: Equatable {
     var short: String {
         switch self {
         case .loading: return "Chargement"
-        case .mac, .embedded: return "Simulé"
+        case .mac: return "À jour"
+        case .embedded: return "Hors ligne"
         }
     }
 }
@@ -150,7 +151,7 @@ final class SummaryStore: ObservableObject {
         guard !refreshing else { return }
         guard !DemoMode.isOn else { origin = .embedded(reason: "mode démo"); return }
         guard !AppKeys.currentServerURL.isEmpty else {
-            origin = .embedded(reason: "adresse du Mac non réglée")
+            origin = .embedded(reason: "adresse du serveur non réglée")
             return
         }
         refreshing = true
@@ -212,7 +213,7 @@ final class TodoStore: ObservableObject {
             if list.isEmpty {
                 // Le Mac répond mais la War Room n'a pas encore poussé la liste : rien à cocher côté serveur
                 useEmbedded()
-                lastError = "Ouvre le Plan du jour sur le Mac pour synchroniser"
+                lastError = "Ouvre Today's plan pour synchroniser"
                 return
             }
             items = list.sorted(by: Self.order)

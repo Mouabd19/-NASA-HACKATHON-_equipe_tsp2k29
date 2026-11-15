@@ -17,7 +17,7 @@ enum Transport {
             do {
                 return (try await PhoneLink.shared.relay(call), .phone)
             } catch {
-                throw APIError.network("Mac injoignable (\(why)), iPhone aussi : \(error.localizedDescription)")
+                throw APIError.network("Serveur injoignable (\(why)), iPhone aussi : \(error.localizedDescription)")
             }
         }
     }

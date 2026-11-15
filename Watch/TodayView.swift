@@ -12,7 +12,7 @@ struct TodayView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 8) {
-                Text("Jour \(s.mission.day) · Haddad · \(store.origin.short)")
+                Text("Jour \(s.mission.day) · Scott Kelly")
                     .font(.footnote)
                     .monospacedDigit()
                     .foregroundStyle(Palette.secondary)
@@ -40,7 +40,7 @@ struct TodayView: View {
                 }
 
                 OriginFooter(origin: store.origin,
-                             extra: s.checkin.source == "manual" ? "Check-in saisi" : "Check-in simulé",
+                             extra: s.checkin.source == "manual" ? "Check-in fait" : "Check-in à faire",
                              stale: store.isStale)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -139,7 +139,7 @@ struct ReasonsView: View {
             }
             .listRowBackground(Color.clear)
             if summary.triage.reasons.isEmpty {
-                Text("Aucune raison fournie par le Mac.")
+                Text("Aucune raison fournie.")
                     .font(.footnote)
                     .foregroundStyle(Palette.secondary)
             }
@@ -159,7 +159,7 @@ struct ReasonsView: View {
                 .padding(.vertical, 2)
             }
             OriginFooter(origin: origin,
-                         extra: summary.checkin.source == "manual" ? "Check-in saisi" : "Check-in simulé",
+                         extra: summary.checkin.source == "manual" ? "Check-in fait" : "Check-in à faire",
                          stale: stale)
                 .listRowBackground(Color.clear)
         }

@@ -9,7 +9,7 @@ enum EmbeddedSnapshot {
  "version": 1,
  "generatedAt": "2026-11-14T06:00:00.000Z",
  "persona": {
-  "name": "Haddad",
+  "name": "Scott Kelly",
   "tag": "Persona"
  },
  "provenance": "SIMULÉ",

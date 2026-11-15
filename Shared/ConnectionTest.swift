@@ -13,7 +13,7 @@ enum ConnectionTest: Equatable {
         case .running: return "Test en cours"
         case .ok(let h, let viaPhone, let at):
             let route = viaPhone ? " via l'iPhone" : ""
-            return "Mac joint\(route) à \(at.clock) · \(h.todo) tâches · \(h.live) mesures"
+            return "Serveur joint\(route) à \(at.clock) · \(h.todo) tâches · \(h.live) mesures"
         case .failed(let why): return why
         }
     }

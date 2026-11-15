@@ -37,9 +37,9 @@ struct PhoneHomeView: View {
                             .foregroundStyle(pushFailed ? Palette.red : Palette.secondary)
                     }
                 } header: {
-                    Text("Adresse du Mac")
+                    Text("Adresse du serveur")
                 } footer: {
-                    Text("Sur le Mac : npm run dev -- --host, puis ipconfig getifaddr en0 pour l'IP")
+                    Text("Par exemple https://triflow-delta.vercel.app")
                 }
 
                 Section {
@@ -81,12 +81,12 @@ struct PhoneHomeView: View {
                             .foregroundStyle(Palette.red)
                     }
                 } header: {
-                    Text("Relais montre → Mac")
+                    Text("Relais montre → serveur")
                 } footer: {
-                    Text("Utilisé seulement quand la montre n'atteint pas le Mac elle-même")
+                    Text("Utilisé seulement quand la montre n'atteint pas le serveur elle-même")
                 }
             }
-            .navigationTitle("SOL ZÉRO")
+            .navigationTitle("Triflow")
         }
         .onAppear { draft = serverURL }
     }

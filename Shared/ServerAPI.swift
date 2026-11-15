@@ -97,9 +97,9 @@ enum APIError: LocalizedError, Equatable {
 
     var errorDescription: String? {
         switch self {
-        case .noAddress: return "Règle d'abord l'adresse du Mac"
+        case .noAddress: return "Règle d'abord l'adresse du serveur"
         case .badAddress(let s): return "Adresse invalide : \(s)"
-        case .unreachable(let why): return "Mac injoignable : \(why)"
+        case .unreachable(let why): return "Serveur injoignable : \(why)"
         case .network(let why): return why
         case .server(let msg): return "Serveur : \(msg)"
         case .http(let code): return "Réponse HTTP \(code)"

@@ -62,7 +62,7 @@ struct TripView: View {
                     }
                 }
 
-                OriginFooter(origin: store.origin, extra: "Calendrier de la persona", stale: store.isStale)
+                OriginFooter(origin: store.origin, extra: "Calendrier de mission", stale: store.isStale)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
