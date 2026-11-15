@@ -8,7 +8,7 @@
 | :-- | :-- |
 | **▶ Try the app** | **[triflow-delta.vercel.app](https://triflow-delta.vercel.app)** — runs in the browser, best on a desktop screen |
 | **▶ Pitch deck** | **[Animated slides](https://triflow-delta.vercel.app/slides/)** (arrow keys to navigate, **F** for full screen) · **[PDF](docs/pitch/TriFlow-demo-slides.pdf)** |
-| **Built with** | React 19 · TypeScript · Three.js · scikit-learn · Vercel · SwiftUI (Apple Watch) |
+| **Built with** | React 19 · TypeScript · Three.js · Python (pandas, NumPy, scikit-learn) · Vercel · SwiftUI (Apple Watch) |
 
 ![TriFlow: the body scan at load](docs/screenshots/scan.png)
 
@@ -60,7 +60,7 @@ A mood signal compares the astronaut with **their own baseline**, never with a p
 
 ## The models
 
-Three small machine learning models, trained offline in Python (scikit-learn), exported as JSON and run in the browser.
+Three small machine learning models, trained offline in Python (pandas, NumPy, scikit-learn), exported as JSON and run in the browser.
 **Models predict, NASA standards decide.**
 
 | Model | Method | Training data | Test-set results |
@@ -101,7 +101,7 @@ Useful URL options on `/body`: `?noscan=1` skips the scan animation; `?day=860&p
 In development, the watch API runs inside the Vite dev server (in memory). On Vercel, it runs as a Node function (`api/index.ts`) backed by Upstash Redis; see `vercel.json`.
 
 ## Tech stack
-React 19 · TypeScript · Vite · Three.js / React Three Fiber · Zustand · Vitest · scikit-learn (offline training) · Vercel + Upstash Redis · SwiftUI (watch).
+React 19 · TypeScript · Vite · Three.js / React Three Fiber · Zustand · Vitest · Python: pandas, NumPy and scikit-learn (offline training on NHANES and simulated cohorts) · Vercel + Upstash Redis · SwiftUI (watch).
 
 ## Project structure
 
