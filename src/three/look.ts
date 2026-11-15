@@ -128,13 +128,16 @@ export const look = {
     /** Opacité résiduelle AU-DESSUS du plan pendant le balayage : calques internes (le scanner « reconstruit » le corps) et enveloppe. */
     hideInner: 0.06,
     hideShell: 0.55,
-    /** Caisson du scanner : le corps y est enfermé au chargement, puis le caisson remonte et le corps en sort. */
-    hold: 1.1,            // secondes caisson fermé avant le balayage
-    podRadius: 0.5,       // rayon du caisson (m)
-    podHeight: 2.1,       // hauteur du caisson (m)
-    podWall: 0.82,        // opacité de la paroi (masque le corps encore à l'intérieur)
-    podLines: 0.45,       // opacité des nervures et joints
-    podApertureOpacity: 0.95, // anneau lumineux de l'ouverture (bord bas = plan de scan)
+    /** Cabine du scanner : socle, auvent, paroi arrière et grande porte vitrée face à la caméra. */
+    hold: 0.9,            // secondes cabine visible avant que l'anneau monte
+    post: 0.7,            // secondes de fondu de la cabine après le scan
+    podRadius: 0.5,       // rayon de la cabine (m)
+    podHeight: 2.08,      // hauteur de la cabine (m)
+    doorAngle: 2.3,       // ouverture de la porte vitrée (radians, ~130°)
+    podWall: 0.7,         // opacité du socle, de l'auvent et de la paroi arrière
+    glass: 0.05,          // voile de la vitre
+    podLines: 0.55,       // opacité du cadre de la porte
+    podApertureOpacity: 0.9, // anneau lumineux qui monte dans la cabine (= plan de scan)
   },
 
   /** Flux sanguin le long des vaisseaux. Désactivé (boost = 0) : la scène reste immobile. */

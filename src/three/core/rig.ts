@@ -134,54 +134,53 @@ export function createBodyRig(): BodyRig {
   });
   scanGroup.add(new THREE.Line(ringGeo, ringMat), new THREE.Mesh(discGeo, discMat));
 
-  // caisson du grand scanner : cylindre sombre fermé (paroi + couvercle), nervures, ouverture lumineuse en bas.
-  // Au chargement il enferme le corps ; pendant le balayage il remonte, son ouverture suit le plan de scan.
+  // cabine du scanner : socle, auvent, paroi arrière pleine et grande porte vitrée face à la caméra (+Z).
+  // Elle reste fixe au sol ; à travers la porte on voit l'anneau monter et révéler le corps.
   const S = look.scan;
-  const podWallGeo = new THREE.CylinderGeometry(S.podRadius, S.podRadius, S.podHeight, 96, 1, true).translate(0, S.podHeight / 2, 0);
-  const podWallMat = new THREE.MeshBasicMaterial({
-    color: tokens.color.panelHover, transparent: true, opacity: S.podWall, side: THREE.DoubleSide, depthWrite: false,
-  });
-  const podCapGeo = new THREE.CircleGeometry(S.podRadius, 96).rotateX(-Math.PI / 2).translate(0, S.podHeight, 0);
-  const podCapMat = podWallMat.clone();
-  const podLinePts: THREE.Vector3[] = [];
-  for (let i = 0; i < 12; i++) {                       // nervures verticales
-    const a = (i / 12) * Math.PI * 2;
-    const x = Math.cos(a) * S.podRadius * 1.004, z = Math.sin(a) * S.podRadius * 1.004;
-    podLinePts.push(new THREE.Vector3(x, 0.06, z), new THREE.Vector3(x, S.podHeight, z));
+  const R = S.podRadius, H = S.podHeight, DOOR = S.doorAngle;
+  const solidMat = new THREE.MeshBasicMaterial({ color: tokens.color.panelHover, transparent: true, opacity: S.podWall, side: THREE.DoubleSide, depthWrite: false });
+  const plinthGeo = new THREE.CylinderGeometry(R + 0.07, R + 0.09, 0.07, 96).translate(0, 0.035, 0);
+  const canopyGeo = new THREE.CylinderGeometry(R + 0.07, R + 0.07, 0.11, 96).translate(0, H - 0.055, 0);
+  // paroi arrière : tout le tour sauf la porte (thêta = 0 regarde +Z)
+  const wallGeo = new THREE.CylinderGeometry(R, R, H - 0.18, 96, 1, true, DOOR / 2, Math.PI * 2 - DOOR).translate(0, 0.07 + (H - 0.18) / 2, 0);
+  const glassGeo = new THREE.CylinderGeometry(R, R, H - 0.18, 48, 1, true, -DOOR / 2, DOOR).translate(0, 0.07 + (H - 0.18) / 2, 0);
+  const glassMat = new THREE.MeshBasicMaterial({ color: tokens.color.holo, transparent: true, opacity: S.glass, side: THREE.DoubleSide, depthWrite: false });
+  // montants et cadre de la porte
+  const framePts: THREE.Vector3[] = [];
+  const at = (a: number, y: number, r = R * 1.003): THREE.Vector3 => new THREE.Vector3(Math.sin(a) * r, y, Math.cos(a) * r);
+  for (const a of [-DOOR / 2, DOOR / 2]) framePts.push(at(a, 0.07), at(a, H - 0.11));
+  for (const y of [0.07, H - 0.11]) {
+    for (let i = 0; i < 32; i++) framePts.push(at(-DOOR / 2 + (DOOR * i) / 32, y), at(-DOOR / 2 + (DOOR * (i + 1)) / 32, y));
   }
-  for (const h of [0.06, S.podHeight * 0.36, S.podHeight * 0.68, S.podHeight]) {   // joints horizontaux
-    for (let i = 0; i < 96; i++) {
-      const a0 = (i / 96) * Math.PI * 2, a1 = ((i + 1) / 96) * Math.PI * 2;
-      podLinePts.push(
-        new THREE.Vector3(Math.cos(a0) * S.podRadius * 1.004, h, Math.sin(a0) * S.podRadius * 1.004),
-        new THREE.Vector3(Math.cos(a1) * S.podRadius * 1.004, h, Math.sin(a1) * S.podRadius * 1.004),
-      );
-    }
-  }
-  const podLineGeo = new THREE.BufferGeometry().setFromPoints(podLinePts);
-  const podLineMat = new THREE.LineBasicMaterial({ color: tokens.color.holo, transparent: true, opacity: S.podLines, depthWrite: false });
-  const podApGeo = new THREE.TorusGeometry(S.podRadius, 0.014, 10, 128).rotateX(Math.PI / 2);
+  const frameGeo = new THREE.BufferGeometry().setFromPoints(framePts);
+  const frameMat = new THREE.LineBasicMaterial({ color: tokens.color.textDim, transparent: true, opacity: S.podLines, depthWrite: false });
+  const booth = new THREE.Group();
+  const meshes = [
+    new THREE.Mesh(plinthGeo, solidMat), new THREE.Mesh(canopyGeo, solidMat), new THREE.Mesh(wallGeo, solidMat),
+    new THREE.Mesh(glassGeo, glassMat), new THREE.LineSegments(frameGeo, frameMat),
+  ];
+  meshes.forEach((m, i) => { m.renderOrder = i === 2 ? -1 : 10; booth.add(m); });   // paroi arrière dessinée DERRIÈRE le corps
+  scanGroup.add(booth);
+  // anneau du scanner qui monte dans la cabine (bord lumineux)
+  const podApGeo = new THREE.TorusGeometry(R - 0.03, 0.012, 10, 128).rotateX(Math.PI / 2);
   const podApMat = new THREE.MeshBasicMaterial({
     color: tokens.color.text, transparent: true, opacity: S.podApertureOpacity, blending: THREE.AdditiveBlending, depthWrite: false,
   });
-  const pod = new THREE.Group();
-  const podWall = new THREE.Mesh(podWallGeo, podWallMat);
-  const podCap = new THREE.Mesh(podCapGeo, podCapMat);
-  const podLines = new THREE.LineSegments(podLineGeo, podLineMat);
   const podAp = new THREE.Mesh(podApGeo, podApMat);
-  podWall.renderOrder = 10; podCap.renderOrder = 10; podLines.renderOrder = 11; podAp.renderOrder = 12;
-  pod.add(podWall, podCap, podLines, podAp);
-  scanGroup.add(pod);
-  const setPodFade = (k: number): void => {
-    podWallMat.opacity = S.podWall * k;
-    podCapMat.opacity = S.podWall * k;
-    podLineMat.opacity = S.podLines * k;
-    podApMat.opacity = S.podApertureOpacity * k;
+  podAp.renderOrder = 12;
+  scanGroup.add(podAp);
+  const setBoothFade = (k: number): void => {
+    solidMat.opacity = S.podWall * k;
+    glassMat.opacity = S.glass * k;
+    frameMat.opacity = S.podLines * k;
   };
+  /** La cabine reste au sol pendant que scanGroup monte avec le plan. */
+  const pinBooth = (): void => { booth.position.y = S.yStart - scanGroup.position.y; };
 
   scanGroup.visible = false;
   let scanT = -1; // < 0 : pas de balayage en cours
-  let holdT = 0;  // > 0 : caisson fermé, balayage pas encore lancé
+  let holdT = 0;  // > 0 : cabine fermée, balayage pas encore lancé
+  let postT = 0;  // > 0 : balayage fini, la cabine s'efface
   const scanInfo = { t: -1, y: 0 };
 
   const fade: Record<LayerId, number> = { squelette: 0, muscles: 0, organes: 0, cardio: 0, nerveux: 0, exposition: 0 };
@@ -216,23 +215,26 @@ export function createBodyRig(): BodyRig {
     shared.time.value = t;
     shared.ghost.value += ((s.ghost ? 1 : 0) - shared.ghost.value) * damp(look.ghost.lerpSpeed, dt);
 
-    // caisson fermé : le corps est encore à l'intérieur (tout est au-dessus du plan, donc masqué)
+    // 1. cabine qui apparaît, corps encore « non reconstruit » (on le devine derrière la vitre)
     if (scanT >= 0 && holdT > 0) {
       holdT -= dt;
       shared.scanY.value = look.scan.yStart;
       scanInfo.t = 0; scanInfo.y = look.scan.yStart;
       scanGroup.position.y = look.scan.yStart;
       scanGroup.visible = true;
-      const kin = Math.min(1, (look.scan.hold - holdT) / 0.35);   // apparition du caisson
-      setPodFade(kin);
+      pinBooth();
+      setBoothFade(Math.min(1, (look.scan.hold - holdT) / 0.4));
+      podApMat.opacity = look.scan.podApertureOpacity * Math.min(1, (look.scan.hold - holdT) / 0.4);
       ringMat.opacity = 0; discMat.opacity = 0;
     } else if (scanT >= 0) {
+      // 2. l'anneau monte dans la cabine, pieds → tête
       scanT += dt / look.scan.duration;
       if (scanT >= 1) {
         scanT = -1;
+        postT = look.scan.post;
         scanInfo.t = -1;
         shared.scanY.value = SCAN_Y_IDLE;
-        scanGroup.visible = false;
+        ringMat.opacity = 0; discMat.opacity = 0; podApMat.opacity = 0;
       } else {
         const k = scanT * scanT * (3 - 2 * scanT);
         const y = look.scan.yStart + (look.scan.yEnd - look.scan.yStart) * k;
@@ -240,12 +242,19 @@ export function createBodyRig(): BodyRig {
         scanInfo.t = k; scanInfo.y = y;
         scanGroup.position.y = y;
         scanGroup.visible = true;
+        pinBooth();
+        setBoothFade(1);
         const edge = Math.min(1, scanT * 8, (1 - scanT) * 8);
         ringMat.opacity = look.scan.ringOpacity * edge;
         discMat.opacity = look.scan.discOpacity * edge;
-        // le caisson s'efface sur le dernier quart, une fois le corps sorti
-        setPodFade(Math.min(1, (1 - scanT) * 4));
+        podApMat.opacity = look.scan.podApertureOpacity * edge;
       }
+    } else if (postT > 0) {
+      // 3. scan terminé : la cabine s'efface, le corps reste
+      postT -= dt;
+      pinBooth();
+      setBoothFade(Math.max(0, postT / look.scan.post));
+      if (postT <= 0) scanGroup.visible = false;
     }
 
     // fondu des calques
@@ -315,14 +324,14 @@ export function createBodyRig(): BodyRig {
 
   return {
     staticGroup, pickGroup, scanGroup, setStatuses, update, pick,
-    startScan: () => { scanT = 0; holdT = look.scan.hold; shared.scanY.value = look.scan.yStart; },
+    startScan: () => { scanT = 0; holdT = look.scan.hold; postT = 0; shared.scanY.value = look.scan.yStart; },
     scan: () => scanInfo,
     layerFade: (l) => fade[l],
     dispose: () => {
       for (const e of list) e.mat.dispose();
       ringGeo.dispose(); ringMat.dispose(); discGeo.dispose(); discMat.dispose();
-      podWallGeo.dispose(); podWallMat.dispose(); podCapGeo.dispose(); podCapMat.dispose();
-      podLineGeo.dispose(); podLineMat.dispose(); podApGeo.dispose(); podApMat.dispose();
+      plinthGeo.dispose(); canopyGeo.dispose(); wallGeo.dispose(); glassGeo.dispose(); frameGeo.dispose();
+      solidMat.dispose(); glassMat.dispose(); frameMat.dispose(); podApGeo.dispose(); podApMat.dispose();
     },
   };
 }
