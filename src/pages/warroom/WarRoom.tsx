@@ -5,6 +5,7 @@ import { TagBadge } from '../../ui';
 import { MISSION_TODAY, clearCheckIn, onCheckInChange, todayCheckIn } from '../../ingest/checkin';
 import { loadRealData, onRealDataChange } from '../../ingest/realData';
 import { pullDone, pushTodo, setDone } from '../../ingest/todoSync';
+import { onServerChange } from '../../ingest/events';
 import { triage } from '../../models/triage';
 import { router } from '../../models/router';
 import { planDay } from '../../models/planDay';
@@ -82,8 +83,10 @@ export function WarRoom() {
   useEffect(() => {
     let stop = false;
     let busy = false;
+    let again = false; // un changement est arrivé pendant une synchro : on relance juste après
     const tick = async () => {
-      if (busy || stop || document.hidden) return;
+      if (stop || document.hidden) return;
+      if (busy) { again = true; return; }
       busy = true;
       try {
         const up = await serverUp();
@@ -100,13 +103,15 @@ export function WarRoom() {
         });
       } finally {
         busy = false;
+        if (again) { again = false; tick(); }
       }
     };
     const onVisible = () => { if (!document.hidden) tick(); };
     tick();
     const id = setInterval(tick, SYNC_MS);
     document.addEventListener('visibilitychange', onVisible);
-    return () => { stop = true; clearInterval(id); document.removeEventListener('visibilitychange', onVisible); };
+    const off = onServerChange(['todo'], tick); // coche faite sur la montre → visible tout de suite
+    return () => { stop = true; off(); clearInterval(id); document.removeEventListener('visibilitychange', onVisible); };
   }, []);
 
   const toggle = (id: string, d: boolean) => {
