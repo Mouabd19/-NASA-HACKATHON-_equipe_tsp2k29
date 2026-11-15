@@ -12,7 +12,7 @@ import type { Color, LayerId, OrganId } from '../types';
 import { tokens } from '../ui/tokens';
 import { DAY_TODAY } from '../mocks/mission';
 import { getDayBodyPlan } from '../sim/load';
-import { bodyAxis, screenAnchors, useBody } from '../pages/body/store';
+import { bodyAxis, scanState, screenAnchors, useBody } from '../pages/body/store';
 import { activeAnchors, organLayers } from './anatomy';
 import { createBodyRig } from './core/rig';
 import { createFloor, disposeFloor } from './core/floor';
@@ -54,9 +54,12 @@ function Rig(): JSX.Element {
   useEffect(() => {
     const s0 = useBody.getState();
     rig.setStatuses(statusesForDay(s0.day, s0.adherence), true);
-    // Plus de balayage au chargement : « ?noscan=1 » reste accepté dans l'URL, sans effet.
+    // balayage du scanner au chargement (« ?noscan=1 » dans l'URL le désactive)
+    const noscan = new URLSearchParams(window.location.search).get('noscan') === '1';
+    if (!noscan) rig.startScan();
     const unsub = useBody.subscribe((s, prev) => {
       if (s.day !== prev.day || s.adherence !== prev.adherence) rig.setStatuses(statusesForDay(s.day, s.adherence));
+      if (s.scanNonce !== prev.scanNonce) rig.startScan();
     });
     return () => {
       unsub();
@@ -64,6 +67,7 @@ function Rig(): JSX.Element {
       gl.domElement.style.cursor = '';
       screenAnchors.clear();
       bodyAxis.x = Number.NaN;
+      scanState.t = -1;
     };
   }, [rig, gl, st]);
 
@@ -150,6 +154,14 @@ function Rig(): JSX.Element {
       const fov = (state.camera as THREE.PerspectiveCamera).fov;
       bodyAxis.pxPerM = h / (2 * Math.tan(THREE.MathUtils.degToRad(fov) / 2) * axisDist);
       bodyAxis.x = (tmp.v.project(state.camera).x * 0.5 + 0.5) * w;
+      // libellé « Scan n % » : suit le bord droit de l'anneau de scan
+      const sc = rig.scan();
+      scanState.t = sc.t;
+      if (sc.t >= 0) {
+        tmp.v.set(look.scan.podRadius + 0.03, sc.y, 0).applyMatrix4(g.matrixWorld).project(state.camera);
+        scanState.x = (tmp.v.x * 0.5 + 0.5) * w;
+        scanState.y = (-tmp.v.y * 0.5 + 0.5) * h;
+      }
       for (const a of getAnchors()) {
         tmp.v.copy(a.anchor).applyMatrix4(g.matrixWorld).project(state.camera);
         let active = false;
@@ -169,6 +181,7 @@ function Rig(): JSX.Element {
       <group ref={root}>
         <primitive object={rig.staticGroup} />
         <primitive object={rig.pickGroup} onPointerMove={onMove} onPointerOut={onOut} onClick={onClick} onDoubleClick={onDouble} />
+        <primitive object={rig.scanGroup} />
         <Warnings3D />
       </group>
       <OrbitControls

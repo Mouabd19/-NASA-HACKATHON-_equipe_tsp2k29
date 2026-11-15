@@ -247,3 +247,22 @@
    il ne reste qu'à retirer la marge et le cadre. */
 .body-page--clean { padding: 0; }
 .body-page--clean .body-scene { border: 0; border-radius: 0; }
+
+/* Libellé « Scan n % » qui suit l'ouverture du caisson pendant le balayage au chargement */
+.body-scanlabel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-family: var(--sz-font-mono);
+  font-size: 11px;
+  color: var(--sz-text-dim);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  transition: opacity 160ms;
+}
+
+/* Étiquettes d'organes et traits de liaison masqués tant que le corps est dans le caisson du scanner */
+.body-scene .w3d-layer { transition: opacity 400ms; }
+.body-scene[data-scanning='true'] .w3d-layer { opacity: 0; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .body-scene .w3d-layer { transition: none; } }
