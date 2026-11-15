@@ -42,15 +42,14 @@ function Rig(): JSX.Element {
     clearTimer: 0 as ReturnType<typeof setTimeout> | 0,
     sceneHover: null as OrganId | null,   // survol posé par la scène (pas par un panneau)
     interacting: false,
-    introOff: false,
-    introWas: 0,   // l'utilisateur a pris la main : la vue du scan ne pilote plus la caméra
+    introWas: 0,   // poids de la vue du scan à l'image précédente
     lastInteraction: -100,
     swayPhase: 0,
     swayWeight: 0,
     sizeH: 0,
     now: 0,
   }).current;
-  const tmp = useMemo(() => ({ v: new THREE.Vector3(), target: new THREE.Vector3(), dir: new THREE.Vector3() }), []);
+  const tmp = useMemo(() => ({ v: new THREE.Vector3(), target: new THREE.Vector3(), dir: new THREE.Vector3(), prev: new THREE.Vector3(), q: new THREE.Quaternion() }), []);
 
   // statuts du jour : abonnement au store, sans re-rendu React
   useEffect(() => {
@@ -146,13 +145,14 @@ function Rig(): JSX.Element {
       }
       // vue du scan : trois quarts légèrement plongeante, puis retour de face à la sortie du caisson
       const view = rig.scan().view;
-      if (!st.introOff && (view > 0 || st.introWas > 0)) {
-        const dist = cam.position.distanceTo(c.target);
-        tmp.dir.set(...look.camera.position).sub(tmp.target.set(...look.camera.target)).normalize();
-        tmp.dir.applyAxisAngle(Y_AXIS, look.scan.viewYaw * view);
-        tmp.dir.y += look.scan.viewLift * view;
-        tmp.dir.normalize();
-        cam.position.copy(c.target).addScaledVector(tmp.dir, dist);
+      // Appliqué en relatif (rotation de la vue précédente vers la nouvelle) : un clic, la molette ou une rotation
+      // pendant l'animation n'empêchent plus le retour de face, et l'angle ajouté par l'utilisateur est conservé.
+      if (view !== st.introWas) {
+        introDir(st.introWas, tmp.prev, tmp.target);
+        introDir(view, tmp.dir, tmp.target);
+        tmp.q.setFromUnitVectors(tmp.prev, tmp.dir);
+        tmp.v.copy(cam.position).sub(c.target).applyQuaternion(tmp.q);
+        cam.position.copy(c.target).add(tmp.v);
       }
       st.introWas = view;
       c.update();
@@ -210,16 +210,24 @@ function Rig(): JSX.Element {
         minPolarAngle={look.camera.minPolar}
         maxPolarAngle={look.camera.maxPolar}
         target={look.camera.target}
-        onStart={() => { st.interacting = true; st.introOff = true; }}
+        onStart={() => { st.interacting = true; }}
         onEnd={() => { st.interacting = false; st.lastInteraction = st.now; }}
       />
     </>
   );
 }
 
-/** Canvas plein cadre (le parent doit être position:relative avec une taille). */
 const Y_AXIS = new THREE.Vector3(0, 1, 0);
 
+/** Direction caméra → cible de la vue du scan, pour un poids `view` (1 = trois quarts plongeante, 0 = face). */
+function introDir(view: number, out: THREE.Vector3, scratch: THREE.Vector3): THREE.Vector3 {
+  out.set(...look.camera.position).sub(scratch.set(...look.camera.target)).normalize();
+  out.applyAxisAngle(Y_AXIS, look.scan.viewYaw * view);
+  out.y += look.scan.viewLift * view;
+  return out.normalize();
+}
+
+/** Canvas plein cadre (le parent doit être position:relative avec une taille). */
 export function BodyScene(): JSX.Element {
   return (
     <Canvas
