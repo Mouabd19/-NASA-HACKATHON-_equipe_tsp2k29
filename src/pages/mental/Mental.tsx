@@ -3,6 +3,7 @@
 // Ouverte par un double-clic sur le cerveau dans la page Corps.
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { JSX, RefObject } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import type { Color } from '../../types';
 import { moodSignals } from '../../models/ml';
@@ -86,6 +87,46 @@ function useWidth(fallback: number): [RefObject<HTMLDivElement | null>, number] 
   return [ref, w];
 }
 
+/**
+ * Verdict = point de couleur (vert : rien à signaler, ambre : à surveiller, rouge : proposer un échange, gris creux : inconnu).
+ * Un clic sur le point descend au dossier du jour.
+ */
+function VerdictMark({ cx, cy, color }: { cx: number; cy: number; color: Color }): JSX.Element {
+  const c = statusVar[color];
+  return color === 'grey'
+    ? <circle className="mt-verdict__pt" data-color={color} cx={cx} cy={cy} r={5.5} fill="none" stroke={c} strokeWidth={1.6} />
+    : <circle className="mt-verdict__pt" data-color={color} cx={cx} cy={cy} r={6} fill={c} />;
+}
+
+/** Point de légende, mêmes couleurs que la frise. */
+function VerdictDot({ color }: { color: Color }): JSX.Element {
+  const c = statusVar[color];
+  return (
+    <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
+      {color === 'grey' ? <circle cx="6" cy="6" r="4.5" fill="none" stroke={c} strokeWidth="1.4" /> : <circle cx="6" cy="6" r="5" fill={c} />}
+    </svg>
+  );
+}
+
+/** Flèche vers le haut du bouton « Haut de page ». */
+function ArrowUp(): JSX.Element {
+  return (
+    <svg width="12" height="14" viewBox="0 0 12 14" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 13 V2 M1.5 6.5 L6 2 L10.5 6.5" />
+    </svg>
+  );
+}
+
+/** Conteneur qui défile autour de la page (la coquille fait défiler .sz-main__scroll, pas la fenêtre). */
+function scrollParent(el: HTMLElement | null): HTMLElement | null {
+  for (let p = el?.parentElement ?? null; p; p = p.parentElement) {
+    const o = getComputedStyle(p).overflowY;
+    if ((o === 'auto' || o === 'scroll') && p.scrollHeight > p.clientHeight) return p;
+  }
+  return null;
+}
+const smoothOr = (): ScrollBehavior => (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth');
+
 function Frise({ sel, onSel, mlAlert }: { sel: { sc: Sc; day: number }; onSel: (sc: Sc, day: number) => void; mlAlert: number | null }): JSX.Element {
   const [ref, measured] = useWidth(1000);
   const drift = SERIES.drift ?? [];
@@ -140,12 +181,13 @@ function Frise({ sel, onSel, mlAlert }: { sel: { sc: Sc; day: number }; onSel: (
                 const color = nivColor(n);
                 const on = sel.sc === t.sc && sel.day === dd.day;
                 return (
-                  <g key={dd.day} className="mt-verdict" role="button" tabIndex={0} aria-pressed={on} aria-label={`${SC_LABEL[t.sc]}, J${dd.day} : ${NIV_LABEL[n]}`}
+                  <g key={dd.day} className="mt-verdict" role="button" tabIndex={0} aria-pressed={on} aria-label={`${SC_LABEL[t.sc]}, J${dd.day} : ${NIV_LABEL[n]}. Descendre au dossier du jour`}
                     onClick={() => onSel(t.sc, dd.day)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSel(t.sc, dd.day); } }}>
-                    {/* voyant carré, comme partout dans l'app ; sélection = filet carré autour */}
+                    {/* point de couleur ; sélection = filet carré autour */}
+                    <title>{`J${dd.day} · ${NIV_LABEL[n]} — cliquer pour descendre au dossier`}</title>
                     <rect className="mt-verdict__hit" x={x(dd.day) - 13} y={t.y - 13} width={26} height={26} />
-                    <rect className="mt-verdict__ring" x={x(dd.day) - 8.5} y={t.y - 8.5} width={17} height={17} />
-                    <rect className="mt-verdict__dot" data-color={color} x={x(dd.day) - 4.5} y={t.y - 4.5} width={9} height={9} rx={1} fill={statusVar[color]} stroke={statusVar[color]} />
+                    <rect className="mt-verdict__ring" x={x(dd.day) - 10} y={t.y - 10} width={20} height={20} />
+                    <VerdictMark cx={x(dd.day)} cy={t.y} color={color} />
                   </g>
                 );
               })}
@@ -179,7 +221,7 @@ function Frise({ sel, onSel, mlAlert }: { sel: { sc: Sc; day: number }; onSel: (
         <li><svg width="20" height="4" aria-hidden="true"><line className="mt-frise__line" x1="0" x2="20" y1="2" y2="2" /></svg>Avec trouble</li>
         <li><svg width="20" height="4" aria-hidden="true"><line className="mt-frise__line mt-frise__line--ctrl" x1="0" x2="20" y1="2" y2="2" /></svg>Témoin</li>
         {(['rien', 'a_surveiller', 'proposer_un_echange'] as Niveau[]).map((n) => (
-          <li key={n}><StatusDot color={nivColor(n)} />{NIV_LABEL[n]}</li>
+          <li key={n}><VerdictDot color={nivColor(n)} />{NIV_LABEL[n]}</li>
         ))}
         <li className="mt-legend__note">Moyenne sur 3 jours</li>
       </ul>
@@ -277,6 +319,27 @@ export function Mental(): JSX.Element {
   const mlAlert = useMemo(() => moodSignals().find((s) => s.alert)?.day ?? null, []);
   const [sel, setSel] = useState<{ sc: Sc; day: number }>(() => ({ sc: 'drift', day: detected?.day ?? DAYS[DAYS.length - 1] }));
   const current = DATA[sel.sc].find((d) => d.day === sel.day);
+  const pageRef = useRef<HTMLDivElement>(null);
+  const [showTop, setShowTop] = useState(false);
+  // un verdict cliqué : son dossier s'affiche, puis la page descend jusqu'aux blocs de texte
+  const pick = (sc: Sc, day: number): void => {
+    setSel({ sc, day });
+    setTimeout(() => document.getElementById('mt-dossier')?.scrollIntoView({ behavior: smoothOr(), block: 'start' }), 0);
+  };
+  const toTop = (): void => {
+    const sp = scrollParent(pageRef.current);
+    if (sp) sp.scrollTo({ top: 0, behavior: smoothOr() });
+    else window.scrollTo({ top: 0, behavior: smoothOr() });
+  };
+  // le bouton « Haut de page » n'apparaît qu'une fois la page descendue
+  useEffect(() => {
+    const sp = scrollParent(pageRef.current);
+    const target: HTMLElement | Window = sp ?? window;
+    const onScroll = (): void => setShowTop((sp ? sp.scrollTop : window.scrollY) > 240);
+    onScroll();
+    target.addEventListener('scroll', onScroll, { passive: true });
+    return () => target.removeEventListener('scroll', onScroll);
+  }, []);
   const engine = SUMMARY.model ? SUMMARY.model.replace(/^claude-(\w+)-(\d+)-(\d+)$/, (_m, n: string, a: string, b: string) => `Claude ${cap(n)} ${a}.${b}`) : 'modèle de langage';
 
   const back = <Link className="sz-link mt-back" to="/body">‹ Corps</Link>;
@@ -292,7 +355,7 @@ export function Mental(): JSX.Element {
   }
 
   return (
-    <div className="sz-page mt-page">
+    <div className="sz-page mt-page" ref={pageRef}>
       {back}
       <header className="sz-page__head mt-head">
         <div>
@@ -321,16 +384,27 @@ export function Mental(): JSX.Element {
           </dl>
         </Panel>
 
-        <Panel title="Frise" right="Cliquer un verdict ouvre le dossier du jour">
-          <Frise sel={sel} onSel={(sc, day) => setSel({ sc, day })} mlAlert={mlAlert} />
+        <Panel title="Frise" right="Cliquer un point descend au dossier du jour">
+          <Frise sel={sel} onSel={pick} mlAlert={mlAlert} />
         </Panel>
 
-        {current ? <Dossier key={`${sel.sc}${sel.day}`} x={current} /> : null}
+        <div id="mt-dossier" className="mt-anchor">
+          {current ? <Dossier key={`${sel.sc}${sel.day}`} x={current} /> : null}
+        </div>
 
         <HowItWorks />
       </div>
 
       <p className="mt-honest">Données entièrement simulées · aucune personne réelle · un signal à regarder, jamais un diagnostic.</p>
+
+      {/* rendu dans <body> : la page est animée à l'entrée (transform), ce qui casserait position: fixed */}
+      {createPortal(
+        <button type="button" className="sz-btn mt-totop" data-show={showTop} onClick={toTop} tabIndex={showTop ? 0 : -1} aria-hidden={!showTop}>
+          <ArrowUp />
+          Haut de page
+        </button>,
+        document.body,
+      )}
     </div>
   );
 }
