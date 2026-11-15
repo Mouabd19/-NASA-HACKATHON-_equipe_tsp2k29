@@ -28,3 +28,5 @@ export.zip
 export.xml
 public/data/watch/
 server/.data/
+.vercel
+.env*
