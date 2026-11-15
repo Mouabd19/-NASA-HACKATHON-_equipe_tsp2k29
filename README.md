@@ -1,4 +1,4 @@
-# SOL ZÉRO
+# TriFlow
 
 **NASA Space Apps Challenge — Health Monitoring Software for Astronauts** · équipe TSP2k29
 
