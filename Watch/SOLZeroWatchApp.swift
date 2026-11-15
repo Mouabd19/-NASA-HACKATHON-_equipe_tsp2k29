@@ -31,6 +31,7 @@ struct ContentView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @AppStorage(AppKeys.serverURL) private var serverURL = ""
     @State private var page: Page = DemoMode.page.flatMap(Page.init(rawValue:)) ?? .today
+    @StateObject private var events = LiveEvents()
 
     var body: some View {
         NavigationStack {
@@ -49,8 +50,19 @@ struct ContentView: View {
         .onChange(of: serverURL) { _, _ in
             Task { await summary.refresh(); await todo.refresh() }
         }
-        // Rafraîchit tant que l'app est au premier plan : résumé toutes les 30 s, to-do toutes les 5 s.
-        // Mac injoignable : to-do toutes les 15 s, pour ne pas encombrer le relais iPhone qui porte aussi le pouls.
+        // Temps réel : une coche ou un check-in fait sur le Mac arrive ici tout de suite (GET /api/events)
+        .task(id: "\(scenePhase)|\(serverURL)") {
+            guard scenePhase == .active, !DemoMode.isOn, !serverURL.isEmpty else { return }
+            await events.run(base: serverURL) { kind in
+                switch kind {
+                case "todo": await todo.refresh(); await summary.refresh()
+                case "checkin", "hello": await summary.refresh(); await todo.refresh()
+                default: break // « live » : le pouls vient de la montre elle-même
+                }
+            }
+        }
+        // Synchro de secours tant que l'app est au premier plan : résumé toutes les 30 s, to-do toutes les 5 s
+        // (15 s quand le temps réel est connecté, ou quand le Mac est injoignable pour ménager le relais iPhone).
         .task(id: scenePhase) {
             guard scenePhase == .active else { return }
             if DemoMode.isOn && heart.phase == .idle {
@@ -63,8 +75,8 @@ struct ContentView: View {
                     lastSummary = Date()
                 }
                 await todo.refresh()
-                let failing = todo.unreachable || summary.isStale
-                try? await Task.sleep(nanoseconds: (failing ? 15 : 5) * 1_000_000_000)
+                let slow = todo.unreachable || summary.isStale || events.connected
+                try? await Task.sleep(nanoseconds: (slow ? 15 : 5) * 1_000_000_000)
             }
         }
     }

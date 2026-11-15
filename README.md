@@ -280,3 +280,7 @@ La page Corps affiche le vrai corps de Haddad, avec les mêmes modèles que la p
 
 - `Watch/Resources/body.json` + `body.bin` (885 Ko, ~39 000 triangles) sont générés depuis le dépôt web par `node docs/tools/build-watch-body.mjs <app>/Watch/Resources` (branche `night/watch-api`). À relancer si Steve modifie les modèles.
 - Chaque alerte colore l'organe nommé par `organId`. Pour un ancien serveur, c'est la zone qui sert de repli.
+
+## Temps réel
+
+La montre écoute `GET /api/events` (Server-Sent Events) tant qu'elle est au premier plan. Le serveur y envoie `data: {"kind":"todo"|"checkin"|"live","v":n}` à chaque changement. Une coche ou un check-in fait sur le Mac arrive donc sur la montre en moins d'une seconde, au lieu de 5 s. Il n'y a pas de WebSocket : watchOS interdit les connexions bas niveau en dehors des apps audio, mais une requête HTTP longue est permise. Si le flux tombe, la synchro périodique reprend (to-do toutes les 5 s, résumé toutes les 30 s) et la montre se reconnecte toute seule. Côté serveur, c'est `server/api.ts` (`openEvents`, `broadcast`) ; côté War Room, `src/ingest/events.ts`.

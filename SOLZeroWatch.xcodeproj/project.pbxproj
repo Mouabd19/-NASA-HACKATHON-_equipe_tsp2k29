@@ -26,6 +26,7 @@
 		89912F62AA72DF8AB7CFA771 /* PhoneRelay.swift in Sources */ = {isa = PBXBuildFile; fileRef = F84B1D4AB935ADDF167FE03F /* PhoneRelay.swift */; };
 		9191918802D44A8257E5D8CC /* TripView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED2EA3969BC317A477730B17 /* TripView.swift */; };
 		C9417E129E19A15F86484B80 /* ConnectionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A036A25755C6A03BF8C5217A /* ConnectionTest.swift */; };
+		CDBA21D3B71BB05DF8BA1F49 /* LiveEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF633CCAF9D3CDC5919D2A19 /* LiveEvents.swift */; };
 		CDD451CBD6353897A1856536 /* SnapshotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79843C09A4E178DF90C4E1B9 /* SnapshotView.swift */; };
 		D20DD090ED5ED1AFB0A20587 /* MissionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AFFAD2B7D85A7BEB20C5CB2 /* MissionStore.swift */; };
 		D8C4042959863DF2A91464A2 /* Palette.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB573E299ED7121BE0D84DA /* Palette.swift */; };
@@ -76,6 +77,7 @@
 		9AFFAD2B7D85A7BEB20C5CB2 /* MissionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissionStore.swift; sourceTree = "<group>"; };
 		A036A25755C6A03BF8C5217A /* ConnectionTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionTest.swift; sourceTree = "<group>"; };
 		A2911C61A65E7C500C965CE5 /* body.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = body.bin; sourceTree = "<group>"; };
+		AF633CCAF9D3CDC5919D2A19 /* LiveEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveEvents.swift; sourceTree = "<group>"; };
 		B07F8CF4322A5BC78485A2AF /* LiveHeartRate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveHeartRate.swift; sourceTree = "<group>"; };
 		B4375B13B492B5A85C084B84 /* BodyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyView.swift; sourceTree = "<group>"; };
 		C35A840F9D8AA7F96B550C10 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -141,6 +143,7 @@
 				797BBD10AA6855CCAE3E75BF /* Components.swift */,
 				0858FFDE38D878284D26C184 /* EmbeddedSnapshot.swift */,
 				C35A840F9D8AA7F96B550C10 /* Info.plist */,
+				AF633CCAF9D3CDC5919D2A19 /* LiveEvents.swift */,
 				B07F8CF4322A5BC78485A2AF /* LiveHeartRate.swift */,
 				9AFFAD2B7D85A7BEB20C5CB2 /* MissionStore.swift */,
 				27E8765B87AD53DB7256631F /* PhoneLink.swift */,
@@ -270,6 +273,7 @@
 				C9417E129E19A15F86484B80 /* ConnectionTest.swift in Sources */,
 				414D08F69858F2BFDE26051F /* EmbeddedSnapshot.swift in Sources */,
 				8255E8420E2FB04FF52E139E /* HealthSnapshot.swift in Sources */,
+				CDBA21D3B71BB05DF8BA1F49 /* LiveEvents.swift in Sources */,
 				07DA07F224A7DF4456828656 /* LiveHeartRate.swift in Sources */,
 				D20DD090ED5ED1AFB0A20587 /* MissionStore.swift in Sources */,
 				524F336668C99C04C788E911 /* Palette.swift in Sources */,
