@@ -273,3 +273,10 @@ Elle fait tourner le corps (« Couronne : rotation · touche pour finir » sous 
 
 **L'app ne s'ouvre plus au bout de 7 jours**
 C'est la signature du compte gratuit qui a expiré. Relance ⌘R depuis Xcode.
+
+## Corps 3D : les modèles de Steve
+
+La page Corps affiche le vrai corps de Haddad, avec les mêmes modèles que la page Corps du web (`public/models`, Z-Anatomy) : peau translucide, squelette en filigrane, et seulement les organes en alerte, colorés par leur statut (hanche, cuisse, cœur, yeux…). Avant, c'était un mannequin en capsules.
+
+- `Watch/Resources/body.json` + `body.bin` (885 Ko, ~39 000 triangles) sont générés depuis le dépôt web par `node docs/tools/build-watch-body.mjs <app>/Watch/Resources` (branche `night/watch-api`). À relancer si Steve modifie les modèles.
+- Chaque alerte colore l'organe nommé par `organId`. Pour un ancien serveur, c'est la zone qui sert de repli.

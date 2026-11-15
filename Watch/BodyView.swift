@@ -2,9 +2,9 @@ import SceneKit
 import SwiftUI
 import UIKit
 
-/// Page Corps : mannequin 3D simple (SceneKit), zones en alerte colorées par leur statut.
+/// Page Corps : le corps 3D de Haddad, avec les modèles de Steve (Z-Anatomy, les mêmes que la page Corps du web),
+/// simplifiés pour la montre. Peau translucide, squelette en filigrane, organes en alerte colorés par leur statut.
 /// Rotation lente au repos ; touche le corps pour le faire tourner à la Couronne.
-/// Ce n'est pas un rendu anatomique : il situe les alertes, comme les étiquettes de la page Corps du web.
 struct BodyView: View {
     @ObservedObject var store: SummaryStore
     /// Vrai quand la page Corps est affichée : en la quittant, la Couronne revient toujours aux pages
@@ -141,11 +141,13 @@ final class BodyScene: ObservableObject {
     let camera: SCNNode
     private let spin = SCNNode()
     private let crownNode = SCNNode()
-    private var parts: [String: [SCNNode]] = [:]
-    private var markers: [String: [SCNNode]] = [:]
+    /// organes par id (hanche, cuisse, coeur, yeux…), cachés tant qu'ils ne sont pas en alerte
+    private var organs: [String: SCNNode] = [:]
     private var crownOffset = 0.0
 
     private static let neutral = UIColor(red: 0.36, green: 0.40, blue: 0.45, alpha: 1)
+    private static let skin = UIColor(red: 0.62, green: 0.68, blue: 0.76, alpha: 1)
+    private static let bone = UIColor(red: 0.50, green: 0.53, blue: 0.58, alpha: 1)
 
     init() {
         scene.background.contents = UIColor.black
@@ -155,7 +157,7 @@ final class BodyScene: ObservableObject {
         cam.zNear = 0.1
         camera = SCNNode()
         camera.camera = cam
-        camera.position = SCNVector3(0, 0.92, 4.1)
+        camera.position = SCNVector3(0, 0.87, 3.4)
         scene.rootNode.addChildNode(camera)
 
         let ambient = SCNNode()
@@ -176,71 +178,84 @@ final class BodyScene: ObservableObject {
         build()
     }
 
-    // Silhouette en volumes simples (mètres, y vers le haut, face vers +z)
+    /// Charge body.json (index des pièces) + body.bin (Float32 positions, Float32 normales, UInt32 indices).
+    /// Fichiers produits par docs/tools/build-watch-body.mjs (dépôt web, branche night/watch-api) à partir de
+    /// public/models : même repère que le web (mètres, y vers le haut, face vers +z).
     private func build() {
-        func add(_ g: SCNGeometry, _ p: SCNVector3, zone: String? = nil, rotZ: Float = 0,
-                 scale: SCNVector3 = SCNVector3(1, 1, 1), marker: Bool = false) {
+        guard let jsonURL = Bundle.main.url(forResource: "body", withExtension: "json"),
+              let binURL = Bundle.main.url(forResource: "body", withExtension: "bin"),
+              let json = try? Data(contentsOf: jsonURL),
+              let index = try? JSONDecoder().decode(BodyIndex.self, from: json),
+              let bin = try? Data(contentsOf: binURL, options: .mappedIfSafe) else { return }
+
+        for part in index.parts {
+            let v = part.vertexCount * 12
+            let start = part.offset, end = start + 2 * v + part.indexCount * 4
+            guard end <= bin.count else { continue }
+            let pos = bin.subdata(in: start ..< start + v)
+            let nor = bin.subdata(in: start + v ..< start + 2 * v)
+            let idx = bin.subdata(in: start + 2 * v ..< end)
+            func source(_ d: Data, _ sem: SCNGeometrySource.Semantic) -> SCNGeometrySource {
+                SCNGeometrySource(data: d, semantic: sem, vectorCount: part.vertexCount, usesFloatComponents: true,
+                                  componentsPerVector: 3, bytesPerComponent: 4, dataOffset: 0, dataStride: 12)
+            }
+            let element = SCNGeometryElement(data: idx, primitiveType: .triangles,
+                                             primitiveCount: part.indexCount / 3, bytesPerIndex: 4)
+            let geo = SCNGeometry(sources: [source(pos, .vertex), source(nor, .normal)], elements: [element])
             let m = SCNMaterial()
             m.lightingModel = .lambert
-            m.diffuse.contents = Self.neutral
-            g.materials = [m]
-            let n = SCNNode(geometry: g)
-            n.position = p
-            n.eulerAngles.z = rotZ
-            n.scale = scale
-            n.isHidden = marker
-            crownNode.addChildNode(n)
-            if let zone {
-                if marker { markers[zone, default: []].append(n) } else { parts[zone, default: []].append(n) }
+            geo.materials = [m]
+            let node = SCNNode(geometry: geo)
+
+            switch part.id {
+            case "avatar":
+                // peau translucide, dessinée après le reste pour laisser voir les organes
+                m.diffuse.contents = Self.skin
+                m.transparency = 0.18
+                m.writesToDepthBuffer = false
+                node.renderingOrder = 10
+            case "squelette":
+                m.diffuse.contents = Self.bone
+                m.transparency = 0.35
+                node.renderingOrder = 5
+            default:
+                m.diffuse.contents = Self.neutral
+                node.isHidden = true
+                organs[part.id] = node
             }
+            crownNode.addChildNode(node)
         }
-        // tête, cou
-        add(SCNSphere(radius: 0.11), SCNVector3(0, 1.62, 0))
-        add(SCNCylinder(radius: 0.045, height: 0.1), SCNVector3(0, 1.49, 0))
-        // tronc
-        add(SCNCapsule(capRadius: 0.16, height: 0.5), SCNVector3(0, 1.24, 0),
-            scale: SCNVector3(1.12, 1, 0.66))
-        add(SCNCapsule(capRadius: 0.135, height: 0.3), SCNVector3(0, 1.0, 0), zone: "abdomen",
-            scale: SCNVector3(1.05, 1, 0.64))
-        add(SCNCapsule(capRadius: 0.12, height: 0.38), SCNVector3(0, 0.86, 0), zone: "bassin", rotZ: .pi / 2,
-            scale: SCNVector3(1, 1, 0.72))
-        // bras
-        for s: Float in [-1, 1] {
-            add(SCNCapsule(capRadius: 0.048, height: 0.33), SCNVector3(s * 0.245, 1.25, 0), rotZ: s * 0.12)
-            add(SCNCapsule(capRadius: 0.04, height: 0.3), SCNVector3(s * 0.28, 0.96, 0.01), rotZ: s * 0.06)
-            add(SCNSphere(radius: 0.045), SCNVector3(s * 0.29, 0.78, 0.01))
-        }
-        // jambes
-        for s: Float in [-1, 1] {
-            add(SCNCapsule(capRadius: 0.075, height: 0.46), SCNVector3(s * 0.095, 0.58, 0), zone: "cuisse")
-            add(SCNCapsule(capRadius: 0.055, height: 0.42), SCNVector3(s * 0.095, 0.19, 0), zone: "mollet")
-            add(SCNBox(width: 0.08, height: 0.04, length: 0.17, chamferRadius: 0.02), SCNVector3(s * 0.095, -0.01, 0.04))
-        }
-        // repères (cachés sauf alerte) : yeux, cœur, dos
-        for s: Float in [-1, 1] {
-            add(SCNSphere(radius: 0.024), SCNVector3(s * 0.042, 1.645, 0.093), zone: "tete", marker: true)
-        }
-        add(SCNSphere(radius: 0.058), SCNVector3(0.055, 1.27, 0.085), zone: "thorax", marker: true)
-        add(SCNBox(width: 0.12, height: 0.42, length: 0.03, chamferRadius: 0.015), SCNVector3(0, 1.12, -0.1),
-            zone: "dos", marker: true)
     }
 
-    /// Colore les volumes ou affiche les repères des zones en alerte. Le reste reste neutre (jamais vert par défaut).
+    /// Affiche et colore les organes en alerte. Le reste reste caché (jamais vert par défaut).
     func apply(_ alerts: [WatchSummary.AlertZone]) {
         var color: [String: UIColor] = [:]
         for a in alerts {
-            let c = Self.uiColor(a.color)
-            // une zone porte la couleur la plus grave
-            if color[a.zone] == nil || a.color == "red" { color[a.zone] = c }
-        }
-        for (zone, nodes) in parts {
-            for n in nodes { n.geometry?.firstMaterial?.diffuse.contents = color[zone] ?? Self.neutral }
-        }
-        for (zone, nodes) in markers {
-            for n in nodes {
-                n.isHidden = color[zone] == nil
-                n.geometry?.firstMaterial?.diffuse.contents = color[zone] ?? Self.neutral
+            for id in organIds(for: a) where color[id] == nil || a.color == "red" {
+                color[id] = Self.uiColor(a.color)
             }
+        }
+        for (id, node) in organs {
+            node.isHidden = color[id] == nil
+            node.geometry?.firstMaterial?.diffuse.contents = color[id] ?? Self.neutral
+            // léger éclat propre pour que l'organe en alerte ressorte sous la peau
+            node.geometry?.firstMaterial?.emission.contents = color[id].map { $0.withAlphaComponent(1) } ?? UIColor.black
+            node.geometry?.firstMaterial?.emission.intensity = 0.35
+        }
+    }
+
+    /// L'alerte nomme son organe ; repli sur la zone pour un ancien serveur.
+    private func organIds(for a: WatchSummary.AlertZone) -> [String] {
+        if organs[a.organId] != nil { return [a.organId] }
+        switch a.zone {
+        case "bassin": return ["hanche"]
+        case "cuisse": return ["cuisse"]
+        case "mollet": return ["mollet"]
+        case "thorax": return ["coeur"]
+        case "abdomen": return ["reins"]
+        case "dos": return ["rachis"]
+        case "tete": return ["yeux"]
+        default: return []
         }
     }
 
@@ -265,4 +280,15 @@ final class BodyScene: ObservableObject {
         default: return UIColor(red: 0x69 / 255, green: 0x70 / 255, blue: 0x7B / 255, alpha: 1)
         }
     }
+}
+
+/// Index de body.bin (voir docs/tools/build-watch-body.mjs)
+private struct BodyIndex: Decodable {
+    struct Part: Decodable {
+        let id: String
+        let vertexCount: Int
+        let indexCount: Int
+        let offset: Int
+    }
+    let parts: [Part]
 }

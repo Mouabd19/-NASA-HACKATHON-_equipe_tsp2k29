@@ -1,0 +1,89 @@
+{
+ "source": "public/models (Z-Anatomy, modèles de Steve)",
+ "parts": [
+  {
+   "id": "avatar",
+   "vertexCount": 4502,
+   "indexCount": 27000,
+   "offset": 0
+  },
+  {
+   "id": "squelette",
+   "vertexCount": 2081,
+   "indexCount": 18999,
+   "offset": 216048
+  },
+  {
+   "id": "hanche",
+   "vertexCount": 912,
+   "indexCount": 4497,
+   "offset": 341988
+  },
+  {
+   "id": "femur",
+   "vertexCount": 881,
+   "indexCount": 4500,
+   "offset": 381864
+  },
+  {
+   "id": "rachis",
+   "vertexCount": 1311,
+   "indexCount": 4470,
+   "offset": 421008
+  },
+  {
+   "id": "cuisse",
+   "vertexCount": 1950,
+   "indexCount": 7485,
+   "offset": 470352
+  },
+  {
+   "id": "mollet",
+   "vertexCount": 1231,
+   "indexCount": 5997,
+   "offset": 547092
+  },
+  {
+   "id": "paravertebraux",
+   "vertexCount": 432,
+   "indexCount": 4944,
+   "offset": 600624
+  },
+  {
+   "id": "coeur",
+   "vertexCount": 1372,
+   "indexCount": 7392,
+   "offset": 630768
+  },
+  {
+   "id": "poumons",
+   "vertexCount": 1719,
+   "indexCount": 7500,
+   "offset": 693264
+  },
+  {
+   "id": "foie",
+   "vertexCount": 836,
+   "indexCount": 4497,
+   "offset": 764520
+  },
+  {
+   "id": "reins",
+   "vertexCount": 768,
+   "indexCount": 4500,
+   "offset": 802572
+  },
+  {
+   "id": "cerveau",
+   "vertexCount": 273,
+   "indexCount": 5664,
+   "offset": 839004
+  },
+  {
+   "id": "yeux",
+   "vertexCount": 828,
+   "indexCount": 4500,
+   "offset": 868212
+  }
+ ]
+}
