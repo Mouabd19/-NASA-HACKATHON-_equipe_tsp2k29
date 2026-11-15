@@ -134,9 +134,7 @@ export const look = {
     podRadius: 0.5,       // rayon de la cabine (m)
     podHeight: 2.08,      // hauteur de la cabine (m)
     doorAngle: 2.3,       // ouverture de la porte vitrée (radians, ~130°)
-    podWall: 0.7,         // opacité du socle, de l'auvent et de la paroi arrière
-    glass: 0.05,          // voile de la vitre
-    podLines: 0.55,       // opacité du cadre de la porte
+    podWall: 0.85,        // opacité de la paroi arrière (ombrée)
     podApertureOpacity: 0.9, // anneau lumineux qui monte dans la cabine (= plan de scan)
   },
 

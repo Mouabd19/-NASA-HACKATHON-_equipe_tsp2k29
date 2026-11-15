@@ -134,33 +134,111 @@ export function createBodyRig(): BodyRig {
   });
   scanGroup.add(new THREE.Line(ringGeo, ringMat), new THREE.Mesh(discGeo, discMat));
 
-  // cabine du scanner : socle, auvent, paroi arrière pleine et grande porte vitrée face à la caméra (+Z).
-  // Elle reste fixe au sol ; à travers la porte on voit l'anneau monter et révéler le corps.
+  // cabine du scanner, modelée comme un objet réel : plateau au ras du sol (les pieds restent visibles),
+  // paroi arrière ombrée (plus claire sur les bords de la porte, plus sombre en bas), vitre à reflet de bord
+  // (fresnel), montants de porte, auvent chanfreiné avec bandeau lumineux, ombre de contact sous le corps.
+  // Tout ce qui est derrière le corps est dessiné AVANT lui ; seuls la vitre et les montants passent devant.
   const S = look.scan;
   const R = S.podRadius, H = S.podHeight, DOOR = S.doorAngle;
-  const solidMat = new THREE.MeshBasicMaterial({ color: tokens.color.panelHover, transparent: true, opacity: S.podWall, side: THREE.DoubleSide, depthWrite: false });
-  const plinthGeo = new THREE.CylinderGeometry(R + 0.07, R + 0.09, 0.07, 96).translate(0, 0.035, 0);
-  const canopyGeo = new THREE.CylinderGeometry(R + 0.07, R + 0.07, 0.11, 96).translate(0, H - 0.055, 0);
-  // paroi arrière : tout le tour sauf la porte (thêta = 0 regarde +Z)
-  const wallGeo = new THREE.CylinderGeometry(R, R, H - 0.18, 96, 1, true, DOOR / 2, Math.PI * 2 - DOOR).translate(0, 0.07 + (H - 0.18) / 2, 0);
-  const glassGeo = new THREE.CylinderGeometry(R, R, H - 0.18, 48, 1, true, -DOOR / 2, DOOR).translate(0, 0.07 + (H - 0.18) / 2, 0);
-  const glassMat = new THREE.MeshBasicMaterial({ color: tokens.color.holo, transparent: true, opacity: S.glass, side: THREE.DoubleSide, depthWrite: false });
-  // montants et cadre de la porte
-  const framePts: THREE.Vector3[] = [];
-  const at = (a: number, y: number, r = R * 1.003): THREE.Vector3 => new THREE.Vector3(Math.sin(a) * r, y, Math.cos(a) * r);
-  for (const a of [-DOOR / 2, DOOR / 2]) framePts.push(at(a, 0.07), at(a, H - 0.11));
-  for (const y of [0.07, H - 0.11]) {
-    for (let i = 0; i < 32; i++) framePts.push(at(-DOOR / 2 + (DOOR * i) / 32, y), at(-DOOR / 2 + (DOOR * (i + 1)) / 32, y));
-  }
-  const frameGeo = new THREE.BufferGeometry().setFromPoints(framePts);
-  const frameMat = new THREE.LineBasicMaterial({ color: tokens.color.textDim, transparent: true, opacity: S.podLines, depthWrite: false });
+  const base = new THREE.Color(tokens.color.panelHover);
+  const light = new THREE.Color(tokens.color.textDim);
+  const fades: { mat: THREE.Material & { opacity: number }; o: number }[] = [];
+  const track = <M extends THREE.Material & { opacity: number }>(mat: M, o: number): M => { mat.opacity = o; fades.push({ mat, o }); return mat; };
+  const geos: THREE.BufferGeometry[] = [];
+  const keep = <G extends THREE.BufferGeometry>(g: G): G => { geos.push(g); return g; };
+
+  /** Ombrage « cuit » dans les sommets : bords de porte éclairés, bas assombri (occlusion), haut légèrement plus clair. */
+  const shade = (g: THREE.BufferGeometry, edgeGain: number): void => {
+    const pos = g.getAttribute('position');
+    const col = new Float32Array(pos.count * 3);
+    const c = new THREE.Color();
+    for (let i = 0; i < pos.count; i++) {
+      const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
+      const a = Math.abs(Math.atan2(x, z));                      // 0 = face caméra, π = fond
+      const edge = 1 - THREE.MathUtils.smoothstep(Math.abs(a - DOOR / 2), 0, 0.7);
+      const ao = THREE.MathUtils.smoothstep(y, 0, 0.45);          // pied de paroi plus sombre
+      const top = THREE.MathUtils.smoothstep(y, H * 0.6, H);
+      c.copy(base).multiplyScalar(0.55 + 0.35 * ao + 0.15 * top).lerp(light, edgeGain * edge * 0.45);
+      col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b;
+    }
+    g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  };
+  const solid = (o: number): THREE.MeshBasicMaterial =>
+    track(new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, side: THREE.DoubleSide, depthWrite: false }), o);
+
   const booth = new THREE.Group();
-  const meshes = [
-    new THREE.Mesh(plinthGeo, solidMat), new THREE.Mesh(canopyGeo, solidMat), new THREE.Mesh(wallGeo, solidMat),
-    new THREE.Mesh(glassGeo, glassMat), new THREE.LineSegments(frameGeo, frameMat),
-  ];
-  meshes.forEach((m, i) => { m.renderOrder = i === 2 ? -1 : 10; booth.add(m); });   // paroi arrière dessinée DERRIÈRE le corps
+  const add = (m: THREE.Object3D, order: number): void => { m.renderOrder = order; booth.add(m); };
+
+  // plateau : disque chanfreiné au ras du sol, sous les pieds
+  const plateGeo = keep(new THREE.CylinderGeometry(R + 0.05, R + 0.08, 0.025, 128).translate(0, 0.0125 - 0.02, 0));
+  shade(plateGeo, 0.6);
+  add(new THREE.Mesh(plateGeo, solid(0.9)), -3);
+  // ombre de contact douce sous le corps
+  if (typeof document !== 'undefined') {
+    const cv = document.createElement('canvas'); cv.width = cv.height = 128;
+    const cx = cv.getContext('2d');
+    if (cx) {
+      const gr = cx.createRadialGradient(64, 64, 4, 64, 64, 64);
+      gr.addColorStop(0, 'rgba(0,0,0,0.75)'); gr.addColorStop(0.55, 'rgba(0,0,0,0.3)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+      cx.fillStyle = gr; cx.fillRect(0, 0, 128, 128);
+      const tex = new THREE.CanvasTexture(cv);
+      const shGeo = keep(new THREE.CircleGeometry(0.36, 64).rotateX(-Math.PI / 2).translate(0, 0.008, 0));
+      add(new THREE.Mesh(shGeo, track(new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false }), 1)), -2);
+    }
+  }
+  // liseré lumineux au bord du plateau
+  const plateRimGeo = keep(new THREE.TorusGeometry(R - 0.02, 0.005, 8, 128).rotateX(Math.PI / 2).translate(0, 0.008, 0));
+  add(new THREE.Mesh(plateRimGeo, track(new THREE.MeshBasicMaterial({ color: tokens.color.holo, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }), 0.35)), -2);
+
+  // paroi arrière (tout le tour sauf la porte), ombrée
+  const wallH = H - 0.13;
+  const wallGeo = keep(new THREE.CylinderGeometry(R, R, wallH, 128, 24, true, DOOR / 2, Math.PI * 2 - DOOR).translate(0, wallH / 2, 0));
+  shade(wallGeo, 1);
+  add(new THREE.Mesh(wallGeo, solid(S.podWall)), -1);
+
+  // auvent chanfreiné + bandeau lumineux dessous
+  const canopyGeo = keep(new THREE.CylinderGeometry(R + 0.04, R + 0.07, 0.13, 128, 4).translate(0, H - 0.065, 0));
+  shade(canopyGeo, 0.5);
+  add(new THREE.Mesh(canopyGeo, solid(0.92)), 9);
+  const ledGeo = keep(new THREE.TorusGeometry(R - 0.01, 0.006, 8, 128).rotateX(Math.PI / 2).translate(0, H - 0.135, 0));
+  add(new THREE.Mesh(ledGeo, track(new THREE.MeshBasicMaterial({ color: tokens.color.text, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }), 0.8)), 11);
+
+  // vitre : presque invisible de face, plus présente sur les bords (fresnel), léger reflet vertical
+  const glassGeo = keep(new THREE.CylinderGeometry(R, R, wallH, 64, 1, true, -DOOR / 2, DOOR).translate(0, wallH / 2, 0));
+  const glassMat = track(new THREE.ShaderMaterial({
+    uniforms: { uColor: { value: new THREE.Color(tokens.color.holo) }, opacity: { value: 1 } },
+    vertexShader: /* glsl */ `
+      varying vec3 vN; varying vec3 vP;
+      void main() {
+        vec4 wp = modelMatrix * vec4(position, 1.0);
+        vP = wp.xyz; vN = normalize(mat3(modelMatrix) * normal);
+        gl_Position = projectionMatrix * viewMatrix * wp;
+      }`,
+    fragmentShader: /* glsl */ `
+      uniform vec3 uColor; uniform float opacity;
+      varying vec3 vN; varying vec3 vP;
+      void main() {
+        vec3 V = normalize(cameraPosition - vP);
+        float f = pow(1.0 - abs(dot(normalize(vN), V)), 3.0);
+        float streak = smoothstep(0.05, 0.0, abs(vP.x + 0.18 - vP.y * 0.06)) * 0.10;   // reflet de studio
+        float a = 0.025 + 0.35 * f + streak;
+        gl_FragColor = vec4(uColor * (0.8 + 0.6 * f), a * opacity);
+      }`,
+    transparent: true, depthWrite: false, side: THREE.DoubleSide,
+  }), 1);
+  add(new THREE.Mesh(glassGeo, glassMat), 10);
+
+  // montants de porte (profilés)
+  const postGeo = keep(new THREE.BoxGeometry(0.03, wallH, 0.045).translate(0, wallH / 2, 0));
+  shade(postGeo, 0.2);
+  for (const a of [-DOOR / 2, DOOR / 2]) {
+    const post = new THREE.Mesh(postGeo, solid(0.95));
+    post.position.set(Math.sin(a) * R, 0, Math.cos(a) * R);
+    post.rotation.y = a;
+    add(post, 10);
+  }
   scanGroup.add(booth);
+
   // anneau du scanner qui monte dans la cabine (bord lumineux)
   const podApGeo = new THREE.TorusGeometry(R - 0.03, 0.012, 10, 128).rotateX(Math.PI / 2);
   const podApMat = new THREE.MeshBasicMaterial({
@@ -170,9 +248,10 @@ export function createBodyRig(): BodyRig {
   podAp.renderOrder = 12;
   scanGroup.add(podAp);
   const setBoothFade = (k: number): void => {
-    solidMat.opacity = S.podWall * k;
-    glassMat.opacity = S.glass * k;
-    frameMat.opacity = S.podLines * k;
+    for (const f of fades) {
+      if (f.mat instanceof THREE.ShaderMaterial) f.mat.uniforms.opacity.value = f.o * k;
+      else f.mat.opacity = f.o * k;
+    }
   };
   /** La cabine reste au sol pendant que scanGroup monte avec le plan. */
   const pinBooth = (): void => { booth.position.y = S.yStart - scanGroup.position.y; };
@@ -330,8 +409,9 @@ export function createBodyRig(): BodyRig {
     dispose: () => {
       for (const e of list) e.mat.dispose();
       ringGeo.dispose(); ringMat.dispose(); discGeo.dispose(); discMat.dispose();
-      plinthGeo.dispose(); canopyGeo.dispose(); wallGeo.dispose(); glassGeo.dispose(); frameGeo.dispose();
-      solidMat.dispose(); glassMat.dispose(); frameMat.dispose(); podApGeo.dispose(); podApMat.dispose();
+      for (const g of geos) g.dispose();
+      for (const f of fades) { (f.mat as THREE.MeshBasicMaterial).map?.dispose(); f.mat.dispose(); }
+      podApGeo.dispose(); podApMat.dispose();
     },
   };
 }
