@@ -3,7 +3,7 @@
 // (trait plein = mesuré, pointillé = projection, bande d'incertitude). 'global' → PhenoAge + écart par organe.
 // Provenance, normes, prévision du modèle d'IA, formule et limites : visibles en mode Détails seulement,
 // une seule fois par bloc (une puce dans l'en-tête de section, pas une par ligne).
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties, JSX, ReactNode } from 'react';
 import {
   Area, CartesianGrid, ComposedChart, Line, ReferenceDot, ReferenceLine,
@@ -303,19 +303,27 @@ function Synthesis({ organId, day, hideEmpty }: { organId: OrganId; day: number;
   const delayExact = useMemo(() => lightTimeSource(date) === 'table', [date]);
   const isTemplate = SUMMARY_SOURCE === 'gabarit';
   const future = summary !== null && summary.day > DAY_TODAY;
+  const reveal = useReveal(summary ? `${organId}|${summary.day}|${adherence}` : null, summary?.text ?? '');
   if (!summary && hideEmpty) return null;
   return (
     <Sect
       className="ow__synth"
       title={isTemplate ? 'Summary' : 'AI summary'}
-      right={summary ? (
+      right={summary && reveal.phase === 'done' ? (
         <>
           <span className="ow__pill">Pending CMO review</span>
           <ProvenanceBadge value={future ? 'H' : 'SIMULÉ'} />
         </>
       ) : null}
     >
-      {summary ? (
+      {summary && reveal.phase === 'loading' ? (
+        <div className="ow__ai-loading" role="status" aria-live="polite">
+          <span className="ow__ai-dot" aria-hidden />
+          <span>AI analysis in progress · {REVEAL_STEPS[reveal.step]}</span>
+        </div>
+      ) : summary && reveal.phase === 'typing' ? (
+        <SynthText text={reveal.text} />
+      ) : summary ? (
         <>
           <SynthText text={summary.text} />
           {future ? (
@@ -333,6 +341,46 @@ function Synthesis({ organId, day, hideEmpty }: { organId: OrganId; day: number;
       )}
     </Sect>
   );
+}
+
+// ── Synthèse IA : analyse puis rédaction, une seule fois par organe et par jour (pas rejouée à la réouverture) ──
+const REVEAL_STEPS = ['reading today’s measurements', 'comparing with the mission trajectory', 'checking NASA thresholds', 'writing the summary'];
+const SEEN_KEY = 'ow:ai-seen';
+const seen: Set<string> = (() => {
+  try { return new Set<string>(JSON.parse(sessionStorage.getItem(SEEN_KEY) ?? '[]')); } catch { return new Set<string>(); }
+})();
+function markSeen(key: string): void {
+  seen.add(key);
+  try { sessionStorage.setItem(SEEN_KEY, JSON.stringify([...seen])); } catch { /* stockage indisponible : mémoire seule */ }
+}
+/** Texte coupé à la fin d'un mot, sans laisser une référence de norme « [V1 … » ouverte. */
+function cut(text: string, words: number): string {
+  const out = text.split(/(\s+)/).slice(0, words * 2).join('');
+  const open = out.lastIndexOf('['); return open > out.lastIndexOf(']') ? out.slice(0, open) : out;
+}
+function useReveal(key: string | null, text: string): { phase: 'loading' | 'typing' | 'done'; step: number; text: string } {
+  const already = key === null || seen.has(key);
+  const [st, setSt] = useState<{ key: string | null; phase: 'loading' | 'typing' | 'done'; step: number; words: number }>(
+    { key, phase: already ? 'done' : 'loading', step: 0, words: 0 });
+  // changement d'organe ou de jour : on repart de l'état adapté à la nouvelle clé
+  if (st.key !== key) setSt({ key, phase: already ? 'done' : 'loading', step: 0, words: 0 });
+  useEffect(() => {
+    if (key === null || seen.has(key)) return;
+    const reduce = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const total = text.split(/\s+/).length;
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    const stepMs = reduce ? 150 : 550;
+    REVEAL_STEPS.forEach((_, i) => timers.push(setTimeout(() => setSt((s) => ({ ...s, step: i })), i * stepMs)));
+    const start = REVEAL_STEPS.length * stepMs;
+    if (reduce) {
+      timers.push(setTimeout(() => { markSeen(key); setSt((s) => ({ ...s, phase: 'done' })); }, start));
+    } else {
+      for (let w = 1; w <= total; w++) timers.push(setTimeout(() => setSt((s) => ({ ...s, phase: 'typing', words: w })), start + w * 60));
+      timers.push(setTimeout(() => { markSeen(key); setSt((s) => ({ ...s, phase: 'done' })); }, start + total * 60 + 50));
+    }
+    return () => timers.forEach(clearTimeout);
+  }, [key, text]);
+  return { phase: st.phase, step: st.step, text: cut(text, st.words) };
 }
 
 // ── Graphe ───────────────────────────────────────────────────────────────────────────────────

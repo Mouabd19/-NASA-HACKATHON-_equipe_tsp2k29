@@ -358,3 +358,9 @@ html[data-details='on'] .ow__win[data-kind='organ'] { height: min(720px, 100%); 
 @media (prefers-reduced-motion: reduce) {
   .ow { animation: none; }
 }
+
+/* Synthèse IA en cours : une ligne sobre, un point qui respire doucement. */
+.ow__ai-loading { display: flex; align-items: center; gap: 8px; color: var(--sz-text-muted); font-size: var(--sz-fs-label); min-height: 4.5em; }
+.ow__ai-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--sz-text-muted); animation: ow-ai-breathe 1.2s ease-in-out infinite; flex: none; }
+@keyframes ow-ai-breathe { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .ow__ai-dot { animation: none; } }
