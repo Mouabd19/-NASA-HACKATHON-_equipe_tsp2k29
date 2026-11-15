@@ -1,6 +1,9 @@
 # Film du pitch (15 s)
 
-`film_provisoire_fr.mp4` — version **provisoire** : 15 s, 1280×720, 30 images/s, légendes en français, sans son.
+Version **provisoire** : 15 s, 1280×720, 30 images/s, sans son.
+
+- `film_provisoire_fr.mp4` — avec légendes en français
+- `film_provisoire_sans_legendes.mp4` — sans légendes
 
 Déroulé : vaisseau et anneau à gravité artificielle → l'astronaute arrive du moyeu en apesanteur et se pose sur la
 plateforme du scanner → descente dans la cuve, lecture tranche par tranche → sur l'ordinateur, les tranches deviennent
