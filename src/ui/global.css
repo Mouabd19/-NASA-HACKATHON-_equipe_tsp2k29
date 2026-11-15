@@ -151,6 +151,13 @@ button:disabled { cursor: default; }
   white-space: nowrap;
 }
 .sz-alarm[data-priority='haute'] { background: var(--sz-red); }
+/* Priorité basse « ! » : aplat orange */
+.sz-alarm[data-priority='basse'] { background: var(--sz-orange); }
+/* Priorité moyenne : triangle « attention » jaune, sans aplat autour */
+.sz-alarm[data-priority='moyenne'] { background: transparent; padding: 0; }
+.sz-alarm__tri { width: 19px; height: 17px; display: block; }
+.sz-alarm__tri-bg { fill: var(--sz-amber); stroke: var(--sz-amber); stroke-width: 1.4; }
+.sz-alarm__tri-mark { fill: none; stroke: var(--sz-on-status); stroke-width: 1.9; }
 /* Projection : contour de la couleur, fond transparent. Une prévision n'est pas une alarme. */
 .sz-alarm[data-projected] {
   background: transparent;
@@ -158,6 +165,11 @@ button:disabled { cursor: default; }
   color: var(--sz-text-dim);
 }
 .sz-alarm[data-projected][data-priority='haute'] { box-shadow: inset 0 0 0 1px var(--sz-red); }
+.sz-alarm[data-projected][data-priority='basse'] { box-shadow: inset 0 0 0 1px var(--sz-orange); }
+/* Projection du triangle : contour seul */
+.sz-alarm[data-projected][data-priority='moyenne'] { box-shadow: none; }
+.sz-alarm[data-projected] .sz-alarm__tri-bg { fill: transparent; }
+.sz-alarm[data-projected] .sz-alarm__tri-mark { stroke: var(--sz-amber); }
 
 /* Marqueur + mot du niveau (« ! Attention ») */
 .sz-alarm-l {

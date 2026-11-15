@@ -127,7 +127,13 @@ export function AlarmMark({ level, projected = false, withLabel = false, classNa
       data-projected={projected || undefined}
       {...(withLabel ? { 'aria-hidden': true } : { role: 'img', 'aria-label': text, title: text })}
     >
-      {priorityMark[p]}
+      {p === 'moyenne' ? (
+        // priorité moyenne : triangle « attention » (pictogramme ISO 7010 W001) à la place de « !! »
+        <svg className="sz-alarm__tri" viewBox="0 0 18 16" aria-hidden="true">
+          <path className="sz-alarm__tri-bg" d="M9 1.2 L17 14.8 H1 Z" strokeLinejoin="round" />
+          <path className="sz-alarm__tri-mark" d="M9 5.6 V10 M9 12.2 V12.4" strokeLinecap="round" />
+        </svg>
+      ) : priorityMark[p]}
     </span>
   );
   if (!withLabel) return mark;

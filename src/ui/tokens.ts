@@ -24,7 +24,8 @@ export const tokens = {
     accent: '#E9ECEF',        // interaction : case cochée, focus, sélection (la couleur reste aux alarmes)
     holo: '#C3CAD1',          // corps 3D : gris argentique d'un cliché, sans teinte
     ok: '#3EB873',            // nominal
-    amber: '#EDBB2C',         // jaune d'alarme (priorité moyenne / basse)
+    amber: '#EDBB2C',         // jaune d'alarme (priorité moyenne : triangle « attention »)
+    orange: '#F28C28',        // orange d'alarme (priorité basse : « ! »)
     red: '#F04A42',           // rouge d'alarme (priorité haute)
     unknown: '#79828C',       // sans donnée
     onStatus: '#07080A',      // texte posé sur un aplat d'alarme (jaune, rouge)
@@ -106,7 +107,7 @@ export function applyTokens(root: HTMLElement = document.documentElement): void 
     '--sz-border': c.border, '--sz-border-strong': c.borderStrong,
     '--sz-text': c.text, '--sz-text-dim': c.textDim, '--sz-text-muted': c.textMuted,
     '--sz-accent': c.accent, '--sz-holo': c.holo,
-    '--sz-ok': c.ok, '--sz-amber': c.amber, '--sz-red': c.red, '--sz-unknown': c.unknown,
+    '--sz-ok': c.ok, '--sz-amber': c.amber, '--sz-orange': c.orange, '--sz-red': c.red, '--sz-unknown': c.unknown,
     '--sz-on-status': c.onStatus, '--sz-grid-minor': c.gridMinor, '--sz-grid-major': c.gridMajor,
     '--sz-font-text': tokens.font.text, '--sz-font-mono': tokens.font.mono, '--sz-font-num': tokens.font.num,
     '--sz-tracking': tokens.labelTracking,
