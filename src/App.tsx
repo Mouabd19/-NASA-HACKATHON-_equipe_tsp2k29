@@ -24,7 +24,7 @@ function TopBar(): JSX.Element {
     <header className="sz-topbar">
       <div className="sz-topbar__left">
         {/* mot-symbole seul : pas de pictogramme santé générique */}
-        <span className="sz-wordmark">Triflow</span>
+        <span className="sz-wordmark">TriFlow</span>
         <nav className="sz-nav" aria-label="Pages">
           {TABS.map((t) => (
             <NavLink
