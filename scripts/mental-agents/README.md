@@ -15,8 +15,8 @@ Modèle local **Ollama** (traitement « à bord », rien ne part sur Internet).
 ## Lancer
 ```bash
 ollama pull qwen2.5:7b
-node proto/mental/generate.mjs     # data/drift, data/control, data/truth.json
-node proto/mental/run.mjs          # jours clés 65,74,78,85,94 × drift + control → public/data/mental/
+node scripts/mental-agents/generate.mjs     # data/drift, data/control, data/truth.json
+node scripts/mental-agents/run.mjs          # jours clés 65,74,78,85,94 × drift + control → public/data/mental/
 ```
 Glissement dépressif injecté à **J75** (scénario `drift`) ; `control` = témoin sans glissement, même bruit de fond.
 `run.mjs` ne lit jamais `data/truth.json`.

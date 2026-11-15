@@ -1,5 +1,5 @@
 // SOL ZÉRO — Prototype santé mentale : page de visualisation autonome (capture pour la slide Vision).
-//   node proto/mental/build-viewer.mjs   →   proto/mental/viewer.html (s'ouvre dans un navigateur, sans serveur ni réseau)
+//   node scripts/mental-agents/build-viewer.mjs   →   scripts/mental-agents/viewer.html (s'ouvre dans un navigateur, sans serveur ni réseau)
 // DA sobre (Apple / SpaceX) : un chiffre clé, une frise, le détail au clic.
 import fs from 'node:fs';
 import path from 'node:path';

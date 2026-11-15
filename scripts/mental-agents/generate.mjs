@@ -2,7 +2,7 @@
 // Génère des journées 100 % SIMULÉES de Haddad [Persona], telles que les lunettes connectées les auraient
 // extraites (option A : transcription de scènes + indicateurs capteurs), sans aucune personne réelle.
 //
-//   node proto/mental/generate.mjs
+//   node scripts/mental-agents/generate.mjs
 //
 // Deux scénarios, même graine, même bruit de fond :
 //   - drift   : glissement dépressif injecté à partir de J75 (progressif jusqu'à J94)
@@ -212,7 +212,7 @@ for (const scenario of ['drift', 'control']) {
 fs.writeFileSync(path.join(OUT, 'truth.json'), JSON.stringify(truth, null, 1));
 // Séries compactes pour la page Mental Health (frise) : public/data/mental/series.json (aucune transcription, aucune vérité).
 {
-  const series = { note: 'Données SIMULÉES, une valeur par jour. Généré par proto/mental/generate.mjs.', onsetDay: ONSET, scenarios: {} };
+  const series = { note: 'Données SIMULÉES, une valeur par jour. Généré par scripts/mental-agents/generate.mjs.', onsetDay: ONSET, scenarios: {} };
   for (const scenario of ['drift', 'control']) {
     series.scenarios[scenario] = [];
     for (let day = FIRST; day <= LAST; day++) {

@@ -1,11 +1,11 @@
 // SOL ZÉRO — Prototype santé mentale : fait tourner les 6 agents sur les jours clés, AVANT la démo.
 // Modèle local via Ollama (traitement « à bord » : rien ne part sur Internet).
 //
-//   Avec l'API Claude :  export ANTHROPIC_API_KEY=sk-ant-…   puis  node proto/mental/run.mjs
+//   Avec l'API Claude :  export ANTHROPIC_API_KEY=sk-ant-…   puis  node scripts/mental-agents/run.mjs
 //   Avec Ollama (local) : ollama pull qwen2.5:7b
-//   node proto/mental/generate.mjs
-//   node proto/mental/run.mjs                      # jours clés 65,74,78,85,94, scénarios drift + control
-//   DAYS=78 SCENARIOS=drift node proto/mental/run.mjs   # un seul jour pour tester
+//   node scripts/mental-agents/generate.mjs
+//   node scripts/mental-agents/run.mjs                      # jours clés 65,74,78,85,94, scénarios drift + control
+//   DAYS=78 SCENARIOS=drift node scripts/mental-agents/run.mjs   # un seul jour pour tester
 //
 // Sorties figées : public/data/mental/<scenario>/J<n>.json + public/data/mental/summary.json
 // Ce script ne lit JAMAIS data/truth.json (la vérité sert seulement à évaluer après coup).
@@ -52,7 +52,7 @@ async function chatClaude(messages, tries = 3) {
       // Garde la réponse brute pour comprendre l'échec (dossier ignoré par git).
       fs.mkdirSync(path.join(HERE, 'debug'), { recursive: true });
       fs.writeFileSync(path.join(HERE, 'debug', `echec-${Date.now()}.txt`), `stop_reason: ${body.stop_reason}\nerreur: ${e.message}\n\n${text}`);
-      console.warn(`  JSON invalide (essai ${i}/${tries}, arrêt : ${body.stop_reason}) — réponse brute dans proto/mental/debug/`);
+      console.warn(`  JSON invalide (essai ${i}/${tries}, arrêt : ${body.stop_reason}) — réponse brute dans scripts/mental-agents/debug/`);
     }
   }
   return { output: null, error: 'échec après plusieurs essais' };

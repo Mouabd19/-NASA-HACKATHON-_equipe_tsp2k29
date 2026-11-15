@@ -4,7 +4,11 @@
 
 *NASA Space Apps Challenge 2026 · Health Monitoring Software for Astronauts · Team TSP2k29*
 
-**Live demo:** https://triflow-delta.vercel.app
+| | |
+| :-- | :-- |
+| **▶ Try the app** | **[triflow-delta.vercel.app](https://triflow-delta.vercel.app)** — runs in the browser, best on a desktop screen |
+| **▶ Pitch deck** | **[Animated slides](https://triflow-delta.vercel.app/slides/)** (arrow keys to navigate, **F** for full screen) · **[PDF](docs/pitch/TriFlow-demo-slides.pdf)** |
+| **Built with** | React 19 · TypeScript · Three.js · scikit-learn · Vercel · SwiftUI (Apple Watch) |
 
 ![TriFlow: the body scan at load](docs/screenshots/scan.png)
 
@@ -91,6 +95,7 @@ npm run build      # type-check + production build (site in dist/, API bundle in
 ```
 
 Routes: `/body` · `/warroom` (Today's plan) · `/mental` · `/reasoning/:id`.
+The pitch deck is served at `/slides/index.html`.
 Useful URL options on `/body`: `?noscan=1` skips the scan animation; `?day=860&plan=1` opens the return day with the plan.
 
 In development, the watch API runs inside the Vite dev server (in memory). On Vercel, it runs as a Node function (`api/index.ts`) backed by Upstash Redis; see `vercel.json`.
@@ -111,9 +116,12 @@ React 19 · TypeScript · Vite · Three.js / React Three Fiber · Zustand · Vit
 | `src/ui/` | Design system (`tokens.ts` is the single source of colors and type) |
 | `server/`, `api/` | Watch API: local Vite plugin and Vercel function |
 | `scripts/ml/` | Model training (Python) |
+| `scripts/mental-agents/` | Multi-agent mental-health analysis, precomputed with Claude |
 | `public/data/` | Simulated data, model cards, NASA standards, AI summaries |
 | `public/models/` | 3D anatomy models (glTF) |
+| `public/slides/` | Pitch deck (HTML, served at `/slides/`) |
 | `tests/` | Tests |
+| `docs/` | Screenshots, pitch PDF, NASA sources, and the team's hackathon notes (`docs/hackathon/`: roadmap, daily status, UI proposals) |
 
 ## Team TSP2k29
 - **Walid**: Body page, 3D scene, design system, integration.

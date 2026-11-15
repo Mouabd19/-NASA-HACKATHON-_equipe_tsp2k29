@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TriFlow · pitch</title>
+<meta name="description" content="TriFlow pitch deck, team TSP2k29, NASA Space Apps 2026. Works offline.">
+<link rel="preload" href="assets/fonts/inter-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/deck.css">
+</head>
+<body>
+<div id="viewport" aria-live="polite">
+<div id="stage">
+
+<!-- 1 · Le corps s'use plus vite (Steve) -->
+<section class="slide" data-id="1" data-title="The body wears out faster">
+  <h1 class="h1 title">In space, the body wears out faster.</h1>
+  <div class="story">
+    <div class="it"><span class="n">2016</span><span class="k">Scott Kelly</span><span class="d">returns to Earth</span></div>
+    <div class="it"><svg class="ico" viewBox="0 0 120 120" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><circle cx="62" cy="16" r="9"/><path d="M60 32 L54 62 L70 82 L72 108"/><path d="M54 62 L40 86 L28 104"/><path d="M58 40 L38 52 L30 66"/><path d="M58 40 L76 54 L90 56"/></g><path d="M14 14 L106 106 M106 14 L14 106" stroke="var(--red)" stroke-width="9" stroke-linecap="round"/></svg><span class="k">Can barely walk</span><span class="d">stepping out of the capsule</span></div>
+    <div class="it"><span class="n">2&nbsp;h</span><span class="k">of exercise a day</span><span class="d">for the whole mission</span></div>
+  </div>
+  <p class="src">True story<b> [Daily Beast]</b></p>
+</section>
+
+<!-- 2 · 1 h 30 de sport par jour (Steve) -->
+<section class="slide" data-id="2" data-title="Keeping astronauts healthy">
+  <h1 class="h1 title">Keeping astronauts healthy</h1>
+  <div class="axes">
+    <div class="ax"><span class="no">1</span><span class="k">Body analysis</span><span class="how">The scanner</span><span class="d">Bones, muscles, organs, measured in one minute.</span></div>
+    <div class="ax"><span class="no">2</span><span class="k">Optimised routine</span><span class="how">AI + Apple Watch</span><span class="d">The daily plan, adjusted to what the body goes through.</span></div>
+    <div class="ax"><span class="no">3</span><span class="k">Mental health monitoring</span><span class="how">Smart glasses</span><span class="d">Continuous capture, analysed for personalised follow-up.</span></div>
+  </div>
+</section>
+
+<!-- 4 · Kelly, jour 94 sur 860 -->
+<section class="slide" data-id="4" data-title="Commander Kelly, day 94 of 860" data-skip="c">
+  <h1 class="h1 title">Commander Kelly<br>Day 94 of 860</h1>
+  <svg class="fig" viewBox="0 0 1920 1080" aria-hidden="true" data-fig="mission"></svg>
+</section>
+
+<!-- 4 · La capture des données (Walid) : vidéo du scanner -->
+<section class="slide" data-id="45" data-title="Capturing the data">
+  <h1 class="h1 title">Capturing the data</h1>
+  <div class="capture">
+    <div class="cap-left">
+      <video class="cap-video" src="assets/scanner-ring.mp4" style="aspect-ratio: 2724 / 1310" autoplay muted loop playsinline></video>
+      <p class="cap-label">The scanner</p>
+    </div>
+    <div class="cap-side">
+      <div class="grp"><p class="gk">Scan</p><p class="gv">Muscle volume · heart (ejection fraction) · kidneys (stones) · optic nerve</p></div>
+      <div class="grp"><p class="gk">Blood test</p><p class="gv">Haemoglobin · cortisol · inflammation (CRP) · vitamin D · glucose</p></div>
+      <div class="grp"><p class="gk">Urine test</p><p class="gv">Calcium and CTX: bone loss</p></div>
+      <div class="grp"><p class="gk">Smartwatch</p><p class="gv">Heart rate · heart rate variability · sleep</p></div>
+    </div>
+  </div>
+  <p class="src">Midjourney Scanner, announced in June 2026 <b>[Midjourney Medical]</b></p>
+</section>
+
+<!-- 5 · Le film (Walid) -->
+<section class="slide" data-id="47" data-title="The film">
+  <video class="film" src="assets/film.mp4" autoplay muted loop playsinline></video>
+</section>
+
+<!-- 6 · Comment marche le scanner (Walid) -->
+<section class="slide" data-id="46" data-title="How the scanner works">
+  <h1 class="h1 title">How the scanner works.</h1>
+  <div class="howscan">
+    <figure><video src="assets/scan.mp4" autoplay muted loop playsinline></video><figcaption>Each tissue bends the sound wave differently</figcaption></figure>
+    <figure><video src="assets/scan-coupes.mp4" autoplay muted loop playsinline></video><figcaption>The body moves through the ring, slice after slice</figcaption></figure>
+  </div>
+  <div class="steps">
+    <div class="st"><span class="no">1</span><p class="k">Sound through the body</p><p class="d">In a warm water bath, a ring of sensors sends sound waves through the body. Each tissue refracts and diffracts them differently. No radiation.</p></div>
+    <div class="st"><span class="no">2</span><p class="k">A 3D body</p><p class="d">From how the waves changed, the computer rebuilds each slice. Stacked up, they give the whole body in 3D, in about a minute.</p></div>
+    <div class="st"><span class="no">3</span><p class="k">Organs measured</p><p class="d">AI recognises each tissue: muscles, organs, vessels, vertebrae. From that we get volumes and measurements.</p></div>
+  </div>
+</section>
+
+<!-- 6 · Prédit par un modèle de ML (Steve) -->
+<section class="slide" data-id="70" data-title="Three machine learning models" data-skip="c">
+  <h1 class="h1 title">Three machine learning models</h1>
+  <div class="ml-cards">
+    <div class="mc"><p class="nm">Organ projection</p><p class="w">Predicts bone, muscle and heart loss, with a range.</p><p class="big">8.6%</p><p class="bd">predicted hip loss at return (6.4 to 11.7%)</p><p class="ft">Trained on 2,000 NASA-calibrated virtual astronauts</p></div>
+    <div class="mc"><p class="nm">Blood age</p><p class="w">Reads 13 markers from the blood test.</p><p class="big">+3.5&nbsp;years</p><p class="bd">for Kelly after 3 months in flight</p><p class="ft">Trained on 9,326 real adults (NHANES)</p></div>
+    <div class="mc"><p class="nm">Mood signal</p><p class="w">Compares the astronaut with themselves, day after day.</p><p class="big">D83</p><p class="bd">alert, 8 days after the mood change began</p><p class="ft">92% of episodes caught across 1,500 virtual astronauts</p></div>
+  </div>
+  <p class="src">Models predict, NASA standards decide · simulated training data <b>[H]</b>, except NHANES (CDC)</p>
+</section>
+
+
+
+<!-- 7 · Suivre le plan chaque jour -->
+<section class="slide" data-id="7" data-title="Following the plan every day halves the loss" data-skip="c">
+  <h1 class="h3 title">Following the plan every day halves the loss</h1>
+  <svg class="fig" viewBox="0 0 1920 1080" aria-hidden="true" data-fig="bone"></svg>
+</section>
+
+<!-- 7 · La montre (Steve) -->
+<section class="slide" data-id="71" data-title="The essentials, on the wrist">
+  <h1 class="h1 title">The essentials, on the wrist.</h1>
+  <div class="watch-row">
+    <div class="wt"><div class="face"><img src="assets/watch/01-today.png" alt="Today screen of the watch app"></div><p class="nm">Today</p><p class="d">The day's level, the instruction and its “Why?”.</p></div>
+    <div class="wt"><div class="face"><img src="assets/watch/03-body.png" alt="Body screen of the watch app"></div><p class="nm">Body</p><p class="d">The areas to watch, at a glance.</p></div>
+    <div class="wt"><div class="face"><img src="assets/watch/04-todo.png" alt="To-do screen of the watch app"></div><p class="nm">To-do</p><p class="d">The day's tasks, ticked off on the wrist.</p></div>
+  </div>
+  <p class="src">Apple Watch app (SwiftUI) · also streams heart rate live to the War Room · simulator screenshots, Kelly's data simulated <b>[H]</b></p>
+</section>
+
+<!-- 8 · Le suivi psychologique (Steve) -->
+<section class="slide" data-id="72" data-title="Mental health monitoring">
+  <h1 class="h1 title">Mental health monitoring.</h1>
+  <div class="flow">
+    <div class="fn "><p class="k">Smart glasses</p><p class="d">film and record, 24 hours a day</p></div>
+    <div class="fa" aria-hidden="true">→</div>
+    <div class="fn "><p class="k">3 AI observers</p><p class="d">log the facts, without interpreting</p></div>
+    <div class="fa" aria-hidden="true">→</div>
+    <div class="fn "><p class="k">3 AI psychologists</p><p class="d">give a level, kept if 2 out of 3 agree</p></div>
+    <div class="fa" aria-hidden="true">→</div>
+    <div class="fn human"><p class="k">Human psychologist</p><p class="d">receives the file and decides</p></div>
+  </div>
+  <div class="flow-res">
+    <div class="it"><span class="n">24/7</span><span class="d">continuous capture, not one interview a week</span></div>
+    <div class="it"><span class="n">10&nbsp;days</span><span class="d">to spot a drop in mood (prototype)</span></div>
+    <div class="it"><span class="n">0</span><span class="d">false alarms for the control astronaut, with no disorder</span></div>
+  </div>
+  <p class="src">Prototype: fictional astronaut, simulated days, disorder injected on D75, analysed by Claude <b>[H]</b> · AI flags, the psychologist decides</p>
+</section>
+
+
+
+<div id="num" aria-hidden="true"></div>
+</div>
+</div>
+
+<!-- Surcouches (hors scène) -->
+<div id="notes" class="overlay" role="region" aria-label="Speaker notes"></div>
+<div id="timer" class="overlay" role="timer"><div class="el">0:00</div><div class="pl"></div></div>
+<div id="toast" class="overlay" role="status"></div>
+<div id="overview" class="overlay" role="dialog" aria-label="All slides"></div>
+<div id="help" class="overlay">
+  <div><kbd>→</kbd><kbd>Space</kbd>next · <kbd>←</kbd>previous · <kbd>R</kbd>replay the slide</div>
+  <div><kbd>N</kbd>notes · <kbd>T</kbd>timer · <kbd>O</kbd>overview · <kbd>P</kbd>presenter window</div>
+  <div><kbd>F</kbd>full screen · <kbd>0</kbd>reset the timer · number then <kbd>Enter</kbd>: go to slide · <kbd>?</kbd>this help</div>
+</div>
+
+<!-- Vue présentateur (fenêtre ouverte par P) -->
+<div id="pres">
+  <div class="col">
+    <div class="now" id="pnow"></div>
+    <div id="pnotes"></div>
+  </div>
+  <div class="col">
+    <div class="clock" id="pclock">0:00</div>
+    <div class="plan" id="pplan"></div>
+    <div class="lbl">Next slide</div>
+    <div class="frame"><iframe id="pnext" title="Next slide" tabindex="-1"></iframe></div>
+    <div class="lbl" id="pnexttitle"></div>
+    <div class="btns">
+      <button data-cmd="prev">Previous</button><button data-cmd="next">Next</button>
+      <button data-cmd="replay">Replay</button><button data-cmd="reset">Reset timer</button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/notes.js"></script>
+<script src="assets/data.js"></script>
+<script src="assets/slides.js"></script>
+<script src="assets/deck.js"></script>
+</body>
+</html>
