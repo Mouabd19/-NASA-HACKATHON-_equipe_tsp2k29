@@ -151,8 +151,6 @@ button:disabled { cursor: default; }
   white-space: nowrap;
 }
 .sz-alarm[data-priority='haute'] { background: var(--sz-red); }
-/* Priorité basse « ! » : aplat orange */
-.sz-alarm[data-priority='basse'] { background: var(--sz-orange); }
 /* Priorité moyenne : triangle « attention » jaune, sans aplat autour */
 .sz-alarm[data-priority='moyenne'] { background: transparent; padding: 0; }
 .sz-alarm__tri { width: 19px; height: 17px; display: block; }
@@ -161,15 +159,15 @@ button:disabled { cursor: default; }
 /* Projection : contour de la couleur, fond transparent. Une prévision n'est pas une alarme. */
 .sz-alarm[data-projected] {
   background: transparent;
-  box-shadow: inset 0 0 0 1px var(--sz-amber);
-  color: var(--sz-text-dim);
+  box-shadow: inset 0 0 0 1px var(--sz-orange);
+  color: var(--sz-orange);
 }
-.sz-alarm[data-projected][data-priority='haute'] { box-shadow: inset 0 0 0 1px var(--sz-red); }
-.sz-alarm[data-projected][data-priority='basse'] { box-shadow: inset 0 0 0 1px var(--sz-orange); }
+.sz-alarm[data-projected][data-priority='haute'] { box-shadow: inset 0 0 0 1px var(--sz-red); color: var(--sz-red); }
 /* Projection du triangle : contour seul */
 .sz-alarm[data-projected][data-priority='moyenne'] { box-shadow: none; }
 .sz-alarm[data-projected] .sz-alarm__tri-bg { fill: transparent; }
-.sz-alarm[data-projected] .sz-alarm__tri-mark { stroke: var(--sz-amber); }
+.sz-alarm[data-projected] .sz-alarm__tri-bg { stroke: var(--sz-orange); }
+.sz-alarm[data-projected] .sz-alarm__tri-mark { stroke: var(--sz-orange); }
 
 /* Marqueur + mot du niveau (« ! Attention ») */
 .sz-alarm-l {

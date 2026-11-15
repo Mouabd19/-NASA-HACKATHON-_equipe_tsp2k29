@@ -111,7 +111,7 @@ export function alarmText(level: Level, projected = false): string {
 }
 
 /**
- * Marqueur de priorité d'alarme (« !!! », « !! », « ! »), comme dans le champ d'alarme d'un moniteur :
+ * Marqueur de priorité d'alarme (« ! » rouge, triangle « attention », « ! » jaune), comme dans le champ d'alarme d'un moniteur :
  * aplat de la couleur d'alarme, texte sombre. En projection, contour seulement. Rien pour un niveau nominal ou inconnu.
  * Le mot du niveau (Attention, Attention renforcée, Alerte) reste le vocabulaire de l'app ; la priorité
  * IEC 60601-1-8 (haute, moyenne, basse) n'est donnée qu'en complément, dans l'infobulle et l'aria.

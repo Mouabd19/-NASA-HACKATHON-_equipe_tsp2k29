@@ -24,8 +24,8 @@ export const tokens = {
     accent: '#E9ECEF',        // interaction : case cochée, focus, sélection (la couleur reste aux alarmes)
     holo: '#C3CAD1',          // corps 3D : gris argentique d'un cliché, sans teinte
     ok: '#3EB873',            // nominal
-    amber: '#EDBB2C',         // jaune d'alarme (priorité moyenne : triangle « attention »)
-    orange: '#F28C28',        // orange d'alarme (priorité basse : « ! »)
+    amber: '#EDBB2C',         // jaune d'alarme (priorité moyenne / basse)
+    orange: '#F28C28',        // orange : alarme projetée (contour sur fond sombre), pas une alarme du jour
     red: '#F04A42',           // rouge d'alarme (priorité haute)
     unknown: '#79828C',       // sans donnée
     onStatus: '#07080A',      // texte posé sur un aplat d'alarme (jaune, rouge)
@@ -92,7 +92,8 @@ export const levelPriority: Record<Level, AlarmPriority | null> = {
   VERT: null,
   DONNEES_INSUFFISANTES: null,
 };
-export const priorityMark: Record<AlarmPriority, string> = { haute: '!!!', moyenne: '!!', basse: '!' };
+// haute : un seul « ! » sur aplat rouge (la couleur suffit) ; moyenne : triangle « attention » (dessiné par AlarmMark)
+export const priorityMark: Record<AlarmPriority, string> = { haute: '!', moyenne: '!!', basse: '!' };
 export const priorityLabel: Record<AlarmPriority, string> = {
   haute: 'Priorité haute',
   moyenne: 'Priorité moyenne',
