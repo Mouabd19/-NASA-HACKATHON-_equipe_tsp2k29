@@ -79,7 +79,11 @@ struct WatchTodo: Codable, Equatable, Identifiable {
 
     var isUrgent: Bool { kind == "medical" && priority == 1 }
     /// Charge lourde : suspendue si le niveau du jour est ORANGE ou ROUGE (même règle que la page web)
-    var isHeavy: Bool { kind == "exercice" && detail.contains("charge lourde") }
+    /// Même test que la page web (TodoList.isSuspended) : « heavy load » depuis la traduction du site, « charge lourde » avant
+    var isHeavy: Bool {
+        let text = "\(title) \(detail)".lowercased()
+        return kind == "exercice" && (text.contains("heavy load") || text.contains("charge lourde"))
+    }
 }
 
 /// D'où viennent les données affichées. Le contenu est toujours celui de la persona (simulé) :
