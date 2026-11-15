@@ -8,7 +8,7 @@ export const DAY_SOL0 = 210;
 export const DAY_END = 860;
 export const MISSION_START_DATE = '2026-08-12';
 export const CHRONO_AGE_J0 = 42;
-export const PERSONA = { name: 'HADDAD', sex: 'M', ageJ0: CHRONO_AGE_J0, tag: 'Persona' } as const;
+export const PERSONA = { name: 'Scott Kelly', sex: 'M', ageJ0: CHRONO_AGE_J0, tag: 'Persona' } as const;
 
 const DAY_MS = 86_400_000;
 

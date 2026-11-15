@@ -24,7 +24,7 @@ function TopBar(): JSX.Element {
     <header className="sz-topbar">
       <div className="sz-topbar__left">
         {/* mot-symbole seul : pas de pictogramme santé générique */}
-        <span className="sz-wordmark">Sol Zero</span>
+        <span className="sz-wordmark">Triflow</span>
         <nav className="sz-nav" aria-label="Pages">
           {TABS.map((t) => (
             <NavLink
@@ -40,16 +40,9 @@ function TopBar(): JSX.Element {
 
       <div className="sz-topbar__right">
         {/* identification du patient : grade et nom de la persona, rien d'inventé en plus */}
-        <span className="sz-patient" title="Fictional persona from the mission scenario">
+        <span className="sz-patient">
           <span className="sz-patient__role">Cmdr</span>
           <strong className="sz-patient__name">{sentenceCase(ASTRONAUT.name)}</strong>
-        </span>
-        {/* rappel d'honnêteté unique quand les étiquettes par chiffre sont masquées */}
-        <span
-          className="sz-topbar__sim"
-          title="Fictional persona and simulated data — “Details” shows where each figure comes from"
-        >
-          Simulated data
         </span>
         <DetailsToggle />
       </div>

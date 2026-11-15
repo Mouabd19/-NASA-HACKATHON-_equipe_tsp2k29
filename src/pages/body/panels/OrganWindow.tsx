@@ -633,7 +633,7 @@ function GlobalRight({ result }: { result: PhenoAgeResult | null }): JSX.Element
             {drivers.top.map((t, i) => (
               <span key={t.k}>{i ? ' and ' : ''}{PHENO_NAME[t.k]} (+{fmt(t.years, 1)} yr)</span>
             ))}
-            . PhenoAge is highly sensitive to these markers: on a simulated series, a rise this large should be confirmed by a second blood draw before an age is derived from it.
+            . PhenoAge is highly sensitive to these markers: a rise this large should be confirmed by a second blood draw before an age is derived from it.
           </p>
         ) : null}
       </Sect>

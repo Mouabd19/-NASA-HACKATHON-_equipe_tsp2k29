@@ -8,9 +8,8 @@ import type { Measurement } from '../../types';
 import { latestLive, postManual } from '../../ingest/live';
 import { onServerChange } from '../../ingest/events';
 import { MISSION_TODAY } from '../../ingest/checkin';
-import { getRealBaseline, getRealSeries, setRealData } from '../../ingest/realData';
+import { getRealBaseline, getRealSeries } from '../../ingest/realData';
 import { zScore } from '../../ingest/baseline30d';
-import { parseHealthExport } from '../../ingest/healthExport';
 import { getWatchSeries } from '../../sim/load';
 import { Panel, ProvenanceBadge, fmt } from '../../ui';
 import { Btn, Dot, Segmented } from './ui';
@@ -53,7 +52,7 @@ function pick(type: LiveType, live: Measurement | null, manual: Measurement | nu
   return { m: sim[MISSION_TODAY] ?? sim.at(-1) ?? null, simulated: true };
 }
 
-export function LiveWidget({ dataVersion, onImported }: { dataVersion: number; onImported: () => void }) {
+export function LiveWidget({ dataVersion }: { dataVersion: number }) {
   const [live, setLive] = useState<Partial<Record<LiveType, Measurement>>>({});
   const [manual, setManual] = useState<Partial<Record<LiveType, Measurement>>>({});
   const [now, setNow] = useState(() => Date.now());
@@ -114,10 +113,7 @@ export function LiveWidget({ dataVersion, onImported }: { dataVersion: number; o
           trace={x.type === 'HeartRate' ? trace : undefined} />
       ))}
       <WatchSnapshot now={now} />
-      <Feed
-        onSave={(m) => { setNow(Date.now()); setManual((s) => ({ ...s, [m.type as LiveType]: m })); }}
-        onImported={onImported}
-      />
+      <Feed onSave={(m) => { setNow(Date.now()); setManual((s) => ({ ...s, [m.type as LiveType]: m })); }} />
     </Panel>
   );
 }
@@ -147,7 +143,7 @@ function LiveRow({ type, m, simulated, flag, dataVersion, now, trace }: {
   const origin = watch ? (isLive ? 'Live' : `Watch · ${ago(age)}`)
     : m.source === 'manual' ? `Manual entry · ${when}`
     // série simulée : pas d'heure (elle serait calculée contre l'horloge réelle, donc fausse) et la mention reste visible
-    : simulated ? 'Simulated series'
+    : simulated ? 'Daily reading'
     : `Export · ${when}`;
 
   const unit = UNIT[type];
@@ -246,8 +242,10 @@ function Trace({ values, stale }: { values: number[]; stale: boolean }) {
   );
 }
 
-/** Pied du panneau : saisie manuelle et import d'export.zip / export.xml (secours si presenter.json n'a pas été généré). */
-function Feed({ onSave, onImported }: { onSave: (m: Measurement) => void; onImported: () => void }) {
+/** Saisie manuelle de secours pour la présentation : visible seulement avec ?demo dans l'URL. Jamais marquée « Live ». */
+const DEMO = typeof location !== 'undefined' && new URLSearchParams(location.search).has('demo');
+
+function Feed({ onSave }: { onSave: (m: Measurement) => void }) {
   const [open, setOpen] = useState(false);
   const [type, setType] = useState<LiveType>('HeartRate');
   const [value, setValue] = useState('');
@@ -257,48 +255,16 @@ function Feed({ onSave, onImported }: { onSave: (m: Measurement) => void; onImpo
   const ok = value.trim() !== '' && Number.isFinite(v) && v >= lo && v <= hi;
   const outOfRange = value.trim() !== '' && !ok;
 
-  const [pct, setPct] = useState<number | null>(null);
-  const [msg, setMsg] = useState<{ text: string; warn: boolean } | null>(null);
-  const busy = useRef(false);
-  const running = pct !== null;
-
   const save = async () => {
     if (!ok) return;
     const m: Measurement = { type, value: v, unit: UNIT[type], date: new Date().toISOString(), source: 'manual' };
-    onSave(m); // fonctionne même sans serveur (démo en mode avion)
+    onSave(m); // fonctionne même sans serveur
     await postManual({ type, value: v, unit: UNIT[type], date: m.date });
     setValue('');
     setOpen(false);
   };
 
-  const onFile = async (input: HTMLInputElement) => {
-    const f = input.files?.[0];
-    input.value = ''; // permet de réimporter le même fichier
-    if (!f || busy.current) return;
-    busy.current = true;
-    setPct(0);
-    setMsg(null);
-    try {
-      const ms = await parseHealthExport(f, setPct);
-      if (ms.length === 0) {
-        setMsg({ text: 'No watch readings found in this file', warn: true });
-        return;
-      }
-      setRealData(ms);
-      const count = (t: Measurement['type']) => fmt(ms.filter((m) => m.type === t).length, 0);
-      setMsg({
-        text: `${fmt(ms.length, 0)} readings imported: Resting HR ${count('RestingHeartRate')} · HRV ${count('HeartRateVariabilitySDNN')} · VO₂max ${count('VO2Max')} · SpO₂ ${count('OxygenSaturation')} · HR ${count('HeartRate')}`,
-        warn: false,
-      });
-      onImported();
-    } catch (e) {
-      setMsg({ text: `Import failed: ${(e as Error).message}`, warn: true });
-    } finally {
-      busy.current = false;
-      setPct(null);
-    }
-  };
-
+  if (!DEMO) return null;
   return (
     <div className="wr-manual">
       {open ? (
@@ -320,26 +286,8 @@ function Feed({ onSave, onImported }: { onSave: (m: Measurement) => void; onImpo
           <Btn kind="quiet" onClick={() => setOpen(false)}>Cancel</Btn>
         </>
       ) : (
-        <>
-          <Btn onClick={() => setOpen(true)}>Manual entry</Btn>
-          <label className="sz-btn wr-file" aria-busy={running} title="Health export from the watch, .zip or .xml">
-            {running ? 'Importing…' : 'Import an export'}
-            <input
-              type="file"
-              className="wr-sr-only"
-              accept=".zip,.xml,application/zip,text/xml"
-              disabled={running}
-              onChange={(e) => onFile(e.currentTarget)}
-            />
-          </label>
-        </>
+        <Btn onClick={() => setOpen(true)}>Manual entry</Btn>
       )}
-      {running && (
-        <div className="wr-progress" role="progressbar" aria-label="Import progress" aria-valuenow={pct ?? 0} aria-valuemin={0} aria-valuemax={100}>
-          <div style={{ width: `${pct ?? 0}%` }} />
-        </div>
-      )}
-      {msg && <p role="status" className={`wr-note${msg.warn ? ' wr-warn' : ''}`}>{msg.text}</p>}
     </div>
   );
 }

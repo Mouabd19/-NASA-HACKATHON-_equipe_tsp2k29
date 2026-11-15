@@ -7,14 +7,14 @@
  "input": {
   "transcript": [
    "06:44 — Wakes up. Gets up right away.",
-   "07:30 — Breakfast with the crew. Haddad: “Can you stop asking me if I'm okay?” Answers after a long silence.",
-   "08:30 — Briefing with Earth (delayed message). Haddad asks two questions about the schedule and suggests a change.",
+   "07:30 — Breakfast with the crew. Kelly: “Can you stop asking me if I'm okay?” Answers after a long silence.",
+   "08:30 — Briefing with Earth (delayed message). Kelly asks two questions about the schedule and suggests a change.",
    "10:00 — Air filtration system maintenance: finished on time.",
-   "12:40 — Shared lunch. Haddad: “I feel like I'm going around in circles here.”",
+   "12:40 — Shared lunch. Kelly: “I feel like I'm going around in circles here.”",
    "14:00 — Exercise session: complete (60 min ARED + bike).",
-   "16:00 — Biology experiment with Okafor. Haddad jokes and suggests a variation of the protocol.",
+   "16:00 — Biology experiment with Okafor. Kelly jokes and suggests a variation of the protocol.",
    "17:30 — Delayed video call with his family (recorded messages). 9-min recorded message, smiles.",
-   "19:30 — Shared dinner. Haddad: “Ito, will you show me your fix on the pump?”",
+   "19:30 — Shared dinner. Kelly: “Ito, will you show me your fix on the pump?”",
    "21:00 — Movie night with the crew, comments on the film.",
    "23:30 — Goes to bed."
   ],
@@ -69,7 +69,7 @@
       "citation": null
      }
     ],
-    "resume": "Haddad ate his three meals with the crew (0 skipped meals) and spent 209 min with them, finishing the maintenance and the full exercise session. He recorded 3,872 steps between getting up at 06:44 and going to bed at 23:30."
+    "resume": "Kelly ate his three meals with the crew (0 skipped meals) and spent 209 min with them, finishing the maintenance and the full exercise session. He recorded 3,872 steps between getting up at 06:44 and going to bed at 23:30."
    },
    "seconds": 7.9
   },
@@ -80,36 +80,36 @@
     "faits": [
      {
       "heure": "07:30",
-      "fait": "Haddad asks the crew to stop asking him if he's okay, and answers after a long silence.",
+      "fait": "Kelly asks the crew to stop asking him if he's okay, and answers after a long silence.",
       "citation": "Can you stop asking me if I'm okay?"
      },
      {
       "heure": "08:30",
-      "fait": "During the briefing with Earth, Haddad asks two questions about the schedule and suggests a change.",
+      "fait": "During the briefing with Earth, Kelly asks two questions about the schedule and suggests a change.",
       "citation": null
      },
      {
       "heure": "12:40",
-      "fait": "At the shared lunch, Haddad tells the crew how he feels about the mission.",
+      "fait": "At the shared lunch, Kelly tells the crew how he feels about the mission.",
       "citation": "I feel like I'm going around in circles here."
      },
      {
       "heure": "16:00",
-      "fait": "During the biology experiment with Okafor, Haddad jokes and suggests a variation of the protocol.",
+      "fait": "During the biology experiment with Okafor, Kelly jokes and suggests a variation of the protocol.",
       "citation": null
      },
      {
       "heure": "17:30",
-      "fait": "Haddad records a 9-minute video message for his family during the delayed call.",
+      "fait": "Kelly records a 9-minute video message for his family during the delayed call.",
       "citation": null
      },
      {
       "heure": "19:30",
-      "fait": "At dinner, Haddad calls out to Ito and asks him to show him his fix on the pump.",
+      "fait": "At dinner, Kelly calls out to Ito and asks him to show him his fix on the pump.",
       "citation": "Ito, will you show me your fix on the pump?"
      }
     ],
-    "resume": "Haddad took the initiative with questions and suggestions about the schedule, the protocol and a technical fix, and recorded a long message for his family. He made a remark to the crew about the mission routine and asked not to be questioned about how he is anymore."
+    "resume": "Kelly took the initiative with questions and suggestions about the schedule, the protocol and a technical fix, and recorded a long message for his family. He made a remark to the crew about the mission routine and asked not to be questioned about how he is anymore."
    },
    "seconds": 4.7
   },
@@ -149,7 +149,7 @@
       "citation": null
      }
     ],
-    "resume": "Haddad gets up without delay, eats all his meals and completes his 60-minute exercise session. He describes a feeling of stagnation at lunch, pauses for a long silence before answering the crew in the morning and smiles during his message to his family."
+    "resume": "Kelly gets up without delay, eats all his meals and completes his 60-minute exercise session. He describes a feeling of stagnation at lunch, pauses for a long silence before answering the crew in the morning and smiles during his message to his family."
    },
    "seconds": 7.8
   }
@@ -165,7 +165,7 @@
      {
       "schema": "Weariness with the mission routine, expressed verbally. To watch if it persists.",
       "preuves": [
-       "At lunch, Haddad says “I feel like I'm going around in circles here.” (body and speech observer)",
+       "At lunch, Kelly says “I feel like I'm going around in circles here.” (body and speech observer)",
        "Self-reported mood at 3/5 today, vs 4/5 on D68 to D73",
        "Feeling of stagnation described by the body observer, while physical activity remains complete"
       ]
@@ -224,11 +224,11 @@
     ],
     "pointsRassurants": [
      "All three meals are eaten with the crew (0 skipped meals).",
-     "Sleep of 7.1 h, within Haddad's usual variation (+3%).",
+     "Sleep of 7.1 h, within Kelly's usual variation (+3%).",
      "Full 60-min exercise session and filtration maintenance finished on time.",
      "Initiative on the schedule and the protocol, and a 9-min video message to his family, smiling throughout."
     ],
-    "noteAuPsy": "Only one indicator (self-reported mood) exceeds 20% today, and no 3-day pattern reaches the alert threshold, so the level remains “nothing to report”. The point to watch is Haddad's request to stop the questions about how he is, combined with mood at 3/5 and declining HRV; cortisol was not measured today (an isolated 423 nmol/L on D70). An informal conversation about the feeling of “going around in circles” would be appropriate if the signal recurs over the next few days."
+    "noteAuPsy": "Only one indicator (self-reported mood) exceeds 20% today, and no 3-day pattern reaches the alert threshold, so the level remains “nothing to report”. The point to watch is Kelly's request to stop the questions about how he is, combined with mood at 3/5 and declining HRV; cortisol was not measured today (an isolated 423 nmol/L on D70). An informal conversation about the feeling of “going around in circles” would be appropriate if the signal recurs over the next few days."
    },
    "seconds": 9.5
   },
@@ -244,7 +244,7 @@
       "preuves": [
        "Self-reported mood at 3/5 today, i.e. -21% vs baseline 3.8, and the only indicator exceeding 20%",
        "Mood at 4/5 on D68, D69, D71, D72 and D73, so no decline over 7 days",
-       "At lunch, Haddad says “I feel like I'm going around in circles here.”"
+       "At lunch, Kelly says “I feel like I'm going around in circles here.”"
       ]
      }
     ],
@@ -260,7 +260,7 @@
      "Initiatives at the briefing and on the biology experiment, and a message to his family recorded with a smile",
      "Speaking time at +10% vs baseline and step count at +5%"
     ],
-    "noteAuPsy": "Only one indicator (mood) exceeds 20% today, and the 7-day history shows no persistence, so there is no alert signal under the grid. Haddad's remarks about the crew's repeated questions “Can you stop asking me if I'm okay?” and about the feeling of going around in circles are factual and deserve to be explored in an informal conversation, without interpreting them here. To revisit if the drop in mood or HRV continues over the next few days."
+    "noteAuPsy": "Only one indicator (mood) exceeds 20% today, and the 7-day history shows no persistence, so there is no alert signal under the grid. Kelly's remarks about the crew's repeated questions “Can you stop asking me if I'm okay?” and about the feeling of going around in circles are factual and deserve to be explored in an informal conversation, without interpreting them here. To revisit if the drop in mood or HRV continues over the next few days."
    },
    "seconds": 11.5
   }

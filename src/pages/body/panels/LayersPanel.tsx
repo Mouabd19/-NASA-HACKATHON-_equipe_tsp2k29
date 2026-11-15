@@ -129,7 +129,7 @@ export function LayersPanel(): JSX.Element {
               aria-pressed={layers[l]}
               onClick={onLayerClick(l)}
               onDoubleClick={() => soloLayer(l)}
-              title={`${sentenceCase(meta.label)}${meta.mvp ? '' : ' (beta)'}: ${alertsText(n)}. ${SOLO_HINT}.`}
+              title={`${sentenceCase(meta.label)}: ${alertsText(n)}. ${SOLO_HINT}.`}
             >
               <span className="lyr__box" aria-hidden="true">
                 <svg viewBox="0 0 14 14"><path d="M3.5 7.2l2.4 2.4 4.6-5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -164,7 +164,6 @@ export function LayersPanel(): JSX.Element {
                 title={`Hide layer. ${SOLO_HINT}.`}
               >
                 <span className="lyr__label">{sentenceCase(meta.label)}</span>
-                {!meta.mvp ? <span className="lyr__beta sz-detail" title="Layer under development: partial data">Beta</span> : null}
                 <span className="lyr__fill" />
                 {n > 0 ? <span className="lyr__alerts sz-detail">{alertsText(n)}</span> : null}
                 {groupTag ? <span className="lyr__gtag sz-detail"><TagBadge tag={groupTag} /></span> : null}

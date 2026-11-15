@@ -7,14 +7,14 @@
  "input": {
   "transcript": [
    "07:09 — Wakes up. Gets up right away.",
-   "07:30 — Breakfast with the crew. Haddad: “I feel like I'm going around in circles here.” Low, monotone voice.",
-   "08:30 — Briefing with Earth (delayed message). Haddad asks two questions about the schedule and suggests a change.",
-   "10:00 — Air filtration system maintenance: abandoned midway, postponed to tomorrow. Haddad: “We'll see anyway.”",
+   "07:30 — Breakfast with the crew. Kelly: “I feel like I'm going around in circles here.” Low, monotone voice.",
+   "08:30 — Briefing with Earth (delayed message). Kelly asks two questions about the schedule and suggests a change.",
+   "10:00 — Air filtration system maintenance: abandoned midway, postponed to tomorrow. Kelly: “We'll see anyway.”",
    "12:40 — Eats alone in his cabin, ration half eaten.",
    "14:00 — Exercise session: cut short at 25 of 60 min. Says he has a headache.",
-   "16:00 — Biology experiment with Okafor. Haddad forgets a step; Okafor redoes it without comment.",
+   "16:00 — Biology experiment with Okafor. Kelly forgets a step; Okafor redoes it without comment.",
    "17:30 — Free time alone in his cabin, door closed. Looks at photos of Earth for 40 min without moving.",
-   "19:30 — Shared dinner. Haddad: “I'm tired, that's all.” Stays apart at the back of the module.",
+   "19:30 — Shared dinner. Kelly: “I'm tired, that's all.” Stays apart at the back of the module.",
    "21:00 — Movie night with the crew, comments on the film.",
    "00:30 — Goes to bed."
   ],
@@ -69,7 +69,7 @@
       "citation": null
      }
     ],
-    "resume": "Haddad abandoned a maintenance task, skipped part of his meal and cut his exercise session short, spending about 40 minutes alone in his cabin. Time spent with the crew was 147 minutes over the day, with one meal eaten alone and 2,423 steps recorded."
+    "resume": "Kelly abandoned a maintenance task, skipped part of his meal and cut his exercise session short, spending about 40 minutes alone in his cabin. Time spent with the crew was 147 minutes over the day, with one meal eaten alone and 2,423 steps recorded."
    },
    "seconds": 7.3
   },
@@ -80,12 +80,12 @@
     "faits": [
      {
       "heure": "07:30",
-      "fait": "At breakfast with the crew, Haddad says in a low voice that his situation feels repetitive.",
+      "fait": "At breakfast with the crew, Kelly says in a low voice that his situation feels repetitive.",
       "citation": "I feel like I'm going around in circles here."
      },
      {
       "heure": "08:30",
-      "fait": "At the briefing with Earth, Haddad takes the initiative: he asks two questions about the schedule and suggests a change.",
+      "fait": "At the briefing with Earth, Kelly takes the initiative: he asks two questions about the schedule and suggests a change.",
       "citation": null
      },
      {
@@ -95,7 +95,7 @@
      },
      {
       "heure": "16:00",
-      "fait": "During the biology experiment with Okafor, Haddad skips a step; Okafor redoes it without comment.",
+      "fait": "During the biology experiment with Okafor, Kelly skips a step; Okafor redoes it without comment.",
       "citation": null
      },
      {
@@ -109,7 +109,7 @@
       "citation": null
      }
     ],
-    "resume": "Haddad interacted with the crew at breakfast, at the briefing, during maintenance and at the movie night, where he commented on the film, and he took the initiative with questions and a suggestion at the briefing. He ate lunch alone and stayed apart during the shared dinner."
+    "resume": "Kelly interacted with the crew at breakfast, at the briefing, during maintenance and at the movie night, where he commented on the film, and he took the initiative with questions and a suggestion at the briefing. He ate lunch alone and stayed apart during the shared dinner."
    },
    "seconds": 7.5
   },
@@ -149,7 +149,7 @@
       "citation": null
      }
     ],
-    "resume": "Haddad reports a headache at 14:00 and fatigue at 19:30, and stops his exercise session after 25 of 60 minutes. He slept 6 hours and took 2,423 steps over the day."
+    "resume": "Kelly reports a headache at 14:00 and fatigue at 19:30, and stops his exercise session after 25 of 60 minutes. He slept 6 hours and took 2,423 steps over the day."
    },
    "seconds": 5.8
   }
@@ -243,7 +243,7 @@
      "Time with the crew at 147 min, i.e. -18% vs baseline, below the 20% threshold, with exchanges at breakfast, at the briefing and at the movie night.",
      "Initiative at the briefing with two questions about the schedule and a suggested change, showing active engagement in the mission."
     ],
-    "noteAuPsy": "The signal is persistent: reduced speaking time, skipped meals and low mood have recurred since D89, and all three observers describe it consistently. Cortisol from D91 (454 nmol/L) has no personal baseline provided, and no measurement is available for D94, so this point cannot be interpreted. An informal, non-evaluative conversation seems worth considering for Haddad, keeping in mind that this is a pattern to watch and not a diagnosis."
+    "noteAuPsy": "The signal is persistent: reduced speaking time, skipped meals and low mood have recurred since D89, and all three observers describe it consistently. Cortisol from D91 (454 nmol/L) has no personal baseline provided, and no measurement is available for D94, so this point cannot be interpreted. An informal, non-evaluative conversation seems worth considering for Kelly, keeping in mind that this is a pattern to watch and not a diagnosis."
    },
    "seconds": 15
   },
@@ -289,7 +289,7 @@
      "Time with the crew at 147 min, i.e. -18%, below the 20% threshold.",
      "Initiative at the briefing (two questions and a suggestion) and joined the movie night with a comment."
     ],
-    "noteAuPsy": "The signal has persisted since D89 with at least two indicators deviating every day, and it is consistent across observed behavior, self-reported mood and HRV. Haddad remains engaged in some work and social interactions, which could be a source of support. A one-on-one conversation from the ground would be appropriate to explore the weariness, workload and fatigue he feels."
+    "noteAuPsy": "The signal has persisted since D89 with at least two indicators deviating every day, and it is consistent across observed behavior, self-reported mood and HRV. Kelly remains engaged in some work and social interactions, which could be a source of support. A one-on-one conversation from the ground would be appropriate to explore the weariness, workload and fatigue he feels."
    },
    "seconds": 12.7
   }

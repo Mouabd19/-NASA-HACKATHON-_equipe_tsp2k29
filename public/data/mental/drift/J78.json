@@ -7,14 +7,14 @@
  "input": {
   "transcript": [
    "06:51 — Wakes up. Gets up right away.",
-   "07:30 — Breakfast with the crew. Haddad: “That's the third time we've redone this.” Answers after a long silence.",
-   "08:30 — Briefing with Earth (delayed message). Haddad asks two questions about the schedule and suggests a change.",
+   "07:30 — Breakfast with the crew. Kelly: “That's the third time we've redone this.” Answers after a long silence.",
+   "08:30 — Briefing with Earth (delayed message). Kelly asks two questions about the schedule and suggests a change.",
    "10:00 — Air filtration system maintenance: finished on time.",
-   "12:40 — Shared lunch. Haddad: “We'll see anyway.”",
+   "12:40 — Shared lunch. Kelly: “We'll see anyway.”",
    "14:00 — Exercise session: complete (60 min ARED + bike).",
-   "16:00 — Biology experiment with Okafor. Haddad carries out the requested steps, little conversation.",
+   "16:00 — Biology experiment with Okafor. Kelly carries out the requested steps, little conversation.",
    "17:30 — Delayed video call with his family (recorded messages). Short recorded message (2 min), neutral tone.",
-   "19:30 — Shared dinner. Haddad: “Shall we tackle module 3 after coffee?”",
+   "19:30 — Shared dinner. Kelly: “Shall we tackle module 3 after coffee?”",
    "21:00 — Movie night with the crew, comments on the film.",
    "23:20 — Goes to bed."
   ],
@@ -69,7 +69,7 @@
       "citation": null
      }
     ],
-    "resume": "Haddad got up at 06:51 and went to bed at 23:20, after 6.5 h of sleep. All three meals were shared, the exercise session was complete and the maintenance finished on time."
+    "resume": "Kelly got up at 06:51 and went to bed at 23:20, after 6.5 h of sleep. All three meals were shared, the exercise session was complete and the maintenance finished on time."
    },
    "seconds": 5.7
   },
@@ -109,7 +109,7 @@
       "citation": "Shall we tackle module 3 after coffee?"
      }
     ],
-    "resume": "Haddad takes the initiative with questions and a suggestion during the briefing and at dinner, and answers after a long silence at breakfast. His exchanges with Okafor are few and his recorded family message lasts 2 minutes."
+    "resume": "Kelly takes the initiative with questions and a suggestion during the briefing and at dinner, and answers after a long silence at breakfast. His exchanges with Okafor are few and his recorded family message lasts 2 minutes."
    },
    "seconds": 5.6
   },
@@ -149,7 +149,7 @@
       "citation": null
      }
     ],
-    "resume": "Haddad took 3,230 steps, completed a full exercise session and skipped no meals. His speaking time was 37 min over a day with 196 min spent with the crew, with a long silence at breakfast and few exchanges during the biology experiment."
+    "resume": "Kelly took 3,230 steps, completed a full exercise session and skipped no meals. His speaking time was 37 min over a day with 196 min spent with the crew, with a long silence at breakfast and few exchanges during the biology experiment."
    },
    "seconds": 7.3
   }
@@ -171,7 +171,7 @@
       ]
      },
      {
-      "schema": "Possible tension around schedule planning, to be clarified with Haddad.",
+      "schema": "Possible tension around schedule planning, to be clarified with Kelly.",
       "preuves": [
        "Two questions about the schedule at the briefing (08:30), followed by a suggested change.",
        "Remark reported at breakfast: “That's the third time we've redone this.” Its context is not specified in the reports.",
@@ -198,7 +198,7 @@
      "No skipped meals, full exercise session and maintenance finished on time.",
      "Initiative at dinner (“Shall we tackle module 3 after coffee?”) and message recorded for his family."
     ],
-    "noteAuPsy": "Speaking time and mood are down today, but only one indicator deviates on D76 and D77, so the monitoring threshold is not reached. The remark “That's the third time we've redone this.” and the questions about the schedule deserve to be clarified with Haddad. Physiological biomarkers and sleep remain close to his baseline."
+    "noteAuPsy": "Speaking time and mood are down today, but only one indicator deviates on D76 and D77, so the monitoring threshold is not reached. The remark “That's the third time we've redone this.” and the questions about the schedule deserve to be clarified with Kelly. Physiological biomarkers and sleep remain close to his baseline."
    },
    "seconds": 10.9
   },

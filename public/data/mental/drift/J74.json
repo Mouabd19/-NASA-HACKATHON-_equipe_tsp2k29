@@ -7,14 +7,14 @@
  "input": {
   "transcript": [
    "06:44 — Wakes up. Gets up right away.",
-   "07:30 — Breakfast with the crew. Haddad: “Can you stop asking me if I'm okay?” Answers after a long silence.",
-   "08:30 — Briefing with Earth (delayed message). Haddad asks two questions about the schedule and suggests a change.",
+   "07:30 — Breakfast with the crew. Kelly: “Can you stop asking me if I'm okay?” Answers after a long silence.",
+   "08:30 — Briefing with Earth (delayed message). Kelly asks two questions about the schedule and suggests a change.",
    "10:00 — Air filtration system maintenance: finished on time.",
-   "12:40 — Shared lunch. Haddad: “I feel like I'm going around in circles here.”",
+   "12:40 — Shared lunch. Kelly: “I feel like I'm going around in circles here.”",
    "14:00 — Exercise session: complete (60 min ARED + bike).",
-   "16:00 — Biology experiment with Okafor. Haddad jokes and suggests a variation of the protocol.",
+   "16:00 — Biology experiment with Okafor. Kelly jokes and suggests a variation of the protocol.",
    "17:30 — Delayed video call with his family (recorded messages). 9-min recorded message, smiles.",
-   "19:30 — Shared dinner. Haddad: “Ito, will you show me your fix on the pump?”",
+   "19:30 — Shared dinner. Kelly: “Ito, will you show me your fix on the pump?”",
    "21:00 — Movie night with the crew, comments on the film.",
    "23:30 — Goes to bed."
   ],
@@ -69,7 +69,7 @@
       "citation": null
      }
     ],
-    "resume": "Haddad ate his three meals, two of them with the crew, and completed the planned maintenance and exercise session. He spent 209 minutes with the crew, slept 7.1 hours and took 3,872 steps."
+    "resume": "Kelly ate his three meals, two of them with the crew, and completed the planned maintenance and exercise session. He spent 209 minutes with the crew, slept 7.1 hours and took 3,872 steps."
    },
    "seconds": 6
   },
@@ -109,7 +109,7 @@
       "citation": "Ito, will you show me your fix on the pump?"
      }
     ],
-    "resume": "Haddad spoke for 53 min out of 209 min of time with the crew, and took the initiative in most of his work exchanges of the day. He answered a question about his well-being after a long silence and recorded a message for his family."
+    "resume": "Kelly spoke for 53 min out of 209 min of time with the crew, and took the initiative in most of his work exchanges of the day. He answered a question about his well-being after a long silence and recorded a message for his family."
    },
    "seconds": 5.6
   },
@@ -149,7 +149,7 @@
       "citation": null
      }
     ],
-    "resume": "Haddad gets up without delay, completes a full exercise session and sleeps 7.1 hours. Around midday he expresses a feeling of monotony, and in the morning he answers after a long silence."
+    "resume": "Kelly gets up without delay, completes a full exercise session and sleeps 7.1 hours. Around midday he expresses a feeling of monotony, and in the morning he answers after a long silence."
    },
    "seconds": 6.4
   }
@@ -165,7 +165,7 @@
      {
       "schema": "Weariness with the living quarters, possibly one-off, to be watched over the next few days.",
       "preuves": [
-       "At lunch, Haddad says “I feel like I'm going around in circles here.” (speech and body observers)",
+       "At lunch, Kelly says “I feel like I'm going around in circles here.” (speech and body observers)",
        "Self-reported mood at 3/5 today, vs 4/5 on the three previous days (D72 to D74)",
        "He asked the crew to stop asking him how he is, after a long silence (07:30)"
       ]
@@ -185,13 +185,13 @@
      "Skipped meals: 0 today vs 0.5 baseline (favorable deviation)"
     ],
     "pointsRassurants": [
-     "Haddad took the initiative at the briefing with Earth and suggested a schedule change",
+     "Kelly took the initiative at the briefing with Earth and suggested a schedule change",
      "He finished the filtration maintenance on time and completed the full exercise session",
      "He took part in the biology experiment with Okafor, suggesting a variation, and recorded a message for his family",
      "Sleep stable at 7.1 h, steps at 3,872 (+5%), time with the crew at 209 min (+16%)",
      "No skipped meals today"
     ],
-    "noteAuPsy": "Only one indicator (self-reported mood) deviates by more than 20% today, and HRV stays below the threshold, so the level remains “nothing to report”. The weariness expressed at lunch deserves attention, especially if mood stays at 3/5 over the next few days. A light check-in with Haddad about how he feels about the living quarters may be enough to clarify the situation."
+    "noteAuPsy": "Only one indicator (self-reported mood) deviates by more than 20% today, and HRV stays below the threshold, so the level remains “nothing to report”. The weariness expressed at lunch deserves attention, especially if mood stays at 3/5 over the next few days. A light check-in with Kelly about how he feels about the living quarters may be enough to clarify the situation."
    },
    "seconds": 9.4
   },
@@ -205,7 +205,7 @@
      {
       "schema": "Weariness expressed about the living quarters, without marked withdrawal: a pattern to watch if it recurs.",
       "preuves": [
-       "At lunch (12:40), Haddad says: “I feel like I'm going around in circles here.”",
+       "At lunch (12:40), Kelly says: “I feel like I'm going around in circles here.”",
        "Self-reported mood of 3/5 today, vs a baseline of 3.8 (-21%).",
        "He nonetheless stays engaged: initiative at the briefing, protocol variation suggested to Okafor, full exercise session."
       ]
@@ -252,7 +252,7 @@
      {
       "schema": "Weariness with the living conditions onboard, to be monitored over the next few days. Only one indicator crosses the 20% threshold today.",
       "preuves": [
-       "Haddad says “I feel like I'm going around in circles here.” at lunch",
+       "Kelly says “I feel like I'm going around in circles here.” at lunch",
        "Self-reported mood at 3/5 today, vs 4/5 on D68, D69, D71, D72 and D73 (-21% deviation vs baseline)",
        "HRV at 46.9 ms, i.e. -17% vs baseline, without reaching the 20% threshold"
       ]

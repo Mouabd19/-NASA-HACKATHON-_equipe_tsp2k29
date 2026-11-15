@@ -137,7 +137,7 @@ export function watchSummary(state: ApiState, day: number = DAY_TODAY, now: Date
   return {
     version: WATCH_SUMMARY_VERSION,
     generatedAt: now.toISOString(),
-    persona: { name: 'Haddad', tag: 'Persona' },
+    persona: { name: 'Scott Kelly', tag: 'Persona' },
     provenance: 'SIMULÉ',
     mission: {
       day: d, totalDays: DAY_END, sol0Day: DAY_SOL0, daysToSol0: Math.max(0, DAY_SOL0 - d), date, phase: phaseLabel(d),

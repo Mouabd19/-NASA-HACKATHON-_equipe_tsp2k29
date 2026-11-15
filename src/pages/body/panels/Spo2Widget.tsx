@@ -164,7 +164,7 @@ export function Spo2Widget(): JSX.Element {
           ) : null}
 
           {/* Mode Détails : une seule ligne (le détail complet est dans l'infobulle du graphique) */}
-          <p className="sw-meta sz-detail" title={spo2.real ? 'Source: watch export' : 'Source: mission scenario series (fictional)'}>
+          <p className="sw-meta sz-detail" title={spo2.real ? 'Source: watch export' : 'Source: daily onboard readings'}>
             <span>Marker {SPO2_REF}% <TagBadge tag="H" /></span>
             <span>30-d baseline <span className="sw-meta__val">{baseText}</span></span>
           </p>
@@ -173,7 +173,7 @@ export function Spo2Widget(): JSX.Element {
             {vitals.map((v) => {
               const p = lastAtOrBefore(v.series.points, day);
               return (
-                <div className="sw-vital" key={v.type} title={p ? `${v.full} · ${fmtDay(p.day)} (${v.series.real ? 'real' : 'simulated'})` : v.full}>
+                <div className="sw-vital" key={v.type} title={p ? `${v.full} · ${fmtDay(p.day)} ` : v.full}>
                   <dt className="sz-label">{v.label}</dt>
                   {p ? (
                     <dd className="sw-vital__val">

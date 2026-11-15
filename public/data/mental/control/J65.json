@@ -8,12 +8,12 @@
   "transcript": [
    "07:02 — Wakes up. Gets up right away.",
    "06:50 — Message received or incident reported the day before: a technical disagreement with Ito during the briefing.",
-   "07:30 — Breakfast with the crew. Haddad: “Slept well, for once.” Sustained exchange with Okafor (3 lines). Looks the people he talks to in the eye.",
-   "08:30 — Briefing with Earth (delayed message). Haddad asks two questions about the schedule and suggests a change.",
+   "07:30 — Breakfast with the crew. Kelly: “Slept well, for once.” Sustained exchange with Okafor (3 lines). Looks the people he talks to in the eye.",
+   "08:30 — Briefing with Earth (delayed message). Kelly asks two questions about the schedule and suggests a change.",
    "10:00 — Air filtration system maintenance: finished on time.",
-   "12:40 — Shared lunch. Haddad: “Not now.”",
+   "12:40 — Shared lunch. Kelly: “Not now.”",
    "14:00 — Exercise session: complete (60 min ARED + bike). Says he has a headache.",
-   "16:00 — Biology experiment with Okafor. Haddad carries out the requested steps, little conversation.",
+   "16:00 — Biology experiment with Okafor. Kelly carries out the requested steps, little conversation.",
    "17:30 — Delayed video call with his family (recorded messages). Short recorded message (2 min), neutral tone.",
    "19:30 — Skips the shared dinner. Kovacs notices his absence.",
    "21:00 — Declines the movie night suggested by Ito: “I'd rather be alone for a while.”",
@@ -70,7 +70,7 @@
       "citation": "I'd rather be alone for a while."
      }
     ],
-    "resume": "Haddad gets up at 07:02 and completes all planned tasks, including the full exercise session at 14:00. He skips the shared dinner and declines the group evening, then goes to bed at 23:40 after 7 h of sleep."
+    "resume": "Kelly gets up at 07:02 and completes all planned tasks, including the full exercise session at 14:00. He skips the shared dinner and declines the group evening, then goes to bed at 23:40 after 7 h of sleep."
    },
    "seconds": 8.5
   },
@@ -81,22 +81,22 @@
     "faits": [
      {
       "heure": "07:30",
-      "fait": "At breakfast with the crew, 3-line exchange with Okafor; Haddad looks him in the eye.",
+      "fait": "At breakfast with the crew, 3-line exchange with Okafor; Kelly looks him in the eye.",
       "citation": "Slept well, for once."
      },
      {
       "heure": "08:30",
-      "fait": "During the briefing with Earth, Haddad takes the initiative: he asks two questions about the schedule and suggests a change.",
+      "fait": "During the briefing with Earth, Kelly takes the initiative: he asks two questions about the schedule and suggests a change.",
       "citation": null
      },
      {
       "heure": "12:40",
-      "fait": "At the shared lunch, Haddad answers with a refusal.",
+      "fait": "At the shared lunch, Kelly answers with a refusal.",
       "citation": "Not now."
      },
      {
       "heure": "17:30",
-      "fait": "Delayed video call with his family: Haddad records a short message of about 2 minutes.",
+      "fait": "Delayed video call with his family: Kelly records a short message of about 2 minutes.",
       "citation": null
      },
      {
@@ -110,7 +110,7 @@
       "citation": "I'd rather be alone for a while."
      }
     ],
-    "resume": "Haddad interacts little with the crew outside the briefing: he takes the initiative during the briefing, but answers with refusals at lunch and to the movie night, and skips dinner. He records a short message for his family and his exchanges with Okafor remain limited to a few lines."
+    "resume": "Kelly interacts little with the crew outside the briefing: he takes the initiative during the briefing, but answers with refusals at lunch and to the movie night, and skips dinner. He records a short message for his family and his exchanges with Okafor remain limited to a few lines."
    },
    "seconds": 6.5
   },
@@ -150,7 +150,7 @@
       "citation": null
      }
     ],
-    "resume": "Haddad reports 7 h of sleep and a full exercise session, followed by a reported headache. He skipped dinner without complaining of hunger, and his speech stayed brief in the afternoon."
+    "resume": "Kelly reports 7 h of sleep and a full exercise session, followed by a reported headache. He skipped dinner without complaining of hunger, and his speech stayed brief in the afternoon."
    },
    "seconds": 6.2
   }
@@ -164,7 +164,7 @@
     "confiance": "moyenne",
     "hypotheses": [
      {
-      "schema": "Increasing social withdrawal: Haddad speaks less and avoids group moments, a clear deviation from his baseline since D63.",
+      "schema": "Increasing social withdrawal: Kelly speaks less and avoids group moments, a clear deviation from his baseline since D63.",
       "preuves": [
        "Speaking time today 26 min (-46% vs baseline 48.4), with a deviation already present on D63 (38 min, -21%).",
        "Time with the crew today 79 min (-56% vs baseline 180.1), vs 127 min on D63 (-29%).",
@@ -210,7 +210,7 @@
     "confiance": "moyenne",
     "hypotheses": [
      {
-      "schema": "Marked social withdrawal since the end of the week: Haddad avoids exchanges with the crew, apart from required briefings.",
+      "schema": "Marked social withdrawal since the end of the week: Kelly avoids exchanges with the crew, apart from required briefings.",
       "preuves": [
        "Time with the crew at 79 min today, i.e. -56% relative to his baseline (180.1 min).",
        "Speaking time at 26 min, i.e. -46% relative to his baseline (48.4 min). Refusal “Not now” at lunch and movie night declined with the sentence “I'd rather be alone for a while”.",
@@ -244,9 +244,9 @@
      "HRV at 58.8 ms, i.e. +4% relative to his baseline.",
      "Full exercise session and air maintenance finished on time.",
      "Initiative at the briefing with Earth (questions about the schedule and a suggested change).",
-     "Breakfast with Okafor where Haddad looks him in the eye, and a message recorded for his family."
+     "Breakfast with Okafor where Kelly looks him in the eye, and a message recorded for his family."
     ],
-    "noteAuPsy": "The signal has been present on two of three days (D63 and D65), with social withdrawal and declining self-reported mood, but it is not yet continuous over four days. Physiological biomarkers (sleep, HRV) remain stable, and Haddad keeps his autonomy and his participation in tasks. An informal check-in with Haddad, without an evaluative framework, would be appropriate within the next 24 h, while monitoring D66."
+    "noteAuPsy": "The signal has been present on two of three days (D63 and D65), with social withdrawal and declining self-reported mood, but it is not yet continuous over four days. Physiological biomarkers (sleep, HRV) remain stable, and Kelly keeps his autonomy and his participation in tasks. An informal check-in with Kelly, without an evaluative framework, would be appropriate within the next 24 h, while monitoring D66."
    },
    "seconds": 11.4
   },
@@ -292,7 +292,7 @@
      "Initiative at the briefing and technical tasks finished on time.",
      "Heart rate variability within normal range (58.8 ms, +4%) and a message recorded for his family."
     ],
-    "noteAuPsy": "The social withdrawal is present on D63 and D65 but not over the last 4 days: D64 returns to a level close to baseline (crew 197 min). Cortisol from D63 (401 nmol/L) has no measurement today, and no one-off cause is reported. An informal check-in with Haddad would help detect whether the withdrawal recurs."
+    "noteAuPsy": "The social withdrawal is present on D63 and D65 but not over the last 4 days: D64 returns to a level close to baseline (crew 197 min). Cortisol from D63 (401 nmol/L) has no measurement today, and no one-off cause is reported. An informal check-in with Kelly would help detect whether the withdrawal recurs."
    },
    "seconds": 12.7
   }

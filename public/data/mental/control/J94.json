@@ -7,14 +7,14 @@
  "input": {
   "transcript": [
    "06:38 — Wakes up. Gets up right away.",
-   "07:30 — Breakfast with the crew. Haddad: “Movie tonight, I'm choosing.” Sustained exchange with Okafor (3 lines). Laughs at a joke by Okafor.",
-   "08:30 — Briefing with Earth (delayed message). Haddad asks two questions about the schedule and suggests a change.",
+   "07:30 — Breakfast with the crew. Kelly: “Movie tonight, I'm choosing.” Sustained exchange with Okafor (3 lines). Laughs at a joke by Okafor.",
+   "08:30 — Briefing with Earth (delayed message). Kelly asks two questions about the schedule and suggests a change.",
    "10:00 — Air filtration system maintenance: finished on time.",
-   "12:40 — Shared lunch. Haddad: “I'll see later.”",
+   "12:40 — Shared lunch. Kelly: “I'll see later.”",
    "14:00 — Exercise session: complete (60 min ARED + bike). Says he feels rested.",
-   "16:00 — Biology experiment with Okafor. Haddad jokes and suggests a variation of the protocol.",
+   "16:00 — Biology experiment with Okafor. Kelly jokes and suggests a variation of the protocol.",
    "17:30 — Delayed video call with his family (recorded messages). 9-min recorded message, smiles.",
-   "19:30 — Shared dinner. Haddad: “If you want.” Answers after a long silence.",
+   "19:30 — Shared dinner. Kelly: “If you want.” Answers after a long silence.",
    "21:00 — Movie night with the crew, comments on the film.",
    "23:00 — Goes to bed."
   ],
@@ -69,7 +69,7 @@
       "citation": "Movie tonight, I'm choosing."
      }
     ],
-    "resume": "Haddad ate his meals with the crew, including dinner, and completed the maintenance and the full exercise session. He got up at 06:38 and went to bed at 23:00, with 6.7 h of sleep."
+    "resume": "Kelly ate his meals with the crew, including dinner, and completed the maintenance and the full exercise session. He got up at 06:38 and went to bed at 23:00, with 6.7 h of sleep."
    },
    "seconds": 8.1
   },
@@ -109,7 +109,7 @@
       "citation": "If you want."
      }
     ],
-    "resume": "Haddad took the initiative at breakfast, at the briefing with Earth and at 16:00 (suggesting a variation with Okafor), and he answered the crew by putting off lunch and accepting dinner after a long silence. He recorded a 9-minute message to his family."
+    "resume": "Kelly took the initiative at breakfast, at the briefing with Earth and at 16:00 (suggesting a variation with Okafor), and he answered the crew by putting off lunch and accepting dinner after a long silence. He recorded a 9-minute message to his family."
    },
    "seconds": 7.4
   },
@@ -149,7 +149,7 @@
       "citation": null
      }
     ],
-    "resume": "Haddad gets up without delay, completes the full exercise and says he feels rested, with 4,338 steps recorded. His speaking time is 51 minutes and his sensor-measured sleep is 6.7 h."
+    "resume": "Kelly gets up without delay, completes the full exercise and says he feels rested, with 4,338 steps recorded. His speaking time is 51 minutes and his sensor-measured sleep is 6.7 h."
    },
    "seconds": 6.5
   }
@@ -234,7 +234,7 @@
      "Finishes the maintenance and the full exercise session, and says he feels rested",
      "Smiles and laughs with Okafor, and records a message to his family. Sleep at 6.7 h and HRV stable at 57.3 ms (+1%)"
     ],
-    "noteAuPsy": "Haddad shows a slight dip in mood over two days, with no signal corroborated by sleep, HRV or overall behavior. The two delayed answers about meals are worth noting but remain isolated for now. No conversation is recommended at this stage; observing the next few days is enough."
+    "noteAuPsy": "Kelly shows a slight dip in mood over two days, with no signal corroborated by sleep, HRV or overall behavior. The two delayed answers about meals are worth noting but remain isolated for now. No conversation is recommended at this stage; observing the next few days is enough."
    },
    "seconds": 11
   },

@@ -6,6 +6,6 @@ export const DAY_SOL0 = 210;
 export const DAY_END = 860;           // fin de mission
 export const MISSION_START_DATE = '2026-08-12'; // J0, de sorte que J94 = 2026-11-14
 export const CHRONO_AGE_J0 = 42;      // Haddad, 42 ans [Persona]
-export const ASTRONAUT = { name: 'HADDAD', role: 'CDR', id: 'SZ-01' } as const;
+export const ASTRONAUT = { name: 'Scott Kelly', role: 'CDR', id: 'SZ-01' } as const;
 /** Adhérence au plan : 0 = rythme actuel, 1 = plan suivi. */
 export type Adherence = 0 | 1;

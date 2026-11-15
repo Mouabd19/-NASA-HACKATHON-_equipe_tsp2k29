@@ -7,14 +7,14 @@
  "input": {
   "transcript": [
    "06:41 — Wakes up. Gets up right away.",
-   "07:30 — Breakfast with the crew. Haddad: “Shall we tackle module 3 after coffee?” Sustained exchange with Okafor (3 lines). Laughs at a joke by Okafor.",
-   "08:30 — Briefing with Earth (delayed message). Haddad asks two questions about the schedule and suggests a change.",
-   "10:00 — Air filtration system maintenance: abandoned midway, postponed to tomorrow. Haddad: “It's fine, I don't need help.”",
+   "07:30 — Breakfast with the crew. Kelly: “Shall we tackle module 3 after coffee?” Sustained exchange with Okafor (3 lines). Laughs at a joke by Okafor.",
+   "08:30 — Briefing with Earth (delayed message). Kelly asks two questions about the schedule and suggests a change.",
+   "10:00 — Air filtration system maintenance: abandoned midway, postponed to tomorrow. Kelly: “It's fine, I don't need help.”",
    "12:40 — Eats alone in his cabin, ration half eaten.",
    "14:00 — Exercise session: complete (60 min ARED + bike). Says he feels rested.",
-   "16:00 — Biology experiment with Okafor. Haddad jokes and suggests a variation of the protocol.",
+   "16:00 — Biology experiment with Okafor. Kelly jokes and suggests a variation of the protocol.",
    "17:30 — Delayed video call with his family (recorded messages). 9-min recorded message, smiles.",
-   "19:30 — Shared dinner. Haddad: “Movie tonight, I'm choosing.”",
+   "19:30 — Shared dinner. Kelly: “Movie tonight, I'm choosing.”",
    "21:00 — Declines the movie night suggested by Ito: “Go ahead without me tonight.”",
    "23:50 — Goes to bed."
   ],
@@ -69,7 +69,7 @@
       "citation": null
      }
     ],
-    "resume": "Haddad got up at 06:41 and went to bed at 23:50, with a full exercise session in the afternoon. He abandoned a maintenance task midway, ate a meal alone with a half-eaten ration and declined the crew's movie night."
+    "resume": "Kelly got up at 06:41 and went to bed at 23:50, with a full exercise session in the afternoon. He abandoned a maintenance task midway, ate a meal alone with a half-eaten ration and declined the crew's movie night."
    },
    "seconds": 4.4
   },
@@ -109,7 +109,7 @@
       "citation": "Go ahead without me tonight."
      }
     ],
-    "resume": "Haddad takes the initiative in several exchanges with the crew (breakfast, dinner) but refuses help and the suggested movie night. He eats alone at noon, records a 9-min message for his family, and his measured speaking time for the day is 52 min."
+    "resume": "Kelly takes the initiative in several exchanges with the crew (breakfast, dinner) but refuses help and the suggested movie night. He eats alone at noon, records a 9-min message for his family, and his measured speaking time for the day is 52 min."
    },
    "seconds": 7.1
   },
@@ -149,7 +149,7 @@
       "citation": null
      }
     ],
-    "resume": "Haddad completed the full exercise session and says he feels rested, with 4,186 steps and 1 skipped meal according to the sensors. He ate alone at noon, ration half eaten, and smiled during the recorded message at 17:30."
+    "resume": "Kelly completed the full exercise session and says he feels rested, with 4,186 steps and 1 skipped meal according to the sensors. He ate alone at noon, ration half eaten, and smiled during the recorded message at 17:30."
    },
    "seconds": 5.7
   }

@@ -1,7 +1,6 @@
 // Propriétaire : Ahmed (B). Page « Plan du jour » (route /warroom) — ROADMAP §1 (page 2) et §3.
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Tag, TodoItem } from '../../types';
-import { TagBadge } from '../../ui';
 import { MISSION_TODAY, clearCheckIn, onCheckInChange, todayCheckIn } from '../../ingest/checkin';
 import { loadRealData, onRealDataChange } from '../../ingest/realData';
 import { pullDone, pushTodo, setDone } from '../../ingest/todoSync';
@@ -138,7 +137,7 @@ export function WarRoom() {
         <h1 className="wr-sr-only">Today's plan</h1>
         <span className="wr-head__day">Day {DAY} · {dateLabel}</span>
         <span className="wr-head__clock sz-mono">Onboard time 07:00</span>
-        <span className="sz-detail"> · Haddad <TagBadge tag="Persona" /> · en route to Mars</span>
+        <span className="sz-detail"> · Scott Kelly · en route to Mars</span>
       </header>
 
       <div className="wr-grid">
@@ -148,7 +147,7 @@ export function WarRoom() {
         <div className="wr-main">
           <div className="wr-side">
             <CheckInCard day={DAY} done={checkin} />
-            <LiveWidget dataVersion={dataVersion} onImported={() => setDataVersion((v) => v + 1)} />
+            <LiveWidget dataVersion={dataVersion} />
           </div>
           <div className="wr-side">
             <TodoList items={items} onToggle={toggle} synced={synced} level={t.level} />

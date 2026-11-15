@@ -33,7 +33,7 @@ class SceneBoundary extends Component<{ children: ReactNode }, { error: string |
   }
 
   componentDidCatch(err: unknown, info: ErrorInfo): void {
-    console.warn('[SOL ZÉRO] 3D scene unavailable:', err, info.componentStack);
+    console.warn('[Triflow] 3D scene unavailable:', err, info.componentStack);
   }
 
   render(): ReactNode {

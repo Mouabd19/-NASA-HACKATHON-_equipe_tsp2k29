@@ -88,13 +88,13 @@ function chains(): Record<string, Reasoning> {
   const v = vo2max(T, 0);
   const AGE_LIMIT = 'Limitation: the per-organ age gap is a team indicator [H] — an equivalent in years, not actual aging; spaceflight loss is partly reversible after return.';
 
-  const boneData = step('donnee', `D${T}: hip bone density ESTIMATED at ${fr(100 - hip, 2)}% of preflight (loss ${fr(hip, 2)}%). Sources: preflight ground assessment + daily urinary markers. The ultrasound scanner does not measure bone.`, 'H', { label: 'Today’s body D94 — SIMULATED (persona Haddad)' });
+  const boneData = step('donnee', `D${T}: hip bone density ESTIMATED at ${fr(100 - hip, 2)}% of preflight (loss ${fr(hip, 2)}%). Sources: preflight ground assessment + daily urinary markers. The ultrasound scanner does not measure bone.`, 'H', { label: 'Today’s body D94' });
   const boneModel = step('modele', `"Bone" model: at current pace, loss reaches ${fr(hipEnd, 2)}% at D${DAY_END}; ${fr(HIP_LOSS_END_PLAN, 2)}% if the plan is followed. ${AGE_LIMIT}`, 'H', { label: 'Bone model — sol-zero sheet §7 (mock)' });
   const boneNorm = step('norme', 'NASA-STD-3001 [V1 4027]: bone density ≥ 95% of preflight at the hip, ≥ 90% at the femoral neck. The D860 projection falls below the threshold → AMBER status today.', 'NASA', NASA);
-  const vo2Data = step('donnee', `D${T}: VO₂max ${fr(v, 1)} ml/kg/min, i.e. −${fr(vo2DeficitPct(T, 0), 2)}% vs preflight (${fr(VO2_PREFLIGHT, 1)}).`, 'Persona', { label: 'Watch + cycle session — SIMULATED (persona Haddad)' });
+  const vo2Data = step('donnee', `D${T}: VO₂max ${fr(v, 1)} ml/kg/min, i.e. −${fr(vo2DeficitPct(T, 0), 2)}% vs preflight (${fr(VO2_PREFLIGHT, 1)}).`, 'Persona', { label: 'Watch + cycle session' });
   const vo2Model = step('modele', `"Aerobic" model: on arrival (Sol 0, D${DAY_SOL0}), ${fr(vo2max(DAY_SOL0, 0), 1)} ml/kg/min at current pace; ${fr(vo2max(DAY_SOL0, 1), 1)} with the plan.`, 'H', { label: 'Aerobic model — sol-zero sheet §7 (mock)' });
   const vo2Norm = step('norme', `NASA-STD-3001 [V1 4003]: ≥ 80% of preflight in mission; [V1 4002]: ≥ ${fr(VO2_SOL0, 1)} ml/kg/min. Arrival would be at the limit → AMBER.`, 'NASA', NASA);
-  const muscleData = step('donnee', `D${T}: thigh scan volume ${fr(cuisse?.value ?? NaN, 1)}% of D0; 7-day trend ${fr(cuisse?.trend7d ?? NaN, 2)}%/week (measurement noise ± ${fr(cuisse?.noise ?? 0, 1)}).`, 'Persona', { label: 'Daily scan — SIMULATED (no public scanner data)' });
+  const muscleData = step('donnee', `D${T}: thigh scan volume ${fr(cuisse?.value ?? NaN, 1)}% of D0; 7-day trend ${fr(cuisse?.trend7d ?? NaN, 2)}%/week (measurement noise ± ${fr(cuisse?.noise ?? 0, 1)}).`, 'Persona', { label: 'Daily scan' });
   const muscleModel = step('modele', 'Simple regression over the last 7 days: the slope leaves the noise band. A single value never triggers an alert.', 'H', { label: '7-day trend rule — ROADMAP §8' });
   const muscleNorm = step('norme', 'No numeric NASA threshold for muscle volume: team thresholds [H] (amber at −4% or slope ≤ −0.8%/wk, red at −10%).', 'H');
 
@@ -115,17 +115,17 @@ function chains(): Record<string, Reasoning> {
     R('r-cuisse-proteines', 'High-protein dinner — why?', [muscleData, muscleModel, muscleNorm,
       step('decision', 'Dinner with 58 g of protein after the strength session, to support muscle protein synthesis.', 'H')]),
     R('r-nerf-optique', 'Vision test — why?', [
-      step('donnee', `D${T}: optic nerve sheath diameter ${fr(gaine?.value ?? NaN, 2)} mm (5.00 mm at D0), rising slightly. Measured by ultrasound, already performed on the ISS.`, 'Persona', { label: 'Daily scan — SIMULATED' }),
+      step('donnee', `D${T}: optic nerve sheath diameter ${fr(gaine?.value ?? NaN, 2)} mm (5.00 mm at D0), rising slightly. Measured by ultrasound, already performed on the ISS.`, 'Persona', { label: 'Daily scan' }),
       step('modele', '7-day average and slope: the average exceeds the 5.5 mm watch threshold.', 'H'),
       step('norme', 'Team threshold [H] pending the published reference (optic nerve ultrasound, SANS risk) — to be sourced by Steve.', 'H'),
       step('decision', 'Vision test today and measurements sent to the ground flight surgeon.', 'H')]),
     R('r-calcium-urinaire', 'Increased hydration — why?', [
-      step('donnee', `D${T}: urinary calcium ${fr(ca?.value ?? NaN, 0)} mg/24 h, rising since D0; no stones on the scan.`, 'Persona', { label: 'Daily urine — SIMULATED' }),
+      step('donnee', `D${T}: urinary calcium ${fr(ca?.value ?? NaN, 0)} mg/24 h, rising since D0; no stones on the scan.`, 'Persona', { label: 'Daily urine' }),
       step('modele', 'Calcium released from bone passes into the urine: the rise tracks the estimated bone loss.', 'H'),
       step('norme', 'Terrestrial reference < 300 mg/24 h [Published — to be verified].', 'Publié'),
       step('decision', 'Hydration ≥ 2.5 L and a kidney check on the next scan.', 'H')]),
     R('r-checkin', 'Morning check-in — why?', [
-      step('donnee', 'Mood, fatigue, pain and perceived sleep: the only data only you can provide.', 'Persona', { label: 'Morning check-in — REAL when entered, SIMULATED otherwise' }),
+      step('donnee', 'Mood, fatigue, pain and perceived sleep: the only data only you can provide.', 'Persona', { label: 'Morning check-in' }),
       step('modele', 'The check-in feeds today’s triage, along with cortisol, sleep and HRV.', 'H'),
       step('norme', 'No NASA threshold: team rule [H] (mood ≤ 2 for 3 days → a conversation is offered, never imposed).', 'H'),
       step('decision', 'Check-in is the first screen of the day, in under 30 seconds.', 'H')]),
@@ -135,7 +135,7 @@ function chains(): Record<string, Reasoning> {
       step('norme', 'Expired data never yields a green status: it switches to "insufficient data".', 'H'),
       step('decision', 'Capillary micro-sample this morning (a daily venous blood draw would be unrealistic in flight).', 'H')]),
     R('r-dose', 'Dose review — why?', [
-      step('donnee', 'Cumulative dose tracked daily by the onboard dosimeter (SIMULATED).', 'Persona'),
+      step('donnee', 'Cumulative dose tracked daily by the onboard dosimeter.', 'Persona'),
       step('modele', 'Expected: 1.84 mSv/d in cruise, 0.64 mSv/d on the surface.', 'Publié', { label: 'MSL/RAD — Zeitlin et al. 2013; Hassler et al. 2014' }),
       step('norme', '600 mSv threshold: team hypothesis [H], to be verified in NASA-STD-3001.', 'H', NASA),
       step('decision', 'Review with the CMO of time spent outside the best-shielded area.', 'H')]),

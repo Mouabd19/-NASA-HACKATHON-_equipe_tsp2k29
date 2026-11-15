@@ -55,7 +55,7 @@ export function MoodCard() {
       </div>
       <p className="wr-note">
         Not a diagnosis
-        <span className="sz-detail"> · model comparing Haddad with his own baseline (D0–D20)</span>
+        <span className="sz-detail"> · model comparing Scott Kelly with his own baseline (D0–D20)</span>
       </p>
     </Panel>
   );
