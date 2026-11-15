@@ -1,6 +1,6 @@
 # TriFlow
 
-**Crew health monitoring for a Mars mission.** Every morning, the astronaut knows how their body is doing, what to do today, and why, without waiting for Earth.
+**Crew health monitoring for long-duration space missions.** Every morning, the astronaut knows how their body is doing, what to do today, and why, without waiting for Earth.
 
 *NASA Space Apps Challenge 2026 · Health Monitoring Software for Astronauts · Team TSP2k29*
 
@@ -12,7 +12,7 @@
 
 ![TriFlow: the body scan at load](docs/screenshots/scan.png)
 
-> TriFlow follows **Commander Scott Kelly** on a fictional 860-day mission to Mars, at **day 94**.
+> The demo follows **Commander Scott Kelly** on a fictional 860-day mission to Mars, at **day 94**: the longest and most isolated case, with an 11-minute radio delay to Earth.
 > All of his health data is **simulated**. Thresholds come from **NASA-STD-3001**, and every number on screen shows where it comes from.
 
 ---
