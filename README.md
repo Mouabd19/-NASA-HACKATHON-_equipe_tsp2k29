@@ -7,7 +7,7 @@
 | | |
 | :-- | :-- |
 | **▶ Try the app** | **[triflow-delta.vercel.app](https://triflow-delta.vercel.app)** — runs in the browser, best on a desktop screen |
-| **▶ Pitch deck** | **[Animated slides](https://triflow-delta.vercel.app/slides/)** (arrow keys to navigate, **F** for full screen) · **[PDF](docs/pitch/TriFlow-demo-slides.pdf)** |
+| **▶ Pitch deck** | **[Animated slides](https://mouabd19.github.io/NASA-HACKATHON_TriFlow/)** (arrow keys to navigate, **F** for full screen) · **[PDF](docs/pitch/TriFlow-demo-slides.pdf)** |
 | **Built with** | React 19 · TypeScript · Three.js · Python (pandas, NumPy, scikit-learn) · Vercel · SwiftUI (Apple Watch) |
 
 ![TriFlow: the body scan at load](docs/screenshots/scan.png)
