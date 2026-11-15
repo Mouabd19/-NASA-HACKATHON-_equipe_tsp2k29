@@ -1,5 +1,45 @@
 # Status — Ahmed (B)
-_Mis à jour : sam. 19:55_
+_Mis à jour : dim. 15/11, 08:00_
+
+## Nuit du 15/11 : ce qui a été fait (agents Claude, relus par un agent jury)
+
+**Vue d'ensemble avec toutes les captures : https://claude.ai/artifact/LJdsNUxMNYEWsHeaQ3yyWs** (demander l'accès à Ahmed si le lien ne s'ouvre pas).
+
+Rien n'a été poussé sur `develop` ni `main`. Tout est sur des branches à part, qui partent de `night/base` (la refonte UI + le travail en cours de `feature/ahmed-unslop`).
+
+### 1. Quatre propositions d'interface
+Même app, mêmes fonctions (un inventaire de l'existant a servi de checklist). Chaque branche a un `PROPOSAL.md` et ses captures dans `proposal-shots/`. Build et tests OK partout.
+
+| Rang | Branche | Direction | Note jury /20 |
+| :-- | :-- | :-- | :-- |
+| 1 | `proposal/ui-A-mission-control` | Classeur de procédures de bord NASA : papier, filets, la 3D seule surface noire | **17,4** |
+| 2 | `proposal/ui-C-avionique` | Cockpit sombre (ECAM, police B612) ; touche la logique métier | 16,4 |
+| 2 | `proposal/ui-D-journal-de-bord` | Récit éditorial ; meilleur moment montre (pouls sous la consigne) | 16,4 |
+| 4 | `proposal/ui-B-instrument-medical` | Moniteur patient, alarmes IEC 60601 | 15,8 |
+
+Recommandation du jury : A comme base + 5 greffes (pouls en direct sous « Maintenant » et calque allumé à l'épinglage, de D ; check-in auto-coché, de D ; annuler le diff de A dans `src/models/explain.ts` ; tracé du pouls dès 2 points, de C).
+
+> ⚠️ **@Mouad** : `develop` a reçu cette nuit le retour à l'UI d'avant la refonte (`7f5d4bf`, PR #22). Les 4 propositions partent de la refonte, donc une fusion dans `develop` aura beaucoup de conflits (`global.css`, `tokens.ts`, `three/*`, `warroom/*`). À décider ensemble : soit on prend une proposition telle quelle pour la démo, soit on la rebase sur `develop`.
+
+### 2. App Apple Watch
+Branche `night/watch-api` : endpoint `GET /api/watch/summary` (+ test) et l'app dans `watch/` (XcodeGen).
+- 7 pages à la Couronne : Aujourd'hui (niveau + consigne + « Pourquoi ? »), Pouls en direct, Corps 3D, To-do cochable, Trajet (J94, Sol 0, délai radio), Santé, Réglages.
+- Sans l'endpoint, repli sur un instantané marqué « Simulé ». Le flux pouls → `/ingest` est inchangé.
+- Builds montre + iPhone OK, 153 tests. Captures simulateur dans `watch/shots/`.
+- À vérifier au poignet : Couronne pour quitter la page Corps, toucher pour faire tourner le corps.
+
+### 3. Pitch et deck
+Branche `night/pitch-slides` :
+- `pitch/` : message central, accroches classées, scripts 4 min (3:50) et 7 min (6:30) par orateur, démo clic par clic + plan B, 26 questions jury. Commencer par `pitch/00-LISEZMOI.md`.
+- `slides/index.html` : deck HTML hors ligne, 13 slides + annexes. Touches N (notes), T (chrono), S (version 4 min), F (plein écran).
+- Message : « Quand le médecin est à onze minutes-lumière, Sol Zéro dit à l'astronaute quoi faire ce matin, et lui prouve pourquoi. »
+
+### À faire ce matin
+1. Choisir l'interface (voir l'alerte ci-dessus).
+2. Installer l'app sur la vraie montre et tester les deux gestes.
+3. Filage chronométré du 4 min avec le deck.
+
+---
 
 ## Livré sur develop (PR `feature/ahmed`)
 - **Ingest réel** (remplace les stubs, mêmes signatures) :
