@@ -13,9 +13,10 @@ struct PulseView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 6) {
                     if heart.isSimulated || (heart.phase == .idle && simulatedSetting) {
-                        Text("SIMULÉ · rien n'est envoyé")
+                        Text("SIMULÉ · non envoyé")
                             .font(.footnote.weight(.semibold))
                             .foregroundStyle(Palette.amber)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
 
                     statusRow(live: live)

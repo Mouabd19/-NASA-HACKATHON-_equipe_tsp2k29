@@ -105,7 +105,7 @@ L'écran affiche :
 
 **Arrêter** termine la séance sans l'enregistrer dans Santé.
 
-**Mode simulé** (page Réglages, désactivé par défaut) : produit un pouls inventé pour tester l'écran, par exemple dans le simulateur. Tout s'affiche en ambre avec « SIMULÉ · rien n'est envoyé ». L'écart est alors calculé contre la FC de repos simulée de Haddad. **Aucune valeur simulée n'est envoyée au Mac.**
+**Mode simulé** (page Réglages, désactivé par défaut) : produit un pouls inventé pour tester l'écran, par exemple dans le simulateur. Tout s'affiche en ambre avec « SIMULÉ · non envoyé ». L'écart est alors calculé contre la FC de repos simulée de Haddad. **Aucune valeur simulée n'est envoyée au Mac.**
 
 **Repli** : si la montre n'atteint pas le Mac (pas de réseau, délai dépassé, connexion refusée) et que l'app iPhone est joignable, la requête passe par l'iPhone via WatchConnectivity. L'iPhone affiche alors le nombre de requêtes relayées. Le résumé et la to-do passent par le même chemin.
 
