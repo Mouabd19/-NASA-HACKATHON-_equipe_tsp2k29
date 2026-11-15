@@ -6,6 +6,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import type { Measurement } from '../../types';
 import { latestLive, postManual } from '../../ingest/live';
+import { onServerChange } from '../../ingest/events';
 import { MISSION_TODAY } from '../../ingest/checkin';
 import { getRealBaseline, getRealSeries, setRealData } from '../../ingest/realData';
 import { zScore } from '../../ingest/baseline30d';
@@ -90,8 +91,10 @@ export function LiveWidget({ dataVersion, onImported }: { dataVersion: number; o
     // Horloge lente : fait vieillir « il y a … » et bascule en gris sans re-rendu toutes les 3 s.
     const clock = setInterval(() => { if (!document.hidden) setNow(Date.now()); }, CLOCK_MS);
     document.addEventListener('visibilitychange', onVisible);
+    const offLive = onServerChange(['live'], tick); // pouls reçu de la montre → affiché tout de suite
     return () => {
       stop = true;
+      offLive();
       clearInterval(id);
       clearInterval(clock);
       document.removeEventListener('visibilitychange', onVisible);

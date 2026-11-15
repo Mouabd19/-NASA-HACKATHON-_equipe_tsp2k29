@@ -21,6 +21,18 @@ export interface ApiResponse {
 
 export const emptyState = (): ApiState => ({ todo: [], live: [] });
 
+/**
+ * Ajout (montre) : fonctions calculées par les modèles de l'app, injectées par api.ts, car les données simulées
+ * passent par import.meta.glob et doivent être chargées par Vite (voir server/watchSummary.ts).
+ */
+export interface ApiDeps {
+  watchSummary?: (state: ApiState, day?: number) => unknown;
+  /** Plan du jour (J94) : remplit la to-do quand la War Room ne l'a pas encore poussée. */
+  planToday?: () => TodoItem[];
+  /** Check-in du navigateur, enregistré là où le triage le lit. */
+  receiveCheckIn?: (body: unknown) => { ok: true } | string;
+}
+
 const LIVE_TYPES: Measurement['type'][] = [
   'RestingHeartRate', 'HeartRateVariabilitySDNN', 'VO2Max', 'OxygenSaturation',
   'AppleSleepingWristTemperature', 'SleepAnalysis', 'HeartRate',
@@ -59,10 +71,38 @@ function isTodo(x: unknown): x is TodoItem {
 /** Libellé affiché par « Choisir dans la liste » sur la montre. */
 export const menuLabel = (t: TodoItem) => `${t.time ? t.time + ' · ' : ''}${t.title}`;
 
-export function handle(state: ApiState, req: ApiRequest): ApiResponse {
+export function handle(state: ApiState, req: ApiRequest, deps: ApiDeps = {}): ApiResponse {
   const { method, path } = req;
 
-  if (path === '/api/todo' && method === 'GET') return { status: 200, json: state.todo };
+  // Ajout pour l'app Apple Watch : résumé du jour en lecture seule (triage, consignes, alertes, métriques).
+  // ?day=N pour un autre jour (0..860). Sans modèles chargés → 503, la montre affiche alors son instantané embarqué.
+  if (path === '/api/watch/summary' && method === 'GET') {
+    if (!deps.watchSummary) return { status: 503, json: { error: 'summary unavailable: models not loaded' } };
+    const raw = req.query.get('day');
+    const day = raw === null || raw === '' ? undefined : Number(raw);
+    if (day !== undefined && !Number.isFinite(day)) return { status: 400, json: { error: 'day must be a number (0 to 860)' } };
+    return { status: 200, json: deps.watchSummary(state, day) };
+  }
+
+  // Ajout : le check-in saisi dans la War Room, pour que la montre affiche le même triage.
+  if (path === '/api/checkin' && method === 'POST') {
+    if (!deps.receiveCheckIn) return { status: 503, json: { error: 'check-in unavailable: models not loaded' } };
+    const r = deps.receiveCheckIn(req.body);
+    return typeof r === 'string' ? { status: 400, json: { error: r } } : { status: 200, json: r };
+  }
+
+  // To-do vide (War Room pas encore ouverte) : on la remplit avec le plan du jour, pour que la montre puisse cocher.
+  // La War Room la remplacera en la poussant ; les coches déjà faites sont gardées (même id).
+  if (path === '/api/todo' && method === 'GET') {
+    if (!state.todo.length && deps.planToday) {
+      const plan = deps.planToday();
+      if (plan.length) {
+        state.todo = plan.map((t) => ({ ...t, done: false }));
+        return { status: 200, json: state.todo, changed: true };
+      }
+    }
+    return { status: 200, json: state.todo };
+  }
 
   // Ajout : la War Room pousse la to-do du jour (pushTodo). Les cases déjà cochées sont conservées.
   if (path === '/api/todo' && (method === 'POST' || method === 'PUT')) {

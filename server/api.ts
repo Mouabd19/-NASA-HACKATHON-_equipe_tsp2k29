@@ -4,11 +4,41 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import type { Plugin } from 'vite';
-import { emptyState, handle, type ApiState } from './handlers.ts';
+import type { Plugin, ViteDevServer } from 'vite';
+import { emptyState, handle, type ApiDeps, type ApiState } from './handlers.ts';
 
 const ROUTES = /^\/(api\/|ingest(\/|$))/;
 const MAX_BODY = 256 * 1024;
+
+// Temps réel (Server-Sent Events) : GET /api/events garde la connexion ouverte et reçoit
+// « data: {"kind":"todo"|"checkin"|"live","v":n} » à chaque changement. Navigateur : EventSource ; montre : URLSession.bytes.
+// (Pas de WebSocket : watchOS les interdit hors apps audio.)
+const clients = new Set<ServerResponse>();
+let version = 0;
+function broadcast(kind: string): void {
+  version += 1;
+  const msg = `data: ${JSON.stringify({ kind, v: version })}\n\n`;
+  for (const c of clients) { try { c.write(msg); } catch { clients.delete(c); } }
+}
+function kindOf(path: string): string | null {
+  if (path.startsWith('/api/todo')) return 'todo';
+  if (path === '/api/checkin') return 'checkin';
+  if (path === '/ingest') return 'live';
+  return null;
+}
+function openEvents(req: IncomingMessage, res: ServerResponse): void {
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream; charset=utf-8', 'Cache-Control': 'no-store', Connection: 'keep-alive',
+    'Access-Control-Allow-Origin': '*', 'X-Accel-Buffering': 'no',
+  });
+  res.write(`retry: 2000\ndata: ${JSON.stringify({ kind: 'hello', v: version })}\n\n`);
+  clients.add(res);
+  const ping = setInterval(() => { try { res.write(': ping\n\n'); } catch { /* fermé */ } }, 15_000);
+  req.on('close', () => { clearInterval(ping); clients.delete(res); });
+}
+
+type ModelDeps = Required<ApiDeps>;
+const SUMMARY_MODULE = '/server/watchSummary.ts';
 
 function load(file: string): ApiState {
   try {
@@ -44,11 +74,27 @@ function readBody(req: IncomingMessage): Promise<unknown> {
   });
 }
 
-export function createApiMiddleware(file: string) {
+/**
+ * `loadModels` charge server/watchSummary.ts par Vite (import.meta.glob). En cas d'échec, le résumé et le check-in
+ * répondent 503 et la to-do reste vide jusqu'à ce que la War Room la pousse : le reste de l'API ne change pas.
+ */
+export function createApiMiddleware(file: string, loadModels?: () => Promise<ModelDeps>) {
   const state = load(file);
+  const deps = async (path: string, method: string): Promise<ApiDeps> => {
+    const wanted = path === '/api/watch/summary' || (path === '/api/checkin' && method === 'POST')
+      || (path === '/api/todo' && method === 'GET' && !state.todo.length);
+    if (!wanted || !loadModels) return {};
+    try {
+      return await loadModels();
+    } catch (e) {
+      console.warn('[sol-zero-api] models unavailable for the watch:', e);
+      return {};
+    }
+  };
   return async (req: IncomingMessage, res: ServerResponse, next: () => void) => {
     const url = new URL(req.url ?? '/', 'http://local');
     if (!ROUTES.test(url.pathname)) return next();
+    if (url.pathname === '/api/events' && req.method === 'GET') return openEvents(req, res);
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -61,8 +107,11 @@ export function createApiMiddleware(file: string) {
       res.statusCode = 413;
       return res.end(JSON.stringify({ error: String(e) }));
     }
-    const out = handle(state, { method: req.method ?? 'GET', path: url.pathname.replace(/\/$/, '') || '/', query: url.searchParams, body });
+    const path = url.pathname.replace(/\/$/, '') || '/';
+    const method = req.method ?? 'GET';
+    const out = handle(state, { method, path, query: url.searchParams, body }, await deps(path, method));
     if (out.changed) save(file, state);
+    if (method !== 'GET' && out.status < 300) { const k = kindOf(path); if (k) broadcast(k); }
     res.statusCode = out.status;
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     res.end(JSON.stringify(out.json));
@@ -72,15 +121,32 @@ export function createApiMiddleware(file: string) {
 /** À enregistrer dans vite.config.ts (Walid) : plugins: [react(), solZeroApi()] + server.host / preview.host = true. */
 export function solZeroApi(opts: { stateFile?: string } = {}): Plugin {
   let mw: ReturnType<typeof createApiMiddleware>;
+  let root = process.cwd();
+  // dev : le serveur Vite charge le module (et le recharge après une modif) ;
+  // preview : un petit serveur Vite sans plugin, créé au premier appel, sert uniquement à ce chargement.
+  let loadModels: () => Promise<ModelDeps> = async () => { throw new Error('server not started'); };
+  let previewLoader: Promise<ViteDevServer> | undefined;
   return {
     name: 'sol-zero-api',
     configResolved(cfg) {
-      mw = createApiMiddleware(opts.stateFile ?? resolve(cfg.root, 'server/.data/state.json'));
+      root = cfg.root;
+      mw = createApiMiddleware(opts.stateFile ?? resolve(cfg.root, 'server/.data/state.json'), () => loadModels());
     },
     configureServer(server) {
+      loadModels = async () => (await server.ssrLoadModule(SUMMARY_MODULE)) as unknown as ModelDeps;
       server.middlewares.use((req, res, next) => void mw(req, res, next));
     },
     configurePreviewServer(server) {
+      loadModels = async () => {
+        previewLoader ??= import('vite').then(({ createServer }) => createServer({
+          root, configFile: false, logLevel: 'silent', appType: 'custom',
+          server: { middlewareMode: true, hmr: false, ws: false },
+          optimizeDeps: { noDiscovery: true, include: [] },
+        }));
+        previewLoader.catch(() => { previewLoader = undefined; });
+        return (await (await previewLoader).ssrLoadModule(SUMMARY_MODULE)) as unknown as ModelDeps;
+      };
+      server.httpServer?.once('close', () => { void previewLoader?.then((s) => s.close()); });
       server.middlewares.use((req, res, next) => void mw(req, res, next));
     },
   };
