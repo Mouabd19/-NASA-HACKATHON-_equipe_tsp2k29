@@ -44,10 +44,17 @@ final class PhoneLink: NSObject, WCSessionDelegate {
         apply(applicationContext)
     }
 
+    /// N'applique une adresse de l'iPhone que si elle est nouvelle : au lancement, WatchConnectivity redonne
+    /// le dernier contexte reçu, qui écraserait sinon une adresse saisie depuis sur la montre.
     private func apply(_ context: [String: Any]) {
         guard let url = context[RelayKeys.baseURL] as? String, !url.isEmpty else { return }
         DispatchQueue.main.async {
-            UserDefaults.standard.set(url, forKey: AppKeys.serverURL)
+            let d = UserDefaults.standard
+            guard d.string(forKey: Self.lastRelayedKey) != url else { return }
+            d.set(url, forKey: Self.lastRelayedKey)
+            d.set(url, forKey: AppKeys.serverURL)
         }
     }
+
+    private static let lastRelayedKey = "lastRelayedServerURL"
 }
