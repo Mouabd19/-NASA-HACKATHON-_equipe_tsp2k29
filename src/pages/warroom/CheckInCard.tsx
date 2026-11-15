@@ -49,7 +49,7 @@ export function CheckInCard({ day, done }: { day: number; done: CheckInZones | n
       >
         <div className="wr-kv">
           {ROWS.map((r) => (
-            <Summary key={r.key} label={r.label} v={done[r.key]} max={r.scale[r.scale.length - 1]} alert={TRIGGERS[r.key](done[r.key])}
+            <Summary key={r.key} label={r.label} v={done[r.key]} max={r.scale[r.scale.length - 1]} alert={TRIGGERS[r.key](done[r.key])} red={r.key === 'pain' && done.pain >= 3}
               extra={r.key === 'pain' && done.pain > 0 ? (zone ?? 'zone non précisée') : undefined} />
           ))}
         </div>
@@ -103,15 +103,16 @@ export function CheckInCard({ day, done }: { day: number; done: CheckInZones | n
   );
 }
 
-function Summary({ label: l, v, max, extra, alert }: { label: string; v: number; max: number; extra?: string; alert: boolean }) {
+// Le déclencheur d'une alerte rouge (douleur 3/3, règle R13) porte le rouge ; les autres déclencheurs restent en jaune.
+function Summary({ label: l, v, max, extra, alert, red = false }: { label: string; v: number; max: number; extra?: string; alert: boolean; red?: boolean }) {
   return (
     <div className="wr-kv__row">
       <span className="wr-kv__label">
         {l}
-        {alert && <span className="wr-sr-only">, déclenche une alerte</span>}
+        {alert && <span className="wr-sr-only">{red ? ', déclenche l’alerte rouge' : ', déclenche une alerte'}</span>}
       </span>
       {extra && <span className="wr-kv__extra" title={extra}>{extra}</span>}
-      <span className="wr-kv__value">{alert && <Dot color="amber" />}{v}<span className="sz-unit"> / {max}</span></span>
+      <span className="wr-kv__value">{alert && <Dot color={red ? 'red' : 'amber'} />}{v}<span className="sz-unit"> / {max}</span></span>
     </div>
   );
 }

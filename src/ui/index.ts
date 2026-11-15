@@ -2,7 +2,7 @@
 export { tokens, statusColor, statusLabel, levelLabel, levelColor, levelPriority, priorityMark, priorityLabel, applyTokens } from './tokens';
 export type { AlarmPriority } from './tokens';
 export {
-  Panel, AlarmMark, PanelCloseContext, PanelClose, CloseButton, Label, TagBadge, ProvenanceBadge, StatusDot, StatusChip, statusVar, TAG_TEXT, PROVENANCE_TEXT,
+  Panel, AlarmMark, alarmText, PanelCloseContext, PanelClose, CloseButton, Label, TagBadge, ProvenanceBadge, StatusDot, StatusChip, statusVar, TAG_TEXT, PROVENANCE_TEXT,
 } from './primitives';
 export type {
   AlarmMarkProps, PanelProps, CloseButtonProps, LabelProps, TagBadgeProps, ProvenanceBadgeProps, StatusDotProps, StatusChipProps,

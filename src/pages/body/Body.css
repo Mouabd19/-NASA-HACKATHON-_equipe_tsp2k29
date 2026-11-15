@@ -115,7 +115,9 @@
   line-height: 16px;
   color: var(--sz-text-muted);
 }
-.body-id__name { color: var(--sz-text-dim); }
+.body-id__name { display: none; color: var(--sz-text-dim); }
+/* Téléphone : la barre haute masque le bandeau patient, l'identification revient sur la scène. */
+@media (max-width: 760px) { .body-id__name { display: inline; } }
 
 /* Légendes des coins bas : même voix que l'identification. */
 .body-corner {
@@ -129,7 +131,7 @@
   color: var(--sz-text-muted);
   pointer-events: none;
 }
-.body-corner--bl { left: 12px; }
+.body-corner--bl { left: 12px; max-width: calc(50% - 160px); min-width: 200px; }
 .body-corner--br { right: 12px; text-align: right; }
 .body-page--clean .body-corner--br { display: none; }
 @container (max-width: 520px) {

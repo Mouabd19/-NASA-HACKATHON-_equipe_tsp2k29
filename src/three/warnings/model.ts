@@ -6,7 +6,7 @@ import { DAY_TODAY } from '../../mocks/mission';
 import { alertsForDayPlan } from '../../models/alerts';
 import { getDayBodyPlan } from '../../sim/load';
 import * as anatomy from '../anatomy';
-import { alarmNumbers } from '../../pages/body/alarmOrder';
+import { alarmNumbers, isOnBody } from '../../pages/body/alarmOrder';
 
 export interface WarnItem {
   key: string;
@@ -46,17 +46,11 @@ export function warnItems(day: number, layers: Record<LayerId, boolean>, adheren
   const out: WarnItem[] = [];
   let right = 0;
   const all = alertsForDayPlan(day, adherence);
-  const nums = alarmNumbers(all);
+  // numéros : seulement les repères visibles, de haut en bas (ils se lisent dans l'ordre dans la colonne)
+  const nums = alarmNumbers(all, (a) => isOnBody(a, layers, body));
   for (const alert of all) {
-    if (alert.level === 'VERT') continue; // un warning ne s'affiche jamais en vert
-    const anchor = anatomy.getAnchor(alert.organId);
-    if (!anchor) continue;
-    const organ = body.organs.find((o) => o.id === alert.organId);
-    const ls = new Set<LayerId>(anatomy.organLayers?.(alert.organId) ?? []);
-    if (organ) ls.add(organ.layer);
-    let active = false;
-    for (const l of ls) if (layers[l]) active = true;
-    if (!active) continue;
+    if (!isOnBody(alert, layers, body)) continue;
+    const anchor = anatomy.getAnchor(alert.organId)!;
     // Une seule colonne régulière, à droite du corps (la carte de survol se pose à gauche).
     const side: 1 | -1 = right < COLUMN_MAX ? 1 : -1;
     if (side > 0) right++;

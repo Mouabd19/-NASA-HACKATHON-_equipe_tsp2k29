@@ -38,6 +38,11 @@
 }
 .w3d-dot--amber { fill: var(--sz-amber); }
 .w3d-dot--red { fill: var(--sz-red); }
+/* Projection : point creux (contour de la couleur), comme le marqueur de l'étiquette. */
+.w3d-dot.is-projected { fill: var(--sz-bg); stroke-width: 1.5; paint-order: normal; }
+.w3d-dot--amber.is-projected { stroke: var(--sz-amber); }
+.w3d-dot--red.is-projected { stroke: var(--sz-red); }
+.w3d-dot--grey.is-projected { stroke: var(--sz-unknown); }
 
 /* ── Étiquette ──────────────────────────────────────────────────────── */
 

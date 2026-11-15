@@ -3,7 +3,11 @@
 // Le délai Terre n'est affiché qu'une fois, dans l'en-tête de « Ensuite ».
 // Avant le check-in du jour, aucune consigne n'est affichée : l'inconnu se voit (gris).
 import type { OrganSummary, RouterOutput, Tag, TriageResult } from '../../types';
-import { AlarmMark, Panel, StatusChip, TagBadge, fmt, levelColor, sentenceCase } from '../../ui';
+import { AlarmMark, Panel, StatusChip, TagBadge, fmt, levelColor, levelPriority, sentenceCase } from '../../ui';
+import { alertsForDay } from '../../models/alerts';
+import { DAY_TODAY } from '../../mocks/mission';
+import { alarmNumbers, isOnBody, sortAlarms } from '../body/alarmOrder';
+import { useBody } from '../body/store';
 import { usePrefs } from '../../ui/prefs';
 import { Btn, LEVEL_LABEL, hhmm } from './ui';
 
@@ -15,6 +19,27 @@ const ZONE: Record<string, string> = { rachis: 'dos', cerveau: 'tête', paravert
 
 /** Id du titre « Maintenant » : le check-in y renvoie le focus après validation. */
 export const NOW_TITLE_ID = 'wr-now-title';
+
+/**
+ * Raisons dans l'ordre de lecture : d'abord ce qui a déclenché le niveau au check-in (règle R13),
+ * puis les alertes du corps dans l'ordre de la liste « Alertes » de la page Corps (gravité, puis de haut en bas),
+ * puis le reste (résumé du check-in, prélèvement…).
+ */
+function orderReasons(reasons: readonly string[], layers: Parameters<typeof isOnBody>[1]): { r: string; num?: number }[] {
+  const alerts = alertsForDay(DAY_TODAY);
+  const visible = (a: (typeof alerts)[number]): boolean => isOnBody(a, layers);
+  const nums = alarmNumbers(alerts, visible);
+  const order = sortAlarms(alerts, false, visible).map((a) => ({ text: `${a.title} [${a.rule}]`, num: nums.get(a.id) }));
+  const rank = (r: string): number => {
+    if (/\[R13\]$/.test(r)) return -1;
+    const i = order.findIndex((o) => o.text === r);
+    return i >= 0 ? i : 1000;
+  };
+  return reasons
+    .map((r, i) => ({ r, k: rank(r), i }))
+    .sort((a, b) => a.k - b.k || a.i - b.i)
+    .map(({ r, k }) => ({ r, num: k >= 0 && k < 1000 ? order[k].num : undefined }));
+}
 
 /** Amène l'utilisateur sur la première note du check-in (panneau .wr-checkin). */
 function goToCheckIn() {
@@ -38,6 +63,8 @@ export function NowNextCard(props: {
   const grey = pending || insufficient; // l'inconnu se voit : puce grise, consigne atténuée
   const red = !pending && t.level === 'ROUGE';
   const details = usePrefs((s) => s.details);
+  // calques de la page Corps (état partagé) : mêmes numéros de repère que la liste « Alertes »
+  const layers = useBody((s) => s.layers);
   const reply = out.ensuite.reponseMin != null ? new Date(props.missionNow.getTime() + out.ensuite.reponseMin * 60_000) : null;
   const levelText = pending ? 'En attente' : LEVEL_LABEL[t.level];
 
@@ -49,8 +76,10 @@ export function NowNextCard(props: {
           <span className="sz-panel__fill" />
           <span className="sz-panel__right">
             <span className="sz-detail">Calculé à bord</span>
-            {!pending && <AlarmMark level={t.level} />}
-            <span aria-hidden><StatusChip color={grey ? 'grey' : levelColor[t.level]} label={levelText} /></span>
+            {/* niveau codé une seule fois : marqueur + mot pour une alarme, voyant + mot sinon */}
+            {!grey && levelPriority[t.level]
+              ? <span aria-hidden><AlarmMark level={t.level} withLabel /></span>
+              : <span aria-hidden><StatusChip color={grey ? 'grey' : levelColor[t.level]} label={levelText} /></span>}
           </span>
         </header>
         <div className="sz-panel__body wr-now__body">
@@ -63,10 +92,15 @@ export function NowNextCard(props: {
           {pending && <div><Btn kind="primary" onClick={goToCheckIn}>Faire le check-in</Btn></div>}
           {!pending && t.reasons.length > 0 && (
             <ul className="wr-reasons">
-              {t.reasons.slice(0, 4).map((r) => {
+              {orderReasons(t.reasons, layers).slice(0, 4).map(({ r, num }) => {
                 // « HANCHE — PERTE OSSEUSE ESTIMÉE [V1 4027] » : casse de phrase ; la règle citée passe en mode Détails.
                 const m = /^(.*?)\s*\[([^\]]+)\]$/.exec(r);
-                return <li key={r}>{sentenceCase(m ? m[1] : r)}{m && <> <span className="sz-tag">{m[2]}</span></>}</li>;
+                return (
+                  <li key={r}>
+                    <span className="wr-reasons__num" title={num ? `Repère ${num} sur la page Corps` : undefined}>{num ?? ''}</span>
+                    <span>{sentenceCase(m ? m[1] : r)}{m && <> <span className="sz-tag">{m[2]}</span></>}</span>
+                  </li>
+                );
               })}
             </ul>
           )}

@@ -99,7 +99,35 @@
   color: var(--sz-text);
 }
 .alr__card[data-selected='true'] .alr__title { font-weight: 500; }
-.alr__card[data-level='ROUGE'] .alr__title { color: var(--sz-red); }
+.alr__card[data-level='ROUGE']:not([data-projected='true']):not([data-masked='true']) .alr__title { color: var(--sz-red); }
+/* Calque masqué : ligne grisée, sans numéro ni couleur */
+.alr__card[data-masked='true'] .alr__title { color: var(--sz-text-muted); }
+.alr__word {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  font-size: var(--sz-fs-small);
+  line-height: 1.4;
+  color: var(--sz-text-dim);
+}
+.alr__word--masked { color: var(--sz-text-muted); }
+
+/* Lignes cachées sous le bas de la liste : le défilement se voit */
+.alr__below {
+  flex: none;
+  display: block;
+  width: 100%;
+  padding: 6px var(--sz-pad);
+  border-top: 1px solid var(--sz-border);
+  text-align: left;
+  font-size: var(--sz-fs-small);
+  line-height: 1.4;
+  color: var(--sz-text-dim);
+  transition: background-color 120ms, color 120ms;
+}
+.alr__below:hover,
+.alr__below:focus-visible { background: var(--sz-panel-hover); color: var(--sz-text); }
 
 /* Chevron : ouvre la fiche de l'organe */
 .alr__open {

@@ -85,7 +85,7 @@ function Overlay({ items, recs }: { items: WarnItem[]; recs: Map<string, Rec> })
           <circle
             key={it.key}
             ref={(el) => { if (el) rec(it.key).dot = el; else { const r = recs.get(it.key); if (r) r.dot = null; } }}
-            className={`w3d-dot w3d-dot--${it.color}`}
+            className={`w3d-dot w3d-dot--${it.color}${it.projected ? ' is-projected' : ''}`}
             r={K.dotR}
           />
         ))}

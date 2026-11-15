@@ -93,18 +93,49 @@ export function StatusChip({ color, label }: StatusChipProps): JSX.Element {
   );
 }
 
-export interface AlarmMarkProps { level: Level; className?: string }
+export interface AlarmMarkProps {
+  level: Level;
+  /** Jour projeté : une prévision n'est pas une alarme. Marqueur en contour seulement, sans aplat. */
+  projected?: boolean;
+  /** Affiche le mot du niveau à côté du marqueur (« ! Attention »). */
+  withLabel?: boolean;
+  className?: string;
+}
+
+/** « Attention · priorité basse », ou « Attention · projection » pour un jour futur. Même texte pour l'aria et l'infobulle. */
+export function alarmText(level: Level, projected = false): string {
+  const p = levelPriority[level];
+  const word = levelLabel[level];
+  if (projected) return `${word} · projection, pas une alarme`;
+  return p ? `${word} · ${priorityLabel[p].toLowerCase()}` : word;
+}
 
 /**
  * Marqueur de priorité d'alarme (« !!! », « !! », « ! »), comme dans le champ d'alarme d'un moniteur :
- * aplat de la couleur d'alarme, texte sombre. Rien pour un niveau nominal ou inconnu.
+ * aplat de la couleur d'alarme, texte sombre. En projection, contour seulement. Rien pour un niveau nominal ou inconnu.
+ * Le mot du niveau (Attention, Attention renforcée, Alerte) reste le vocabulaire de l'app ; la priorité
+ * IEC 60601-1-8 (haute, moyenne, basse) n'est donnée qu'en complément, dans l'infobulle et l'aria.
  */
-export function AlarmMark({ level, className }: AlarmMarkProps): JSX.Element | null {
+export function AlarmMark({ level, projected = false, withLabel = false, className }: AlarmMarkProps): JSX.Element | null {
   const p = levelPriority[level];
   if (!p) return null;
-  return (
-    <span className={cx('sz-alarm', className)} data-priority={p} role="img" aria-label={priorityLabel[p]} title={`${priorityLabel[p]} · ${levelLabel[level]}`}>
+  const text = alarmText(level, projected);
+  const mark = (
+    <span
+      className={cx('sz-alarm', !withLabel && className)}
+      data-priority={p}
+      data-projected={projected || undefined}
+      {...(withLabel ? { 'aria-hidden': true } : { role: 'img', 'aria-label': text, title: text })}
+    >
       {priorityMark[p]}
+    </span>
+  );
+  if (!withLabel) return mark;
+  return (
+    <span className={cx('sz-alarm-l', className)} data-projected={projected || undefined} title={text}>
+      {mark}
+      <span className="sz-alarm-l__word">{levelLabel[level]}</span>
+      <span className="sz-sr">{projected ? ' · projection, pas une alarme' : ` · ${priorityLabel[p].toLowerCase()}`}</span>
     </span>
   );
 }

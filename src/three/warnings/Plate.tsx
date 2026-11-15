@@ -2,7 +2,7 @@
 // Positionnée à chaque frame par Warnings3D.
 import type { CSSProperties, JSX, KeyboardEvent, SyntheticEvent } from 'react';
 import { useBody } from '../../pages/body/store';
-import { AlarmMark, statusVar } from '../../ui';
+import { AlarmMark, alarmText, statusVar } from '../../ui';
 import { warnKnobs } from './knobs';
 import type { WarnItem } from './model';
 
@@ -36,8 +36,8 @@ export function Plate({ item, register }: { item: WarnItem; register: (el: HTMLD
       style={{ height: warnKnobs.plateH, '--sz-status': statusVar[item.color] } as CSSProperties}
       role="button"
       tabIndex={0}
-      title={`${item.levelLabel} · ${item.ruleLabel}${item.projected ? ' · projection' : ''} — clic : épingler, double-clic : ouvrir le détail`}
-      aria-label={`${item.alert.title} — ${item.levelLabel}${item.projected ? ' (projection)' : ''}. ${item.alert.message}`}
+      title={`${item.num}. ${alarmText(item.level, item.projected)} · ${item.ruleLabel} — clic : épingler, double-clic : ouvrir le détail`}
+      aria-label={`Repère ${item.num}, ${item.alert.title} — ${alarmText(item.level, item.projected)}. ${item.alert.message}`}
       onPointerEnter={() => useBody.getState().setHovered(item.organId)}
       onPointerLeave={() => {
         if (useBody.getState().hovered === item.organId) useBody.getState().setHovered(null);
@@ -52,7 +52,7 @@ export function Plate({ item, register }: { item: WarnItem; register: (el: HTMLD
     >
       <span className="w3d-plate__num">{item.num}</span>
       <span className="w3d-plate__label">{item.label}</span>
-      {item.color === 'grey' ? <span className="sz-dot" data-color="grey" aria-hidden="true" /> : <AlarmMark level={item.level} />}
+      {item.color === 'grey' ? <span className="sz-dot" data-color="grey" aria-hidden="true" /> : <AlarmMark level={item.level} projected={item.projected} />}
       {/* mode Détails : la règle appliquée seulement — le statut est déjà porté par la pastille */}
       <span className="w3d-plate__meta sz-detail">{item.ruleLabel}</span>
     </div>

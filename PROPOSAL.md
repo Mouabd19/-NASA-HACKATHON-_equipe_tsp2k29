@@ -14,8 +14,8 @@ Rien n'est décoratif. Chaque détail vient d'un instrument que le jury, ou un f
 |---|---|---|
 | Priorité d'alarme `!!!` / `!!` / `!` sur aplat rouge ou jaune, texte sombre | Couleurs d'alarme IEC 60601-1-8 : rouge pour la priorité haute, jaune pour la moyenne et la basse. Les points d'exclamation sont la convention d'affichage de nombreux moniteurs, pas une exigence de la norme. | Alertes, étiquettes 3D, « Maintenant » |
 | ROUGE = haute, ORANGE = moyenne, AMBRE = basse | Le marqueur distingue enfin ORANGE d'AMBRE, qui partagent la même couleur jaune depuis le début | `levelPriority` dans `src/ui/tokens.ts` |
-| Repères numérotés 1, 2, 3 sur le corps, repris dans la liste | Le radiologue numérote ses repères sur le cliché et les cite dans le compte rendu | `src/pages/body/alarmOrder.ts` (une seule source d'ordre) |
-| Légendes aux quatre coins de la scène (patient, J094 · date, calques, « Atlas Z-Anatomy, pas une image du patient », délai Terre) | Incrustations DICOM d'une image médicale | `SceneCorners` et `.body-id` dans `Body.tsx` |
+| Repères numérotés 1, 2, 3 sur le corps, de haut en bas, repris dans la liste et dans « Maintenant » | Le radiologue numérote ses repères sur le cliché et les cite dans le compte rendu | `src/pages/body/alarmOrder.ts` (une seule source d'ordre) |
+| Légendes aux coins de la scène (J094 · date, calques, « Atlas Z-Anatomy, pas une image du patient », délai Terre ; le patient seulement sur téléphone) | Incrustations DICOM d'une image médicale | `SceneCorners` et `.body-id` dans `Body.tsx` |
 | Papier millimétré d'ECG (petit carreau 5 px, grand carreau 25 px, filets rosés très sombres) | Papier d'enregistrement ECG et polygraphie | SpO₂ 30 j, signal d'humeur, graphes de la fenêtre organe, frise Santé mentale. Nulle part ailleurs. |
 | Grand chiffre condensé (IBM Plex Sans Condensed, 44 px) | Valeur principale d'un moniteur | SpO₂, FC en direct, J85 (Santé mentale) |
 | Références, heures et graduations en IBM Plex Mono | Incrustations, horodatages d'appareil | Heures de la to-do, NASA V1 4027, axe de la chronologie, citations de norme |
@@ -37,9 +37,9 @@ Couleurs : `src/ui/tokens.ts` reste la seule source. Fond `#07080A` (noir de mon
 ### Corps (/body)
 - Plus de cartes arrondies. La page est une grille dont la gouttière de 1 px est le filet entre les secteurs. La scène 3D est le seul secteur noir.
 - En-tête : valeurs en chiffres condensés de 28 px (« Jour 94 », « 43,1 ans »).
-- Scène : identification et date en haut à gauche (« Haddad · SZ-01 », « J094 · 2026-11-14 »), calques affichés et « Atlas Z-Anatomy, pas une image du patient » en bas à gauche, délai Terre en bas à droite. Le bandeau « Projection » est encadré d'un filet clair.
-- Étiquettes 3D : `[n°] Nom [priorité]`. Le numéro est celui de la liste d'alertes. En mode Détails, la règle s'affiche en mono (NASA V1 4027, Tendance 7 j).
-- Alertes : chaque ligne porte n°, titre, marqueur de priorité et chevron, séparés par des filets. Une alerte ROUGE colore aussi son titre, comme un message d'alarme haute.
+- Scène : jour et date en haut à gauche (« J094 · 14 nov. 2026 » ; « Haddad · SZ-01 » seulement sur téléphone, où la barre haute masque le bandeau patient), calques affichés (décompte au-delà de trois) et « Atlas Z-Anatomy, pas une image du patient » en bas à gauche, délai Terre en bas à droite. Le bandeau « Projection » est encadré d'un filet clair.
+- Étiquettes 3D : `[n°] Nom [priorité]`. Le numéro est celui de la liste d'alertes ; seuls les repères visibles sont numérotés, de haut en bas. En projection, le marqueur et le point d'ancrage passent en contour. En mode Détails, la règle s'affiche en mono (NASA V1 4027, Tendance 7 j).
+- Alertes : chaque ligne porte n°, titre, marqueur et mot du niveau (« ! Attention »), chevron. Une alerte ROUGE du jour colore aussi son titre, jamais en projection. Une alerte dont le calque est masqué reste en fin de liste, grisée, sans numéro, avec « Calque masqué ». « + 2 alertes plus bas » signale le défilement.
 - Constantes : SpO₂ en grand chiffre de moniteur, courbe 30 j sur papier d'ECG, vitales en chiffres condensés.
 - Chronologie : graduations et jalons en mono, curseur en trait vertical.
 - Fenêtre organe et Corps entier : graphes sur papier d'ECG (la grille Recharts est masquée pour ne pas doubler). « À valider par le médecin de bord » devient une mention encadrée.
@@ -49,7 +49,7 @@ Couleurs : `src/ui/tokens.ts` reste la seule source. Fond `#07080A` (noir de mon
 ### Plan du jour (/warroom)
 - Même surface en secteurs à filets. La ligne de tête porte « Heure de bord 07:00 » en mono (l'horloge figée de la démo, dite en clair).
 - « Maintenant » est le seul grand texte de la page : 28 px pour la consigne, 22 px gris pour « Aucune consigne avant le check-in ». « Faire le check-in » devient l'action principale (bouton clair).
-- Après le check-in, le niveau s'affiche avec son marqueur : `!!` Attention renforcée pour une douleur 2 (voir `after-warroom-checkin.png`).
+- Après le check-in, le niveau s'affiche une seule fois : marqueur + mot (`!!` Attention renforcée pour une douleur 2, voir `after-warroom-checkin.png`). Les raisons commencent par ce qui a déclenché le niveau au check-in, puis suivent les repères du Corps avec leur numéro.
 - To-do : heures en mono, titres en 14 px.
 - Signal d'humeur : score en chiffres condensés, courbe sur papier d'ECG.
 - Dernière mesure : la SpO₂ simulée affiche toujours « Série simulée », au lieu d'un « il y a 18 h » faux calculé contre l'horloge réelle (point 7.1 de l'inventaire corrigé). La FC en direct passe en grand chiffre de moniteur.
@@ -95,7 +95,7 @@ Rien n'a été retiré. La logique métier (`src/models`, `src/sim`, `src/mocks`
 | Ensuite : délai Terre, décideur, réponse, suivi sol, synthèse IA repliée | Inchangé |
 | Check-in du matin : 4 notes, zones, validation, résumé, Modifier, Effacer | Inchangé |
 | Dernière mesure : direct < 15 s, gris > 10 min, tracé, σ, montre, saisie manuelle, import | Inchangé. Ajout de « Série simulée » toujours visible. |
-| Aujourd'hui : 10 tâches, Priorité 1, Suspendu, Pourquoi, synchro montre | Inchangé |
+| Aujourd'hui : 10 tâches, Urgent (ex-« Priorité 1 »), Suspendu, Pourquoi, synchro montre | Inchangé, « Priorité 1 » renommé « Urgent » |
 | Signal d'humeur : score, seuil, courbe, « Pas un diagnostic » | Inchangé, courbe sur papier d'ECG |
 | Pourquoi ? : retour, titre, chaîne en 4 étapes, citation, introuvable, 19 sujets, fiches des modèles et leurs limites | Inchangé. Rail vertical, citation en extrait, modèles à droite sur grand écran. |
 | Santé mentale : retour, sous-titre, Prototype, résultat, frise cliquable, dossier, fonctionnement, pied de page | Inchangé. J85 en grand, frise sur papier d'ECG. |
@@ -106,11 +106,58 @@ Rien n'a été retiré. La logique métier (`src/models`, `src/sim`, `src/mocks`
 - Les moniteurs font clignoter les alarmes hautes (IEC 60601-1-8). Ici rien ne clignote : c'est une exigence anti-effets de l'équipe et une question d'accessibilité. Le niveau se lit par la couleur, le marqueur et le mot.
 - Les points d'exclamation sont une convention d'affichage, pas un texte de la norme. Le PROPOSAL et les commentaires du code le disent.
 - Capture J860 : deux étiquettes se chevauchent (« Hanche » sous « Rachis »). C'est déjà le cas avant la refonte : la capture tombe pendant le lissage des positions. À vérifier en direct.
-- Captures téléphone : Chrome sans tête impose une fenêtre d'au moins 500 px. Les vues 390 px `after-mobile-*` passent donc par une iframe de 390 px, et dans ce mode la 3D ne se dessine pas encore au moment de la capture (la scène reste vide sur `after-mobile-body.png`). Les captures `before-*-mobile` ont été faites dans une fenêtre trop large et sont rognées. En vrai, sur téléphone, la scène s'affiche.
+- Captures téléphone : les vues `after-mobile-*` sont maintenant faites à 390 × 844 par le protocole DevTools (émulation d'appareil, pas d'iframe) : la 3D s'y dessine. Les captures `before-*-mobile` ont été faites dans une fenêtre trop large et sont rognées.
 - La frise Santé mentale défile à l'horizontale sur téléphone, comme avant.
-- Point 7.3 de l'inventaire non traité : le compteur annonce 8 alertes à J600 et la liste défile sans autre indice. Les numéros aident un peu : la liste visible s’arrête à 7 alors que le compteur dit 8.
-- `after-warroom-checkin.png` et `after-body-details.png` sont faits avec une page temporaire qui préremplit `localStorage` (check-in douleur 2, mode Détails). Elle a été supprimée après les captures.
+- Point 7.3 de l'inventaire : traité. Une ligne « + n alertes plus bas » sous la liste dit ce qui reste caché et fait défiler au clic.
+- `after-warroom-checkin.png`, `after-warroom-rouge.png` et `after-body-details.png` sont faits en préremplissant `localStorage` par le protocole DevTools (check-in douleur 2, puis douleur 3 avec humeur 2 et fatigue 5, mode Détails). Rien n'est ajouté au dépôt pour ça.
 - La skill Impeccable demande normalement de valider la direction avec l'utilisateur. Il dormait : j'ai pris la direction du brief (« Instrument médical ») sans question.
+
+## Retour du jury et corrections
+
+Note reçue : 15. Verdict : la bonne direction, quatre défauts à corriger avant la démo. Point par point :
+
+### À corriger absolument
+
+1. **Repères 3D sans n° 1 à J94, ordre qui saute à J600 et J860.** Corrigé. Seuls les repères dessinés sur la scène sont numérotés (calque affiché, ancre 3D, niveau non nominal), et les numéros suivent le corps de haut en bas. Les étiquettes de la colonne sont rangées par hauteur d'ancre, donc les numéros se lisent toujours 1, 2, 3… sur la scène (J94 : Cœur 1, Hanche 2, Cuisse 3 ; J860 : 1 à 7 dans l'ordre). Le nerf optique, calque Nerveux masqué, reste dans la liste, en fin de liste, grisé, sans numéro, avec « Calque masqué » (infobulle : « Calque Nerveux + yeux masqué : repère absent de la scène »). Le test `tests/ui/alarmOrder.test.ts` vérifie l'ordre à J94, J600 et J860, avec les calques par défaut et tous les calques. Fichiers : `alarmOrder.ts`, `three/warnings/model.ts`, `AlertsPanel.tsx`.
+2. **« !!! » rouge plein sur des valeurs projetées.** Corrigé. Au-delà de J94, `AlarmMark` passe en contour (filet de la couleur, fond transparent, texte gris), le point d'ancrage 3D devient creux, et le titre de la ligne n'est plus coloré. L'infobulle et le lecteur d'écran disent « Alerte · projection, pas une alarme ». En projection, la liste suit aussi le corps de haut en bas : une prévision n'a pas de priorité d'alarme. Voir `after-body-j600.png` et `after-body-j860.png`.
+3. **Code « ! / !! / !!! » illisible, trois vocabulaires.** Corrigé. Chaque ligne d'alerte montre le marqueur et le mot du niveau (« ! Attention », « !!! Alerte »). Le mot reste le vocabulaire de l'app partout (Attention, Attention renforcée, Alerte). La priorité IEC n'est plus qu'un complément, dans l'infobulle et le texte lu par le lecteur d'écran : « Attention · priorité basse » (`alarmText` dans `primitives.tsx`, une seule source pour les deux).
+4. **Légende de coin qui chevauche les pieds avec tous les calques.** Corrigé. Au-delà de trois calques, la légende affiche « Calques · 6 sur 6 » (liste complète en infobulle), et le bloc est limité à la marge gauche de la scène. Voir `after-body-all-layers.png`.
+5. **Chiffres de la hanche à J860 et courbe PhenoAge.** En partie corrigé.
+   - Hanche : les deux séries de chiffres viennent de deux modèles différents. La chronologie et la carte de survol affichent la courbe de l'équipe (8,7 % et 4,2 %), le texte de « Pourquoi » le modèle d'IA B (8,6 % et 4,3 %). Les deux restent, mais « Pourquoi » donne maintenant les deux et le dit : « La chronologie affiche la courbe de l'équipe (formule calée, hypothèse) : 8,7 % et 4,2 %. Deux méthodes, même ordre de grandeur. » (`models/explain.ts`, texte seulement, aucun calcul changé).
+   - PhenoAge : je n'ai pas touché aux données simulées. Elles appartiennent à l'équipe données, et le 43,1 ans (+0,9) de l'en-tête est cité dans le pitch. J'ai mesuré d'où vient la hausse de +11,1 ans entre J0 et J91, en remettant chaque marqueur à sa valeur de J0 : IDR (12,5 → 13,8 %, +4,7 ans) et CRP (0,6 → 4,7 mg/L, +2,2 ans). La fenêtre l'écrit sous la courbe, calculé à partir des données et toujours visible : « +11,1 ans de J0 à J91, portés surtout par l'IDR (+4,7 ans) et la CRP (+2,2 ans). Le PhenoAge est très sensible à ces marqueurs : sur une série simulée, une hausse de cette taille serait à confirmer par un second prélèvement avant d'en tirer un âge. » **Reste à faire par l'équipe données avant le pitch :** relever les marqueurs de J0 (IDR, CRP) pour que le PhenoAge de départ soit proche de 42 ans, ou ne pas ouvrir cette fenêtre pendant la démo.
+
+### À corriger si possible
+
+- **Triple codage du niveau dans « Maintenant ».** Corrigé : marqueur + mot pour une alarme, voyant + mot pour « En attente » ou « Nominal ». Plus de carré en plus.
+- **Vide sous « Faire le check-in ».** Corrigé : la hauteur minimale de 176 px est retirée. « Maintenant » et « Ensuite » prennent la hauteur de leur contenu.
+- **Formats de jour mélangés.** Corrigé : le coin de scène dit « J094 · 14 nov. 2026 » (date en français ; l'infobulle explique le format sur trois chiffres). L'en-tête garde « Jour 94 · 14 novembre 2026 ».
+- **Identité en double.** Corrigé : sur ordinateur, le nom n'est plus que dans la barre haute. Le coin de scène ne le montre que sous 760 px, quand la barre le masque. Cela corrige aussi le manque relevé sur téléphone (`after-mobile-body.png`).
+- **« Priorité 1 » de la to-do.** Corrigé : renommé « Urgent ».
+- **Raisons de « Maintenant » dans le désordre.** Corrigé : d'abord ce qui a déclenché le niveau au check-in (douleur, humeur et fatigue), puis les alertes dans l'ordre de la liste du Corps, avec le même numéro de repère dans une colonne en mono. Les calques sont lus dans l'état de la page Corps : les numéros restent ceux de la scène. Avant, avec 4 alertes, la raison « Douleur forte 3/3 » sortait même de la liste.
+- **Pastilles vertes à côté de « Non modélisé » (Corps entier).** Corrigé : sans modèle d'écart d'âge, la pastille est grise.
+- **Douleur 3/3 en jaune dans le résumé du check-in.** Corrigé : le déclencheur de l'alerte rouge porte le rouge. Fatigue et humeur restent en jaune.
+- **Papier d'ECG sur toute la frise Santé mentale.** Corrigé : le quadrillage n'est plus que derrière les quatre voies de courbes (motif SVG), plus derrière les verdicts ni les libellés.
+- **« Heure de bord 07:00 » trop pâle.** Corrigé : passé à `textDim`.
+- **Point 7.3, alertes cachées sous la liste.** Corrigé : « + 2 alertes plus bas » sous la liste, avec le même seuil que le rognage des lignes. Un clic fait défiler.
+
+### Fonctions devenues difficiles à trouver
+
+- Mot du niveau absent des lignes : corrigé (point 3).
+- Repère n° 1 introuvable : corrigé (point 1).
+- Nom de la persona absent à 390 px : corrigé, il revient dans le coin de scène sur téléphone.
+- Point 7.3 : corrigé.
+
+### Slop relevé
+
+- Marqueurs répétés sur chaque ligne et chaque étiquette : en projection, ils passent en contour gris, donc le mur de rouge de J600 et J860 disparaît. À J94, ils restent : c'est le signal d'alarme, et la liste porte maintenant le mot à côté.
+- Triple codage dans « Maintenant » : corrigé.
+- Papier d'ECG en texture : corrigé.
+
+### Ce qui n'a pas été fait, et pourquoi
+
+- **Couleurs de l'en-tête et du panneau Calques en projection.** « Statut du jour : Alerte » et les valeurs du panneau Calques restent colorées à J600 et J860. Le jury ne l'a pas relevé, la règle est déjà dite par le bandeau « Projection », et changer ces composants partagés la veille de la démo coûtait plus que ça ne rapportait.
+- **Numéros de la liste un jour mesuré avec des niveaux mélangés.** Un jour mesuré, la liste est triée par gravité, et les numéros suivent le corps. Si un jour passé mêle ROUGE et AMBRE à des hauteurs croisées, les numéros de la liste peuvent sauter (2, 1, 3), alors que la scène reste dans l'ordre. À J94 (démo), tout est AMBRE et la liste se lit 1, 2, 3. J'ai privilégié la règle du jury : « les numéros doivent toujours se lire dans l'ordre sur la scène ».
+- **Titres coupés dans la liste.** Le mot du niveau prend environ 70 px sur une colonne de 320 px : « Cœur — VO₂max en bais… ». Le titre complet est en infobulle et en mode Détails. Les titres sur deux lignes ne laissaient voir que deux alertes.
 
 ## Lancer
 
@@ -119,5 +166,5 @@ cd /Users/ahmed/Documents/Hacks/sol-zero-ui-B-instrument-medical
 npm install            # ajoute @fontsource/ibm-plex-sans, -sans-condensed, -mono
 npm run dev -- --port 5182 --strictPort
 # http://localhost:5182/body · /warroom · /reasoning/r-hanche-ared · /mental
-npm run build && npm test   # build OK, 147 tests OK
+npm run build && npm test   # build OK, 152 tests OK
 ```

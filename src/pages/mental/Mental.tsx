@@ -106,8 +106,18 @@ function Frise({ sel, onSel, mlAlert }: { sel: { sc: Sc; day: number }; onSel: (
   };
   return (
     <div>
-      <div className="mt-chart sz-ecg"><div className="mt-chart__in" ref={ref}>
+      <div className="mt-chart"><div className="mt-chart__in" ref={ref}>
         <svg className="mt-frise" viewBox={`0 0 ${W} ${H}`} width={W} height={H} role="img" aria-label={`Frise J${d0} à J${d1} : humeur, sommeil, variabilité cardiaque et temps avec l'équipage, avec et sans trouble ; verdicts des agents aux jours analysés`}>
+          {/* papier d'ECG : seulement derrière les quatre voies de courbes, pas derrière les verdicts */}
+          <defs>
+            <pattern id="mt-ecg" width="25" height="25" patternUnits="userSpaceOnUse" x={L} y={TOP}>
+              <path className="mt-ecg__minor" d="M5 0V25M10 0V25M15 0V25M20 0V25M0 5H25M0 10H25M0 15H25M0 20H25" />
+              <path className="mt-ecg__major" d="M0.5 0V25M0 0.5H25" />
+            </pattern>
+          </defs>
+          {METRICS.map((m, i) => (
+            <rect key={m.k} x={L} y={TOP + i * (CH + GAP)} width={W - L - R} height={CH} fill="url(#mt-ecg)" />
+          ))}
           {/* période du trouble : aplat neutre */}
           <rect className="mt-frise__zone" x={x(ONSET)} y={20} width={x(d1) - x(ONSET)} height={BOTTOM - 20} />
           {/* grille */}

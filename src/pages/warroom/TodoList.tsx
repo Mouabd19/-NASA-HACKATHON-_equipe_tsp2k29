@@ -74,7 +74,7 @@ function Row({ t, onToggle, suspended }: { t: TodoItem; onToggle: (id: string, d
         {suspended ? (
           <><Dot color="amber" size={6} /><span title="Voir la consigne « Maintenant »">Suspendu</span></>
         ) : urgent ? (
-          <><Dot color="red" size={6} />Priorité 1</>
+          <><Dot color="red" size={6} />Urgent</>
         ) : (
           KIND[t.kind]
         )}

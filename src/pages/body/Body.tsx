@@ -55,15 +55,21 @@ class SceneBoundary extends Component<{ children: ReactNode }, { error: string |
  * Légendes d'image aux coins de la scène, comme les incrustations d'un cliché (DICOM) : identification,
  * jour et date, calques affichés, nature de l'image et délai Terre. Discrètes, toujours là, jamais cliquables.
  */
+/** « 2026-11-14 » → « 14 nov. 2026 » (même langue que l'en-tête de la page). */
+const frDate = (iso: string): string =>
+  new Date(`${iso}T12:00:00`).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+
 function SceneCorners(): JSX.Element {
   const day = useBody((s) => s.day);
   const layers = useBody((s) => s.layers);
   const date = dayToDate(day);
   const shown = LAYER_ORDER.filter((l) => layers[l]).map((l) => LAYER_META[l].label.toLowerCase());
+  // Au-delà de trois calques, la liste déborderait sur les pieds du modèle : un décompte suffit (le panneau Calques détaille).
+  const legend = shown.length === 0 ? 'aucun' : shown.length <= 3 ? shown.join(', ') : `${shown.length} sur ${LAYER_ORDER.length}`;
   return (
     <>
       <div className="body-corner body-corner--bl sz-mono" aria-hidden="true">
-        <span>Calques · {shown.length ? shown.join(', ') : 'aucun'}</span>
+        <span title={shown.join(', ')}>Calques · {legend}</span>
         <span>Atlas Z-Anatomy, pas une image du patient</span>
       </div>
       <div className="body-corner body-corner--br sz-mono" aria-hidden="true">
@@ -87,8 +93,9 @@ function SceneChrome(): JSX.Element {
   return (
     <div className="body-chrome" data-projected={projected}>
       <div className="body-id sz-mono">
+        {/* le nom est déjà dans la barre haute ; il ne revient ici que sur téléphone, où la barre le masque */}
         <span className="body-id__name">{sentenceCase(ASTRONAUT.name)} · {ASTRONAUT.id}</span>
-        <span>{fmtDayLong(day)} · {dayToDate(day)}</span>
+        <span title="Jour de mission sur trois chiffres, comme l'incrustation d'un cliché">{fmtDayLong(day)} · {frDate(dayToDate(day))}</span>
       </div>
       {projected && (
         <div className="body-ribbon" role="status" title="Jour futur : corps projeté par le modèle, pas une mesure">

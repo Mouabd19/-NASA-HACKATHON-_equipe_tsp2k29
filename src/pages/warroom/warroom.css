@@ -8,7 +8,7 @@
 /* En-tête : une ligne (le nom de la page est déjà l'onglet actif de la barre haute). */
 .wr-head { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 8px; margin-bottom: 16px; font-size: var(--sz-fs-data); line-height: 1.4; color: var(--sz-text-dim); }
 .wr-head__day { color: var(--sz-text); font-weight: 500; }
-.wr-head__clock { order: 9; margin-left: auto; color: var(--sz-text-muted); }
+.wr-head__clock { order: 9; margin-left: auto; color: var(--sz-text-dim); }
 /* Le contenu de droite des en-têtes s'aligne sur la marge des panneaux (pas de bouton × sur cette page). */
 .wr-page .sz-panel__head { padding-right: var(--sz-pad); }
 .wr-grid { display: grid; gap: 1px; border: 1px solid var(--sz-border); background: var(--sz-border); }
@@ -17,7 +17,7 @@
 .wr-page .sz-panel__head { border-bottom: 0; min-height: 40px; }
 .wr-page .sz-panel__body { padding-top: 4px; }
 .wr-now { display: grid; gap: 1px; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); align-items: stretch; }
-.wr-now > .sz-panel { min-height: 176px; }
+.wr-now > .sz-panel { min-height: 0; }
 .wr-main { display: grid; gap: 1px; grid-template-columns: minmax(300px, 360px) minmax(0, 1fr); align-items: stretch; }
 .wr-side { display: grid; gap: 1px; min-width: 0; grid-template-rows: auto 1fr; }
 .wr-foot { display: flex; justify-content: flex-end; margin-top: 16px; }
@@ -48,8 +48,10 @@
 /* La consigne : le seul grand texte de la page. */
 .wr-order { font-size: 28px; line-height: 1.2; font-weight: 500; letter-spacing: -0.01em; color: var(--sz-text); max-width: 34ch; text-wrap: balance; }
 .wr-order[data-muted='true'] { font-size: 22px; line-height: 1.3; font-weight: 400; letter-spacing: 0; color: var(--sz-text-dim); }
-.wr-reasons { display: grid; gap: 4px; padding-left: 16px; list-style: disc; color: var(--sz-text-dim); }
-.wr-reasons li::marker { color: var(--sz-text-muted); }
+.wr-reasons { display: grid; gap: 4px; padding-left: 0; list-style: none; color: var(--sz-text-dim); }
+/* Colonne des repères : le n° est celui de l'étiquette sur le corps (page Corps) ; vide pour une raison du check-in. */
+.wr-reasons li { display: grid; grid-template-columns: 20px minmax(0, 1fr); }
+.wr-reasons__num { font-family: var(--sz-font-mono); font-size: var(--sz-fs-small); color: var(--sz-text-muted); font-variant-numeric: tabular-nums; }
 .wr-next { display: grid; gap: 8px; align-content: start; }
 .wr-next__who { display: flex; align-items: baseline; gap: 8px; }
 .wr-next__who strong { font-size: var(--sz-fs-title); font-weight: 500; color: var(--sz-text); }
@@ -112,7 +114,7 @@
 .wr-todo-row[data-state='done'] .wr-todo__time,
 .wr-todo-row[data-state='done'] .wr-todo__kind { color: var(--sz-text-muted); }
 .wr-todo-row[data-state='suspended'] .wr-todo__check { cursor: not-allowed; }
-/* Liste étroite : une seule ligne, la catégorie disparaît (les états « Suspendu » et « Priorité 1 » restent). */
+/* Liste étroite : une seule ligne, la catégorie disparaît (les états « Suspendu » et « Urgent » restent). */
 @container (max-width: 520px) {
   .wr-todo__kind:not([data-flag]) { display: none; }
 }

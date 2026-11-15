@@ -85,6 +85,8 @@
 .mt-frise__zone { fill: var(--sz-text); opacity: 0.05; }
 /* Le papier d'ECG porte déjà la grille : pas de seconde grille par-dessus. */
 .mt-frise__grid { stroke: var(--sz-border); opacity: 0; }
+.mt-ecg__minor { fill: none; stroke: var(--sz-grid-minor); stroke-width: 1; shape-rendering: crispEdges; }
+.mt-ecg__major { fill: none; stroke: var(--sz-grid-major); stroke-width: 1; shape-rendering: crispEdges; }
 .mt-frise__axis { stroke: var(--sz-border); }
 .mt-frise__mark { stroke: var(--sz-border-strong); }
 .mt-frise__mark--dash { stroke: var(--sz-text-muted); stroke-dasharray: 3 3; }

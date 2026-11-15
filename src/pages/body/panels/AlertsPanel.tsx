@@ -1,14 +1,15 @@
 // Alertes du jour : alertsForDay(day), triées par gravité puis de haut en bas du corps (même ordre que les
 // étiquettes de la scène). Chaque ligne porte data-organ-id (lu par les traits de liaison) et met l'organe
 // en évidence en 3D au survol.
-import { useMemo, useRef } from 'react';
-import type { CSSProperties, JSX, KeyboardEvent } from 'react';
+import { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import type { CSSProperties, JSX, KeyboardEvent, RefObject } from 'react';
 import type { Alert, Color, DayBody, Level } from '../../../types';
 import { trend7d } from '../../../models/trend';
 import { getStandard } from '../../../content/standards';
-import { AlarmMark, Panel, TagBadge, fmt, levelColor, levelLabel, sentenceCase, statusVar } from '../../../ui';
-import { sortAlarms } from '../alarmOrder';
-import { useBody, useDayAlerts, useDayBody, useRowClip } from '../store';
+import { AlarmMark, Panel, TagBadge, alarmText, fmt, levelColor, levelLabel, sentenceCase, statusVar } from '../../../ui';
+import { getAnchor } from '../../../three/anatomy';
+import { alarmNumbers, alertLayers, isOnBody, sortAlarms } from '../alarmOrder';
+import { LAYER_META, LAYER_ORDER, useBody, useDayAlerts, useDayBody, useRowClip } from '../store';
 import './AlertsPanel.css';
 
 const LEVEL_LABEL: Record<Level, string> = levelLabel;
@@ -56,6 +57,27 @@ function signed(n: number, digits: number): string {
   return `${r === 0 ? '±' : n < 0 ? '−' : '+'}${fmt(r, digits)}`;
 }
 
+/** Nombre de lignes `[data-row]` cachées sous le bas de la liste (point 7.3 : le défilement doit se voir). */
+function useRowsBelow(ref: RefObject<HTMLElement | null>, count: number): number {
+  const [below, setBelow] = useState(0);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) { setBelow(0); return; }
+    const apply = (): void => {
+      const bottom = el.getBoundingClientRect().top + el.clientTop + el.clientHeight + 0.5; // même seuil que useRowClip
+      let n = 0;
+      for (const row of el.querySelectorAll<HTMLElement>('[data-row]')) if (row.getBoundingClientRect().bottom > bottom) n++;
+      setBelow(n);
+    };
+    const ro = new ResizeObserver(apply);
+    ro.observe(el);
+    el.addEventListener('scroll', apply, { passive: true });
+    apply();
+    return () => { ro.disconnect(); el.removeEventListener('scroll', apply); };
+  }, [ref, count]);
+  return below;
+}
+
 export function AlertsPanel(): JSX.Element {
   const day = useBody((s) => s.day);
   const hovered = useBody((s) => s.hovered);
@@ -65,16 +87,29 @@ export function AlertsPanel(): JSX.Element {
   const openOrganWindow = useBody((s) => s.openOrganWindow);
 
   const adherence = useBody((s) => s.adherence);
+  const layers = useBody((s) => s.layers);
   const body = useDayBody();
   const raw = useDayAlerts();
-  // même ordre et mêmes numéros que les repères posés sur le corps 3D
-  const alerts = useMemo(() => sortAlarms(raw), [raw]);
+  const projected = body.projected;
+  // mêmes numéros que les repères posés sur le corps 3D : seuls les repères visibles sont numérotés
+  const { alerts, nums } = useMemo(() => {
+    const visible = (a: Alert): boolean => isOnBody(a, layers, body);
+    return { alerts: sortAlarms(raw, projected, visible), nums: alarmNumbers(raw, visible) };
+  }, [raw, layers, body, projected]);
   // Jamais de demi-ligne en bas de liste.
   const listRef = useRef<HTMLUListElement>(null);
   useRowClip(listRef);
+  const below = useRowsBelow(listRef, alerts.length);
   const cards = useMemo(
-    () => alerts.map((a) => ({ a, trend: alertTrend(a, body, day), std: isNasaRule(a.rule) ? getStandard(a.rule) : null })),
-    [alerts, body, day],
+    () => alerts.map((a) => {
+      const num = nums.get(a.id);
+      // calque masqué : nom du premier calque de l'organe, pour le dire en clair sur la ligne
+      const hiddenLayer = num === undefined && a.level !== 'VERT' && getAnchor(a.organId)
+        ? LAYER_ORDER.find((l) => alertLayers(a, body).includes(l))
+        : undefined;
+      return { a, num, hiddenLayer, trend: alertTrend(a, body, day), std: isNasaRule(a.rule) ? getStandard(a.rule) : null };
+    }),
+    [alerts, nums, body, day],
   );
 
   return (
@@ -98,12 +133,13 @@ export function AlertsPanel(): JSX.Element {
         </p>
       ) : (
         <ul className="alr__list" ref={listRef}>
-          {cards.map(({ a, trend, std }, i) => {
+          {cards.map(({ a, num, hiddenLayer, trend, std }) => {
             const color: Color = levelColor[a.level] ?? 'grey';
             const level = LEVEL_LABEL[a.level] ?? sentenceCase(a.level);
             const title = sentenceCase(a.title);
             const message = cleanMessage(a.message);
             const isSelected = selected === a.organId;
+            const masked = hiddenLayer !== undefined;
             const onKey = (e: KeyboardEvent): void => {
               if (e.target !== e.currentTarget) return;
               if (e.key !== 'Enter' && e.key !== ' ') return;
@@ -120,6 +156,8 @@ export function AlertsPanel(): JSX.Element {
                   data-organ-id={a.organId}
                   data-level={a.level}
                   data-color={color}
+                  data-projected={projected}
+                  data-masked={masked}
                   data-hovered={hovered === a.organId}
                   data-selected={isSelected}
                   onMouseEnter={() => setHovered(a.organId)}
@@ -129,19 +167,19 @@ export function AlertsPanel(): JSX.Element {
                   onClick={() => setSelected(a.organId)}
                   onKeyDown={onKey}
                 >
-                  <span className="alr__num" aria-hidden="true">{i + 1}</span>
-                  <h3 className="alr__title" title={`${level} : ${title}`}>{title}</h3>
+                  <span className="alr__num" aria-hidden="true">{num ?? ''}</span>
+                  <h3 className="alr__title" title={`${alarmText(a.level, projected)} : ${title}`}>
+{title}</h3>
                   <span className="alr__prio">
-                    {color === 'grey' ? (
-                      <span
-                        className="sz-dot"
-                        data-color={color}
-                        style={{ '--sz-status': statusVar[color] } as CSSProperties}
-                        role="img"
-                        aria-label={level}
-                        title={level}
-                      />
-                    ) : <AlarmMark level={a.level} />}
+                    {masked ? (
+                      // repère absent de la scène : pas de numéro, pas de couleur, la raison en clair
+                      <span className="alr__word alr__word--masked" title={`Calque ${LAYER_META[hiddenLayer].label} masqué : repère absent de la scène`}>Calque masqué</span>
+                    ) : color === 'grey' ? (
+                      <span className="alr__word">
+                        <span className="sz-dot" data-color={color} style={{ '--sz-status': statusVar[color] } as CSSProperties} aria-hidden="true" />
+                        {level}
+                      </span>
+                    ) : <AlarmMark level={a.level} projected={projected} withLabel />}
                   </span>
                   <button
                     type="button"
@@ -180,6 +218,15 @@ export function AlertsPanel(): JSX.Element {
           })}
         </ul>
       )}
+      {below > 0 ? (
+        <button
+          type="button"
+          className="alr__below"
+          onClick={() => listRef.current?.scrollBy({ top: listRef.current.clientHeight * 0.8, behavior: 'smooth' })}
+        >
+          + {below} alerte{below > 1 ? 's' : ''} plus bas
+        </button>
+      ) : null}
     </Panel>
   );
 }

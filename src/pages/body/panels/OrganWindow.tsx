@@ -14,6 +14,7 @@ import { CHRONO_AGE_J0, DAY_END, DAY_SOL0, DAY_TODAY } from '../../../mocks/miss
 import { getAnalyteMeta, getBloodTests, getDayBodyPlan } from '../../../sim/load';
 import { bioAgeSeries, hasBioAgeModel } from '../../../models/bioAge';
 import { phenoAge } from '../../../models/phenoAge';
+import { computePhenoAge, type PhenoAgeMarkers } from '../../../models/phenoAgeFormula';
 import { lossToYears } from '../../../models/agingRates';
 import { organForecast, type Forecast, type ForecastOrgan } from '../../../models/ml';
 import { SUMMARY_SOURCE, getSummaryPlan } from '../../../content/summaries';
@@ -577,8 +578,38 @@ function OrganRight({ organ, day }: { organ: OrganState; day: number }): JSX.Ele
   );
 }
 
+const PHENO_KEY: Record<keyof PhenoAgeMarkers, string> = {
+  albumine: 'albumine', creatinine: 'creatinine', glucose: 'glucose', crp: 'crp', lymphocytes_pct: 'lymphocytes_pct',
+  vgm: 'vgm', idr: 'idr', pal: 'phosphatases_alcalines', leucocytes: 'leucocytes',
+};
+const PHENO_NAME: Partial<Record<keyof PhenoAgeMarkers, string>> = {
+  idr: 'l’IDR', crp: 'la CRP', creatinine: 'la créatinine', albumine: 'l’albumine', lymphocytes_pct: 'les lymphocytes',
+  leucocytes: 'les leucocytes', glucose: 'le glucose', vgm: 'le VGM', pal: 'les phosphatases alcalines',
+};
+
+/**
+ * D'où vient la hausse du PhenoAge entre le premier et le dernier prélèvement : pour chaque marqueur, on remet sa
+ * valeur du premier prélèvement dans le dernier et on mesure l'écart. Les deux plus forts sont dits en clair.
+ */
+function phenoDrivers(): { first: number; last: number; rise: number; top: { k: keyof PhenoAgeMarkers; years: number }[] } | null {
+  const days = [...new Set(getBloodTests('crp').map((b) => b.day))].filter((d) => d <= DAY_TODAY).sort((a, b) => a - b);
+  const a = days.length ? phenoAge(days[0]) : null;
+  const b = days.length ? phenoAge(days[days.length - 1]) : null;
+  if (!a || !b || a.day === b.day) return null;
+  const marks = (r: PhenoAgeResult): PhenoAgeMarkers =>
+    Object.fromEntries(Object.entries(PHENO_KEY).map(([k, an]) => [k, r.inputs[an]])) as unknown as PhenoAgeMarkers;
+  const mb = marks(b), ma = marks(a);
+  const base = computePhenoAge(mb, b.chronoAge);
+  const top = (Object.keys(PHENO_KEY) as (keyof PhenoAgeMarkers)[])
+    .map((k) => ({ k, years: base - computePhenoAge({ ...mb, [k]: ma[k] }, b.chronoAge) }))
+    .sort((x, y) => y.years - x.years)
+    .slice(0, 2);
+  return { first: a.day, last: b.day, rise: b.phenoAge - a.phenoAge, top };
+}
+
 function GlobalRight({ result }: { result: PhenoAgeResult | null }): JSX.Element {
   const rows = useMemo(buildPhenoRows, []);
+  const drivers = useMemo(phenoDrivers, []);
   return (
     <div className="ow__right">
       <Sect
@@ -591,6 +622,16 @@ function GlobalRight({ result }: { result: PhenoAgeResult | null }): JSX.Element
           </div>
         </div>
         <Legend pheno />
+        {drivers && drivers.rise >= 3 ? (
+          // une hausse rapide se lit d'abord comme une alerte sur la donnée : on dit d'où elle vient, sans la cacher
+          <p className="ow__caveat">
+            +{fmt(drivers.rise, 1)} ans de {fmtDay(drivers.first)} à {fmtDay(drivers.last)}, portés surtout par{' '}
+            {drivers.top.map((t, i) => (
+              <span key={t.k}>{i ? ' et ' : ''}{PHENO_NAME[t.k]} (+{fmt(t.years, 1)} an{t.years >= 2 ? 's' : ''})</span>
+            ))}
+            . Le PhenoAge est très sensible à ces marqueurs : sur une série simulée, une hausse de cette taille serait à confirmer par un second prélèvement avant d’en tirer un âge.
+          </p>
+        ) : null}
       </Sect>
       <div className="ow__notes sz-detail">
         <p>Un point par prélèvement hebdomadaire, sans projection.</p>
@@ -645,7 +686,8 @@ function OrganGaps({ organs }: { organs: OrganState[] }): JSX.Element {
           return (
             <li key={o.id}>
               <button type="button" className="ow__organ" onClick={() => openOrganWindow(o.id)}>
-                <StatusDot color={o.status} />
+                {/* sans modèle d'écart d'âge, la pastille est grise : la ligne ne dit rien de l'organe, donc pas de couleur */}
+                <StatusDot color={modeled ? o.status : 'grey'} />
                 <span className="ow__organ-name">{sentenceCase(o.name.replace(/\s*\(non modélisé\)\s*$/i, ''))}</span>
                 {/* « a un modèle d'écart d'âge » vient du modèle, pas de la couleur : sans modèle, jamais « +0,0 » */}
                 {modeled
