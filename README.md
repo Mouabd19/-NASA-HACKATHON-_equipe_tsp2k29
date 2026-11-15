@@ -6,9 +6,10 @@ App Apple Watch (avec son app iPhone compagnon) qui envoie le pouls **réel** à
 |---|---|
 | 1. Squelette, réglage de l'adresse du Mac, bouton « Tester » | testé sur iPhone 16 Pro + Apple Watch SE (watchOS 11.5) |
 | 2. Pouls en direct (séance d'entraînement → `/ingest` toutes les 2 s au plus, repli via l'iPhone) | testé : pouls réel reçu par le Mac ~5 s après la mesure ; repli via l'iPhone non testé |
-| 3. Instantané santé | à faire |
-| 4. To-do sur la montre | à faire |
-| 5. Check-in du matin | à discuter (contrat `POST /api/checkin`) |
+| 3. Instantané santé (page « Santé », envoi des dernières mesures) | fait, non retesté sur la vraie montre |
+| 4. To-do sur la montre (`GET /api/todo`, coche `POST /api/todo/:id/done`) | fait et testé dans le simulateur (instantané embarqué) ; à tester avec le Mac |
+| 5. Pages Aujourd'hui, Corps 3D, Trajet (`GET /api/watch/summary`) | fait et testé dans le simulateur ; l'endpoint est sur la branche `night/watch-api` du dépôt web |
+| 6. Check-in du matin | à discuter (contrat `POST /api/checkin`) |
 
 Cibles : iOS 17+, watchOS 10+. Swift 5, SwiftUI, sans aucune dépendance.
 
@@ -72,19 +73,86 @@ Tu peux aussi saisir l'adresse directement sur la montre. `10.184.16.196:5173` s
 
 ## 5. Utiliser
 
-Page **Pouls** → **Démarrer**. La montre lance une séance d'entraînement (type « Autre », en intérieur) : c'est ce qui force la mesure continue du pouls. Chaque nouvelle valeur part vers `POST /ingest` avec **la date de l'échantillon**, au plus une requête toutes les 2 s. Si plusieurs valeurs arrivent entre deux envois, seule la plus récente part.
+La Couronne fait défiler les pages de haut en bas. Une information par page.
+
+| Page | Ce qu'elle montre | Source |
+|---|---|---|
+| **Aujourd'hui** | Niveau du jour (pastille de couleur, gris si inconnu), nombre de zones à surveiller, consigne **Maintenant**, puis **Ensuite** : qui décide et dans quel délai | `GET /api/watch/summary`, sinon instantané embarqué |
+| **Pouls** | Pouls en direct, petit cœur qui bat au rythme mesuré, écart à ta FC de repos (lue dans Santé), tracé des 60 dernières valeurs, envoi au Mac | **Réel** (montre) |
+| **Corps** | Mannequin 3D (SceneKit) qui tourne lentement ; les zones en alerte prennent leur couleur. Touche le corps pour le faire tourner à la Couronne, retouche pour rendre la Couronne aux pages. La ligne du bas ouvre la liste des alertes | résumé du jour |
+| **To-do** | Les tâches du jour, cochables. « Priorité 1 » en rouge, « Suspendu » pour la charge lourde si le niveau est orange ou rouge | `GET /api/todo`, sinon liste embarquée de J94 |
+| **Trajet** | J94 / 860, frise avec Sol 0, jours avant Sol 0, délai radio Terre-Mars (aller simple et aller-retour) | résumé du jour |
+| **Santé** | Envoi des dernières mesures de Santé au Mac (inchangé) | **Réel** |
+| **Réglages** | Adresse du Mac, bouton Tester, mode simulé (inchangés) | |
+
+Pourquoi cet ordre : la démo commence par la question « que dois-je faire maintenant ? », puis montre le seul flux réel (le pouls), puis le corps et la to-do qui en découlent. Trajet, Santé et Réglages servent moins pendant le pitch.
+
+**Honnêteté des données.** Le pied de chaque page dit d'où vient ce qu'elle affiche :
+- « Simulé · Mac à 07:02 » : calculé par le Mac (persona Haddad, données simulées) ;
+- « Simulé · instantané embarqué » : le Mac ne répond pas, ou l'endpoint n'est pas encore déployé. L'app affiche alors une copie de J94 enregistrée dans `Watch/EmbeddedSnapshot.swift` ;
+- la to-do dit « Synchronisée avec le Mac » ou « Non synchronisée : coches gardées sur la montre ».
+
+Seul le pouls est réel, et « En direct » n'apparaît que pour une valeur de moins de 15 s. Le check-in saisi dans le navigateur n'arrive pas au serveur : la page Aujourd'hui l'indique (« Check-in simulé »).
+
+**Pouls.** Page **Pouls** → **Démarrer**. La montre lance une séance d'entraînement (type « Autre », en intérieur) : c'est ce qui force la mesure continue du pouls. Chaque nouvelle valeur part vers `POST /ingest` avec **la date de l'échantillon**, au plus une requête toutes les 2 s. Si plusieurs valeurs arrivent entre deux envois, seule la plus récente part.
 
 L'écran affiche :
 - **« En direct »** (vert) seulement si une valeur est arrivée il y a moins de 15 s. Sinon le statut est gris.
 - Le pouls en blanc quand il est frais, en gris sinon.
+- « +14 vs 58 bpm, ton repos (Santé) » : l'écart à ta dernière FC de repos des 30 derniers jours. Pas de couleur : un pouls plus haut qu'au repos est normal pendant un effort. Sans FC de repos dans Santé, l'écart est marqué inconnu.
 - « Envoyé à 19:29:10 depuis la montre » ou « via l'iPhone », avec le nombre d'envois.
 - Le dernier message d'erreur, en rouge s'il est plus récent que le dernier envoi réussi, en gris sinon.
 
 **Arrêter** termine la séance sans l'enregistrer dans Santé.
 
-**Mode simulé** (page Réglages, désactivé par défaut) : produit un pouls inventé pour tester l'écran, par exemple dans le simulateur. Tout s'affiche en ambre avec « SIMULÉ · rien n'est envoyé ». **Aucune valeur simulée n'est envoyée au Mac.**
+**Mode simulé** (page Réglages, désactivé par défaut) : produit un pouls inventé pour tester l'écran, par exemple dans le simulateur. Tout s'affiche en ambre avec « SIMULÉ · rien n'est envoyé ». L'écart est alors calculé contre la FC de repos simulée de Haddad. **Aucune valeur simulée n'est envoyée au Mac.**
 
-**Repli** : si la montre n'atteint pas le Mac (pas de réseau, délai dépassé, connexion refusée) et que l'app iPhone est joignable, la requête passe par l'iPhone via WatchConnectivity. L'iPhone affiche alors le nombre de requêtes relayées.
+**Repli** : si la montre n'atteint pas le Mac (pas de réseau, délai dépassé, connexion refusée) et que l'app iPhone est joignable, la requête passe par l'iPhone via WatchConnectivity. L'iPhone affiche alors le nombre de requêtes relayées. Le résumé et la to-do passent par le même chemin.
+
+**Animations.** Changement de page (0,2 s), battement du cœur, rotation lente du corps. Avec Réglages › Accessibilité › Réduire les animations, le cœur et le corps restent immobiles.
+
+**Mode démo (simulateur).** Arguments de lancement :
+- `-SZDemo YES` : aucune requête au Mac, instantané embarqué, pouls simulé lancé tout seul (jamais envoyé) ;
+- `-SZPage today|pulse|body|todo|trip|health|settings` : page affichée au lancement.
+
+```sh
+xcrun simctl launch <UDID> com.tsp2k29.solzero.SOLZeroWatch.watchkitapp -SZDemo YES -SZPage body
+```
+
+Captures de chaque page dans `shots/` (Apple Watch SE 3 44 mm, watchOS 26.2).
+
+## Endpoint `GET /api/watch/summary`
+
+Sur la branche `night/watch-api` du dépôt web (`server/watchSummary.ts`, branché dans `server/handlers.ts`, testé dans `tests/api/handlers.test.ts`). Lecture seule. Recalculé avec les modèles de l'app (`triage`, `router`, `planDay`, corps du jour), donc les mêmes chiffres que la page Plan du jour. `?day=N` pour un autre jour (0 à 860). Répond 503 si les modèles ne sont pas chargés : la montre passe alors sur l'instantané embarqué.
+
+```json
+{
+  "version": 1, "provenance": "SIMULÉ",
+  "mission": { "day": 94, "totalDays": 860, "sol0Day": 210, "daysToSol0": 116, "phase": "Croisière aller",
+               "delayMin": 11, "delayTag": "Publié", "conjunction": false },
+  "checkin": { "source": "simulated" },
+  "triage": { "level": "AMBRE", "label": "Attention", "color": "amber", "reasons": ["…"] },
+  "now": { "text": "Appliquer la to-do du jour : contre-mesures renforcées (…). Pas d'urgence." },
+  "next": { "decideur": "sol", "who": "Médecin au sol", "reponseMin": 52, "text": "…" },
+  "alerts": [{ "organId": "hanche", "name": "Hanche", "color": "amber", "finding": "perte osseuse estimée",
+               "rule": "V1 4027", "zone": "bassin" }],
+  "todo": { "total": 10, "done": 0, "source": "plan" },
+  "metrics": [{ "key": "fc_repos", "value": 62, "unit": "bpm", "tag": "Persona", "provenance": "SIMULÉ" }],
+  "live": { "heartRate": null }
+}
+```
+
+```sh
+curl http://$IP:5173/api/watch/summary
+```
+
+## Demain matin : déployer sur la vraie montre (5 étapes)
+
+1. **Serveur.** Dans le dépôt web, récupère l'endpoint : `git fetch && git merge origin/night/watch-api` (ou demande à l'équipe de le fusionner), puis `npm run dev -- --host`. Vérifie `curl http://$(ipconfig getifaddr en0):5173/api/watch/summary`. Sans ce merge, la montre marche quand même, sur l'instantané embarqué.
+2. **Projet.** `cd ~/Documents/Hacks/sol-zero-watch && xcodegen generate`. iPhone branché, montre au poignet déverrouillée.
+3. **Installer.** Commandes de « Réinstaller sans cliquer » ci-dessous (iPhone puis montre), ou ⌘R dans Xcode sur chaque schéma. Le compte gratuit expire au bout de 7 jours.
+4. **Adresse.** Dans l'app iPhone : `http://IP:5173` → Tester → Envoyer à la montre. Sur la montre, page Réglages → Tester (point vert).
+5. **Répétition.** Ouvre le Plan du jour sur le Mac (il pousse la to-do). Sur la montre : Aujourd'hui affiche « Simulé · Mac à … », la To-do dit « Synchronisée avec le Mac », coche une tâche et regarde-la se cocher sur le Mac. Page Pouls → Démarrer → « En direct » sur la montre et sur le Mac. Vérifie que **Mode simulé est désactivé**.
 
 ## 6. Tester avec curl
 
@@ -163,7 +231,13 @@ Si l'erreur indique que la version de watchOS ou d'iOS n'est pas prise en charge
 Sur l'iPhone : Santé › Profil › Apps › SOL ZÉRO › tout activer. Sur la montre : Réglages › Santé › Apps.
 
 **Pas de pouls dans le simulateur**
-C'est normal. Active le mode simulé pour tester l'écran.
+C'est normal. Active le mode simulé, ou lance avec `-SZDemo YES`.
+
+**« Simulé · instantané embarqué » alors que le Mac répond**
+Le serveur n'a pas l'endpoint `/api/watch/summary` (branche `night/watch-api` pas encore fusionnée) : la montre affiche la copie de J94. La to-do et le pouls marchent quand même.
+
+**La Couronne ne change plus de page sur la page Corps**
+Elle fait tourner le corps (« Couronne : rotation » en haut). Touche le corps une fois pour la rendre aux pages.
 
 **L'app ne s'ouvre plus au bout de 7 jours**
 C'est la signature du compte gratuit qui a expiré. Relance ⌘R depuis Xcode.

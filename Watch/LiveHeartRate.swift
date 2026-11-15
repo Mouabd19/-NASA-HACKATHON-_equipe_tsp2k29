@@ -24,6 +24,11 @@ final class LiveHeartRate: NSObject, ObservableObject {
     @Published private(set) var lastError: String?
     @Published private(set) var lastErrorAt: Date?
 
+    /// Dernières valeurs reçues (60 au plus), pour le tracé de la page Pouls
+    @Published private(set) var recent: [Double] = []
+    /// FC au repos du porteur, lue dans Santé au démarrage : sert de référence à l'écart affiché
+    @Published private(set) var restingRef: (value: Double, date: Date)?
+
     private let store = HKHealthStore()
     private var session: HKWorkoutSession?
     private var builder: HKLiveWorkoutBuilder?
@@ -54,6 +59,7 @@ final class LiveHeartRate: NSObject, ObservableObject {
     func start(simulated: Bool) async {
         guard phase == .idle else { return }
         bpm = nil; sampleDate = nil; receivedAt = nil; lastQueuedSampleDate = nil
+        recent = []
         isSimulated = simulated
         phase = .starting
 
@@ -75,6 +81,8 @@ final class LiveHeartRate: NSObject, ObservableObject {
                 phase = .idle
                 return
             }
+
+            await loadRestingReference()
 
             let config = HKWorkoutConfiguration()
             config.activityType = .other
@@ -135,6 +143,8 @@ final class LiveHeartRate: NSObject, ObservableObject {
         bpm = value
         sampleDate = date
         receivedAt = Date()
+        recent.append(value)
+        if recent.count > 60 { recent.removeFirst(recent.count - 60) }
 
         guard !isSimulated else { return } // jamais de valeur inventée côté serveur
         guard date != lastQueuedSampleDate else { return }
@@ -157,6 +167,19 @@ final class LiveHeartRate: NSObject, ObservableObject {
     fileprivate func fail(_ message: String) {
         lastError = message
         lastErrorAt = Date()
+    }
+
+    /// Dernière FC au repos dans Santé (30 derniers jours). Absente → pas d'écart affiché, jamais de valeur inventée.
+    private func loadRestingReference() async {
+        let since = Date().addingTimeInterval(-30 * 86_400)
+        let query = HKSampleQueryDescriptor(
+            predicates: [.quantitySample(type: HKQuantityType(.restingHeartRate),
+                                         predicate: HKQuery.predicateForSamples(withStart: since, end: nil))],
+            sortDescriptors: [SortDescriptor(\.endDate, order: .reverse)],
+            limit: 1
+        )
+        guard let s = try? await query.result(for: store).first else { restingRef = nil; return }
+        restingRef = (s.quantity.doubleValue(for: HKUnit.count().unitDivided(by: .minute())), s.endDate)
     }
 
     // MARK: Mode simulé (UI seulement)

@@ -153,6 +153,22 @@ enum ServerAPI {
         )
     }
 
+    /// Résumé du jour pour la montre (lecture seule)
+    static func summaryCall(base: String) throws -> HTTPCall {
+        HTTPCall(url: try ServerAddress.url(base: base, path: "/api/watch/summary"), method: "GET", body: nil)
+    }
+
+    static func todoCall(base: String) throws -> HTTPCall {
+        HTTPCall(url: try ServerAddress.url(base: base, path: "/api/todo"), method: "GET", body: nil)
+    }
+
+    /// Coche (`done`) ou décoche (`undo`) un item de la to-do
+    static func todoMarkCall(base: String, id: String, done: Bool) throws -> HTTPCall {
+        let safe = id.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed.subtracting(CharacterSet(charactersIn: "/"))) ?? id
+        return HTTPCall(url: try ServerAddress.url(base: base, path: "/api/todo/\(safe)/\(done ? "done" : "undo")"),
+                        method: "POST", body: nil)
+    }
+
     // MARK: Lecture des réponses
 
     /// Lit une réponse `{"ok":…}` ; lève `.server` si `ok` vaut false

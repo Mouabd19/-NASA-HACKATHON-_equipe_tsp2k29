@@ -7,21 +7,28 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		051D9C62B1876C2A51525257 /* TodoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFDE5AD6EB2098F35FD18310 /* TodoView.swift */; };
 		07DA07F224A7DF4456828656 /* LiveHeartRate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B07F8CF4322A5BC78485A2AF /* LiveHeartRate.swift */; };
 		0DEB0C28210AC7B60F8D483C /* ConnectionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A036A25755C6A03BF8C5217A /* ConnectionTest.swift */; };
+		0E36FBE31E2219510ECE0F50 /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6B273961DD94256D4CEB6B /* TodayView.swift */; };
 		141978691F674ACC8575B247 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAE529494E86D18C91B6352F /* SettingsView.swift */; };
+		414D08F69858F2BFDE26051F /* EmbeddedSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858FFDE38D878284D26C184 /* EmbeddedSnapshot.swift */; };
 		460CFE9AD75B240C33EACC92 /* SOLZeroWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 72B15879B2DBB76AED7A4800 /* SOLZeroWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		48AD9E181875E98FC5587643 /* ServerAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64FA148A079A471A234EAB81 /* ServerAPI.swift */; };
+		4C4D2A74F73B86DE1EE0B138 /* BodyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4375B13B492B5A85C084B84 /* BodyView.swift */; };
 		524F336668C99C04C788E911 /* Palette.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB573E299ED7121BE0D84DA /* Palette.swift */; };
 		6A9DE4673AD6EA09A1D57C82 /* SOLZeroWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06EC4567AB14AC07D8C586F9 /* SOLZeroWatchApp.swift */; };
 		72CE5BCF3F3D0E6E4647F468 /* ServerAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64FA148A079A471A234EAB81 /* ServerAPI.swift */; };
 		7DE8D60B4890958FE420D9AC /* PulseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C81CEBA6CBE9FE040027124 /* PulseView.swift */; };
 		8255E8420E2FB04FF52E139E /* HealthSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = F829D2802DF99A3A290BA549 /* HealthSnapshot.swift */; };
 		89912F62AA72DF8AB7CFA771 /* PhoneRelay.swift in Sources */ = {isa = PBXBuildFile; fileRef = F84B1D4AB935ADDF167FE03F /* PhoneRelay.swift */; };
+		9191918802D44A8257E5D8CC /* TripView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED2EA3969BC317A477730B17 /* TripView.swift */; };
 		C9417E129E19A15F86484B80 /* ConnectionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A036A25755C6A03BF8C5217A /* ConnectionTest.swift */; };
 		CDD451CBD6353897A1856536 /* SnapshotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79843C09A4E178DF90C4E1B9 /* SnapshotView.swift */; };
+		D20DD090ED5ED1AFB0A20587 /* MissionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AFFAD2B7D85A7BEB20C5CB2 /* MissionStore.swift */; };
 		D8C4042959863DF2A91464A2 /* Palette.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB573E299ED7121BE0D84DA /* Palette.swift */; };
 		E5137A115E8412812D94DDF2 /* PhoneHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76C0DB9A514A1778A4C49393 /* PhoneHomeView.swift */; };
+		E5D5AED50FA53CDB4EC94C8F /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = 797BBD10AA6855CCAE3E75BF /* Components.swift */; };
 		EA35BF46C3CE440D8315527C /* HealthSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = F829D2802DF99A3A290BA549 /* HealthSnapshot.swift */; };
 		EC08A68BA9380C4EF97F60B6 /* Transport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5538925233F29B0FCCAE5E3D /* Transport.swift */; };
 		ED1719B07991A415B0F7B51A /* PhoneLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27E8765B87AD53DB7256631F /* PhoneLink.swift */; };
@@ -54,25 +61,32 @@
 
 /* Begin PBXFileReference section */
 		06EC4567AB14AC07D8C586F9 /* SOLZeroWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SOLZeroWatchApp.swift; sourceTree = "<group>"; };
+		0858FFDE38D878284D26C184 /* EmbeddedSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddedSnapshot.swift; sourceTree = "<group>"; };
+		1D6B273961DD94256D4CEB6B /* TodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayView.swift; sourceTree = "<group>"; };
 		27E8765B87AD53DB7256631F /* PhoneLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneLink.swift; sourceTree = "<group>"; };
 		3C81CEBA6CBE9FE040027124 /* PulseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PulseView.swift; sourceTree = "<group>"; };
 		5538925233F29B0FCCAE5E3D /* Transport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transport.swift; sourceTree = "<group>"; };
 		64FA148A079A471A234EAB81 /* ServerAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerAPI.swift; sourceTree = "<group>"; };
 		72B15879B2DBB76AED7A4800 /* SOLZeroWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SOLZeroWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		76C0DB9A514A1778A4C49393 /* PhoneHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneHomeView.swift; sourceTree = "<group>"; };
+		797BBD10AA6855CCAE3E75BF /* Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components.swift; sourceTree = "<group>"; };
 		79843C09A4E178DF90C4E1B9 /* SnapshotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotView.swift; sourceTree = "<group>"; };
+		9AFFAD2B7D85A7BEB20C5CB2 /* MissionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissionStore.swift; sourceTree = "<group>"; };
 		A036A25755C6A03BF8C5217A /* ConnectionTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionTest.swift; sourceTree = "<group>"; };
 		B07F8CF4322A5BC78485A2AF /* LiveHeartRate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveHeartRate.swift; sourceTree = "<group>"; };
+		B4375B13B492B5A85C084B84 /* BodyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyView.swift; sourceTree = "<group>"; };
 		C35A840F9D8AA7F96B550C10 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		C828D170DCBED3AF6C032C2D /* SOLZeroPhoneApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SOLZeroPhoneApp.swift; sourceTree = "<group>"; };
 		DF73515332C19B9A5A84C6E9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		E1C01638A4B86C57E8C0452C /* SOLZeroWatch Watch App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "SOLZeroWatch Watch App.entitlements"; sourceTree = "<group>"; };
 		E751E068651A6CDA9CE6B4EC /* SOLZeroWatch.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = SOLZeroWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		ED2EA3969BC317A477730B17 /* TripView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripView.swift; sourceTree = "<group>"; };
 		EE1D7649B7D640BA41A51785 /* SOLZeroWatch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SOLZeroWatch.entitlements; sourceTree = "<group>"; };
 		F829D2802DF99A3A290BA549 /* HealthSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthSnapshot.swift; sourceTree = "<group>"; };
 		F84B1D4AB935ADDF167FE03F /* PhoneRelay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneRelay.swift; sourceTree = "<group>"; };
 		FAB573E299ED7121BE0D84DA /* Palette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Palette.swift; sourceTree = "<group>"; };
 		FAE529494E86D18C91B6352F /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		FFDE5AD6EB2098F35FD18310 /* TodoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -110,15 +124,22 @@
 		EDC776135AF34B7596473B15 /* Watch */ = {
 			isa = PBXGroup;
 			children = (
+				B4375B13B492B5A85C084B84 /* BodyView.swift */,
+				797BBD10AA6855CCAE3E75BF /* Components.swift */,
+				0858FFDE38D878284D26C184 /* EmbeddedSnapshot.swift */,
 				C35A840F9D8AA7F96B550C10 /* Info.plist */,
 				B07F8CF4322A5BC78485A2AF /* LiveHeartRate.swift */,
+				9AFFAD2B7D85A7BEB20C5CB2 /* MissionStore.swift */,
 				27E8765B87AD53DB7256631F /* PhoneLink.swift */,
 				3C81CEBA6CBE9FE040027124 /* PulseView.swift */,
 				FAE529494E86D18C91B6352F /* SettingsView.swift */,
 				79843C09A4E178DF90C4E1B9 /* SnapshotView.swift */,
 				E1C01638A4B86C57E8C0452C /* SOLZeroWatch Watch App.entitlements */,
 				06EC4567AB14AC07D8C586F9 /* SOLZeroWatchApp.swift */,
+				1D6B273961DD94256D4CEB6B /* TodayView.swift */,
+				FFDE5AD6EB2098F35FD18310 /* TodoView.swift */,
 				5538925233F29B0FCCAE5E3D /* Transport.swift */,
+				ED2EA3969BC317A477730B17 /* TripView.swift */,
 			);
 			path = Watch;
 			sourceTree = "<group>";
@@ -217,9 +238,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C4D2A74F73B86DE1EE0B138 /* BodyView.swift in Sources */,
+				E5D5AED50FA53CDB4EC94C8F /* Components.swift in Sources */,
 				C9417E129E19A15F86484B80 /* ConnectionTest.swift in Sources */,
+				414D08F69858F2BFDE26051F /* EmbeddedSnapshot.swift in Sources */,
 				8255E8420E2FB04FF52E139E /* HealthSnapshot.swift in Sources */,
 				07DA07F224A7DF4456828656 /* LiveHeartRate.swift in Sources */,
+				D20DD090ED5ED1AFB0A20587 /* MissionStore.swift in Sources */,
 				524F336668C99C04C788E911 /* Palette.swift in Sources */,
 				ED1719B07991A415B0F7B51A /* PhoneLink.swift in Sources */,
 				7DE8D60B4890958FE420D9AC /* PulseView.swift in Sources */,
@@ -227,7 +252,10 @@
 				72CE5BCF3F3D0E6E4647F468 /* ServerAPI.swift in Sources */,
 				141978691F674ACC8575B247 /* SettingsView.swift in Sources */,
 				CDD451CBD6353897A1856536 /* SnapshotView.swift in Sources */,
+				0E36FBE31E2219510ECE0F50 /* TodayView.swift in Sources */,
+				051D9C62B1876C2A51525257 /* TodoView.swift in Sources */,
 				EC08A68BA9380C4EF97F60B6 /* Transport.swift in Sources */,
+				9191918802D44A8257E5D8CC /* TripView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
