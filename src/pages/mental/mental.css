@@ -102,9 +102,9 @@
 .mt-verdict { cursor: pointer; }
 .mt-verdict__hit { fill: transparent; }
 .mt-verdict__ring {
-  fill: var(--sz-inset);
+  fill: transparent;
   stroke: transparent;
-  stroke-width: 1.5;
+  stroke-width: 1.25;
   transition: stroke 120ms;
 }
 .mt-verdict:hover .mt-verdict__ring { stroke: var(--sz-border-strong); }
@@ -257,8 +257,6 @@
 
 /* Verdicts : la cible du défilement laisse respirer le haut du dossier */
 .mt-anchor { scroll-margin-top: 16px; }
-.mt-verdict__pt { transition: transform 150ms; transform-box: fill-box; transform-origin: center; }
-.mt-verdict:hover .mt-verdict__pt { transform: scale(1.25); }
 .mt-legend li svg { flex: none; }
 
 /* Bouton « Haut de page » : flottant en bas à droite, visible une fois la page descendue */
@@ -279,5 +277,5 @@
 }
 .mt-totop[data-show='true'] { opacity: 1; transform: none; pointer-events: auto; }
 @media (prefers-reduced-motion: reduce) {
-  .mt-totop, .mt-verdict__pt { transition: none; }
+  .mt-totop { transition: none; }
 }

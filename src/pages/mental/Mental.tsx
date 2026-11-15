@@ -93,17 +93,18 @@ function useWidth(fallback: number): [RefObject<HTMLDivElement | null>, number] 
  */
 function VerdictMark({ cx, cy, color }: { cx: number; cy: number; color: Color }): JSX.Element {
   const c = statusVar[color];
+  // contour de la couleur du panneau : le point « coupe » l'axe au lieu de s'y superposer
   return color === 'grey'
-    ? <circle className="mt-verdict__pt" data-color={color} cx={cx} cy={cy} r={5.5} fill="none" stroke={c} strokeWidth={1.6} />
-    : <circle className="mt-verdict__pt" data-color={color} cx={cx} cy={cy} r={6} fill={c} />;
+    ? <circle className="mt-verdict__pt" data-color={color} cx={cx} cy={cy} r={4} fill="var(--sz-panel)" stroke={c} strokeWidth={1.5} />
+    : <circle className="mt-verdict__pt" data-color={color} cx={cx} cy={cy} r={4.5} fill={c} stroke="var(--sz-panel)" strokeWidth={2} paintOrder="stroke" />;
 }
 
 /** Point de légende, mêmes couleurs que la frise. */
 function VerdictDot({ color }: { color: Color }): JSX.Element {
   const c = statusVar[color];
   return (
-    <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
-      {color === 'grey' ? <circle cx="6" cy="6" r="4.5" fill="none" stroke={c} strokeWidth="1.4" /> : <circle cx="6" cy="6" r="5" fill={c} />}
+    <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
+      {color === 'grey' ? <circle cx="5" cy="5" r="3.5" fill="none" stroke={c} strokeWidth="1.4" /> : <circle cx="5" cy="5" r="4" fill={c} />}
     </svg>
   );
 }
@@ -183,10 +184,10 @@ function Frise({ sel, onSel, mlAlert }: { sel: { sc: Sc; day: number }; onSel: (
                 return (
                   <g key={dd.day} className="mt-verdict" role="button" tabIndex={0} aria-pressed={on} aria-label={`${SC_LABEL[t.sc]}, J${dd.day} : ${NIV_LABEL[n]}. Descendre au dossier du jour`}
                     onClick={() => onSel(t.sc, dd.day)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSel(t.sc, dd.day); } }}>
-                    {/* point de couleur ; sélection = filet carré autour */}
+                    {/* point de couleur ; survol et sélection = anneau fin autour */}
                     <title>{`J${dd.day} · ${NIV_LABEL[n]} — cliquer pour descendre au dossier`}</title>
                     <rect className="mt-verdict__hit" x={x(dd.day) - 13} y={t.y - 13} width={26} height={26} />
-                    <rect className="mt-verdict__ring" x={x(dd.day) - 10} y={t.y - 10} width={20} height={20} />
+                    <circle className="mt-verdict__ring" cx={x(dd.day)} cy={t.y} r={9} />
                     <VerdictMark cx={x(dd.day)} cy={t.y} color={color} />
                   </g>
                 );
