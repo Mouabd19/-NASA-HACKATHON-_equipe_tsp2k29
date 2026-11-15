@@ -128,14 +128,12 @@ export const look = {
     /** Opacité résiduelle AU-DESSUS du plan pendant le balayage : calques internes (le scanner « reconstruit » le corps) et enveloppe. */
     hideInner: 0.06,
     hideShell: 0.55,
-    /** Cabine du scanner : socle, auvent, paroi arrière et grande porte vitrée face à la caméra. */
-    hold: 0.9,            // secondes cabine visible avant que l'anneau monte
-    post: 0.7,            // secondes de fondu de la cabine après le scan
-    podRadius: 0.5,       // rayon de la cabine (m)
-    podHeight: 2.08,      // hauteur de la cabine (m)
-    doorAngle: 2.3,       // ouverture de la porte vitrée (radians, ~130°)
-    podWall: 0.85,        // opacité de la paroi arrière (ombrée)
-    podApertureOpacity: 0.9, // anneau lumineux qui monte dans la cabine (= plan de scan)
+    /** Bassin du scanner (façon Midjourney Medical) : plateforme, eau, anneau de capteurs à la surface. */
+    hold: 0.8,            // secondes debout sur la plateforme avant l'immersion
+    rise: 1.4,            // secondes de remontée du corps après le scan
+    post: 0.6,            // secondes de fondu du bassin
+    poolRadius: 0.5,      // rayon du bassin et de l'anneau (m) — l'anneau réel fait ~70 cm de diamètre
+    deckRadius: 1.15,     // rayon extérieur de la plage du bassin (m)
   },
 
   /** Flux sanguin le long des vaisseaux. Désactivé (boost = 0) : la scène reste immobile. */

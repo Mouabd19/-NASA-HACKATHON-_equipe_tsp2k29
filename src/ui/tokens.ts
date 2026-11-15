@@ -25,6 +25,7 @@ export const tokens = {
     holo: '#C3CAD1',          // corps 3D : gris argentique d'un cliché, sans teinte
     ok: '#3EB873',            // nominal
     amber: '#EDBB2C',         // jaune d'alarme (priorité moyenne / basse)
+    water: '#5AA9E6',         // eau du bassin du scanner (animation de chargement uniquement)
     orange: '#F28C28',        // orange : alarme projetée (contour sur fond sombre), pas une alarme du jour
     red: '#F04A42',           // rouge d'alarme (priorité haute)
     unknown: '#79828C',       // sans donnée

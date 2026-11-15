@@ -134,79 +134,20 @@ export function createBodyRig(): BodyRig {
   });
   scanGroup.add(new THREE.Line(ringGeo, ringMat), new THREE.Mesh(discGeo, discMat));
 
-  // cabine du scanner, modelée comme un objet réel : plateau au ras du sol (les pieds restent visibles),
-  // paroi arrière ombrée (plus claire sur les bords de la porte, plus sombre en bas), vitre à reflet de bord
-  // (fresnel), montants de porte, auvent chanfreiné avec bandeau lumineux, ombre de contact sous le corps.
-  // Tout ce qui est derrière le corps est dessiné AVANT lui ; seuls la vitre et les montants passent devant.
+  // Scanner façon Midjourney Medical : la personne, debout sur une plateforme lumineuse, descend dans un bassin
+  // d'eau tiède à travers un anneau de capteurs à ultrasons fixé à la surface. La caméra suit le corps : on voit
+  // donc la surface de l'eau, l'anneau et le bord du bassin MONTER le long du corps, puis redescendre.
+  // Vue en coupe : le bord du bassin n'est dessiné qu'à l'arrière, pour voir le corps sous l'eau.
   const S = look.scan;
-  const R = S.podRadius, H = S.podHeight, DOOR = S.doorAngle;
-  const base = new THREE.Color(tokens.color.panelHover);
-  const light = new THREE.Color(tokens.color.textDim);
+  const PR = S.poolRadius;
   const fades: { mat: THREE.Material & { opacity: number }; o: number }[] = [];
   const track = <M extends THREE.Material & { opacity: number }>(mat: M, o: number): M => { mat.opacity = o; fades.push({ mat, o }); return mat; };
   const geos: THREE.BufferGeometry[] = [];
   const keep = <G extends THREE.BufferGeometry>(g: G): G => { geos.push(g); return g; };
-
-  /** Ombrage « cuit » dans les sommets : bords de porte éclairés, bas assombri (occlusion), haut légèrement plus clair. */
-  const shade = (g: THREE.BufferGeometry, edgeGain: number): void => {
-    const pos = g.getAttribute('position');
-    const col = new Float32Array(pos.count * 3);
-    const c = new THREE.Color();
-    for (let i = 0; i < pos.count; i++) {
-      const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
-      const a = Math.abs(Math.atan2(x, z));                      // 0 = face caméra, π = fond
-      const edge = 1 - THREE.MathUtils.smoothstep(Math.abs(a - DOOR / 2), 0, 0.7);
-      const ao = THREE.MathUtils.smoothstep(y, 0, 0.45);          // pied de paroi plus sombre
-      const top = THREE.MathUtils.smoothstep(y, H * 0.6, H);
-      c.copy(base).multiplyScalar(0.55 + 0.35 * ao + 0.15 * top).lerp(light, edgeGain * edge * 0.45);
-      col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b;
-    }
-    g.setAttribute('color', new THREE.BufferAttribute(col, 3));
-  };
-  const solid = (o: number): THREE.MeshBasicMaterial =>
-    track(new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, side: THREE.DoubleSide, depthWrite: false }), o);
-
-  const booth = new THREE.Group();
-  const add = (m: THREE.Object3D, order: number): void => { m.renderOrder = order; booth.add(m); };
-
-  // plateau : disque chanfreiné au ras du sol, sous les pieds
-  const plateGeo = keep(new THREE.CylinderGeometry(R + 0.05, R + 0.08, 0.025, 128).translate(0, 0.0125 - 0.02, 0));
-  shade(plateGeo, 0.6);
-  add(new THREE.Mesh(plateGeo, solid(0.9)), -3);
-  // ombre de contact douce sous le corps
-  if (typeof document !== 'undefined') {
-    const cv = document.createElement('canvas'); cv.width = cv.height = 128;
-    const cx = cv.getContext('2d');
-    if (cx) {
-      const gr = cx.createRadialGradient(64, 64, 4, 64, 64, 64);
-      gr.addColorStop(0, 'rgba(0,0,0,0.75)'); gr.addColorStop(0.55, 'rgba(0,0,0,0.3)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
-      cx.fillStyle = gr; cx.fillRect(0, 0, 128, 128);
-      const tex = new THREE.CanvasTexture(cv);
-      const shGeo = keep(new THREE.CircleGeometry(0.36, 64).rotateX(-Math.PI / 2).translate(0, 0.008, 0));
-      add(new THREE.Mesh(shGeo, track(new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false }), 1)), -2);
-    }
-  }
-  // liseré lumineux au bord du plateau
-  const plateRimGeo = keep(new THREE.TorusGeometry(R - 0.02, 0.005, 8, 128).rotateX(Math.PI / 2).translate(0, 0.008, 0));
-  add(new THREE.Mesh(plateRimGeo, track(new THREE.MeshBasicMaterial({ color: tokens.color.holo, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }), 0.35)), -2);
-
-  // paroi arrière (tout le tour sauf la porte), ombrée
-  const wallH = H - 0.13;
-  const wallGeo = keep(new THREE.CylinderGeometry(R, R, wallH, 128, 24, true, DOOR / 2, Math.PI * 2 - DOOR).translate(0, wallH / 2, 0));
-  shade(wallGeo, 1);
-  add(new THREE.Mesh(wallGeo, solid(S.podWall)), -1);
-
-  // auvent chanfreiné + bandeau lumineux dessous
-  const canopyGeo = keep(new THREE.CylinderGeometry(R + 0.04, R + 0.07, 0.13, 128, 4).translate(0, H - 0.065, 0));
-  shade(canopyGeo, 0.5);
-  add(new THREE.Mesh(canopyGeo, solid(0.92)), 9);
-  const ledGeo = keep(new THREE.TorusGeometry(R - 0.01, 0.006, 8, 128).rotateX(Math.PI / 2).translate(0, H - 0.135, 0));
-  add(new THREE.Mesh(ledGeo, track(new THREE.MeshBasicMaterial({ color: tokens.color.text, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }), 0.8)), 11);
-
-  // vitre : presque invisible de face, plus présente sur les bords (fresnel), léger reflet vertical
-  const glassGeo = keep(new THREE.CylinderGeometry(R, R, wallH, 64, 1, true, -DOOR / 2, DOOR).translate(0, wallH / 2, 0));
-  const glassMat = track(new THREE.ShaderMaterial({
-    uniforms: { uColor: { value: new THREE.Color(tokens.color.holo) }, opacity: { value: 1 } },
+  const water = new THREE.Color(tokens.color.water);
+  const poolTime = { value: 0 };
+  const fresnelShader = (base: number, gain: number, color: THREE.Color): THREE.ShaderMaterial => new THREE.ShaderMaterial({
+    uniforms: { uColor: { value: color }, opacity: { value: 1 } },
     vertexShader: /* glsl */ `
       varying vec3 vN; varying vec3 vP;
       void main() {
@@ -219,47 +160,108 @@ export function createBodyRig(): BodyRig {
       varying vec3 vN; varying vec3 vP;
       void main() {
         vec3 V = normalize(cameraPosition - vP);
-        float f = pow(1.0 - abs(dot(normalize(vN), V)), 3.0);
-        float streak = smoothstep(0.05, 0.0, abs(vP.x + 0.18 - vP.y * 0.06)) * 0.10;   // reflet de studio
-        float a = 0.025 + 0.35 * f + streak;
-        gl_FragColor = vec4(uColor * (0.8 + 0.6 * f), a * opacity);
+        float f = pow(1.0 - abs(dot(normalize(vN), V)), 2.5);
+        gl_FragColor = vec4(uColor * (0.85 + 0.5 * f), (${base.toFixed(3)} + ${gain.toFixed(3)} * f) * opacity);
+      }`,
+    transparent: true, depthWrite: false, side: THREE.DoubleSide,
+  });
+
+  // ── éléments qui suivent la surface (enfants de scanGroup, qui monte avec le niveau d'eau) ──
+  const surface = new THREE.Group();
+  // surface de l'eau : ondes concentriques lentes, bord plus lumineux
+  const surfGeo = keep(new THREE.CircleGeometry(PR, 96).rotateX(-Math.PI / 2));
+  const surfMat = track(new THREE.ShaderMaterial({
+    uniforms: { uColor: { value: water }, uTime: poolTime, opacity: { value: 1 }, uR: { value: PR } },
+    vertexShader: /* glsl */ `varying vec2 vXZ; void main() { vXZ = position.xz; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+    fragmentShader: /* glsl */ `
+      uniform vec3 uColor; uniform float uTime; uniform float opacity; uniform float uR;
+      varying vec2 vXZ;
+      void main() {
+        float r = length(vXZ) / uR;
+        float ripple = 0.5 + 0.5 * sin(r * 38.0 - uTime * 3.0);
+        float edge = smoothstep(0.82, 1.0, r);
+        float a = 0.05 + 0.05 * ripple * (1.0 - r) + 0.25 * edge;
+        gl_FragColor = vec4(uColor * (1.0 + 0.4 * edge), a * opacity);
       }`,
     transparent: true, depthWrite: false, side: THREE.DoubleSide,
   }), 1);
-  add(new THREE.Mesh(glassGeo, glassMat), 10);
+  const surf = new THREE.Mesh(surfGeo, surfMat); surf.renderOrder = 11; surface.add(surf);
 
-  // montants de porte (profilés)
-  const postGeo = keep(new THREE.BoxGeometry(0.03, wallH, 0.045).translate(0, wallH / 2, 0));
-  shade(postGeo, 0.2);
-  for (const a of [-DOOR / 2, DOOR / 2]) {
-    const post = new THREE.Mesh(postGeo, solid(0.95));
-    post.position.set(Math.sin(a) * R, 0, Math.cos(a) * R);
-    post.rotation.y = a;
-    add(post, 10);
+  // anneau de capteurs : couronne sombre + rangée de puces lumineuses
+  const ringBodyGeo = keep(new THREE.TorusGeometry(PR - 0.035, 0.03, 16, 160).rotateX(Math.PI / 2));
+  const ringBody = new THREE.Mesh(ringBodyGeo, track(new THREE.MeshBasicMaterial({ color: tokens.color.panelHover, transparent: true, depthWrite: false }), 0.95));
+  ringBody.renderOrder = 12; surface.add(ringBody);
+  const chipPts: THREE.Vector3[] = [];
+  const CHIPS = 40;                                            // 40 modules Butterfly
+  for (let i = 0; i < CHIPS; i++) {
+    const a0 = (i / CHIPS) * Math.PI * 2, a1 = a0 + (Math.PI * 2 / CHIPS) * 0.62;
+    const r = PR - 0.064;
+    for (let k = 0; k < 4; k++) {
+      const b0 = a0 + ((a1 - a0) * k) / 4, b1 = a0 + ((a1 - a0) * (k + 1)) / 4;
+      chipPts.push(new THREE.Vector3(Math.cos(b0) * r, 0, Math.sin(b0) * r), new THREE.Vector3(Math.cos(b1) * r, 0, Math.sin(b1) * r));
+    }
   }
-  scanGroup.add(booth);
+  const chipGeo = keep(new THREE.BufferGeometry().setFromPoints(chipPts));
+  const chips = new THREE.LineSegments(chipGeo, track(new THREE.LineBasicMaterial({ color: tokens.color.text, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }), 0.95));
+  chips.renderOrder = 13; surface.add(chips);
+  // halo de la bande de scan juste sous l'anneau
+  const glowGeo = keep(new THREE.TorusGeometry(PR - 0.07, 0.006, 8, 160).rotateX(Math.PI / 2).translate(0, -0.03, 0));
+  const glow = new THREE.Mesh(glowGeo, track(new THREE.MeshBasicMaterial({ color: tokens.color.water, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }), 0.9));
+  glow.renderOrder = 13; surface.add(glow);
 
-  // anneau du scanner qui monte dans la cabine (bord lumineux)
-  const podApGeo = new THREE.TorusGeometry(R - 0.03, 0.012, 10, 128).rotateX(Math.PI / 2);
-  const podApMat = new THREE.MeshBasicMaterial({
-    color: tokens.color.text, transparent: true, opacity: S.podApertureOpacity, blending: THREE.AdditiveBlending, depthWrite: false,
-  });
-  const podAp = new THREE.Mesh(podApGeo, podApMat);
-  podAp.renderOrder = 12;
-  scanGroup.add(podAp);
+  // bord du bassin (plage) : couronne à l'arrière seulement (vue en coupe), fondue vers l'extérieur
+  const deckGeo = keep(new THREE.RingGeometry(PR + 0.005, S.deckRadius, 128, 1, Math.PI * 0.08, Math.PI * 0.84).rotateX(-Math.PI / 2));
+  const deckMat = track(new THREE.ShaderMaterial({
+    uniforms: { uColor: { value: new THREE.Color(tokens.color.panelHover) }, uEdge: { value: new THREE.Color(tokens.color.textDim) }, opacity: { value: 1 }, uR0: { value: PR }, uR1: { value: S.deckRadius } },
+    vertexShader: /* glsl */ `varying vec2 vXZ; void main() { vXZ = position.xz; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+    fragmentShader: /* glsl */ `
+      uniform vec3 uColor; uniform vec3 uEdge; uniform float opacity; uniform float uR0; uniform float uR1;
+      varying vec2 vXZ;
+      void main() {
+        float r = (length(vXZ) - uR0) / (uR1 - uR0);
+        float lip = 1.0 - smoothstep(0.0, 0.06, r);              // arête du bassin éclairée
+        vec3 c = mix(uColor, uEdge, lip * 0.6);
+        float a = (0.9 - 0.9 * smoothstep(0.35, 1.0, r));
+        gl_FragColor = vec4(c, a * opacity);
+      }`,
+    transparent: true, depthWrite: false, side: THREE.DoubleSide,
+  }), 1);
+  const deck = new THREE.Mesh(deckGeo, deckMat); deck.renderOrder = -1; surface.add(deck);
+  scanGroup.add(surface);
+
+  // ── éléments fixes au sol (recalés à chaque image : scanGroup monte) ──
+  const floorSet = new THREE.Group();
+  // colonne d'eau : du fond jusqu'à la surface (mise à l'échelle en hauteur), reflets de bord
+  const colGeo = keep(new THREE.CylinderGeometry(PR, PR, 1, 96, 1, true).translate(0, 0.5, 0));
+  const col = new THREE.Mesh(colGeo, track(fresnelShader(0.06, 0.28, water), 1));
+  col.renderOrder = 10; floorSet.add(col);
+  // plateforme lumineuse sous les pieds
+  const platGeo = keep(new THREE.CylinderGeometry(0.3, 0.32, 0.02, 96).translate(0, -0.01, 0));
+  const plat = new THREE.Mesh(platGeo, track(new THREE.MeshBasicMaterial({ color: tokens.color.panelHover, transparent: true, depthWrite: false }), 0.95));
+  plat.renderOrder = -2; floorSet.add(plat);
+  const platLedGeo = keep(new THREE.TorusGeometry(0.3, 0.006, 8, 128).rotateX(Math.PI / 2).translate(0, 0.002, 0));
+  const platLed = new THREE.Mesh(platLedGeo, track(new THREE.MeshBasicMaterial({ color: tokens.color.water, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }), 0.9));
+  platLed.renderOrder = -1; floorSet.add(platLed);
+  scanGroup.add(floorSet);
+
   const setBoothFade = (k: number): void => {
     for (const f of fades) {
       if (f.mat instanceof THREE.ShaderMaterial) f.mat.uniforms.opacity.value = f.o * k;
       else f.mat.opacity = f.o * k;
     }
   };
-  /** La cabine reste au sol pendant que scanGroup monte avec le plan. */
-  const pinBooth = (): void => { booth.position.y = S.yStart - scanGroup.position.y; };
+  /** Place la surface à la hauteur `level` (m) ; le fond et la plateforme restent au sol. */
+  const setLevel = (level: number): void => {
+    scanGroup.position.y = level;
+    floorSet.position.y = S.yStart - level;
+    col.scale.y = Math.max(0.001, level - S.yStart);
+  };
 
   scanGroup.visible = false;
-  let scanT = -1; // < 0 : pas de balayage en cours
-  let holdT = 0;  // > 0 : cabine fermée, balayage pas encore lancé
-  let postT = 0;  // > 0 : balayage fini, la cabine s'efface
+  let scanT = -1;  // ≥ 0 : immersion en cours (0..1)
+  let holdT = 0;   // > 0 : sur la plateforme, avant l'immersion
+  let riseT = 0;   // > 0 : le corps remonte (le niveau redescend)
+  let postT = 0;   // > 0 : le bassin s'efface
   const scanInfo = { t: -1, y: 0 };
 
   const fade: Record<LayerId, number> = { squelette: 0, muscles: 0, organes: 0, cardio: 0, nerveux: 0, exposition: 0 };
@@ -294,45 +296,44 @@ export function createBodyRig(): BodyRig {
     shared.time.value = t;
     shared.ghost.value += ((s.ghost ? 1 : 0) - shared.ghost.value) * damp(look.ghost.lerpSpeed, dt);
 
-    // 1. cabine qui apparaît, corps encore « non reconstruit » (on le devine derrière la vitre)
+    poolTime.value = t;
+    ringMat.opacity = 0; discMat.opacity = 0;   // l'ancien plan de scan est remplacé par la surface de l'eau
     if (scanT >= 0 && holdT > 0) {
+      // 1. debout sur la plateforme, bassin et anneau qui apparaissent
       holdT -= dt;
-      shared.scanY.value = look.scan.yStart;
-      scanInfo.t = 0; scanInfo.y = look.scan.yStart;
-      scanGroup.position.y = look.scan.yStart;
+      shared.scanY.value = S.yStart;
+      scanInfo.t = 0; scanInfo.y = S.yStart;
+      setLevel(S.yStart);
       scanGroup.visible = true;
-      pinBooth();
-      setBoothFade(Math.min(1, (look.scan.hold - holdT) / 0.4));
-      podApMat.opacity = look.scan.podApertureOpacity * Math.min(1, (look.scan.hold - holdT) / 0.4);
-      ringMat.opacity = 0; discMat.opacity = 0;
+      setBoothFade(Math.min(1, (S.hold - holdT) / 0.4));
     } else if (scanT >= 0) {
-      // 2. l'anneau monte dans la cabine, pieds → tête
-      scanT += dt / look.scan.duration;
+      // 2. immersion : le corps descend à travers l'anneau, pieds d'abord (ce qui est sous l'eau est scanné)
+      scanT += dt / S.duration;
       if (scanT >= 1) {
         scanT = -1;
-        postT = look.scan.post;
+        riseT = S.rise;
         scanInfo.t = -1;
         shared.scanY.value = SCAN_Y_IDLE;
-        ringMat.opacity = 0; discMat.opacity = 0; podApMat.opacity = 0;
       } else {
         const k = scanT * scanT * (3 - 2 * scanT);
-        const y = look.scan.yStart + (look.scan.yEnd - look.scan.yStart) * k;
+        const y = S.yStart + (S.yEnd - S.yStart) * k;
         shared.scanY.value = y;
         scanInfo.t = k; scanInfo.y = y;
-        scanGroup.position.y = y;
-        scanGroup.visible = true;
-        pinBooth();
+        setLevel(y);
         setBoothFade(1);
-        const edge = Math.min(1, scanT * 8, (1 - scanT) * 8);
-        ringMat.opacity = look.scan.ringOpacity * edge;
-        discMat.opacity = look.scan.discOpacity * edge;
-        podApMat.opacity = look.scan.podApertureOpacity * edge;
       }
+    } else if (riseT > 0) {
+      // 3. le corps remonte, entièrement scanné
+      riseT -= dt;
+      const u = 1 - Math.max(0, riseT) / S.rise;
+      const k = u * u * (3 - 2 * u);
+      setLevel(S.yEnd + (S.yStart - S.yEnd) * k);
+      if (riseT <= 0) postT = S.post;
     } else if (postT > 0) {
-      // 3. scan terminé : la cabine s'efface, le corps reste
+      // 4. le bassin s'efface, le corps reste
       postT -= dt;
-      pinBooth();
-      setBoothFade(Math.max(0, postT / look.scan.post));
+      setLevel(S.yStart);
+      setBoothFade(Math.max(0, postT / S.post));
       if (postT <= 0) scanGroup.visible = false;
     }
 
@@ -403,7 +404,7 @@ export function createBodyRig(): BodyRig {
 
   return {
     staticGroup, pickGroup, scanGroup, setStatuses, update, pick,
-    startScan: () => { scanT = 0; holdT = look.scan.hold; postT = 0; shared.scanY.value = look.scan.yStart; },
+    startScan: () => { scanT = 0; holdT = look.scan.hold; riseT = 0; postT = 0; shared.scanY.value = look.scan.yStart; },
     scan: () => scanInfo,
     layerFade: (l) => fade[l],
     dispose: () => {
@@ -411,7 +412,6 @@ export function createBodyRig(): BodyRig {
       ringGeo.dispose(); ringMat.dispose(); discGeo.dispose(); discMat.dispose();
       for (const g of geos) g.dispose();
       for (const f of fades) { (f.mat as THREE.MeshBasicMaterial).map?.dispose(); f.mat.dispose(); }
-      podApGeo.dispose(); podApMat.dispose();
     },
   };
 }

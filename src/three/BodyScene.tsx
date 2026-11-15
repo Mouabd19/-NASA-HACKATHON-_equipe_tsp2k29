@@ -158,7 +158,7 @@ function Rig(): JSX.Element {
       const sc = rig.scan();
       scanState.t = sc.t;
       if (sc.t >= 0) {
-        tmp.v.set(look.scan.podRadius + 0.1, sc.y, 0).applyMatrix4(g.matrixWorld).project(state.camera);
+        tmp.v.set(look.scan.poolRadius + 0.12, sc.y, 0).applyMatrix4(g.matrixWorld).project(state.camera);
         scanState.x = (tmp.v.x * 0.5 + 0.5) * w;
         scanState.y = (-tmp.v.y * 0.5 + 0.5) * h;
       }
