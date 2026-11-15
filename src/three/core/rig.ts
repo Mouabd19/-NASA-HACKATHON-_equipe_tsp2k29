@@ -52,7 +52,7 @@ export interface BodyRig {
   /** Avance l'animation. dt et t en secondes. */
   update(dt: number, t: number, s: RigFrameState): void;
   /** Avancement du balayage (0..1), ou −1 s'il n'y en a pas, et hauteur du plan (m). */
-  scan(): { t: number; y: number };
+  scan(): { t: number; y: number; view: number };
   /** Fondu courant d'un calque (0..1). */
   layerFade(l: LayerId): number;
   /** Organe désigné par une liste d'intersections (la plus proche d'abord). */
@@ -185,12 +185,12 @@ export function createBodyRig(): BodyRig {
       }`,
     transparent: true, depthWrite: false, side: THREE.DoubleSide,
   }), 1);
-  const surf = new THREE.Mesh(surfGeo, surfMat); surf.renderOrder = 11; surface.add(surf);
+  const surf = new THREE.Mesh(surfGeo, surfMat); surf.renderOrder = -1; surface.add(surf);
 
   // anneau de capteurs : couronne sombre + rangée de puces lumineuses
   const ringBodyGeo = keep(new THREE.TorusGeometry(PR - 0.035, 0.03, 16, 160).rotateX(Math.PI / 2));
-  const ringBody = new THREE.Mesh(ringBodyGeo, track(new THREE.MeshBasicMaterial({ color: tokens.color.panelHover, transparent: true, depthWrite: false }), 0.95));
-  ringBody.renderOrder = 12; surface.add(ringBody);
+  const ringBody = new THREE.Mesh(ringBodyGeo, track(new THREE.MeshBasicMaterial({ color: tokens.color.panelHover, transparent: true, depthWrite: false }), 0.9));
+  ringBody.renderOrder = -1;   // derrière le corps : l'anneau ne coupe pas les jambes surface.add(ringBody);
   const chipPts: THREE.Vector3[] = [];
   const CHIPS = 40;                                            // 40 modules Butterfly
   for (let i = 0; i < CHIPS; i++) {
@@ -234,7 +234,7 @@ export function createBodyRig(): BodyRig {
   // colonne d'eau : du fond jusqu'à la surface (mise à l'échelle en hauteur), reflets de bord
   const colGeo = keep(new THREE.CylinderGeometry(PR, PR, 1, 96, 1, true).translate(0, 0.5, 0));
   const col = new THREE.Mesh(colGeo, track(fresnelShader(0.06, 0.28, water), 1));
-  col.renderOrder = 10; floorSet.add(col);
+  col.renderOrder = -1;   // l'eau teinte le fond, pas le corps floorSet.add(col);
   // plateforme lumineuse sous les pieds
   const platGeo = keep(new THREE.CylinderGeometry(0.3, 0.32, 0.02, 96).translate(0, -0.01, 0));
   const plat = new THREE.Mesh(platGeo, track(new THREE.MeshBasicMaterial({ color: tokens.color.panelHover, transparent: true, depthWrite: false }), 0.95));
@@ -269,7 +269,7 @@ export function createBodyRig(): BodyRig {
   for (const [y, h] of [[0.025, 0.05], [CH - 0.03, 0.06]] as const) {          // cerclages bas et haut
     const bandGeo = keep(new THREE.CylinderGeometry(CR + 0.025, CR + 0.025, h, 160, 1, true).translate(0, y, 0));
     metalShade(bandGeo);
-    const band = new THREE.Mesh(bandGeo, metal(1)); band.renderOrder = 14; floorSet.add(band);
+    const band = new THREE.Mesh(bandGeo, metal(1)); band.renderOrder = -1; floorSet.add(band);
   }
   const lipGeo = keep(new THREE.TorusGeometry(CR + 0.025, 0.004, 6, 160).rotateX(Math.PI / 2).translate(0, CH, 0));
   const lip = new THREE.Mesh(lipGeo, track(new THREE.MeshBasicMaterial({ color: tokens.color.text, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }), 0.5));
@@ -281,8 +281,11 @@ export function createBodyRig(): BodyRig {
     const post = new THREE.Mesh(edgeGeo, metal(1));
     post.position.set(Math.sin(a) * CR, 0, Math.cos(a) * CR);
     post.rotation.y = a;
-    post.renderOrder = 14; floorSet.add(post);
+    post.renderOrder = -1; floorSet.add(post);
   }
+  // l'ouverture du caisson et le bord du bassin font face à la caméra de trois quarts du scan
+  floorSet.rotation.y = S.viewYaw;
+  deck.rotation.y = S.viewYaw;
   scanGroup.add(floorSet);
 
   const setBoothFade = (k: number): void => {
@@ -293,10 +296,11 @@ export function createBodyRig(): BodyRig {
   };
   /**
    * Place la surface à la hauteur `level` (m). Le fond, la plateforme et le caisson restent au sol, sauf à la sortie :
-   * `lift` (m) soulève tout l'appareil d'un bloc, qui part vers le haut et libère le corps par les pieds.
+   * `back` (m) recule tout l'appareil d'un bloc : le corps sort du caisson par l'ouverture, vers la caméra.
    */
-  const setLevel = (level: number, lift = 0): void => {
-    scanGroup.position.y = level + lift;
+  const setLevel = (level: number, back = 0): void => {
+    scanGroup.position.y = level;
+    scanGroup.position.z = -back;
     floorSet.position.y = S.yStart - level;
     col.scale.y = Math.max(0.001, level - S.yStart);
   };
@@ -305,7 +309,7 @@ export function createBodyRig(): BodyRig {
   let scanT = -1;  // ≥ 0 : immersion en cours (0..1)
   let holdT = 0;   // > 0 : sur la plateforme, avant l'immersion
   let exitT = 0;   // > 0 : scan fini, l'appareil part vers le haut et disparaît
-  const scanInfo = { t: -1, y: 0 };
+  const scanInfo = { t: -1, y: 0, view: 0 };   // view : 1 = vue de trois quarts du scan, 0 = vue de face normale
 
   const fade: Record<LayerId, number> = { squelette: 0, muscles: 0, organes: 0, cardio: 0, nerveux: 0, exposition: 0 };
   let fadeInit = false;
@@ -349,6 +353,7 @@ export function createBodyRig(): BodyRig {
       setLevel(S.yStart);
       scanGroup.visible = true;
       setBoothFade(Math.min(1, (S.hold - holdT) / 0.4));
+      scanInfo.view = 1;
     } else if (scanT >= 0) {
       // 2. immersion : le corps descend à travers l'anneau, pieds d'abord (ce qui est sous l'eau est scanné)
       scanT += dt / S.duration;
@@ -364,14 +369,17 @@ export function createBodyRig(): BodyRig {
         scanInfo.t = k; scanInfo.y = y;
         setLevel(y);
         setBoothFade(1);
+        scanInfo.view = 1;
       }
     } else if (exitT > 0) {
-      // 3. scan fini : caisson, eau et anneau partent ensemble vers le haut (accélération douce) et s'effacent
+      // 3. scan fini : changement de vue (trois quarts → face) et le corps sort du caisson, qui recule et s'efface
       exitT -= dt;
       const u = 1 - Math.max(0, exitT) / S.exit;
-      setLevel(S.yEnd, S.exitDistance * u * u);
-      setBoothFade(1 - THREE.MathUtils.smoothstep(u, 0.35, 1));
-      if (exitT <= 0) scanGroup.visible = false;
+      const k = u * u * (3 - 2 * u);
+      setLevel(S.yEnd, S.exitDistance * k);
+      setBoothFade(1 - THREE.MathUtils.smoothstep(u, 0.45, 1));
+      scanInfo.view = 1 - k;
+      if (exitT <= 0) { scanGroup.visible = false; scanInfo.view = 0; }
     }
 
     // fondu des calques

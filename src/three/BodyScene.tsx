@@ -42,6 +42,8 @@ function Rig(): JSX.Element {
     clearTimer: 0 as ReturnType<typeof setTimeout> | 0,
     sceneHover: null as OrganId | null,   // survol posé par la scène (pas par un panneau)
     interacting: false,
+    introOff: false,
+    introWas: 0,   // l'utilisateur a pris la main : la vue du scan ne pilote plus la caméra
     lastInteraction: -100,
     swayPhase: 0,
     swayWeight: 0,
@@ -142,6 +144,17 @@ function Rig(): JSX.Element {
         tmp.dir.copy(cam.position).sub(c.target).normalize();
         cam.position.copy(c.target).addScaledVector(tmp.dir, base * k);
       }
+      // vue du scan : trois quarts légèrement plongeante, puis retour de face à la sortie du caisson
+      const view = rig.scan().view;
+      if (!st.introOff && (view > 0 || st.introWas > 0)) {
+        const dist = cam.position.distanceTo(c.target);
+        tmp.dir.set(...look.camera.position).sub(tmp.target.set(...look.camera.target)).normalize();
+        tmp.dir.applyAxisAngle(Y_AXIS, look.scan.viewYaw * view);
+        tmp.dir.y += look.scan.viewLift * view;
+        tmp.dir.normalize();
+        cam.position.copy(c.target).addScaledVector(tmp.dir, dist);
+      }
+      st.introWas = view;
       c.update();
     }
 
@@ -197,7 +210,7 @@ function Rig(): JSX.Element {
         minPolarAngle={look.camera.minPolar}
         maxPolarAngle={look.camera.maxPolar}
         target={look.camera.target}
-        onStart={() => { st.interacting = true; }}
+        onStart={() => { st.interacting = true; st.introOff = true; }}
         onEnd={() => { st.interacting = false; st.lastInteraction = st.now; }}
       />
     </>
@@ -205,6 +218,8 @@ function Rig(): JSX.Element {
 }
 
 /** Canvas plein cadre (le parent doit être position:relative avec une taille). */
+const Y_AXIS = new THREE.Vector3(0, 1, 0);
+
 export function BodyScene(): JSX.Element {
   return (
     <Canvas
